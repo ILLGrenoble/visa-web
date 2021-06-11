@@ -1,0 +1,61 @@
+.experiments-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.experiments-outer {
+    overflow: hidden;
+}
+
+.experiments-filters {
+    margin: 24px 0px 16px 0px;
+
+    label {
+        font-weight: 500;
+        &.first-label {
+            margin: 0px 24px 0px 0px;
+            //width: 100px;
+            //display:inline-block;
+        }
+        &.second-label {
+            margin: 0px 24px 0px 24px;
+            //width: 100px;
+            //display:inline-block;
+        }
+        &.joining-label {
+            margin: 0px 16px 0px 16px;
+        }
+    }
+
+    .experiments-filter {
+        margin-top: 10px;
+        height: 32px;
+    }
+}
+
+.experiments-toolbar {
+    color: #000;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 1;
+    .right-actions {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        label {
+            margin: 0px 10px 0px 10px;
+        }
+
+    }
+    .left-actions {
+        flex: 0 0 200px;
+    }
+
+    h3 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin: 10px 0 0 0;
+    }
+
+}

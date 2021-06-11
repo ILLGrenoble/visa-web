@@ -1,0 +1,65 @@
+<clr-main-container>
+    <notifier-container class="notifier-custom"></notifier-container>
+    <nav class="navigation-sidebar">
+        <ul class="navigation-sidebar-items">
+            <li class="navigation-sidebar-item navigation-sidebar-item-logo ">
+                <a [routerLink]="['/']">
+                    <img src="/assets/images/visa-logo.png" alt="logo">
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/home']" class="navigation-sidebar-item visa-navigation-item">
+                    <div class="navigation-sidebar-item-icon">
+                        <clr-icon shape="home"></clr-icon>
+                    </div>
+                    <span class="navigation-sidebar-item-name">Home</span>
+                </a>
+            </li>
+            <li  *ngIf="(user$ | async)?.support">
+                <a [routerLink]="['/support']" class="navigation-sidebar-item visa-navigation-item">
+                    <div class="navigation-sidebar-item-icon">
+                        <clr-icon shape="administrator"></clr-icon>
+                    </div>
+                    <span class="navigation-sidebar-item-name">Support</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/help']" class="navigation-sidebar-item visa-navigation-item">
+                    <div class="navigation-sidebar-item-icon">
+                        <clr-icon shape="info"></clr-icon>
+                    </div>
+                    <span class="navigation-sidebar-item-name">Help</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="navigation-sidebar-items">
+            <li *ngIf="(user$ | async)?.admin">
+                <a [routerLink]="['/admin']" class="navigation-sidebar-item visa-navigation-item">
+                    <div class="navigation-sidebar-item-icon">
+                        <clr-icon shape="cog"></clr-icon>
+                    </div>
+                    <span class="navigation-sidebar-item-name">Admin</span>
+                </a>
+            </li>
+            <clr-tooltip>
+
+                <li class="navigation-sidebar-item visa-navigation-item"  clrTooltipTrigger  *ngIf="(user$ | async) as user" (click)="handleLogout()">
+                    <div class="navigation-sidebar-item-icon">
+                        <clr-icon shape="logout"></clr-icon>
+                    </div>
+                    <span class="navigation-sidebar-item-name">Sign out</span>
+                    <clr-tooltip-content clrSize="lg" clrPosition="right" *clrIfOpen>
+                        <span><b> Logged in as:</b> {{ user.fullName }}</span>
+                    </clr-tooltip-content>
+                </li>
+            </clr-tooltip>
+
+        </ul>
+    </nav>
+    <div style="margin-left: 75px">
+        <div *ngIf="notifications != null">
+            <visa-system-notification *ngFor="let notification of notifications" [notification]="notification" (dismissNotification)="dismissNotification($event)"></visa-system-notification>
+        </div>
+        <router-outlet></router-outlet>
+    </div>
+</clr-main-container>

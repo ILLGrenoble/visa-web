@@ -1,0 +1,28 @@
+.system-notification {
+    width: 100%;
+    line-height: 36px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    color: black;
+
+    &.system-notification-info {
+        background-color: #daf6fb;
+    }
+
+    &.system-notification-warn {
+        background-color: #ffcf46;
+    }
+
+    &.system-notification-error {
+        background-color: #e23232;
+        color: white;
+    }
+
+    .system-notification-symbol {
+        margin-right: 12px;
+    }
+}
+
+.close{
+    margin-right: 5px;
+}

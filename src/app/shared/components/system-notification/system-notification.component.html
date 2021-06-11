@@ -1,0 +1,11 @@
+<div class="system-notification"
+     [ngClass]="{'system-notification-info': notification.level === 'INFO', 'system-notification-warn': notification.level === 'WARN', 'system-notification-error': notification.level === 'ERROR'}">
+    <span *ngIf="notification.level === 'INFO'" class="system-notification-symbol"><clr-icon
+        shape="info-standard"></clr-icon></span>
+    <span *ngIf="notification.level === 'WARN'" class="system-notification-symbol"><clr-icon
+        shape="warning-standard"></clr-icon></span>
+    <span *ngIf="notification.level === 'ERROR'" class="system-notification-symbol"><clr-icon
+        shape="error-standard"></clr-icon></span>
+    <span>{{notification.message}}</span>
+    <button type="button" class="close" aria-label="Close" (click)="onDismiss()"><span aria-hidden="true">×</span></button>
+</div>

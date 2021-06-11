@@ -1,0 +1,17 @@
+.remote-desktop-container {
+    position: absolute;
+    left: 75px;
+    right: 0;
+    bottom: 0;
+    top: 0;
+}
+
+.remote-desktop-error-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.description {
+    margin-bottom: 16px;
+}

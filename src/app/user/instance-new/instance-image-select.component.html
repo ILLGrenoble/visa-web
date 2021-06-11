@@ -1,0 +1,22 @@
+<div *ngIf="imagePlansArray != null && imagePlansArray.length > 0">
+    <div class="image-title">
+        <h3>Choose an environment</h3>
+    </div>
+    <div class="images">
+        <ul>
+            <li *ngFor="let imagePlans of imagePlansArray" (click)="selected.next(imagePlans)">
+                <div class="image-box image-box--selected" [ngClass]="{'image-box--selected': imagePlans == selected.getValue()}">
+                    <button class="image-button">
+                        <div class="image-button__icon">
+                            <img src="assets/images/{{imagePlans.image.icon}}" />
+                        </div>
+                        <span class="image-button__name">
+                            {{imagePlans.image.name}}
+                        </span>
+                    </button>
+                    <div class="image-details">{{imagePlans.image.description}}</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

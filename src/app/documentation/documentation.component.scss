@@ -1,0 +1,112 @@
+.documentation-card {
+    border: 1px solid #e6e6e6;
+    break-inside: avoid;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    img {
+        width: 80px;
+        align-self: center;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            margin: 12px 0;
+
+            a {
+                font-size: 15px;
+                font-weight: 400;
+                text-decoration: none;
+
+                &:visited {
+                    color: #0052cc;
+                }
+            }
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+
+
+}
+
+.documentation-layout {
+    column-count: 2;
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: auto auto;
+
+    @media screen and (max-width: 768px) {
+        grid-template-columns: auto;
+        column-count: 1;
+    }
+}
+
+.documentation-contact-card {
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+    padding: 30px;
+
+    &-title {
+        font-weight: 400;
+        margin-top: 0;
+    }
+
+    &-description {
+        margin-top: 10px;
+    }
+}
+
+.documentation-box {
+
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    @media screen and (max-width: 768px) {
+        margin: 0 0 0 0;
+    }
+
+    margin: 0 0 20px 0;
+
+    h2 {
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    p {
+        font-size: 15px;
+        font-weight: 400;
+        color: #111;
+        margin-bottom: 15px;
+        margin-top: 0;
+    }
+
+    &--image {
+        @media screen and (max-width: 768px) {
+            display: none;
+        }
+
+        img {
+            max-width: 200px;
+        }
+    }
+
+}

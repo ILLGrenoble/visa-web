@@ -1,0 +1,40 @@
+<visa-admin-header></visa-admin-header>
+
+
+<div class="admin-container">
+    <div class="admin-container--main">
+
+        <clr-datagrid #datagridRef id="datagrid" [clrDgLoading]="loading">
+            <clr-dg-column>Plan ID</clr-dg-column>
+            <clr-dg-column>Image</clr-dg-column>
+            <clr-dg-column>Version</clr-dg-column>
+            <clr-dg-column>Flavour</clr-dg-column>
+            <clr-dg-column>Visible</clr-dg-column>
+            <clr-dg-column>Preset</clr-dg-column>
+            <clr-dg-column>Update</clr-dg-column>
+
+            <clr-dg-row *ngFor="let plan of plans;let i = index">
+                <clr-dg-cell>{{plan.id}}</clr-dg-cell>
+                <clr-dg-cell>{{plan.image.name}}</clr-dg-cell>
+                <clr-dg-cell>{{plan.image.version}}</clr-dg-cell>
+                <clr-dg-cell>{{plan.flavour.name}}</clr-dg-cell>
+                <clr-dg-cell><input [checked]="plan.image.visible" disabled type="checkbox"/></clr-dg-cell>
+                <clr-dg-cell><input [checked]="plan.preset" disabled type="checkbox"/></clr-dg-cell>
+                <clr-dg-cell>
+                    <button (click)="onUpdate(plan)" class="btn btn-sm">Update</button>
+                </clr-dg-cell>
+            </clr-dg-row>
+            <clr-dg-footer>
+                <button class="btn btn-sm" type="button" (click)="onCreate()">New</button>
+                <button class="btn btn-sm" type="button" (click)="onRefresh()">
+                    <clr-icon shape="refresh"></clr-icon>
+                </button>
+                <clr-dg-pagination #pagination [clrDgPageSize]="pageSize" [clrDgPage]="pageInfo?.currentPage"
+                                   [clrDgLastPage]="pageInfo?.totalPages">{{pagination.firstItem + 1}}
+                    - {{pagination.lastItem + 1 < pageInfo?.count ? pagination.lastItem + 1 : pageInfo?.count}}
+                    of {{ pageInfo?.count }} plans
+                </clr-dg-pagination>
+            </clr-dg-footer>
+        </clr-datagrid>
+    </div>
+</div>

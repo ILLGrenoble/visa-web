@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>External URL</h1>
+<div mat-dialog-content>
+    VISA is requesting that you go to the URL:
+    <p class="text-center"><strong>{{url}}</strong></p>
+</div>
+<div class="modal-footer">
+    <button type="button" (click)="onNoClick()" class="btn btn-outline">Cancel</button>
+    <button type="button"
+            (click)="onConfirm()"
+            class="btn btn-primary">
+        OK, Open in new tab
+    </button>
+</div>

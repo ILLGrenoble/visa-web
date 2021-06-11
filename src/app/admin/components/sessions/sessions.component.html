@@ -1,0 +1,95 @@
+<visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<div class="admin-container">
+    <div class="admin-container--main">
+        <visa-tabs [(selected)]="selectedTab">
+            <visa-tab name="list">
+                <visa-tab-title-icon><clr-icon shape="view-list"></clr-icon></visa-tab-title-icon>
+                <visa-tab-title>List view</visa-tab-title>
+                <visa-tab-content>
+                    <clr-datagrid [clrDgLoading]="loading">
+                        <clr-dg-column>Instance Id</clr-dg-column>
+                        <clr-dg-column>Instance Name</clr-dg-column>
+                        <clr-dg-column>Creation</clr-dg-column>
+                        <clr-dg-column>User</clr-dg-column>
+                        <clr-dg-column>Role</clr-dg-column>
+                        <clr-dg-column>Time connected</clr-dg-column>
+                        <clr-dg-column>Last interaction</clr-dg-column>
+                        <clr-dg-column>Connect</clr-dg-column>
+                        <clr-dg-placeholder>
+                            There are no sessions to display
+                        </clr-dg-placeholder>
+                        <clr-dg-row *ngFor="let instanceSessionMember of sessions">
+                            <clr-dg-cell>{{instanceSessionMember.instanceSession.instance.id}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.instanceSession.instance.name}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.createdAt | date:'dd-MM-yyyy HH:mm'}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.user.fullName}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.role}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.duration | timeConversion}}</clr-dg-cell>
+                            <clr-dg-cell>
+                                {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}
+                                <clr-icon size="20" *ngIf="isInteractiveSession(instanceSessionMember)" shape="mouse"
+                                          class="instance-interaction"></clr-icon>
+                            </clr-dg-cell>
+                            <clr-dg-cell>
+                                <div class="instance-access">
+                                    <button class="instance-access-btn"
+                                            [routerLink]="['/instances', instanceSessionMember.instanceSession.instance.id]">
+                                        <clr-icon shape="display" class="is-solid"></clr-icon> Connect
+                                    </button>
+                                </div>
+                            </clr-dg-cell>
+                        </clr-dg-row>
+                    </clr-datagrid>
+                </visa-tab-content>
+            </visa-tab>
+            <visa-tab name="grid">
+                <visa-tab-title-icon><clr-icon shape="grid-view" class="is-solid"></clr-icon></visa-tab-title-icon>
+                <visa-tab-title>Grid view</visa-tab-title>
+                <visa-tab-content>
+                    <div #gridContainer [ngClass]="{ 'admin-container--fullscreen' : isFullScreen()}">
+                        <div class="blankslate" *ngIf="sessions.length === 0">
+                            <div class="title">
+                                <img src="/assets/images/plug.png" [style.maxWidth]="'128px'" alt="plug"/>
+                                <h3>There are no sessions to display</h3>
+                            </div>
+                        </div>
+                        <div class="admin-session-grid">
+                            <a class="session-box" *ngFor="let instanceSessionMember of sessions; let index = index"
+                               [routerLink]="['/admin/instances/', instanceSessionMember.instanceSession.instance.id]">
+                                <div class="session-box__details">
+                                <span class="session-box__details__content" style="text-align: left; font-size: 13px">
+                                    {{instanceSessionMember.instanceSession.instance.name}}
+                                </span>
+                                <span class="session-box__details__content" style="text-align: right; font-size: 10px">
+                                    {{instanceSessionMember.user.fullName}}
+                                </span>
+                                </div>
+                                <div class="session-box__container">
+                                    <visa-image
+                                        [url]="getThumbnailUrlForInstance(instanceSessionMember.instanceSession.instance)"
+                                        [refreshable]="false"
+                                        [refreshInterval]="15000">
+                                    </visa-image>
+                                </div>
+                                <div class="session-box__activity">
+                                <span class="session-box__activity__content">
+                                   {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}
+                                    <clr-icon size="20" *ngIf="isInteractiveSession(instanceSessionMember)"
+                                              shape="mouse"
+                                              class="instance-interaction"></clr-icon>
+                                </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </visa-tab-content>
+                <visa-tab-actions>
+                    <button class="visa-tabs-btn" (click)="this.enterFullScreen()">
+                        <clr-icon shape="resize"></clr-icon>
+                        Enter full screen
+                    </button>
+                </visa-tab-actions>
+            </visa-tab>
+        </visa-tabs>
+    </div>
+</div>

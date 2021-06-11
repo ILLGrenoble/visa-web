@@ -1,0 +1,72 @@
+<div class="admin-header">
+    <div class="admin-header-container">
+        <div class="admin-header-title">Administration</div>
+    </div>
+    <div class="admin-header-container">
+        <div class="admin-tabs">
+            <div class="admin-tabs-body">
+                <a href="" class="admin-tab" routerLink="/admin/dashboard" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="dashboard" class="is-solid"></clr-icon>
+                    Dashboard
+                </a>
+                <a href="" class="admin-tab" routerLink="/admin/instances" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="display" class="is-solid"></clr-icon>
+                    Instances
+                </a>
+                <a href="" class="admin-tab" routerLink="/admin/sessions" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="wrench" class="is-solid"></clr-icon>
+                    Sessions
+                </a>
+                <a href="" class="admin-tab" routerLink="/admin/images" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="image" class="is-solid"></clr-icon>
+                    Images
+                </a>
+                <a href="" class="admin-tab" routerLink="/admin/flavours" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="organization" class="is-solid"></clr-icon>
+                    Flavours
+                </a>
+                <a href="" class="admin-tab" routerLink="/admin/plans" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="map" class="is-solid"></clr-icon>
+                    Plans
+                </a>
+                <!--            <a href="" class="admin-tab" routerLink="/admin/users" routerLinkActive="admin-tab&#45;&#45;selected">-->
+                <!--                <i class="fa fa-users"></i>-->
+                <!--                Users-->
+                <!--            </a>-->
+                <a href="" class="admin-tab" routerLink="/admin/notifications" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="bell" class="is-solid"></clr-icon>
+                    Notifications
+                </a>
+            </div>
+            <div class="admin-tabs-actions">
+                <div class="admin-tabs-action" *ngIf="isRouteActive('/admin/dashboard')">
+                    <button class="admin-tabs-btn" (click)="handleRefresh()">
+                        <clr-icon shape="sync"></clr-icon> Refresh dashboard
+                    </button>
+                </div>
+                <div class="admin-tabs-action" *ngIf="isRouteActive('/admin/dashboard')">
+                    <clr-toggle-wrapper>
+                        <input type="checkbox" clrToggle [(ngModel)]="autoRefresh" name="autoRefresh"/>
+                        <label>Auto refresh (every 30 seconds)</label>
+                    </clr-toggle-wrapper>
+                </div>
+                <div class="admin-tabs-action" *ngIf="isRouteActive('/admin/instances')">
+                    <button class="admin-tabs-btn" (click)="handleRefresh()">
+                        <clr-icon shape="sync"></clr-icon> Refresh instances
+                    </button>
+                </div>
+                <div class="admin-tabs-action" *ngIf="isRouteActive('/admin/sessions')">
+                    <button class="admin-tabs-btn" (click)="handleRefresh()">
+                        <clr-icon shape="sync"></clr-icon> Refresh sessions
+                    </button>
+                </div>
+                <div class="admin-tabs-action" *ngIf="isRouteActive('/admin/sessions')">
+                    <clr-toggle-wrapper>
+                        <input type="checkbox" clrToggle [(ngModel)]="autoRefresh" name="autoRefresh"/>
+                        <label>Auto refresh (every 30 seconds)</label>
+                    </clr-toggle-wrapper>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

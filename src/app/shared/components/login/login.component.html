@@ -1,0 +1,68 @@
+<div class="content-container">
+    <div class="content-area">
+        <div class="content-small-container">
+            <div class="home-banner">
+                <img src="/assets/images/visa-logo-blue.png" alt="VISA logo"/>
+            </div>
+            <div class="home-hero">
+                <div class="home-hero-first-column">
+                    <h1>Data Analysis, in the cloud</h1>
+                    <p class="lead">
+                        VISA (Virtual Infrastructure for Scientific Analysis) makes it simple to create compute
+                        instances on the data analysis infrastructure to analyse your experimental data using just your
+                        web browser
+                    </p>
+                    <div class="actions">
+                        <button class="sign-in-button" (click)="handleLogin()">
+                            <clr-icon shape="lock"></clr-icon>
+                            Sign in with your user account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="about-container">
+            <div class="about-card-container">
+                <div class="about-card">
+                    <h4 class="about-card-title">Analyse your data</h4>
+                    <p class="about-card-description">Create a new <a
+                        target="_blank" href="/help/instances/about">compute instance</a> and use your web browser to
+                        access
+                        a
+                        Remote Desktop or JupyterLab to start analysing your experimental data
+                    </p>
+                </div>
+                <div class="about-card">
+                    <h4 class="about-card-title">Collaborate with your team</h4>
+                    <p class="about-card-description">Share your compute instance with other members of your team to <a
+                        target="_blank" href="/help/instances/managing-access">collaborate together</a> in real time
+                    </p>
+                </div>
+                <div class="about-card">
+                    <h4 class="about-card-title">No need to install software</h4>
+                    <p class="about-card-description">The compute instances come with pre-installed <a target="_blank"
+                                                                                                       href="/help/data-analysis/scientific-software">
+                        data analysis
+                        software</a> so you can start analysing your experimental data immediately</p>
+                </div>
+            </div>
+            <div class="about-video-container">
+                <iframe *ngIf="config?.metadata['youtubeUrl']" [src]="config?.metadata['youtubeUrl'] | safe" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                <img *ngIf="!config?.metadata['youtubeUrl']" src="/assets/images/screenshot.png" />
+            </div>
+        </div>
+
+        <div *ngIf="config?.contactEmail" class="contact-container">
+            <div class="contact">
+                <div class="contact-card">
+                    <h4 class="contact-card-title">Questions or feedback?</h4>
+                    <p class="contact-card-description">Please send the IT service an email to <a [href]="'mailto:' + config?.contactEmail">{{ config?.contactEmail }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

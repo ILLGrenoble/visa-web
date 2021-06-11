@@ -1,0 +1,21 @@
+<div class="modal-header" cdkDrag cdkDragHandle  cdkDragRootElement=".cdk-overlay-pane">
+    <div mat-dialog-title  class="title">Keyboard</div>
+    <div class="select keyboard-layouts">
+        <select [(ngModel)]="selectedLayout" (ngModelChange)="handleLayoutChange($event)">
+            <option [ngValue]="layout" *ngFor="let layout of layouts">{{layout.value}}</option>
+        </select>
+    </div>
+</div>
+<div mat-dialog-content>
+    <div #container id="keyboard-container">
+
+    </div>
+</div>
+<div class="modal-footer">
+    <span class="hotkeys-keys">
+        <span class="hotkeys-text">You can use</span>
+        <span class="hotkeys-key">ctrl + ⇧ + alt + k</span>
+        <span class="hotkeys-text">to open or close the keyboard</span>
+    </span>
+    <button type="button" (click)="onNoClick()" class="btn btn-sm btn-outline">Close</button>
+</div>

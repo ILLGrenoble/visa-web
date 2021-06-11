@@ -1,0 +1,178 @@
+<div class="remote-desktop-error-container" *ngIf="error">
+    <div class="ngx-remote-desktop-message-body">
+        <div class="blankslate">
+            <div class="title">
+                <clr-icon shape="error-standard"></clr-icon>
+                <div>
+                    <h3>Unable to connect</h3>
+                </div>
+            </div>
+            <div class="description">
+                <p>{{error}}</p>
+            </div>
+            <div class="actions">
+                <button class="btn btn-outline" *ngIf="instance != null" (click)="handleConnect()">Connect to the instance</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="remote-desktop-container" *ngIf="manager && !error">
+    <ngx-remote-desktop [manager]="manager">
+        <ngx-remote-desktop-toolbar-item align="left" [hidden]="!manager.isConnected()" (click)="handleScreenshot()">
+            <clr-icon shape="printer"></clr-icon>
+            Take screenshot
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST')"
+            (click)="handleClipboard()"
+            align="left">
+            <clr-icon shape="clipboard"></clr-icon>
+            Clipboard
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST')"
+            (click)="handleKeyboard()"
+            align="left">
+            <clr-icon shape="keyboard"></clr-icon>
+            Keyboard
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isConnected()"
+            (click)="handleSettings()"
+            align="right">
+            <clr-icon shape="information"></clr-icon>
+            Information
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="isDisplayScaled() || !manager.isConnected()"
+            (click)="toggleScaledMode()"
+            align="right">
+            <clr-icon shape="resize-down"></clr-icon>
+            Full-scale display
+        </ngx-remote-desktop-toolbar-item>
+
+<!--        <ngx-remote-desktop-toolbar-item-->
+<!--            [hidden]="!isDisplayUnscaled() || !manager.isConnected()"-->
+<!--            (click)="toggleScaledMode()"-->
+<!--            align="right">-->
+<!--            <clr-icon shape="resize-up"></clr-icon>-->
+<!--            Unscaled display-->
+<!--        </ngx-remote-desktop-toolbar-item>-->
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="isDisplayOptimal() || !manager.isConnected()"
+            (click)="toggleScaledMode()"
+            align="right">
+            <clr-icon shape="resize-up"></clr-icon>
+            Auto-scale display
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="manager.isFullScreen() || !manager.isConnected()"
+            (click)="handleEnterFullScreen()"
+            align="right">
+            <clr-icon shape="pop-out"></clr-icon>
+            Enter full screen
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isFullScreen() || !manager.isConnected()"
+            (click)="handleExitFullScreen()"
+            align="right">
+            <clr-icon shape="window-restore"></clr-icon>
+            Exit full screen
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-connecting-message>
+            <div class="ngx-remote-desktop-message-body">
+                <div class="blankslate">
+                    <div class="title">
+                        <span class="spinner"></span>
+                        <h3>Connecting to the instance</h3>
+                    </div>
+                    <div *ngIf="!accessPending" class="description">
+                        <p>This could take a few moments.</p>
+                    </div>
+                    <div *ngIf="accessPending" class="description">
+                        <p>Waiting for the owner to accept the connection</p>
+                    </div>
+                </div>
+            </div>
+        </ngx-remote-desktop-connecting-message>
+
+        <ngx-remote-desktop-disconnected-message>
+            <div class="ngx-remote-desktop-message-body">
+                <div class="blankslate">
+                    <div class="title">
+                        <clr-icon shape="disconnect"></clr-icon>
+                        <h3>Disconnected from the instance</h3>
+                    </div>
+                    <div class="description">
+                        <p>You are not connected to the instance</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-outline" (click)="handleConnect()">Connect to the instance</button>
+                    </div>
+                </div>
+            </div>
+        </ngx-remote-desktop-disconnected-message>
+
+        <ngx-remote-desktop-error-message>
+            <div class="ngx-remote-desktop-message-body">
+                <div class="blankslate">
+                    <div class="title">
+                        <clr-icon shape="error-standard"></clr-icon>
+                        <div *ngIf="ownerNotConnected">
+                            <h3>Owner disconnected</h3>
+                        </div>
+                        <div *ngIf="accessRevoked">
+                            <h3>Disconnected</h3>
+                        </div>
+                        <div *ngIf="!ownerNotConnected && !accessRevoked">
+                            <h3>Connection error</h3>
+                        </div>
+                    </div>
+                    <div class="description">
+                        <div *ngIf="ownerNotConnected">
+                            <p>The owner of the instance isn't currently connected.<br>You can only access their desktop while they are connected. Please try again later.</p>
+
+                        </div>
+                        <div *ngIf="accessRevoked">
+                            <p>The owner has disconnected you from their remote desktop.</p>
+
+                        </div>
+                        <div *ngIf="!ownerNotConnected && !accessRevoked">
+                            <p>There was an error connecting to the instance or the connection has been terminated</p>
+
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-outline" (click)="handleConnect()">Connect to the instance</button>
+                    </div>
+                </div>
+            </div>
+        </ngx-remote-desktop-error-message>
+
+        <ngx-remote-desktop-status-bar [hidden]="!manager.isConnected()">
+            <ngx-remote-desktop-status-bar-item>
+                Connected to:
+                <strong>{{ instance?.name }}</strong>
+                <span [hidden]="!instance?.membership.isRole('GUEST')">(View only)</span>
+                <span [hidden]="!instance?.membership.isRole('OWNER', 'USER')">(Full control)</span>
+                <span [hidden]="!instance?.membership.isRole('SUPPORT')">(Full control - Support)</span>
+            </ngx-remote-desktop-status-bar-item>
+            <ngx-remote-desktop-status-bar-item>
+                Connection time: <strong> {{ (timeElapsed$ | async) | timeDuration:'milliseconds' }}</strong>
+            </ngx-remote-desktop-status-bar-item>
+            <ngx-remote-desktop-status-bar-item (click)="handleMembersConnected()" style="cursor: pointer">
+                Members connected: <strong>{{ (users$ | async)?.length }}</strong>
+            </ngx-remote-desktop-status-bar-item>
+        </ngx-remote-desktop-status-bar>
+    </ngx-remote-desktop>
+</div>

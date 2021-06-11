@@ -1,0 +1,49 @@
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="title">
+            <h1>VISA Help Centre</h1>
+        </div>
+    </div>
+</div>
+<div class="content-container">
+    <div class="content-area">
+        <div class="content-small-container">
+            <div class="documentation-box">
+                <div class="documentation-box--title">
+                    <h2>
+                        Data Analysis, in the cloud.
+                    </h2>
+                    <p>
+                        VISA makes it simple to create compute instances and analyse your experimental data using just your web
+                        browser.
+                    </p>
+                </div>
+                <div class="documentation-box--image">
+                    <img src="/assets/images/screenshot.png" alt="Screenshot of VISA"/>
+                </div>
+            </div>
+
+            <div class="documentation-layout">
+                <div class="documentation-card" *ngFor="let section of sections">
+                    <img [src]="section.icon" alt="{{ section.title }}" />
+                    <h2>{{ section.title }}</h2>
+                    <p>{{ section.description }}</p>
+                    <ul>
+                        <li *ngFor="let item of section.items">
+                            <a [routerLink]="['/help',  section.path, item.path]">{{ item.title }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div *ngIf="contactEmail" class="documentation-contact">
+                <div class="documentation-contact-card">
+                    <h4 class="documentation-contact-card-title">Still have questions?</h4>
+                    <p class="documentation-contact-card-description">Contact your IT service at <a
+                        [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>
+                        for more information.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

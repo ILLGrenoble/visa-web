@@ -1,0 +1,93 @@
+<div class="experiments-main">
+    <div class="experiments-title">
+        <h1 mat-dialog-title>Search for experiments</h1>
+        Search for your experiments using the filters below
+    </div>
+    <div mat-dialog-content class="experiments-outer">
+        <div class="experiments-filters">
+            <span>
+                <label for="instruments" class="first-label">Instrument</label>
+                <div class="clr-select-wrapper">
+                    <select name="instruments" id="instruments" [(ngModel)]="instrument"
+                            (ngModelChange)="reload($event)">
+                        <option [ngValue]="null">All instruments</option>
+                        <option *ngFor="let instrument of instruments" [ngValue]="instrument">
+                            {{ instrument.name }}
+                        </option>
+                    </select>
+                </div>
+
+            </span>
+            <span>
+                <label for="fromYears" class="second-label">between</label>
+                <div class="clr-select-wrapper">
+                    <select name="fromYears" id="fromYears" [(ngModel)]="fromYear"
+                            (ngModelChange)="reload($event)">
+                        <option *ngFor="let year of fromYears" [ngValue]="year">
+                            {{ year }}
+                        </option>
+                    </select>
+                </div>
+            </span>
+                <span>
+                <label for="toYears" class="joining-label">and</label>
+                <div class="clr-select-wrapper">
+                    <select name="toYears" id="toYears" [(ngModel)]="toYear"
+                            (ngModelChange)="reload($event)">
+                        <option *ngFor="let year of toYears" [ngValue]="year">
+                            {{ year }}
+                        </option>
+                    </select>
+                </div>
+            </span>
+            <span>
+                <label for="orderBy" class="second-label">sort by</label>
+                <div class="clr-select-wrapper">
+                    <select name="orderBy" id="orderBy" [(ngModel)]="orderBy"
+                            (ngModelChange)="reload($event)">
+                        <option *ngFor="let ordering of orderings" [ngValue]="ordering">
+                            {{ ordering.label }}
+                        </option>
+                    </select>
+                </div>
+            </span>
+        </div>
+
+        <div class="experiments-results">
+            <clr-datagrid [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)" [clrDgRowSelection]="true" style="max-height: 450px; overflow: auto" >
+                <clr-dg-column>Proposal</clr-dg-column>
+                <clr-dg-column>Title</clr-dg-column>
+                <clr-dg-column [style.width.px]="150">Instrument</clr-dg-column>
+                <clr-dg-column [style.width.px]="120">Start Date</clr-dg-column>
+                <clr-dg-column [style.width.px]="120">End Date</clr-dg-column>
+                <clr-dg-column></clr-dg-column>
+                <clr-dg-placeholder>No experiments found
+                </clr-dg-placeholder>
+                <clr-dg-row *ngFor="let experiment of experiments" [clrDgItem]="experiment">
+                    <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
+                    <clr-dg-cell>{{ experiment.proposal.title }}</clr-dg-cell>
+                    <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
+                    <clr-dg-cell>{{ experiment.startDate | date:'dd MMM yyyy' }}</clr-dg-cell>
+                    <clr-dg-cell>{{ experiment.endDate | date:'dd MMM yyyy' }}</clr-dg-cell>
+                    <clr-dg-cell>
+                        <button class="btn btn-sm" (click)="selected.next(experiment)" style="margin: 0">Select
+                        </button>
+                    </clr-dg-cell>
+
+                </clr-dg-row>
+                <clr-dg-footer>
+                    <clr-dg-pagination #pagination [clrDgPageSize]="experiments.limit" [(clrDgPage)]="experiments.page"
+                                       [clrDgTotalItems]="experiments.count"
+                                       [clrDgLastPage]="experiments.lastPage">
+                        <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 25, 50,100]">Results per page</clr-dg-page-size>
+                        {{experiments.firstItem }} - {{experiments.lastItem }} of {{pagination.totalItems}} experiments
+                    </clr-dg-pagination>
+                </clr-dg-footer>
+            </clr-datagrid>
+        </div>
+    </div>
+
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end; margin-top: auto">
+        <button mat-button (click)="onClose()">Close</button>
+    </div>
+</div>

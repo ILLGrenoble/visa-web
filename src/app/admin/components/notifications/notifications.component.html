@@ -1,0 +1,46 @@
+<visa-admin-header></visa-admin-header>
+<div class="admin-container">
+    <div class="admin-container--main">
+        <form [formGroup]="notificationTable">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Message</th>
+                    <th>Level</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container formArrayName="tableRows" *ngFor="let notification of tableRows.controls,  let i=index">
+                    <tr [formGroupName]="i">
+                        <td class="left">
+                            <input name="message" type="text" formControlName="message" class="clr-input message"  size="150"/>
+                        </td>
+                        <td>
+                            <div class="clr-select-wrapper level">
+                                <select name="level" formControlName="level">
+                                    <option value="INFO">INFO</option>
+                                    <option value="WARN">WARN</option>
+                                    <option value="ERROR">ERROR</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <button (click)="isUpdate(notification)" [disabled]="!notificationChange(notification,i)"
+                                    type="button" class="btn btn-success-outline"
+                                    aria-label="home">
+                                Update
+                            </button>
+                            <button (click)="onDelete(notification,i)" type="button"
+                                    class="btn btn-icon btn-danger-outline"
+                                    aria-label="home">
+                                <clr-icon shape="trash"></clr-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-container>
+            </table>
+        </form>
+        <button (click)=addRow() type="button" class="btn  btn-outline addButton" aria-label="home">Add</button>
+    </div>
+</div>

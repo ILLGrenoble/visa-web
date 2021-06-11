@@ -1,0 +1,48 @@
+<div class="admin-box admin-box-success">
+    <div class="admin-box-header">
+        <h3 class="admin-box-title">
+            Latest instances
+        </h3>
+    </div>
+    <div class="admin-box-body">
+        <table class="admin-box-table" *ngIf="data && !loading">
+            <thead>
+            <tr>
+                <th>Instance</th>
+                <th>Owner</th>
+                <th>IP</th>
+                <th>State</th>
+                <th>Created</th>
+                <th>Flavour</th>
+                <th>Image</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let instance of data">
+                <td><a [routerLink]="['/admin/instances',instance.id]">{{ instance.name}}</a></td>
+                <td>{{ instance.owner?.fullName }}</td>
+                <td>{{ instance.cloudInstance?.address || 'No IP address'}}</td>
+                <td [ngClass]="{'text-danger': instance.state ==='ERROR'}">{{ instance.state | titlecase  }}</td>
+                <td>
+                    <clr-tooltip>
+                        <span clrTooltipTrigger>{{ instance.createdAt | timeDuration:'date' }}</span>
+                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                            <span>{{ instance.createdAt | date:'MMM d, y, h:mm:ss a' }}</span>
+                        </clr-tooltip-content>
+                    </clr-tooltip>
+                </td>
+                <td>{{ instance.plan.flavour.name }}</td>
+                <td>{{ instance.plan.image.name }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="admin-box-blankslate" *ngIf="loading">
+            <div class="title">
+                <h3>Loading latest instances....</h3>
+            </div>
+        </div>
+    </div>
+    <div class="admin-box-footer">
+        <a [routerLink]="['/admin/instances']" class="uppercase">View all instances</a>
+    </div>
+</div>

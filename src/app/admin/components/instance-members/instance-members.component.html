@@ -1,0 +1,20 @@
+<clr-datagrid [clrDgLoading]="loading" *ngIf="members">
+    <clr-dg-column>ID</clr-dg-column>
+    <clr-dg-column>Full name</clr-dg-column>
+    <clr-dg-column>Role</clr-dg-column>
+    <clr-dg-column>Added</clr-dg-column>
+    <clr-dg-row *ngFor="let member of members">
+        <clr-dg-cell>{{ member.user.id }}</clr-dg-cell>
+        <clr-dg-cell>{{ member.user.fullName }}</clr-dg-cell>
+        <clr-dg-cell>{{ member.role | titlecase }}</clr-dg-cell>
+        <clr-dg-cell>
+            {{ member.createdAt | date:'dd-MM-yyyy HH:mm' }}
+        </clr-dg-cell>
+    </clr-dg-row>
+</clr-datagrid>
+
+<div class="blankslate" *ngIf="!members">
+    <div class="title">
+        <p>There are no members associated to this instance</p>
+    </div>
+</div>

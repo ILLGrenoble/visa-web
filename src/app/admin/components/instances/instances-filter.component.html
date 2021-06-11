@@ -1,0 +1,129 @@
+<div class="filters-box">
+    <div class="filters-box-header">
+        <h3 class="filters-box-title">
+            Columns
+        </h3>
+        <button class="filters-box-clear" type="button" (click)="onResetColumns()">Reset to default</button>
+    </div>
+    <div class="filters-box-body">
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox (change)="onColumn('image')" [checked]="state.columns.image"/>
+            <label>Image</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox (change)="onColumn('flavour')" [checked]="state.columns.flavour"/>
+            <label>Flavour</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox (change)="onColumn('terminationDate')"
+                   [checked]="state.columns.terminationDate"/>
+            <label>Termination date</label>
+        </clr-checkbox-wrapper>
+    </div>
+</div>
+<div class="filters-box">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="filters-box-header">
+            <h3 class="filters-box-title">
+                Filter Instances
+            </h3>
+            <button class="filters-box-clear" type="button" (click)="onReset()">Clear filters</button>
+        </div>
+        <div class="filters-box-body">
+            <div class="filter-box">
+                <div class="filter-title">
+                    ID
+                </div>
+                <div class="filter-body">
+                    <input formControlName="id" type="number" placeholder="Enter an ID here…" autocomplete="off"
+                           class="filter-input">
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    Name
+                </div>
+                <div class="filter-body">
+                    <input type="search" formControlName="name" placeholder="Search here…" autocomplete="off"
+                           autocorrect="off" autocapitalize="off" spellcheck="false" class="filter-input">
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    User
+                </div>
+                <div class="filter-body">
+                    <visa-admin-user-search [form]="form"></visa-admin-user-search>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    State
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="state" class="filter-input">
+                        <option [ngValue]="null">All states</option>
+                        <option *ngFor="let state of data.instanceStates.enumValues" [ngValue]="state.name">
+                            {{ state.name | titlecase }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    Image
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="image" class="filter-input">
+                        <option [ngValue]="null">All images</option>
+                        <option *ngFor="let image of data.images.data" [ngValue]="image.id">
+                            {{ image.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    Flavour
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="flavour" class="filter-input">
+                        <option [ngValue]="null">All flavours</option>
+                        <option *ngFor="let flavour of data.flavours.data" [ngValue]="flavour.id">{{ flavour.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    Instrument
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="instrument" class="filter-input">
+                        <option [ngValue]="null">All instruments</option>
+                        <option *ngFor="let instrument of data.instruments" [ngValue]="instrument.id">
+                            {{ instrument.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    Cycle
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="cycle" class="filter-input">
+                        <option [ngValue]="null">All cycles</option>
+                        <option *ngFor="let cycle of data.cycles.data" [ngValue]="cycle.id">{{ cycle.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="filters-box-footer">
+            <button class="filters-box-search">
+                Apply filters
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,62 @@
+<form name="instance" [formGroup]="form">
+    <section class="form-block">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" style="width: 100%" placeholder="Enter a instance name..."
+                   formControlName="name">
+            <div ngxErrors="name" class="text-danger">
+                <div ngxError="required">
+                    Name is required.
+                </div>
+                <div ngxError="maxlength">
+                    Name cannot exceed 100 characters.
+                </div>
+                <div ngxError="minlength">
+                    Name must be a minimum of 3 characters.
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="comments">Comments</label>
+            <textarea id="comments" rows="3" name="comments" formControlName="comments"></textarea>
+            <div ngxErrors="comments" class="text-danger">
+                <div ngxError="maxlength">
+                    Comments cannot exceed 4000 characters.
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Experiments</label>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Proposal</th>
+                    <th>Cycle</th>
+                    <th>Instrument</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let experiment of instance.experiments">
+                    <td>{{ experiment.proposal.identifier }}</td>
+                    <td>{{ experiment.cycle.name }}</td>
+                    <td>{{ experiment.instrument.name }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</form>
+<div class="modal-footer modal-footer--space-between">
+    <span class="hotkeys-keys">
+        <span class="hotkeys-text">You can use</span>
+        <span class="hotkeys-key">ctrl + ⇧ + alt + s</span>
+        <span class="hotkeys-text">to open or close the settings dialog</span>
+    </span>
+    <div>
+        <button type="button" (click)="close.next(null)" class="btn btn-outline">Close</button>
+        <button type="button" class="btn btn-primary" [disabled]="form.invalid" (click)="handleUpdate()"
+                *ngIf="instance?.membership.isRole('OWNER')">
+            Update details
+        </button>
+    </div>
+</div>

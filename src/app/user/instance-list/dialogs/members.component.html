@@ -1,0 +1,101 @@
+<h1 mat-dialog-title style="margin-bottom: 10px;">Members</h1>
+<div mat-dialog-content style="display: flex;flex-direction: column;">
+    <div *ngIf="instance.membership.isRole('OWNER')">
+        <p style="margin-top: 0">You can give access to other members to use your instance. Assigning the
+            permission of "Full control" will allow the given
+            member to control the screen, whereas, the "View only" permission provides visual access only.
+        </p>
+        <div class="full-access-warning">
+            <div class="full-access-alert-icon">
+                <clr-icon class="alert-icon" shape="exclamation-triangle" class="is-solid" style="width: 64px; height: 64px;"></clr-icon>
+            </div>
+            <div>
+                <p>Giving someone "Full control" gives them access to your Unix account while they are connected to your instance. <b>This means that they have access to your private and scientific data.</b></p>
+                <p>"Full control" is only active for other members while you are also connected but you must take responsibility of your desktop instance and be present at all times while you have an active session.</p>
+            </div>
+        </div>
+        <div class="search-member-toolbar" *ngIf="($users | async)?.length > 0">
+            <div class="search-container">
+                <ng-select [ngStyle]="{'width': '100%'}"
+                            placeholder="Select a proposal team member..." [items]="$users | async"
+                           notFoundText="No users found"
+                           [searchable]="true"
+                           [(ngModel)]="selectedUser"
+                           [bindValue]="'value'"
+                           [appendTo]="'body'">
+                </ng-select>
+            </div>
+            <div class="control">
+                <div class="select clr-select-wrapper">
+                    <select id="role" name="role" [(ngModel)]="selectedRole">
+                        <option *ngFor="let role of roles | tail: 1" [ngValue]="role">{{ role.value }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button">
+                <button class="btn btn-sm btn-success" [disabled]="!selectedUser" (click)="handleAdd($event)">
+                    Add member
+                </button>
+            </div>
+        </div>
+        <div class="search-member-toolbar" *ngIf="($sciSupportUsers | async)?.length > 0">
+            <div class="search-container">
+                <ng-select [ngStyle]="{'width': '100%'}"
+                           placeholder="Find a scientific support user..." [items]="$sciSupportUsers | async"
+                           notFoundText="No users found"
+                           [searchable]="true"
+                           [(ngModel)]="selectedSupportUser"
+                           [bindValue]="'value'"
+                           [appendTo]="'body'">
+                </ng-select>
+            </div>
+            <div class="control">
+                <div class="select clr-select-wrapper">
+                    <select id="supportRole" name="role" [(ngModel)]="selectedSupportRole">
+                        <option *ngFor="let role of roles | tail: 1" [ngValue]="role">{{ role.value }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button">
+                <button class="btn btn-sm btn-success" [disabled]="!selectedSupportUser" (click)="handleAddSupport($event)">
+                    Add member
+                </button>
+            </div>
+        </div>
+    </div>
+    <table class="members-table">
+        <thead>
+        <tr>
+            <th>Member</th>
+            <th>Access level</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody *ngIf="members">
+        <tr *ngFor="let member of members">
+            <td>{{ member.user.fullName }}</td>
+            <td *ngIf="!instance.membership.isRole('OWNER') && member.isRole('OWNER')" class="control">
+                {{member.role}}
+            </td>
+            <td *ngIf="instance.membership.isRole('OWNER')" class="control">
+                <div class="select clr-select-wrapper">
+                    <select [(ngModel)]="member.role" (change)="handleRoleChange($event, member)"
+                            [disabled]="member.isRole('OWNER') || !instance?.membership.isRole('OWNER')">
+                        <option *ngFor="let role of getRoles(member)" [value]="role.id">{{role.value}}</option>
+                    </select>
+                </div>
+            </td>
+            <td class="actions">
+                <button *ngIf="instance?.membership.isRole('OWNER')" class="btn btn-sm btn-link btn-link-danger"
+                        (click)="handleRemove($event, member)" [hidden]="member.isRole('OWNER')">
+                    Remove member
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+    <button mat-button (click)="handleClose()">Close</button>
+</div>

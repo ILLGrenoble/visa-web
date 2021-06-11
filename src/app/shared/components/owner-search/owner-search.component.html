@@ -1,0 +1,11 @@
+<div [formGroup]="form">
+    <ng-select [items]="users$ | async"
+               [searchable]="true"
+               placeholder="Enter an owners last name..."
+               formControlName="owner"
+               [loading]="loading"
+               [typeahead]="input$"
+               bindLabel="fullName"
+               notFoundText="No owner found">
+    </ng-select>
+</div>

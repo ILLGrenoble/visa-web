@@ -1,0 +1,110 @@
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="title">
+            <h1>Compute instances</h1>
+        </div>
+        <div class="actions">
+            <button class="btn btn-primary" [routerLink]="['/instances/new']">Create a new instance</button>
+        </div>
+    </div>
+</div>
+<div class="content-container">
+    <div class="content-area">
+        <div class="content-small-container" [hidden]="instances.length > 0">
+            <div class="information-panel">
+                <h4 class="information-panel-title">
+                    What is VISA?
+                </h4>
+                <div class="information-panel-body">
+                    VISA (Virtual Infrastructure for Scientific Analysis) is a data analysis portal that allows you to
+                    create
+                    compute instances to analyse your experimental data. Once you have created a new instance, you can
+                    then
+                    access it remotely using only a web browser from anywhere in the world.
+                </div>
+            </div>
+            <div class="blankslate">
+                <div class="title">
+                    <img src="/assets/images/cloud.png" alt="cloud"/>
+                    <h3>Looks like you don't have any instances</h3>
+                </div>
+                <div class="description">
+                    <p>Why not create one?</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm btn-primary" [routerLink]="['/instances/new']">Create a new
+                        instance
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="content-small-container" [hidden]="instances.length === 0">
+            <ng-select class="m-b-10" [multiple]="false" [searchable]="true" notFoundText="No experiments found"
+                       (change)="handleExperimentFilter($event)" placeholder="Filter instances by experiment...">
+                <ng-option *ngFor="let experiment of experiments" [value]="experiment">
+                    {{ experiment.proposal.identifier }} ({{ experiment.instrument.name}},
+                    Cycle {{ experiment.cycle.name }})
+                </ng-option>
+            </ng-select>
+            <div class="centered-content-area m-t-20" [hidden]="!loading">
+                <clr-spinner [hidden]="!loading"></clr-spinner>
+            </div>
+            <visa-tabs [hidden]="loading">
+                <visa-tab>
+                    <visa-tab-title>My instances <span class="label">{{ (instances | instanceFilterPipe: ['OWNER']: selectedExperiment).length }}</span></visa-tab-title>
+                    <visa-tab-actions>
+                        <button class="visa-tabs-btn" (click)="handleUpdate()">
+                            <clr-icon shape="sync"></clr-icon>
+                        </button>
+                    </visa-tab-actions>
+                    <visa-tab-content>
+                        <div class="col" [hidden]="instances.length == 0">
+                            <visa-instance-list [instances]="(instances | instanceFilterPipe: ['OWNER']: selectedExperiment)"
+                                (doUpdateParent)="handleUpdate()">
+                            </visa-instance-list>
+                        </div>
+                        <div class="blankslate"
+                             [hidden]="(instances | instanceFilterPipe: ['OWNER']: selectedExperiment).length > 0">
+                            <div class="title">
+                                <img src="/assets/images/cloud.png" alt="cloud"/>
+                                <h3>No instances found</h3>
+                            </div>
+                            <div class="description">
+                                <p>We couldn't find any instances for the given filter</p>
+                            </div>
+                        </div>
+                    </visa-tab-content>
+                </visa-tab>
+                <visa-tab>
+                    <visa-tab-title>
+                        Instances shared with me <span class="label">{{ (instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment).length }}</span>
+                    </visa-tab-title>
+                    <visa-tab-actions>
+                        <button class="visa-tabs-btn" (click)="handleUpdate()">
+                            <clr-icon shape="sync"></clr-icon>
+                        </button>
+                    </visa-tab-actions>
+                    <visa-tab-content>
+                        <div class="row">
+                            <div class="col" [hidden]="(instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment).length == 0">
+                                <visa-instance-list [instances]="(instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment)"
+                                                    (doUpdateParent)="handleUpdate()">
+                                </visa-instance-list>
+                            </div>
+                            <div class="blankslate"
+                                 [hidden]="(instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment).length > 0">
+                                <div class="title">
+                                    <img src="/assets/images/cloud.png" alt="cloud"/>
+                                    <h3>No shared instances found</h3>
+                                </div>
+                                <div class="description">
+                                    <p>We couldn't find any instances for the given filter</p>
+                                </div>
+                            </div>
+                        </div>
+                    </visa-tab-content>
+                </visa-tab>
+            </visa-tabs>
+        </div>
+    </div>
+</div>

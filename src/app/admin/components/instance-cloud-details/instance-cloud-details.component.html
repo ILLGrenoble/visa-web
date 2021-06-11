@@ -1,0 +1,55 @@
+<dl class="admin-details-list" *ngIf="details">
+    <div class="admin-details-list-item">
+        <dt>
+            <b>IP address</b>
+        </dt>
+        <dd>
+            {{ details?.address || 'No IP address'}}
+        </dd>
+    </div>
+    <div class="admin-details-list-item">
+        <dt><b>Security groups</b></dt>
+        <dd>
+            <span *ngFor="let securityGroup of details?.securityGroups"
+                  class="admin-details-list-item-tag">{{ securityGroup }}</span>
+        </dd>
+    </div>
+    <div class="admin-details-list-item">
+        <dt><b>Fault</b></dt>
+        <dd>
+            {{ details?.fault || 'No fault to display'}}
+            <dl class="admin-details-list" *ngIf="details?.fault">
+                <div class="admin-details-list-item">
+                    <dt>Message</dt>
+                    <dd>
+                        {{ details?.fault?.message || 'No message' }}
+                    </dd>
+                </div>
+                <div class="admin-details-list-item">
+                    <dt>Code</dt>
+                    <dd>
+                        {{ details?.fault?.code || 'No code' }}
+                    </dd>
+                </div>
+                <div class="admin-details-list-item">
+                    <dt>Details</dt>
+                    <dd>
+                        {{ details?.fault?.details || 'No details' }}
+                    </dd>
+                </div>
+                <div class="admin-details-list-item">
+                    <dt>Created</dt>
+                    <dd>
+                        {{ details?.fault?.created || 'No created date' }}
+                    </dd>
+                </div>
+            </dl>
+        </dd>
+    </div>
+</dl>
+<div class="blankslate" *ngIf="!details">
+    <div class="title">
+        <p>There are no cloud details to display for this instance</p>
+    </div>
+</div>
+

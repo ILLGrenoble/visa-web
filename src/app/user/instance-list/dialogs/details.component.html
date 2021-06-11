@@ -1,0 +1,48 @@
+<h1 mat-dialog-title style="margin-bottom: 0px;">Instance Details</h1>
+<div mat-dialog-content style="display: flex;flex-direction: column;">
+    <form name="instance" [formGroup]="form"  clrForm clrLayout="horizontal">
+        <div class="clr-row">
+            <div class="clr-col-12">
+                <h5 style="margin-top: 0">Name</h5>
+                <p style="margin-top: 5px; margin-bottom: 5px">
+                    Give your compute instance an identifying name you will remember it by.
+                </p>
+            </div>
+            <div class="clr-col-12">
+
+                <input formControlName="name" type="text" class="clr-input" name="name" style="width: 100%"
+                       placeholder="Enter a instance name..." autofocus>
+                <div ngxErrors="name" class="text-danger">
+                    <div ngxError="required">
+                        Name is required.
+                    </div>
+                    <div ngxError="maxlength">
+                        Name cannot exceed 100 characters.
+                    </div>
+                    <div ngxError="minlength">
+                        Name must be a minimum of 10 characters.
+                    </div>
+                </div>
+            </div>
+            <div class="clr-col-12">
+                <h5 style="margin-top: 0.5rem">Notes</h5>
+                <p style="margin-top: 5px">
+                    You can add here some comments and notes about this compute resource.
+                </p>
+            </div>
+            <div class="clr-col-12">
+                <textarea id="comments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments"></textarea>
+                <div ngxErrors="comments" class="text-danger">
+                    <div ngxError="maxlength">
+                        Comments cannot exceed 2500 characters.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button (click)="submit()" [disabled]="!canSubmit()">Save
+    </button>
+</div>

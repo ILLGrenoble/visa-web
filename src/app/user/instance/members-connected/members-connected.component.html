@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Members connected</h1>
+<div mat-dialog-content>
+    <p class="p2" style="margin: 0">There are currently
+        <b>{{ users.length }}</b> members connected to this instance.
+    </p>
+    <table class="table table-noborder table-compact" style="margin-top: 0.5rem;">
+        <tbody>
+        <tr *ngFor="let user of users">
+            <td class="left"><div class="members-connected-user">{{ user.fullName }}</div></td>
+            <td class="left" style="float: right">
+                <span class="label label-success members-connected-role" *ngIf="user.role == 'OWNER'">Full control</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role == 'GUEST'">View only</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role == 'USER'">Full control</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role == 'SUPPORT'">Support</span>
+            </td>
+            <td>
+                <div class="button" *ngIf="canDelete(user)">
+                    <button class="btn btn-sm btn-danger-outline" (click)="dropUser($event, user)">Disconnect</button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" (click)="onNoClick()" class="btn btn-outline">Close</button>
+</div>

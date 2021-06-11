@@ -1,0 +1,260 @@
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="title">
+            <h1>New compute instance</h1>
+        </div>
+    </div>
+</div>
+<div *ngIf="user != null" class="content-container">
+    <div class="content-area">
+        <div class="content-small-container">
+            <div class="clr-row">
+                <div class="clr-col-12">
+                    <div class="information-panel">
+                        <div class="information-panel-body">
+                            Please fill in the details below to create a new compute instance. For information about VISA please checkout the
+                            <a [routerLink]="'/help'">documentation</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="blankslate" *ngIf="totalExperiments == 0 && !canBeExperimentFree">
+                <div class="title">
+                    <img src="/assets/images/experiments.png" alt="experiments"/>
+                    <h3>You do not have any experiments</h3>
+                </div>
+                <div class="description">
+                    <p>To create a compute instance, you must be a member of a scientific proposal.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
+                </div>
+            </div>
+            <div class="blankslate" *ngIf="quotas.availableInstances == 0">
+                <div class="title">
+                    <img src="/assets/images/warning.png" alt="warning"/>
+                    <h3>Instance quota reached</h3>
+                </div>
+                <div class="description">
+                    <p>You have reached the maximum number of <b>{{ quotas.maxInstances }}</b> instances that you can
+                        create.</p>
+                    <p>Please delete an existing instance if you would like to create a new one.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
+                </div>
+            </div>
+            <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (totalExperiments > 0 || canBeExperimentFree)">
+                <div class="clr-col-12">
+                    <div class="sections">
+                        <div class="section">
+                            <div class="title">
+                                <h2>Experiments</h2>
+                                <div *ngIf="!canBeExperimentFree" class="title-not-experiment-free">
+                                    You need to select at least one experiment in order to create you compute resource.
+                                </div>
+                                <div *ngIf="canBeExperimentFree" class="title-experiment-free">
+                                    Select the experiments you wish to associate with your compute resource.
+                                    <clr-toggle-container clrInline>
+                                        <clr-toggle-wrapper>
+                                            <input type="checkbox" clrToggle style="margin-top: 0" name="experimentFree"
+                                                   [(ngModel)]="experimentFree"/>
+                                            <label>Instance not associated to any specific experiments</label>
+                                        </clr-toggle-wrapper>
+                                    </clr-toggle-container>
+                                </div>
+                            </div>
+                            <div *ngIf="!experimentFree">
+                                <button class="btn" (click)="openExperimentSearch()">
+                                    Search for experiments
+                                </button>
+<!--                                <visa-instance-experiment-select (selected)="addExperiment($event)"></visa-instance-experiment-select>-->
+
+
+
+
+                                <clr-datagrid [clrDgRowSelection]="true">
+                                    <clr-dg-column [style.width.px]="150">Proposal</clr-dg-column>
+                                    <clr-dg-column>Title</clr-dg-column>
+                                    <clr-dg-column [style.width.px]="150">Instrument</clr-dg-column>
+                                    <clr-dg-column [style.width.px]="120">Start Date</clr-dg-column>
+                                    <clr-dg-column [style.width.px]="120">End Date</clr-dg-column>
+                                    <clr-dg-column [style.width.px]="100"></clr-dg-column>
+                                    <clr-dg-placeholder>No experiments selected
+                                    </clr-dg-placeholder>
+                                    <clr-dg-row *ngFor="let experiment of experiments">
+                                        <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ experiment.proposal.title }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ experiment.startDate | date:'dd MMM yyyy' }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ experiment.endDate | date:'dd MMM yyyy' }}</clr-dg-cell>
+                                        <clr-dg-cell>
+                                            <button class="btn btn-sm" (click)="removeExperiment(experiment)"
+                                                    style="margin: 0">
+                                                Remove
+                                            </button>
+                                        </clr-dg-cell>
+                                    </clr-dg-row>
+                                </clr-datagrid>
+                            </div>
+                        </div>
+
+                        <div class="section" *ngIf="selectedPlan != null && canSkipCustomisation && !customiseInstance">
+                            <div class="title">
+                                <h2>
+                                    Instance settings
+                                </h2>
+                            </div>
+                            <div class="instance-settings">
+                                <h3><b>Environment:</b> {{selectedPlan.image.description}}</h3>
+                                <h3><b>Processor:</b> {{selectedPlan.flavour.cpu}} vCPUs</h3>
+                                <h3><b>Memory:</b> {{selectedPlan.flavour.memory / 1024}} GB RAM</h3>
+                            </div>
+
+                            <clr-toggle-container clrInline class="customise-settings-toggle">
+                                <clr-toggle-wrapper>
+                                    <input type="checkbox" clrToggle style="margin-top: 0" name="experimentFree"
+                                           [(ngModel)]="customiseInstance"/>
+                                    <label>Customise the instance settings</label>
+                                </clr-toggle-wrapper>
+                            </clr-toggle-container>
+                        </div>
+
+                        <div class="section" *ngIf="stage > 0" [hidden]="!customiseInstance && canSkipCustomisation">
+                            <div class="title">
+                                <h2>
+                                    Computing Environment
+                                </h2>
+                            </div>
+                            <div>
+                                <visa-instance-image-select
+                                    [plans]="plans"
+                                    (selected)="setSelectedImagePlans($event)"></visa-instance-image-select>
+                            </div>
+                            <div>
+                                <visa-instance-flavour-select
+                                    [imagePlans]="selectedImagePlans"
+                                    (selectedPlan)="setSelectedPlan($event)"></visa-instance-flavour-select>
+                            </div>
+                        </div>
+
+                        <div class="section" *ngIf="stage > 1">
+                            <div class="title">
+                                <h2>
+                                    Display Settings
+                                </h2>
+                            </div>
+                            <div class="content">
+                                <visa-instance-display-select (resolution)="setScreenResolution($event)"></visa-instance-display-select>
+                            </div>
+                        </div>
+                        <div class="section" *ngIf="stage > 1">
+                            <div class="title">
+                                <h2>
+                                    Keyboard layout
+                                </h2>
+                            </div>
+                            <div class="content">
+                                <visa-keyboard-layout-select (layout)="setKeyboardLayout($event)"></visa-keyboard-layout-select>
+                            </div>
+                        </div>
+                        <div class="section" *ngIf="stage > 1">
+                            <div class="title">
+                                <h2>Finalise and create</h2>
+                            </div>
+                            <div class="content">
+                                <form name="instance" [formGroup]="form">
+                                    <div class="clr-row">
+                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
+                                            <div class="instance-name-title">
+                                                <h3>Choose a name</h3>
+                                                <p>
+                                                    Give your compute instance an identifying name you will remember it
+                                                    by.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
+                                            <div class="clr-row clr-align-items-center">
+                                                <div class="clr-col-8">
+                                                    <input formControlName="name" class="instance-name-input"
+                                                           type="text"
+                                                           id="name" name="name"
+                                                           style="width: 100%"
+                                                           placeholder="Enter an instance name..." autofocus>
+                                                    <div ngxErrors="name" class="text-danger">
+                                                        <div ngxError="required">
+                                                            Name is required.
+                                                        </div>
+                                                        <div ngxError="maxlength">
+                                                            Name cannot exceed 100 characters.
+                                                        </div>
+                                                        <div ngxError="minlength">
+                                                            Name must be a minimum of 10 characters.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="clr-col">
+                                                    <button type="button"
+                                                            class="instance-name-generate-btn"
+                                                            (click)="handleGenerateRandomName()">
+                                                        <clr-icon shape="sync"></clr-icon>
+                                                        Generate random name
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
+                                            <div class="instance-comments-label">
+                                                <h3>Add some notes</h3>
+                                                <p>
+                                                    You can add here some comments and notes about this compute
+                                                    resource.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
+                                            <textarea id="comments" rows="3" name="comments" class="instance-comments-input"
+                                                  style="width: 100%"
+                                                  formControlName="comments">
+                                            </textarea>
+                                            <div ngxErrors="comments" class="text-danger">
+                                                <div ngxError="maxlength">
+                                                    Comments cannot exceed 2500 characters.
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="clr-col-12">
+                                            <div class="instance-terms-label">
+                                                <h3>Terms and conditions</h3>
+                                            </div>
+                                            <clr-checkbox-wrapper>
+                                                <input type="checkbox" clrCheckbox name="acceptedTerms"
+                                                       formControlName="acceptedTerms" required="false"/>
+                                                <label>I accept that I will only use this instance for data analysis
+                                                    purposes and will not engage in any illegal activities.
+                                                    Any user that I share my instance with will have complete access
+                                                    and
+                                                    permissions to my files. I agree to supervise any shared access
+                                                    and
+                                                    remove users once sharing is no longer required.</label>
+                                            </clr-checkbox-wrapper>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <button class="btn btn-block"
+                                    [ngClass]="{'btn-success': canSubmit(), disabled: !canSubmit()}"
+                                    (click)="createInstance()">
+                                Create
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

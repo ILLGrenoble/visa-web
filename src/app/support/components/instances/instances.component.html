@@ -1,0 +1,128 @@
+<visa-support-header></visa-support-header>
+<div class="admin-container">
+    <div class="support-info">
+        <div>
+            This page allows you to access instances for which you can provide user support (IT, instrument control or scientific support).
+        </div>
+        <div>
+            You can request access to active sessions by clicking on the 'connect' button even if the owner of the instance has not explicitly added you as an instance member.
+        </div>
+    </div>
+    <div class="admin-container--left">
+        <visa-support-instances-filter (onState)="onFilter($event)" [state]="currentState">
+        </visa-support-instances-filter>
+    </div>
+    <div class="admin-container--main">
+        <div class="blankslate" *ngIf="instances?.items.length == 0">
+            <div class="title">
+                <img src="/assets/images/cloud.png" alt="cloud" />
+                <h3>There are currently no instances for which you can provide support</h3>
+            </div>
+            <div class="description">
+                <p>A user can still add you manually to their instance through the 'Members' section of the 'Settings' menu on their instance.</p>
+            </div>
+        </div>
+        <div class="clr-row" *ngIf="instances?.items.length > 0">
+            <div class="clr-col-lg-12">
+                <div class="admin-box admin-box-default">
+                    <div class="admin-box-body">
+                        <clr-datagrid (clrDgRefresh)="onGridChange($event)" [clrDgLoading]="loading">
+                            <clr-dg-column [clrDgSortBy]="'id'" clrDgColType="number" [clrDgSortOrder]="isColumnSorted('id')">
+                                <ng-container>
+                                    ID
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'createdAt'" [clrDgSortOrder]="isColumnSorted('createdAt')">
+                                <ng-container>
+                                    Creation Date
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'name'" [clrDgSortOrder]="isColumnSorted('name')">
+                                <ng-container>
+                                    Name
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Owner
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'state'" [clrDgSortOrder]="isColumnSorted('state')">
+                                <ng-container>
+                                    State
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Session Activity
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Instruments
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'terminationDate'" [clrDgSortOrder]="isColumnSorted('terminationDate')">
+                                <ng-container>
+                                    Termination Date
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                            </clr-dg-column>
+                            <clr-dg-placeholder>We couldn't find any instances!</clr-dg-placeholder>
+                            <clr-dg-row *ngFor="let instance of instances?.items">
+                                <clr-dg-cell class="support-cell">{{ instance.id }}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ instance.createdAt | date:'dd MMM'}}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ instance.name }}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ instance.owner.fullName }}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ instance.state | titlecase }}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">
+                                    <span *ngIf="getInstanceSessionMembers(instance).length == 0">
+                                        {{ instance.lastSeenAt | timeDuration: 'date' }}
+                                    </span>
+                                    <clr-tooltip *ngIf="getInstanceSessionMembers(instance).length > 0">
+                                        <span clrTooltipTrigger>
+                                            {{getInstanceSessionMembers(instance).length + ' active'}}
+                                            <clr-icon size="20" *ngIf="isInteractiveSession(instance)" shape="mouse" class="instance-interaction"></clr-icon>
+                                        </span>
+                                        <clr-tooltip-content clrPosition="top-right" clrSize="lg" style="word-break: keep-all">
+                                            User was active {{instance.lastInteractionAt | timeDuration: 'date'}}
+                                        </clr-tooltip-content>
+                                    </clr-tooltip>
+                                </clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ getInstanceInstruments(instance) }}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ instance.terminationDate | date:'dd MMM HH:mm' }}</clr-dg-cell>
+                                <clr-dg-cell>
+                                    <div class="support-instance-access">
+                                        <button class="support-instance-access-btn" [routerLink]="['/instances', instance.id]"
+                                                [disabled]="!canConnect(instance)"><clr-icon shape="display" class="is-solid"></clr-icon> Connect
+                                        </button>
+                                    </div>
+                                </clr-dg-cell>
+                                <ng-container ngProjectAs="clr-dg-row-detail" *ngIf="instance.experiments.length">
+                                    <clr-dg-row-detail *clrIfExpanded>
+                                        <span class="instance-support-experiments__title">Experiments:</span>
+                                        <span class="instance-support-experiments__label" *ngFor="let experiment of instance.experiments">
+                                            {{ experiment.proposal.identifier }} ({{ experiment.instrument.name }}, Cycle
+                                            {{ experiment.cycle.name }})</span>
+                                    </clr-dg-row-detail>
+                                </ng-container>
+                            </clr-dg-row>
+                            <clr-dg-footer>
+                                <clr-dg-column-toggle [hidden]="true">
+                                </clr-dg-column-toggle>
+                                <button class="btn btn-sm btn-outline" type="button" (click)="reload()"><clr-icon shape="refresh"></clr-icon></button>
+                                <clr-dg-pagination #pagination [clrDgPageSize]="25" [clrDgPage]="currentState.page"
+                                                   [clrDgLastPage]="instances?.lastPage">
+                                    {{pagination.firstItem + 1}} - {{pagination.lastItem + 1 <  instances?.count ? pagination.lastItem + 1 : instances?.count}}
+                                    of {{ instances?.count }} instances
+                                </clr-dg-pagination>
+                            </clr-dg-footer>
+                        </clr-datagrid>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

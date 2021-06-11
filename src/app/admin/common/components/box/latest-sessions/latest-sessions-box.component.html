@@ -1,0 +1,53 @@
+<div class="admin-box admin-box-danger">
+    <div class="admin-box-header">
+        <h3 class="admin-box-title">
+            Latest active instance sessions
+        </h3>
+    </div>
+    <div class="admin-box-body">
+        <table class="admin-box-table" *ngIf="data.length > 0 && !loading">
+            <thead>
+            <tr>
+                <th>Instance</th>
+                <th>User</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th>Time connected</th>
+            </tr>
+            </thead>
+            <tbody *ngFor="let sessionMember of data">
+            <tr>
+                <td>
+                    <a [routerLink]="['/admin/instances',sessionMember.instanceSession.instance.id]">
+                        {{ sessionMember.instanceSession.instance.name }}
+                    </a>
+                </td>
+                <td>{{sessionMember.user.fullName}}</td>
+                <td>{{sessionMember.role}}</td>
+                <td>
+                    <clr-tooltip>
+                        <span clrTooltipTrigger>{{ sessionMember.createdAt | timeDuration:'date' }}</span>
+                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                            <span>{{ sessionMember.createdAt | date:'MMM d, y, h:mm:ss a' }}</span>
+                        </clr-tooltip-content>
+                    </clr-tooltip>
+                </td>
+                <td>{{sessionMember.duration| timeConversion}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="admin-box-blankslate" *ngIf="data.length == 0 && !loading">
+            <div class="title">
+                <h3>There are no active sessions</h3>
+            </div>
+        </div>
+        <div class="admin-box-blankslate" *ngIf="loading">
+            <div class="title">
+                <h3>Loading latest sessions....</h3>
+            </div>
+        </div>
+    </div>
+    <div class="admin-box-footer">
+        <a class="uppercase" routerLink="/admin/sessions">View all sessions</a>
+    </div>
+</div>

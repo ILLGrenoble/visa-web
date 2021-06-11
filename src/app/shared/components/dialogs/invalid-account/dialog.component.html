@@ -1,0 +1,16 @@
+<div mat-dialog-content>
+    <div class="blankslate">
+        <div class="title">
+            <img src="/assets/images/user-card.png"  alt="experiments" />
+            <h3>Invalid user account</h3>
+        </div>
+        <div class="description">
+            <p>You must have a valid user account to use VISA</p>
+            <p *ngIf="contactEmail">Please contact <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a> and reference your login username to resolve this issue</p>
+        </div>
+        <div class="actions">
+            <button class="btn btn-sm btn-primary" (click)="handleLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+

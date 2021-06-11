@@ -1,0 +1,100 @@
+::ng-deep .ng-dropdown-panel {
+    margin-left: 7px;
+
+    &.ng-select-bottom {
+        margin-top: 7px;
+    }
+}
+
+.search-member-toolbar {
+    max-width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+
+    .search-container {
+        flex: 1 0 auto;
+        width: 100px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+
+    .control {
+        margin-left: 10px;
+    }
+
+    .button {
+        margin-left: 10px;
+    }
+}
+
+.members-table {
+    padding-top: 10px;
+    box-shadow: none;
+    background-color: transparent;
+    border: 0;
+    margin-top: 0.5rem;
+    border-collapse: separate;
+    color: #565656;
+    max-width: 100%;
+    width: 100%;
+
+    th {
+        &:first-child {
+            text-align: left;
+        }
+
+        &:not(:first-child) {
+            text-align: left;
+            padding-left: 3px;
+        }
+    }
+
+    td {
+        &.actions {
+            width: 100px;
+        }
+
+        &.control {
+            width: 210px;
+
+            .select {
+                width: 103px;
+            }
+        }
+
+        &:last-child {
+            text-align: right;
+        }
+
+        .btn-link-danger {
+            color: #e62700;
+        }
+
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}
+
+.full-access-warning {
+    border: 1px solid #888;
+    padding: 0 20px 12px 10px;
+    margin: 24px 0;
+    background-color: #f0ad4e;
+    display: flex;
+    color: white;
+
+    p {
+        font-size: 0.6rem;
+        margin-top: 0.6rem;
+        color: white;
+    }
+
+    .full-access-alert-icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px
+    }
+}

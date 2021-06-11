@@ -1,0 +1,31 @@
+<div class="modal-header" cdkDrag cdkDragHandle cdkDragRootElement=".cdk-overlay-pane">
+    <div mat-dialog-title class="title">Clipboard</div>
+</div>
+<div mat-dialog-content>
+        <p class="m-t-10 m-b-5">
+        Text copied/cut within the remote desktop will appear here.
+        Sending the text below will affect the remote desktop clipboard.
+        </p>
+        <ngx-codemirror
+            #codeMirror
+            style="width: 100%;"
+            [(ngModel)]="text"
+            name="text"
+            [autoFocus]="true"
+            [options]="{
+                lineNumbers: true,
+                theme: 'material',
+                mode: 'text/plain'
+            }">
+        </ngx-codemirror>
+
+</div>
+<div class="modal-footer">
+    <button type="button" (click)="onNoClick()" class="btn btn-outline">Cancel</button>
+    <button type="button"
+            class="btn btn-primary"
+            [mat-dialog-close]="text"
+            [disabled]="text.length === 0">
+        Send to remote desktop clipboard
+    </button>
+</div>

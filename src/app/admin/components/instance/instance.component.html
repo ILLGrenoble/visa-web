@@ -1,0 +1,180 @@
+<visa-admin-header></visa-admin-header>
+<div class="admin-container" *ngIf="instance">
+    <div class="admin-container--main">
+        <div class="clr-row">
+            <div class="clr-col-lg-12">
+                <div class="admin-box admin-box-borderless">
+                    <div class="admin-box-header">
+                        <div class="admin-box-title">
+                            <ul class="admin-breadcrumbs">
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin']">Administration</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin/instances']">Instances</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    {{ instance.name }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="admin-box-actions">
+                            <visa-dropdown-menu>
+                                <visa-dropdown-menu-button><clr-icon shape="cog" class="is-solid"></clr-icon> Settings</visa-dropdown-menu-button>
+                                <visa-dropdown-menu-item [divider]="true"></visa-dropdown-menu-item>
+                                <visa-dropdown-menu-item (click)="handleStart()">Start instance
+                                </visa-dropdown-menu-item>
+                                <visa-dropdown-menu-item (click)="handleReboot()">Reboot instance
+                                </visa-dropdown-menu-item>
+                                <visa-dropdown-menu-item (click)="handleShutdown()">Shutdown instance
+                                </visa-dropdown-menu-item>
+                                <visa-dropdown-menu-item [divider]="true"></visa-dropdown-menu-item>
+                                <visa-dropdown-menu-item (click)="handleDelete()"><span class="text-danger">Delete</span>
+                                </visa-dropdown-menu-item>
+                            </visa-dropdown-menu>
+                        </div>
+                    </div>
+                    <div class="admin-box-body p-t-10 p-b-10">
+                        <dl class="admin-details-list">
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>ID</b>
+                                </dt>
+                                <dd>
+                                    {{ instance?.id }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Name</b>
+                                </dt>
+                                <dd>
+                                    {{ instance?.name }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>State</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.state | titlecase }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Comments</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.comments || 'No comments'}}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Owner</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.owner.fullName }} (<a
+                                    href="mailto:{{ instance.owner.email }}">{{ instance.owner.email }}</a>)
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Employer</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.owner?.affiliation?.name }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Username</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.username }} ({{ instance.owner?.id }})
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Termination date</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Flavour</b>
+                                </dt>
+                                <dd>{{ instance.plan.flavour.name }}</dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Image</b>
+                                </dt>
+                                <dd>{{ instance.plan.image.name }}</dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Keyboard layout</b>
+                                </dt>
+                                <dd>{{ instance.keyboardLayout }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <visa-tabs>
+                        <visa-tab id="cloudDetails">
+                            <visa-tab-title>Cloud details</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-admin-instance-cloud-details
+                                    [instance]="instance"></visa-admin-instance-cloud-details>
+                            </visa-tab-content>
+                        </visa-tab>
+                        <visa-tab id="thumbnail">
+                            <visa-tab-title>Thumbnail</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-image
+                                    [url]="getThumbnailUrlForInstance(instance)"
+                                    [refreshable]="false"
+                                    [refreshInterval]="15000">
+                                </visa-image>
+                            </visa-tab-content>
+                        </visa-tab>
+                        <visa-tab id="sessions">
+                            <visa-tab-title>Sessions</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-admin-instance-sessions [instance]="instance"
+                                                              [refresh]="refreshSession$"
+                                                              [hiddenColumns]="['instance.id', 'instance.name']"></visa-admin-instance-sessions>
+                            </visa-tab-content>
+                            <visa-tab-actions>
+                                <button class="visa-tabs-btn" (click)="this.refreshSession$.next(true)">
+                                    <clr-icon shape="sync"></clr-icon>
+                                </button>
+                            </visa-tab-actions>
+                        </visa-tab>
+                        <visa-tab id="members">
+                            <visa-tab-title>Members</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-admin-instance-members [instance]="instance"></visa-admin-instance-members>
+                            </visa-tab-content>
+                        </visa-tab>
+                        <visa-tab id="experiments">
+                            <visa-tab-title>Experiments</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-admin-instance-experiments
+                                    [instance]="instance"></visa-admin-instance-experiments>
+                            </visa-tab-content>
+                        </visa-tab>
+                        <visa-tab>
+                            <visa-tab-title>Instance Attributes</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-admin-instance-attributes
+                                    [instance]="instance"></visa-admin-instance-attributes>
+                            </visa-tab-content>
+                        </visa-tab>
+                    </visa-tabs>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

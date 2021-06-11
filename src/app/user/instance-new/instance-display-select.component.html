@@ -1,0 +1,32 @@
+<div class="layout-title">
+    <h3>Choose layout</h3>
+</div>
+<div class="displays">
+    <ul>
+        <li *ngFor="let arrangement of arrangements"  (click)="handleSelectedArrangement(arrangement)">
+            <div class="display-box" [ngClass]="{'display-box--selected': (selectedArrangement | async) === arrangement}">
+                <button class="display-button">
+                    <div class="display-button__icon">
+                        <clr-icon size="48" *ngFor="let screen of [].constructor(arrangement.screens)" shape="display"></clr-icon>
+                    </div>
+                    <span class="display-button__name">{{ arrangement.name }}</span>
+                </button>
+                <div class="display-details">{{ arrangement.details }}</div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="resolution-title">
+    <h3>Choose resolution</h3>
+</div>
+
+<div class="resolution-text">
+    Your screen resolution is {{getHostScreenResolution().width}} x {{getHostScreenResolution().height}}. You can modify this by selecting one of the following resolutions:
+</div>
+
+<ng-select [(ngModel)]="selectedSingleScreenResolution" [searchable]="false" [clearable]="false" class="screen-resolution-select">
+    <ng-option *ngFor="let screenResolution of screenResolutions" [value]="screenResolution" >
+        {{ screenResolution.label }}
+    </ng-option>
+</ng-select>

@@ -1,0 +1,46 @@
+<visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<div class="admin-container">
+    <div class="admin-container--main">
+        <div class="clr-row">
+            <div class="clr-col">
+                <visa-admin-instance-count-stat [refresh]="refreshEvent$"></visa-admin-instance-count-stat>
+            </div>
+            <div class="clr-col">
+                <visa-admin-instance-session-count-stat
+                    [refresh]="refreshEvent$"></visa-admin-instance-session-count-stat>
+            </div>
+            <div class="clr-col">
+                <visa-admin-active-instance-session-count-stat
+                    [refresh]="refreshEvent$"></visa-admin-active-instance-session-count-stat>
+            </div>
+            <div class="clr-col">
+                <visa-admin-image-count-stat [refresh]="refreshEvent$"></visa-admin-image-count-stat>
+            </div>
+        </div>
+        <div class="clr-row">
+            <div class="clr-col-lg-9">
+                <visa-admin-latest-instance-sessions-box [refresh]="refreshEvent$"></visa-admin-latest-instance-sessions-box>
+                <visa-admin-latest-instances-box [refresh]="refreshEvent$"></visa-admin-latest-instances-box>
+                <visa-admin-latest-active-users-box [refresh]="refreshEvent$"></visa-admin-latest-active-users-box>
+                <div class="clr-row clr-row-marginless">
+                    <div class="clr-col clr-col-pl0">
+                        <visa-admin-image-distribution-box [refresh]="refreshEvent$"></visa-admin-image-distribution-box>
+                    </div>
+                    <div class="clr-col clr-col-pr0">
+                        <visa-admin-flavour-distribution-box [refresh]="refreshEvent$"></visa-admin-flavour-distribution-box>
+                    </div>
+                </div>
+
+            </div>
+            <div class="clr-col-lg-3">
+                <div><visa-admin-flavour-count-stat [refresh]="refreshEvent$"></visa-admin-flavour-count-stat></div>
+                <visa-admin-activated-users-count-stat [refresh]="refreshEvent$">
+                </visa-admin-activated-users-count-stat>
+                <visa-admin-cloud-limit-box [refresh]="refreshEvent$">
+                </visa-admin-cloud-limit-box>
+                <visa-admin-instance-states-box [refresh]="refreshEvent$">
+                </visa-admin-instance-states-box>
+            </div>
+        </div>
+    </div>
+</div>

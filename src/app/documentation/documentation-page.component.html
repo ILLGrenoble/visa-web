@@ -1,0 +1,28 @@
+<div class="page-header" *ngIf="page">
+    <div class="page-header-content">
+        <div class="title">
+            <h1>{{ page.attributes?.title }}</h1>
+        </div>
+        <div class="actions">
+            <button class="btn btn-primary" (click)="refresh()" *ngIf="!isProduction()">Refresh</button>
+        </div>
+    </div>
+</div>
+<div class="content-container" *ngIf="page">
+    <div class="content-area">
+        <div class="content-small-container">
+            <ul class="documentation-page-breadcrumbs">
+                <li class="documentation-page-breadcrumbs-item">
+                    <a [routerLink]="['/help']">VISA Help Centre</a>
+                </li>
+                <li class="documentation-page-breadcrumbs-item">
+                    {{ page.attributes?.title }}
+                </li>
+            </ul>
+            <div class="documentation-page-content">
+                <markdown [data]="page.body">
+                </markdown>
+            </div>
+        </div>
+    </div>
+</div>

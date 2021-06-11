@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Request for access</h1>
+<div mat-dialog-content>
+    {{userFullName}} is requesting access to your instance.
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-success-outline" (click)="onFullAccess()">Grant full access</button>
+    <button type="button" class="btn btn-success-outline" (click)="onReadOnlyAccess()">Grant read-only access</button>
+    <button type="button" class="btn btn-danger-outline" (click)="onReject()">Reject access</button>
+</div>

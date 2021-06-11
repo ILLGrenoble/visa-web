@@ -1,0 +1,18 @@
+<clr-datagrid [clrDgLoading]="loading" *ngIf="experiments">
+    <clr-dg-column>ID</clr-dg-column>
+    <clr-dg-column>Cycle</clr-dg-column>
+    <clr-dg-column>Instrument</clr-dg-column>
+    <clr-dg-column>Proposal</clr-dg-column>
+    <clr-dg-row *ngFor="let experiment of experiments">
+        <clr-dg-cell>{{ experiment.id }}</clr-dg-cell>
+        <clr-dg-cell>{{ experiment.cycle.name }} ({{ experiment.cycle.startDate  | date:'dd-MM-yyyy' }})</clr-dg-cell>
+        <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
+        <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
+    </clr-dg-row>
+</clr-datagrid>
+
+<div class="blankslate" *ngIf="!experiments">
+    <div class="title">
+        <p>There are no experiments associated to this instance</p>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="admin-box admin-box-success">
+    <div class="admin-box-header">
+        <h3 class="admin-box-title">
+            Most recently active users
+        </h3>
+    </div>
+    <div class="admin-box-body">
+        <table class="admin-box-table" *ngIf="data && !loading">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Affiliation</th>
+                <th>Last seen at</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of data">
+                <td>{{ user.id }}</td>
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.affiliation ? user.affiliation.name : 'No affiliation' }}</td>
+                <td>
+                    <clr-tooltip>
+                        <span clrTooltipTrigger>{{ user.lastSeenAt | timeDuration:'date' }}</span>
+                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                            <span>{{ user.lastSeenAt | date:'MMM d, y, h:mm:ss a' }}</span>
+                        </clr-tooltip-content>
+                    </clr-tooltip>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="admin-box-blankslate" *ngIf="loading">
+            <div class="title">
+                <h3>Loading most recently active users....</h3>
+            </div>
+        </div>
+    </div>
+</div>

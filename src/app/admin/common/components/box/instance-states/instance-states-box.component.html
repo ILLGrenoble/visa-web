@@ -1,0 +1,19 @@
+<div class="admin-box">
+    <div class="admin-box-header">
+        <h3 class="admin-box-title">
+            Instance States
+        </h3>
+    </div>
+    <div class="admin-box-body">
+        <ul class="admin-box-pills" *ngIf="data && !loading">
+            <li *ngFor="let state of data">
+                <a [routerLink]="['/admin/instances']" [queryParams]="{ state: state.state }">{{ state.state | titlecase }} <span class="pull-right">{{ state.count }}</span></a>
+            </li>
+        </ul>
+        <div class="admin-box-blankslate" *ngIf="loading">
+            <div class="title">
+                <h3>Loading instance states....</h3>
+            </div>
+        </div>
+    </div>
+</div>

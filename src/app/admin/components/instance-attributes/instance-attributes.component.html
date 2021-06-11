@@ -1,0 +1,16 @@
+<clr-datagrid [clrDgLoading]="loading" *ngIf="instance.attributes">
+    <clr-dg-column>ID</clr-dg-column>
+    <clr-dg-column>Name</clr-dg-column>
+    <clr-dg-column>Value</clr-dg-column>
+    <clr-dg-row *ngFor="let attribute of instance.attributes">
+        <clr-dg-cell>{{ attribute.id }}</clr-dg-cell>
+        <clr-dg-cell>{{ attribute.name }}</clr-dg-cell>
+        <clr-dg-cell>{{ attribute.value }}</clr-dg-cell>
+    </clr-dg-row>
+</clr-datagrid>
+
+<div class="blankslate" *ngIf="!instance.attributes">
+    <div class="title">
+        <p>There are no attributes associated to this instance</p>
+    </div>
+</div>

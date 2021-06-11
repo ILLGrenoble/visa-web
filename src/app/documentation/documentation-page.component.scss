@@ -1,0 +1,30 @@
+.documentation-page-breadcrumbs {
+    padding-left: 0;
+    margin-top: 0;
+
+    .documentation-page-breadcrumbs-item {
+        display: inline-block;
+        white-space: nowrap;
+        list-style: none;
+        color: #586069;
+
+        a {
+            text-decoration: none;
+            color: #0366d6;
+
+            &:after {
+                padding-right: 0.5em;
+                padding-left: 0.5em;
+                color: #e1e4e8;
+                content: "/";
+            }
+        }
+    }
+}
+
+.documentation-page-content {
+    pre {
+        padding: 16px;
+        background-color: #eee;
+    }
+}

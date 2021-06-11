@@ -1,0 +1,39 @@
+{
+    "/api/docs/*": {
+        "target": "http://localhost:8066",
+        "secure": false,
+        "pathRewrite": {
+            "^/api/docs/": "/"
+        },
+        "logLevel": "debug"
+    },
+    "/api/*": {
+        "target": "http://localhost:8086",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/graphql/*": {
+        "target": "http://localhost:8086",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/jupyter/*": {
+        "target": "http://localhost:8088",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "ws": true
+    },
+    "/ws/vdi/": {
+        "target": "http://localhost:8087",
+        "secure": false,
+        "pathRewrite": {
+            "^/ws/vdi/": "/socket.io/"
+        },
+        "changeOrigin": true,
+        "logLevel": "debug",
+        "ws": true
+    }
+}

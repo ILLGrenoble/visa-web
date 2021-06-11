@@ -1,0 +1,21 @@
+<div class="remote-desktop-error-container" *ngIf="error">
+    <div class="ngx-remote-desktop-message-body">
+        <div class="blankslate">
+            <div class="title">
+                <clr-icon shape="error-standard"></clr-icon>
+                <div>
+                    <h3>Unable to connect to the Jupyter environment</h3>
+                </div>
+            </div>
+            <div class="description">
+                <p>{{error}}</p>
+            </div>
+            <div class="actions">
+                <button class="btn btn-outline" *ngIf="instance != null" (click)="handleConnect()">Connect to the Jupyter environment</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="instance != null" class="jupyter-container">
+    <iframe width="100%" height="100%" [src]="jupyterUrl | sanitizer" style="border: 0"></iframe>
+</div>

@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>Create Flavour</h1>
+<div mat-dialog-content>
+    <form clrForm #f="ngForm">
+        <clr-input-container>
+            <label for="name">Name</label>
+            <input clrInput id="name" name="name" type="text" class="form-control" [(ngModel)]="nameInput" #name="ngModel"
+                   required>
+            <div *ngIf="name.invalid && (name.dirty || name.touched)"
+                 class="alert alert-danger">
+                <div *ngIf="name.errors.required">
+                    Name is required.
+                </div>
+            </div>
+        </clr-input-container>
+        <clr-select-container>
+            <label for="cloudImages">Cloud Flavour</label>
+            <select clrSelect name="cloudImages" class="selector" id="cloudImages" [(ngModel)]="selectedCloudFlavourId"
+                    (change)=onCloudFlavourSelect() required>
+                <option *ngFor="let cloudFlavour of cloudFlavours"
+                        [value]="cloudFlavour.id">{{cloudFlavour.name}}</option>
+            </select>
+        </clr-select-container>
+        <clr-input-container>
+            <label for="memory">Memory</label>
+            <input clrInput readonly id="memory" class="form-control" [value]="memory+' Mo'">
+        </clr-input-container>
+        <clr-input-container>
+            <label for="cpu">CPU</label>
+            <input clrInput readonly id="cpu" class="form-control" [value]="cpu">
+        </clr-input-container>
+    </form>
+</div>
+<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button (click)="submit()" [disabled]="f.invalid">Create
+    </button>
+</div>

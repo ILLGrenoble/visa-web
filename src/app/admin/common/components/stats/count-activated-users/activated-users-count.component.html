@@ -1,0 +1,10 @@
+<div class="admin-stat-card admin-stat-card-primary">
+  <p class="admin-stat-card-title">Number of activated users</p>
+  <div class="admin-stat-card-body">
+        <span class="admin-stat-card-blankslate" *ngIf="loading">
+            Loading...
+        </span>
+      <h3 *ngIf="!loading">{{ data }}</h3>
+      <clr-icon shape="users" class="is-solid" size="24"></clr-icon>
+  </div>
+</div>

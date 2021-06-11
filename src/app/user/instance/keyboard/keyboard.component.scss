@@ -1,0 +1,159 @@
+.guac-keyboard {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: default;
+    text-align: left;
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+    * {
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .guac-keyboard-key-container {
+        display: inline-block;
+        margin: 0.05em;
+        position: relative;
+    }
+    .guac-keyboard-key {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: #444;
+        border: 0.125em solid #666;
+        border-radius: 0.25em;
+        color: white;
+        font-size: 40%;
+        font-weight: lighter;
+        text-align: center;
+        white-space: pre;
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25), 1px -1px 0 rgba(0, 0, 0, 0.25), -1px 1px 0 rgba(0, 0, 0, 0.25), -1px -1px 0 rgba(0, 0, 0, 0.25);
+        &:hover {
+            cursor: pointer;
+        }
+        &.highlight {
+            background: #666;
+            border-color: #666;
+        }
+    }
+    .guac-keyboard-key-caps,
+    .guac-keyboard-key-enter,
+    .guac-keyboard-key-tab,
+    .guac-keyboard-key-lalt,
+    .guac-keyboard-key-ralt,
+    .guac-keyboard-key-alt-gr,
+    .guac-keyboard-key-lctrl,
+    .guac-keyboard-key-rctrl,
+    .guac-keyboard-key-lshift,
+    .guac-keyboard-key-rshift {
+        text-align: left;
+        padding-left: 0.75em;
+    }
+    &.guac-keyboard-modifier-shift {
+        .guac-keyboard-key-rshift,
+        .guac-keyboard-key-lshift {
+            background: #882;
+            border-color: #DD4;
+        }
+    }
+    &.guac-keyboard-modifier-control {
+        .guac-keyboard-key-rctrl,
+        .guac-keyboard-key-lctrl {
+            background: #882;
+            border-color: #DD4;
+        }
+    }
+    &.guac-keyboard-modifier-alt {
+        .guac-keyboard-key-ralt,
+        .guac-keyboard-key-lalt {
+            background: #882;
+            border-color: #DD4;
+        }
+    }
+    &.guac-keyboard-modifier-alt-gr .guac-keyboard-key-alt-gr,
+    &.guac-keyboard-modifier-caps .guac-keyboard-key-caps,
+    &.guac-keyboard-modifier-super .guac-keyboard-key-super {
+        background: #882;
+        border-color: #DD4;
+    }
+    .guac-keyboard-key.guac-keyboard-pressed {
+        background: #822;
+        border-color: #D44;
+    }
+    .guac-keyboard-group {
+        line-height: 0;
+        &.guac-keyboard-alpha,
+        &.guac-keyboard-movement {
+            display: inline-block;
+            text-align: center;
+            vertical-align: top;
+        }
+        &.guac-keyboard-main {
+            /* IE10 */
+            display: -ms-flexbox;
+            -ms-flex-align: stretch;
+            -ms-flex-direction: row;
+            /* Ancient Mozilla */
+            display: -moz-box;
+            -moz-box-align: stretch;
+            /* Ancient WebKit */
+            display: -webkit-box;
+            -webkit-box-align: stretch;
+            -webkit-box-orient: horizontal;
+            /* Old WebKit */
+            display: -webkit-flex;
+            -webkit-align-items: stretch;
+            /* W3C */
+            display: flex;
+            align-items: stretch;
+            flex-direction: row;
+        }
+        &.guac-keyboard-movement {
+            -ms-flex: 1 1 auto;
+            -webkit-box-flex: 1;
+            flex: 1 1 auto;
+        }
+    }
+    .guac-keyboard-gap {
+        display: inline-block;
+    }
+    &:not(.guac-keyboard-modifier-caps) .guac-keyboard-cap.guac-keyboard-requires-caps,
+    &:not(.guac-keyboard-modifier-shift) .guac-keyboard-cap.guac-keyboard-requires-shift,
+    &:not(.guac-keyboard-modifier-alt-gr) .guac-keyboard-cap.guac-keyboard-requires-alt-gr,
+    &.guac-keyboard-modifier-shift .guac-keyboard-key.guac-keyboard-uses-shift .guac-keyboard-cap:not(.guac-keyboard-requires-shift),
+    &.guac-keyboard-modifier-caps .guac-keyboard-key.guac-keyboard-uses-caps .guac-keyboard-cap:not(.guac-keyboard-requires-caps) {
+        display: none;
+    }
+    &.guac-keyboard-modifier-alt-gr .guac-keyboard-key {
+        &.guac-keyboard-uses-alt-gr .guac-keyboard-cap:not(.guac-keyboard-requires-alt-gr) {
+            display: none;
+        }
+        &:not(.guac-keyboard-uses-alt-gr):not(.guac-keyboard-key-alt-gr) {
+            opacity: 0.5;
+        }
+    }
+}
+
+.modal-footer {
+    cursor: pointer;
+    justify-content: space-between;
+}
+
+.modal-header {
+    cursor: pointer;
+    position: relative;
+    .keyboard-layouts {
+        position: absolute;
+        right: 0;
+        top: 5px;
+    }
+    .title {
+        cursor: pointer;
+        position: relative;
+    }
+}
