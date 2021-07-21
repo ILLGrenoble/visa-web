@@ -14,12 +14,13 @@
                     [refresh]="refreshEvent$"></visa-admin-active-instance-session-count-stat>
             </div>
             <div class="clr-col">
-                <visa-admin-image-count-stat [refresh]="refreshEvent$"></visa-admin-image-count-stat>
+                <visa-admin-jupyter-session-count-stat [refresh]="refreshEvent$"></visa-admin-jupyter-session-count-stat>
             </div>
         </div>
         <div class="clr-row">
             <div class="clr-col-lg-9">
                 <visa-admin-latest-instance-sessions-box [refresh]="refreshEvent$"></visa-admin-latest-instance-sessions-box>
+                <visa-admin-latest-instance-jupyter-sessions-box [refresh]="refreshEvent$"></visa-admin-latest-instance-jupyter-sessions-box>
                 <visa-admin-latest-instances-box [refresh]="refreshEvent$"></visa-admin-latest-instances-box>
                 <visa-admin-latest-active-users-box [refresh]="refreshEvent$"></visa-admin-latest-active-users-box>
                 <div class="clr-row clr-row-marginless">
@@ -33,6 +34,7 @@
 
             </div>
             <div class="clr-col-lg-3">
+                <div><visa-admin-image-count-stat [refresh]="refreshEvent$"></visa-admin-image-count-stat></div>
                 <div><visa-admin-flavour-count-stat [refresh]="refreshEvent$"></visa-admin-flavour-count-stat></div>
                 <visa-admin-activated-users-count-stat [refresh]="refreshEvent$">
                 </visa-admin-activated-users-count-stat>

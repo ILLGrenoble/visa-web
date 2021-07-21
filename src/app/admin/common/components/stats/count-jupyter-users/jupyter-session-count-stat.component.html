@@ -1,0 +1,12 @@
+<div class="admin-stat-card admin-stat-card-success">
+    <p class="admin-stat-card-title">Number of Jupyter sessions</p>
+    <div class="admin-stat-card-body">
+        <span class="admin-stat-card-blankslate" *ngIf="loading">
+            Loading...
+        </span>
+        <h3 *ngIf="!loading">{{ data }}</h3>
+        <img src="assets/images/jupyter_icon.png" height="24">
+    </div>
+</div>
+
+

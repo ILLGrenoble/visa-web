@@ -220,6 +220,19 @@ export type InstanceSessionMember = {
     duration: Scalars['Int'];
 };
 
+export type InstanceJupyterSession = {
+    __typename?: 'InstanceJupyterSession';
+    id: Scalars['Int'];
+    kernelId: Scalars['String'];
+    sessionId: Scalars['String'];
+    user: User;
+    instance: Instance;
+    createdAt: Scalars['String'];
+    updatedAt: Scalars['String'];
+    active?: Maybe<Scalars['Boolean']>;
+    duration: Scalars['Int'];
+};
+
 export type InstanceSessionMemberConnection = {
     __typename?: 'InstanceSessionMemberConnection';
     pageInfo?: Maybe<PageInfo>;
