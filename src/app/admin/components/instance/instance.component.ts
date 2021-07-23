@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import {delay, map, retryWhen, share, switchMap, take, takeUntil} from 'rxjs/operators';
 import {environment} from '../../../../environments/environment';
+import * as moment from 'moment';
 
 @Component({
     selector: 'visa-admin-instance',
@@ -19,6 +20,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     private _refreshSession$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+
+    private _settingDate = false;
+    private _terminationDate: Date;
+    private _minDate: string;
 
     public get instance(): Instance {
         return this._instance;
@@ -44,6 +49,30 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this._refreshSession$ = value;
     }
 
+    get settingDate(): boolean {
+        return this._settingDate;
+    }
+
+    set settingDate(value: boolean) {
+        this._settingDate = value;
+    }
+
+    get terminationDate(): Date {
+        return this._terminationDate;
+    }
+
+    set terminationDate(value: Date) {
+        const hours = this._terminationDate.getHours();
+        const minutes = this._terminationDate.getMinutes();
+        this._terminationDate = value;
+        value.setHours(hours);
+        value.setMinutes(minutes);
+    }
+
+    get minDate(): string {
+        return this._minDate;
+    }
+
     constructor(private apollo: Apollo,
                 private route: ActivatedRoute,
                 private router: Router,
@@ -65,6 +94,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
             takeUntil(this.destroy$),
         ).subscribe((data) => {
             this.instance = data;
+            if (this._terminationDate == null) {
+                this._terminationDate = new Date(this.instance.terminationDate);
+                this._minDate = `${this._terminationDate.getFullYear()}-${this._terminationDate.getMonth() + 1}-${this._terminationDate.getDate()}`;
+            }
         });
     }
 
@@ -147,6 +180,42 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 duration: 2000,
             });
         });
+    }
+
+    public terminationDateHasChanged(): boolean {
+        const terminationDateString = moment(this._terminationDate).format('YYYY-MM-DD');
+        const instanceTerminationDateString = moment(new Date(this.instance.terminationDate)).format('YYYY-MM-DD');
+
+        return terminationDateString != instanceTerminationDateString;
+
+    }
+
+    public handleUpdateTerminationDate(): void {
+        this._settingDate = false;
+        const dateString = moment(this._terminationDate).format('YYYY-MM-DD HH:mm');
+        this.apollo.mutate({
+            mutation: gql`
+                  mutation updateInstanceTerminationDate($id: Int!, $date: String!) {
+                    updateInstanceTerminationDate(id: $id, date: $date) {
+                      message
+                    }
+                  }
+                `,
+            variables: {
+                id: this.instance.id,
+                date: dateString
+            },
+        }).toPromise().then(() => {
+            this.instance.terminationDate = this._terminationDate.toString();
+            this.snackBar.open('Updated instance termination date', 'OK', {
+                duration: 2000,
+            });
+        });
+    }
+
+    public resetTerminationDate(): void {
+        this._terminationDate = new Date(this.instance.terminationDate);
+        this._settingDate = false;
     }
 
     public refresh(): Observable<any> {

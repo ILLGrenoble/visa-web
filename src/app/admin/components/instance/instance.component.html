@@ -98,7 +98,17 @@
                                     <b>Termination date</b>
                                 </dt>
                                 <dd>
-                                    {{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}
+                                    <div *ngIf="!settingDate">
+                                        {{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}
+                                        <button class="btn btn-sm" type="button" (click)="settingDate = true" style="margin-left: 16px">Extend lifetime</button>
+                                    </div>
+                                    <div *ngIf="settingDate">
+                                        <clr-date-container style="margin-top: 2px">
+                                            <input type="date" [(clrDate)]="terminationDate" [min]="minDate">
+                                        </clr-date-container>
+                                        <button class="btn btn-sm" type="button" (click)="resetTerminationDate()">Cancel</button>
+                                        <button class="btn btn-success-outline btn-sm" type="button" (click)="handleUpdateTerminationDate()" [disabled]="!terminationDateHasChanged()" >Update</button>
+                                    </div>
                                 </dd>
                             </div>
                             <div class="admin-details-list-item">

@@ -306,6 +306,8 @@ export type Mutation = {
     shutdownInstance: Message;
     /** Delete an instance */
     deleteInstance: Message;
+    /** Update an instance termination date */
+    updateInstanceTerminationDate: Message;
     /** Create a role */
     createRole: Role;
     /** Delete a role */
