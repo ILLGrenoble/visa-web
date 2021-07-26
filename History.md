@@ -1,5 +1,8 @@
-2.0.1 16/07/2021
+2.0.1 26/07/2021
 ================
+ * Add editable termination date to admin instance ui
+ * Update clarity to 4.0.2 (fixes state bug https://github.com/vmware/clarity/issues/5075)
+ * Add Jupyter session stats to the admin dashboard
 
 2.0.0 15/06/2021
 ==============
