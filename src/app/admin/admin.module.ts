@@ -47,6 +47,8 @@ import {
     PlanUpdateComponent,
     SessionsComponent,
     UserSearchComponent,
+    UsersComponent,
+    UsersFilterComponent
 } from './components';
 import {FlavourService, ImageService, InstanceService, PlanService, SessionService} from './services';
 
@@ -104,6 +106,8 @@ import {FlavourService, ImageService, InstanceService, PlanService, SessionServi
         NotificationsComponent,
         UserSearchComponent,
         LatestActiveUsersBoxComponent,
+        UsersComponent,
+        UsersFilterComponent
     ],
     exports: [
         DashboardComponent,

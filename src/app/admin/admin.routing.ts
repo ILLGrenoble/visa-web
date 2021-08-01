@@ -9,7 +9,7 @@ import {
     InstanceComponent,
     InstancesComponent,
     NotificationsComponent,
-    PlansComponent,
+    PlansComponent, UsersComponent,
 } from './components';
 import {SessionsComponent} from './components/sessions';
 
@@ -42,7 +42,7 @@ export const ROUTES: Routes = [
                 path: 'instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],
             },
             {
-                path: 'users', component: DashboardComponent,
+                path: 'users', component: UsersComponent,
             },
             {
                 path: 'sessions', component: SessionsComponent,

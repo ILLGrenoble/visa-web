@@ -20,3 +20,4 @@ export * from './instance-cloud-details';
 export * from './instance-experiments';
 export * from './notifications';
 export * from './user-search';
+export * from './users';

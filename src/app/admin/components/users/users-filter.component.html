@@ -1,0 +1,25 @@
+<div class="filters-box">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="filters-box-header">
+            <h3 class="filters-box-title">
+                Filter Users
+            </h3>
+            <button class="filters-box-clear" type="button" (click)="onReset()">Clear filters</button>
+        </div>
+        <div class="filters-box-body">
+            <div class="filter-box">
+                <div class="filter-title">
+                    User
+                </div>
+                <div class="filter-body">
+                    <visa-admin-user-search [form]="form"></visa-admin-user-search>
+                </div>
+            </div>
+        </div>
+        <div class="filters-box-footer">
+            <button class="filters-box-search">
+                Apply filters
+            </button>
+        </div>
+    </form>
+</div>

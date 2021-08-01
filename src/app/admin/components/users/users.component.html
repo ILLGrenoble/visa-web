@@ -1,0 +1,100 @@
+<visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<div class="admin-container">
+    <div class="admin-container--left">
+        <visa-admin-users-filter (onState)="onFilter($event)" [state]="currentState">
+        </visa-admin-users-filter>
+    </div>
+    <div class="admin-container--main">
+        <div class="clr-row">
+            <div class="clr-col-lg-12">
+                <div class="admin-box admin-box-default">
+                    <div class="admin-box-body">
+                        <clr-datagrid (clrDgRefresh)="onGridChange($event)" [clrDgLoading]="loading">
+                            <clr-dg-column [clrDgSortBy]="'id'" clrDgColType="number"
+                                           [clrDgSortOrder]="isColumnSorted('id')">
+                                <ng-container>
+                                    ID
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'lastName'" [clrDgSortOrder]="isColumnSorted('lastName')">
+                                <ng-container>
+                                    Name
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Affiliation
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'activatedAt'" [clrDgSortOrder]="isColumnSorted('activatedAt')">
+                                <ng-container>
+                                    Activated at
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column [clrDgSortBy]="'lastSeenAt'" [clrDgSortOrder]="isColumnSorted('lastSeenAt')">
+                                <ng-container>
+                                    Last seen at
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Admin
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Staff
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Support
+                                </ng-container>
+                            </clr-dg-column>
+
+                            <clr-dg-placeholder>We couldn't find any users!</clr-dg-placeholder>
+
+                            <clr-dg-row *ngFor="let user of users?.data" [style.cursor]="'pointer'">
+                                <clr-dg-cell>{{ user.id }}</clr-dg-cell>
+                                <clr-dg-cell>{{ user.fullName }}</clr-dg-cell>
+                                <clr-dg-cell>{{ user.affiliation ? user.affiliation.name : 'No affiliation' }}</clr-dg-cell>
+                                <clr-dg-cell>
+                                    <clr-tooltip>
+                                        <span clrTooltipTrigger>{{ user.activatedAt | timeDuration:'date' }}</span>
+                                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                                            <span>{{ user.activatedAt | date:'MMM d, y, h:mm:ss a' }}</span>
+                                        </clr-tooltip-content>
+                                    </clr-tooltip>
+                                </clr-dg-cell>
+                                <clr-dg-cell>
+                                    <clr-tooltip>
+                                        <span clrTooltipTrigger>{{ user.lastSeenAt | timeDuration:'date' }}</span>
+                                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                                            <span>{{ user.lastSeenAt | date:'MMM d, y, h:mm:ss a' }}</span>
+                                        </clr-tooltip-content>
+                                    </clr-tooltip>
+                                </clr-dg-cell>
+                                <clr-dg-cell>{{ userIsAdmin(user) }}</clr-dg-cell>
+                                <clr-dg-cell>{{ userIsStaff(user) }}</clr-dg-cell>
+                                <clr-dg-cell>{{ userIsSupport(user) }}</clr-dg-cell>
+                            </clr-dg-row>
+
+                            <clr-dg-footer>
+                                <clr-dg-column-toggle [hidden]="true">
+                                </clr-dg-column-toggle>
+                                <button class="btn btn-sm" type="button" (click)="reload()">
+                                    <clr-icon shape="refresh"></clr-icon>
+                                </button>
+                                <clr-dg-pagination #pagination [clrDgPageSize]="25" [clrDgPage]="currentState.page"
+                                                   [clrDgLastPage]="users?.pageInfo.totalPages">{{pagination.firstItem + 1}}
+                                    - {{pagination.lastItem + 1 < users?.pageInfo.count ? pagination.lastItem + 1 : users?.pageInfo.count}}
+                                    of {{ users?.pageInfo.count }} users
+                                </clr-dg-pagination>
+                            </clr-dg-footer>
+                        </clr-datagrid>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

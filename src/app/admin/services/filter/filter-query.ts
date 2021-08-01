@@ -7,6 +7,8 @@ export class FilterQuery {
 
     private parameters: FilterParameter[] = [];
 
+    private fixedQueries: string[] = [];
+
     constructor(attributes: Map<string, FilterAttribute>) {
         this.attributes = attributes;
     }
@@ -16,14 +18,20 @@ export class FilterQuery {
         return this;
     }
 
+    public addFixedQuery(query: string): void {
+        this.fixedQueries.push(query);
+    }
+
     public execute(): { query: string; parameters: { name: string; value: string }[] } {
+        const dynamicQueries = this.parameters.map((parameter) => {
+            const attribute = this.attributes.get(parameter.name);
+            if (attribute) {
+                return `${attribute.alias} ${attribute.comparator} :${attribute.placeholder}`;
+            }
+        });
+
         return {
-            query: this.parameters.map((parameter) => {
-                const attribute = this.attributes.get(parameter.name);
-                if (attribute) {
-                    return `${attribute.alias} ${attribute.comparator} :${attribute.placeholder}`;
-                }
-            }).join(' AND '),
+            query: dynamicQueries.concat(this.fixedQueries).join(' AND '),
             parameters: this.parameters.map((parameter) => {
                 const attribute = this.attributes.get(parameter.name);
                 if (attribute) {
