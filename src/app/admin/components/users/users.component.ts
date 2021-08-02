@@ -2,13 +2,15 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ClrDatagridSortOrder, ClrDatagridStateInterface} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
-import {Instance, InstanceConnection, UserConnection} from 'app/core/graphql/types';
+import {UserConnection} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
-import {Subject} from 'rxjs';
-import {map, takeUntil, tap} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {filter, map, take, takeUntil, tap} from 'rxjs/operators';
 import {QueryParameterBag} from '../../http';
 import {FilterAttribute, FilterProvider} from '../../services';
 import {UsersFilterState} from './users-filter-state';
+import {Store} from '@ngrx/store';
+import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
 import {User} from '../../../core/graphql';
 
 @Component({
@@ -16,6 +18,8 @@ import {User} from '../../../core/graphql';
     templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit, OnDestroy {
+
+    private _user$: Observable<CoreUser>;
 
     private _users: UserConnection;
 
@@ -31,6 +35,9 @@ export class UsersComponent implements OnInit, OnDestroy {
         return this._destroy$;
     }
 
+    get user$(): Observable<CoreUser> {
+        return this._user$;
+    }
 
     get users(): UserConnection {
         return this._users;
@@ -62,7 +69,9 @@ export class UsersComponent implements OnInit, OnDestroy {
     constructor(
         private apollo: Apollo,
         private router: Router,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private store: Store<ApplicationState>) {
+        this._user$ = store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1));
     }
 
     public ngOnInit(): void {
@@ -87,10 +96,6 @@ export class UsersComponent implements OnInit, OnDestroy {
             };
             this.state$.next(state);
         });
-    }
-
-    public handleRefresh($event: void): void {
-        this.reload();
     }
 
     public reload(): void {
@@ -149,6 +154,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             )
             .subscribe((data) => {
                 this.users = data;
+                this.users.data.forEach((user: any) => user.isAdmin = this.userIsAdmin(user));
                 this.updateUrl();
             });
     }
@@ -198,6 +204,42 @@ export class UsersComponent implements OnInit, OnDestroy {
     public userIsSupport(user: User): boolean {
         return ['IT_SUPPORT', 'INSTRUMENT_CONTROL', 'INSTRUMENT_SCIENTIST'].some(supportRole => {
             return user.roles.map(role => role.name).includes(supportRole);
+        });
+    }
+
+    public toggleAdmin(user: any): void {
+        this.apollo.mutate({
+            mutation: gql`
+              mutation updateUserRole($userId: String!, $roleName: String!, $isEnabled: Boolean!) {
+                updateUserRole(userId: $userId, roleName: $roleName, isEnabled: $isEnabled) {
+                    id
+                    firstName
+                    lastName
+                    fullName
+                    email
+                    affiliation {
+                        id
+                        name
+                        town
+                        countryCode
+                    }
+                    roles {
+                        name
+                    }
+                    lastSeenAt
+                    activatedAt
+                }
+              }
+            `,
+            variables: {
+                userId: user.id,
+                roleName: 'ADMIN',
+                isEnabled: !this.userIsAdmin(user)
+            },
+        }).toPromise().then((result: any) => {
+            const returnedUser = result.data.updateUserRole;
+            user.roles = returnedUser.roles;
+            user.isAdmin = this.userIsAdmin(user);
         });
     }
 

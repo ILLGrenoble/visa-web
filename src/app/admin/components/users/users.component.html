@@ -1,4 +1,4 @@
-<visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<visa-admin-header></visa-admin-header>
 <div class="admin-container">
     <div class="admin-container--left">
         <visa-admin-users-filter (onState)="onFilter($event)" [state]="currentState">
@@ -74,9 +74,13 @@
                                         </clr-tooltip-content>
                                     </clr-tooltip>
                                 </clr-dg-cell>
-                                <clr-dg-cell>{{ userIsAdmin(user) }}</clr-dg-cell>
-                                <clr-dg-cell>{{ userIsStaff(user) }}</clr-dg-cell>
-                                <clr-dg-cell>{{ userIsSupport(user) }}</clr-dg-cell>
+                                <clr-dg-cell>
+                                    <clr-toggle-wrapper>
+                                        <input type="checkbox" clrToggle [(ngModel)]="user.isAdmin" [disabled]="(user$ | async)?.id === user.id" (change)="toggleAdmin(user)" />
+                                    </clr-toggle-wrapper>
+                                </clr-dg-cell>
+                                <clr-dg-cell><clr-icon shape="check" *ngIf="userIsStaff(user)"></clr-icon></clr-dg-cell>
+                                <clr-dg-cell><clr-icon shape="check" *ngIf="userIsSupport(user)"></clr-icon></clr-dg-cell>
                             </clr-dg-row>
 
                             <clr-dg-footer>
