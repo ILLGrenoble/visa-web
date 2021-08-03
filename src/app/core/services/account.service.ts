@@ -26,21 +26,28 @@ export class AccountService {
 
     public getExperiments(pageSize: number = 5,
                           pageNumber = 1,
-                          instrument: Instrument = null,
-                          fromYear: number = null,
-                          toYear: number = null,
+                          filter: {instrument?: Instrument, proposals?: string[], fromYear?: number, toYear?: number},
                           orderBy: { value: string, descending: boolean }): Observable<Paginated<Experiment[]>> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments`;
-        let params = new HttpParams().set('page', pageNumber.toString()).set('limit', pageSize.toString());
-        if (instrument) {
-            params = params.append('instrumentId', instrument.id.toString());
+        let params = new HttpParams();
+        if (pageNumber !== null) {
+            params = params.append('page', pageNumber.toString());
         }
-        if (fromYear) {
-            params = params.append('startDate', `${fromYear}-01-01`);
+        if (pageSize !== null) {
+            params = params.append('limit', pageSize.toString());
         }
-        if (toYear) {
-            params = params.append('endDate', `${toYear}-12-31`);
+        if (filter && filter.instrument) {
+            params = params.append('instrumentId', filter.instrument.id.toString());
+        }
+        if (filter && filter.fromYear) {
+            params = params.append('startDate', `${filter.fromYear}-01-01`);
+        }
+        if (filter && filter.toYear) {
+            params = params.append('endDate', `${filter.toYear}-12-31`);
+        }
+        if (filter && filter.proposals) {
+            params = params.append('proposals', filter.proposals.join(','));
         }
         if (orderBy) {
             params = params.append('orderBy', orderBy.value);

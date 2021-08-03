@@ -20,9 +20,10 @@ import {
 import {Store} from '@ngrx/store';
 import {InstanceForm} from '@shared';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {ExperimentSearchConfig, InstanceExperimentSelectComponent} from './instance-experiment-select.component';
 import {MatDialog} from '@angular/material/dialog';
+import {QueryParameterBag} from '../../admin/http';
 
 @Component({
     selector: 'visa-instance-new',
@@ -154,6 +155,16 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this.totalExperiments = totalExperiments;
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
+        });
+
+        this.route.queryParams.pipe(
+            map((params) => new QueryParameterBag(params)),
+        ).subscribe((params: QueryParameterBag) => {
+            const proposals = params.getList('proposals', null);
+            this._accountService.getExperiments(null, null, { proposals }, {value: 'proposal', descending: false})
+                .subscribe((data) => {
+                    this._experimentsObservable.next(data.items);
+                });
         });
 
 

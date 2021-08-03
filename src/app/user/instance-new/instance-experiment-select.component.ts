@@ -132,7 +132,11 @@ export class InstanceExperimentSelectComponent implements OnInit {
 
     private fetchExperiments(page: number): void {
         this.loading = true;
-        this.accountService.getExperiments(this.experiments.limit, page, this.instrument, this.fromYear, this.toYear, this.orderBy)
+        this.accountService.getExperiments(this.experiments.limit, page, {
+            instrument: this.instrument,
+            fromYear: this.fromYear,
+            toYear: this.toYear
+        }, this.orderBy)
             .subscribe((data) => {
                 this.loading = false;
                 this.experiments = data;
