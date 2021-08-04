@@ -264,7 +264,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
 
     public openExperimentSearch(): void {
         const dialogRef = this.dialog.open(InstanceExperimentSelectComponent, {
-            width: '1000px', data: {
+            width: 'max(1000px, 70%)', data: {
                 config: this._experimentSearchConfig
             },
         });
