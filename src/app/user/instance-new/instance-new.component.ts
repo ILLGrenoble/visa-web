@@ -161,10 +161,12 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
             map((params) => new QueryParameterBag(params)),
         ).subscribe((params: QueryParameterBag) => {
             const proposals = params.getList('proposals', null);
-            this._accountService.getExperiments(null, null, { proposals }, {value: 'proposal', descending: false})
-                .subscribe((data) => {
-                    this._experimentsObservable.next(data.items);
-                });
+            if (proposals) {
+                this._accountService.getExperiments(100, 1, { proposals }, {value: 'proposal', descending: false})
+                    .subscribe((data) => {
+                        this._experimentsObservable.next(data.items);
+                    });
+            }
         });
 
 
