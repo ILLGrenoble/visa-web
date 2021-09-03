@@ -253,3 +253,36 @@
 .title-experiment-free {
     margin-bottom: 16px;
 }
+
+.error-box {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0 0 6px 5px;
+    margin: 12px 0 0 0;
+    background-color: #f0ad4e;
+    display: flex;
+    color: white;
+
+    p {
+        //font-size: 0.6rem;
+        margin-top: 0.6rem;
+        color: white;
+    }
+
+    .error-box-message {
+        flex: 1;
+    }
+
+    .error-box-alert-icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 7px 14px
+    }
+
+    .error-box-close {
+        flex-direction: column;
+        justify-content: center;
+        cursor: pointer;
+    }
+}

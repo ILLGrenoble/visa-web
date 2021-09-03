@@ -10,6 +10,7 @@ export class Paginated<T> implements Iterable<T> {
     private _firstItem: number = undefined;
     private _lastItem: number = undefined;
     private _items = [];
+    private _errors: string[] = undefined;
 
     get page(): number {
         return this._page;
@@ -67,11 +68,20 @@ export class Paginated<T> implements Iterable<T> {
         this._items = value;
     }
 
-    constructor(count: number, page: number, limit: number, items: T[]) {
+    get errors(): string[] {
+        return this._errors;
+    }
+
+    set errors(value: string[]) {
+        this._errors = value;
+    }
+
+    constructor(count: number, page: number, limit: number, items: T[], errors?: string[]) {
         this._count = count;
         this._page = page;
         this._limit = limit;
         this._items = items;
+        this._errors = errors;
         this._lastPage = Math.ceil(count / limit);
         this._firstItem = (page - 1) * limit + 1;
         this._lastItem = (this._count > (page * limit)) ? (page * limit) : this._count;

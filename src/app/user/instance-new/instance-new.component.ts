@@ -49,6 +49,8 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
     private _totalExperiments: number;
     private _customiseInstance = false;
 
+    private _errors: string[];
+
 
     get user(): User {
         return this._user;
@@ -132,6 +134,10 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         return this._selectedPlan;
     }
 
+    get errors(): string[] {
+        return this._errors;
+    }
+
     constructor(private _accountService: AccountService,
                 private _router: Router,
                 private _helperService: HelperService,
@@ -165,6 +171,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
                 this._accountService.getExperiments(100, 1, { proposals }, {value: 'proposal', descending: false})
                     .subscribe((data) => {
                         this._experimentsObservable.next(data.items);
+                        this._errors = data.errors;
                     });
             }
         });
@@ -278,6 +285,12 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
                 this._experimentSearchConfig = config;
             }
         });
+    }
+
+    public removeError(index: number): void {
+        if (this._errors && this._errors.length > index) {
+            this._errors.splice(index, 1);
+        }
     }
 
 }

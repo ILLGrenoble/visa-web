@@ -18,6 +18,20 @@
                     </div>
                 </div>
             </div>
+            <div *ngIf="errors">
+                <div *ngFor="let error of errors; let i = index"  class="error-box">
+                    <div class="error-box-alert-icon">
+                        <clr-icon class="alert-icon" shape="exclamation-triangle" class="is-solid" style="width: 32px; height: 32px;"></clr-icon>
+                    </div>
+                    <div class="error-box-message">
+                        <p>{{error}}</p>
+                    </div>
+                    <div class="error-box-close" (click)="removeError(i)">
+                        <clr-icon shape="window-close"  style="width: 20px; height: 20px;"></clr-icon>
+                    </div>
+                </div>
+
+            </div>
             <div class="blankslate" *ngIf="totalExperiments == 0 && !canBeExperimentFree">
                 <div class="title">
                     <img src="/assets/images/experiments.png" alt="experiments"/>

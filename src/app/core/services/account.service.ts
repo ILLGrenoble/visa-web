@@ -58,7 +58,8 @@ export class AccountService {
                 const data = response.data;
                 const {count, page, limit} = response._metadata;
                 const experiments = data.map((experiment) => this.objectMapper.deserialize(experiment, Experiment));
-                return new Paginated<Experiment[]>(count, page, limit, experiments);
+                const errors = response.errors;
+                return new Paginated<Experiment[]>(count, page, limit, experiments, errors);
             }));
     }
 
