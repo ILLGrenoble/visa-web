@@ -258,6 +258,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                         plan {
                             image {
                                 name
+                                version
                             }
                             flavour {
                                 name
@@ -281,5 +282,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return `${baseUrl}/instances/${instance.id}/thumbnail`;
     }
 
+    public formatImageName(image): void {
+        return image.version ? `${image.name} (${image.version})` : image.name;
+    }
 
 }

@@ -113,7 +113,7 @@ export class ImageDistributionBoxComponent implements OnInit, OnDestroy {
                     name: 'Instances',
                     colorByPoint: true,
                     data: data.countInstancesByImages.map((image) => {
-                        return {name: image.name, y: image.total};
+                        return {name: image.version ? `${image.name} (${image.version})` : image.name, y: image.total};
                     }),
                 }];
                 this.options = {
@@ -164,6 +164,7 @@ export class ImageDistributionBoxComponent implements OnInit, OnDestroy {
                     countInstancesByImages {
                         id
                         name
+                        version
                         total
                     }
                 }

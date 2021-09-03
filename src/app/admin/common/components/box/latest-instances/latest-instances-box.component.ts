@@ -90,6 +90,7 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                       plan {
                         image {
                           name
+                          version
                         }
                         flavour {
                           name
@@ -108,6 +109,10 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                 }
             `,
         });
+    }
+
+    public formatImageName(image): void {
+        return image.version ? `${image.name} (${image.version})` : image.name;
     }
 
 }

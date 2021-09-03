@@ -136,6 +136,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                 plan {
                                     image {
                                         name
+                                        version
                                     }
                                     flavour {
                                         name
@@ -273,6 +274,10 @@ export class InstancesComponent implements OnInit, OnDestroy {
             }
         });
         return query.execute();
+    }
+
+    public formatImageName(image): void {
+        return image.version ? `${image.name} (${image.version})` : image.name;
     }
 
 }

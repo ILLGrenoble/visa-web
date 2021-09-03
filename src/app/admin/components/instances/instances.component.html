@@ -79,7 +79,7 @@
 
                                 </clr-dg-cell>
                                 <clr-dg-cell>{{ instance.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
-                                <clr-dg-cell>{{ instance.plan.image.name }}</clr-dg-cell>
+                                <clr-dg-cell>{{ formatImageName(instance.plan.image) }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.plan.flavour.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                             </clr-dg-row>
