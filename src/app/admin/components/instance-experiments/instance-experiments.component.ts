@@ -63,12 +63,6 @@ export class InstanceExperimentsComponent implements OnInit, OnDestroy {
                     instance(id: $id) {
                        experiments {
                             id
-                            cycle {
-                              id
-                              name
-                              startDate
-                              endDate
-                            }
                             instrument {
                                 id
                                 name

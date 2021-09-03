@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, Output} from '@angular/core';
-import {AccountService, Cycle, Experiment, Instrument, Paginated} from '@core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {AccountService, Experiment, Instrument, Paginated} from '@core';
+import {BehaviorSubject} from 'rxjs';
 import {Subject} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ClrDatagridStateInterface} from '@clr/angular';

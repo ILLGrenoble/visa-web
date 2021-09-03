@@ -43,7 +43,7 @@
                        (change)="handleExperimentFilter($event)" placeholder="Filter instances by experiment...">
                 <ng-option *ngFor="let experiment of experiments" [value]="experiment">
                     {{ experiment.proposal.identifier }} ({{ experiment.instrument.name}},
-                    Cycle {{ experiment.cycle.name }})
+                    {{ experiment.startDate | date: 'MMM yyyy' }})
                 </ng-option>
             </ng-select>
             <div class="centered-content-area m-t-20" [hidden]="!loading">

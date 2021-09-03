@@ -103,8 +103,8 @@
                                     <clr-dg-row-detail *clrIfExpanded>
                                         <span class="instance-support-experiments__title">Experiments:</span>
                                         <span class="instance-support-experiments__label" *ngFor="let experiment of instance.experiments">
-                                            {{ experiment.proposal.identifier }} ({{ experiment.instrument.name }}, Cycle
-                                            {{ experiment.cycle.name }})</span>
+                                            {{ experiment.proposal.identifier }} ({{ experiment.instrument.name }},
+                                            {{ experiment.startDate | date: 'MMM yyyy' }})</span>
                                     </clr-dg-row-detail>
                                 </ng-container>
                             </clr-dg-row>

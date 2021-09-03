@@ -74,7 +74,7 @@ export class CardComponent implements OnInit, OnDestroy {
         $event.preventDefault();
         this.toggleSettings();
         const dialogRef = this.dialog.open(DetailsDialog, {
-            width: '600px',
+            width: '1000px',
             data: {instance: this.instance},
         });
 
@@ -92,7 +92,7 @@ export class CardComponent implements OnInit, OnDestroy {
         event.preventDefault();
         this.toggleSettings();
         const dialogRef = this.dialog.open(MembersDialog, {
-            width: '800px',
+            width: '1000px',
             data: {instance: this.instance},
         });
 
@@ -110,7 +110,7 @@ export class CardComponent implements OnInit, OnDestroy {
         event.preventDefault();
         this.toggleSettings();
         const dialogRef = this.dialog.open(ExperimentsDialog, {
-            width: '800px',
+            width: 'max(1000px, 70%)',
             data: {experiments: this.instance.experiments},
         });
     }

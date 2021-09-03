@@ -5,7 +5,6 @@ export interface InstancesFilterState {
         flavour: number,
         image: number;
         instrument: number;
-        cycle: number;
         state: string;
         user: number;
     };

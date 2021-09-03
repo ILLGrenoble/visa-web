@@ -4,7 +4,7 @@ import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Cycle, Experiment, Instance, InstanceSessionMember, Instrument, Member, Paginated, Quota, User} from '../models';
+import {Experiment, Instance, InstanceSessionMember, Instrument, Member, Paginated, Quota, User} from '../models';
 import {InstancesFilterState, toParams} from './filter/instances-filter-state.model';
 import {ObjectMapperService} from './object-mapper.service';
 
@@ -138,15 +138,6 @@ export class AccountService {
         return this.http.get<any>(url).pipe(map((response) => {
             const instruments = response.data;
             return instruments.map((instrument) => this.objectMapper.deserialize(instrument, Instrument));
-        }));
-    }
-
-    public getCycles(): Observable<Cycle[]> {
-        const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/experiments/cycles`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const cycles = response.data;
-            return cycles.map((cycle) => this.objectMapper.deserialize(cycle, Cycle));
         }));
     }
 

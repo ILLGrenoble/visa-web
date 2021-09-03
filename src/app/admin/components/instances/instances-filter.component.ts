@@ -90,7 +90,6 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
             filters: {
                 id: null,
                 name: null,
-                cycle: null,
                 flavour: null,
                 image: null,
                 instrument: null,
@@ -145,15 +144,6 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                         id
                         name
                     }
-                    cycles(pagination: {offset: 0 }) {
-                        data {
-                            id
-                            name
-                            startDate
-                            endDate
-                        }
-                    }
-
                     images(pagination: {offset: 0}) {
                         data {
                             id
@@ -215,13 +205,12 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
             image: new FormControl(null),
             instrument: new FormControl(null),
             state: new FormControl(null),
-            cycle: new FormControl(null),
             user: new FormControl(null),
         });
     }
 
     private processForm(): InstancesFilterState {
-        const {id, name, flavour, image, instrument, state, cycle, user} = this._form.value;
+        const {id, name, flavour, image, instrument, state, user} = this._form.value;
         return {
             ...this._state,
             filters: {
@@ -231,7 +220,6 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                 image,
                 instrument,
                 state,
-                cycle,
                 user: user ? user.id : null,
             },
             page: 1,

@@ -1,5 +1,4 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {Cycle} from './cycle.model';
 import {Instrument} from './instrument.model';
 import {Proposal} from './proposal.model';
 
@@ -7,9 +6,6 @@ import {Proposal} from './proposal.model';
 export class Experiment {
     @JsonProperty('id', String)
     public id: string = undefined;
-
-    @JsonProperty('cycle', Cycle)
-    public cycle: Cycle = undefined;
 
     @JsonProperty('instrument', Instrument)
     public instrument: Instrument = undefined;

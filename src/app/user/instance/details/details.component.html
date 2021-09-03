@@ -31,15 +31,17 @@
                 <thead>
                 <tr>
                     <th>Proposal</th>
-                    <th>Cycle</th>
                     <th>Instrument</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let experiment of instance.experiments">
                     <td>{{ experiment.proposal.identifier }}</td>
-                    <td>{{ experiment.cycle.name }}</td>
                     <td>{{ experiment.instrument.name }}</td>
+                    <td>{{ experiment.startDate | date:'dd MMM yyyy' }}</td>
+                    <td>{{ experiment.endDate | date:'dd MMM yyyy' }}</td>
                 </tr>
                 </tbody>
             </table>

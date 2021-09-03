@@ -3,18 +3,20 @@
     <table class="table">
         <thead>
         <tr>
-            <th class="left">Cycle</th>
-            <th class="left">Instrument</th>
             <th class="left">Identifier</th>
             <th class="left">Proposal</th>
+            <th class="left">Instrument</th>
+            <th class="left">Start Date</th>
+            <th class="left">End Date</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let experiment of experiments">
-            <td class="left">{{ experiment.cycle.name}}</td>
-            <td class="left">{{ experiment.instrument.name}}</td>
             <td class="left">{{ experiment.proposal.identifier}}</td>
             <td class="left">{{ experiment.proposal.title}}</td>
+            <td class="left">{{ experiment.instrument.name}}</td>
+            <td class="left">{{ experiment.startDate | date:'dd MMM yyyy' }}</td>
+            <td class="left">{{ experiment.endDate | date:'dd MMM yyyy' }}</td>
         </tr>
         </tbody>
     </table>

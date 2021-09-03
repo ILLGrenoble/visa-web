@@ -83,26 +83,11 @@ export type CreateRoleInput = {
     description?: Maybe<Scalars['String']>;
 };
 
-export type Cycle = {
-    __typename?: 'Cycle';
-    id: Scalars['Int'];
-    name: Scalars['String'];
-    startDate: Scalars['String'];
-    endDate: Scalars['String'];
-};
-
-export type CycleConnection = {
-    __typename?: 'CycleConnection';
-    pageInfo?: Maybe<PageInfo>;
-    data?: Maybe<Array<Maybe<Cycle>>>;
-};
-
 export type Experiment = {
     __typename?: 'Experiment';
     /** Experiment identifier */
     id: Scalars['String'];
     instrument: Instrument;
-    cycle: Cycle;
     proposal: Proposal;
 };
 
@@ -449,12 +434,8 @@ export type Query = {
     __typename?: 'Query';
     /** The authenticated user */
     viewer?: Maybe<User>;
-    /** Get all cycles */
-    cycles: CycleConnection;
     /** Get all plans */
     plans: PlanConnection;
-    /** Count  cycles */
-    countCycles: Scalars['Int'];
     /** Get experiments */
     experiments: ExperimentConnection;
     /** Count experiments */
@@ -507,22 +488,10 @@ export type Query = {
 };
 
 
-export type QueryCyclesArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
 export type QueryPlansArgs = {
     filter?: Maybe<QueryFilter>;
     orderBy?: Maybe<OrderBy>;
     pagination: Pagination;
-};
-
-
-export type QueryCountCyclesArgs = {
-    filter?: Maybe<QueryFilter>;
 };
 
 

@@ -2,7 +2,6 @@ export * from './cloudFlavour.model';
 export * from './cloudImage.model';
 export * from './proposal.model';
 export * from './instrument.model';
-export * from './cycle.model';
 export * from './experiment.model';
 export * from './user.model';
 export * from './employer.model';
