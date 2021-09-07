@@ -26,7 +26,7 @@ export class AccountService {
 
     public getExperiments(pageSize: number = 5,
                           pageNumber = 1,
-                          filter: {instrument?: Instrument, proposals?: string[], fromYear?: number, toYear?: number},
+                          filter: {instrumentId?: number, proposals?: string[], fromYear?: number, toYear?: number},
                           orderBy: { value: string, descending: boolean }): Observable<Paginated<Experiment[]>> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments`;
@@ -37,8 +37,8 @@ export class AccountService {
         if (pageSize !== null) {
             params = params.append('limit', pageSize.toString());
         }
-        if (filter && filter.instrument) {
-            params = params.append('instrumentId', filter.instrument.id.toString());
+        if (filter && filter.instrumentId) {
+            params = params.append('instrumentId', filter.instrumentId.toString());
         }
         if (filter && filter.fromYear) {
             params = params.append('startDate', `${filter.fromYear}-01-01`);

@@ -1,4 +1,4 @@
-import {Component, Input, Output} from '@angular/core';
+import {Component, Input, OnInit, Output} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {ConfigService} from '@core';
 
@@ -7,7 +7,9 @@ import {ConfigService} from '@core';
     templateUrl: './instance-keyboard-layout-select.component.html',
     styleUrls: ['./instance-keyboard-layout-select.component.scss'],
 })
-export class InstanceKeyboardLayoutSelectComponent {
+export class InstanceKeyboardLayoutSelectComponent implements OnInit {
+
+    private static USER_INSTANCE_KEYBOARD_LAYOUT_KEY = 'user.instance.keyboard.layout';
 
     private _configurationService: ConfigService;
 
@@ -20,10 +22,6 @@ export class InstanceKeyboardLayoutSelectComponent {
 
     constructor(configurationService: ConfigService) {
         this._configurationService = configurationService;
-        this._configurationService.load().then(config => {
-            this._layouts = config.desktop.keyboardLayouts;
-            this.handleSelectedLayout(this._layouts.find(layout => layout.selected));
-        });
     }
 
     get layouts(): ({ layout: string; name: string, selected: boolean })[] {
@@ -55,6 +53,23 @@ export class InstanceKeyboardLayoutSelectComponent {
     public handleSelectedLayout(value: { layout: string; name: string; selected: boolean }): void {
         this._selectedLayout = value;
         this._selectedLayout$.next(value);
+        localStorage.setItem(InstanceKeyboardLayoutSelectComponent.USER_INSTANCE_KEYBOARD_LAYOUT_KEY, value.layout);
+    }
+
+    ngOnInit(): void {
+        this._configurationService.load().then(config => {
+            this._layouts = config.desktop.keyboardLayouts;
+            const localKeyboardLayout = localStorage.getItem(InstanceKeyboardLayoutSelectComponent.USER_INSTANCE_KEYBOARD_LAYOUT_KEY);
+            if (localKeyboardLayout != null) {
+                const keyboardLayout = this._layouts.find(layout => layout.layout === localKeyboardLayout);
+                if (keyboardLayout) {
+                    this.handleSelectedLayout(keyboardLayout);
+                }
+            } else {
+                this.handleSelectedLayout(this._layouts.find(layout => layout.selected));
+            }
+        });
+
     }
 
 

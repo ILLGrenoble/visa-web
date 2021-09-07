@@ -21,7 +21,7 @@ import {Store} from '@ngrx/store';
 import {InstanceForm} from '@shared';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
-import {ExperimentSearchConfig, InstanceExperimentSelectComponent} from './instance-experiment-select.component';
+import {InstanceExperimentSelectComponent} from './instance-experiment-select.component';
 import {MatDialog} from '@angular/material/dialog';
 import {QueryParameterBag} from '../../admin/http';
 
@@ -36,7 +36,6 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
     private _user: User;
 
     private _experimentsObservable: BehaviorSubject<Experiment[]> = new BehaviorSubject<Experiment[]>([]);
-    private _experimentSearchConfig: ExperimentSearchConfig = null;
     private _plans: Plan[] = null;
     private _selectedImagePlans: ImagePlans = null;
     private _selectedPlan: Plan = null;
@@ -273,17 +272,10 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
 
     public openExperimentSearch(): void {
         const dialogRef = this.dialog.open(InstanceExperimentSelectComponent, {
-            width: 'max(1000px, 70%)', data: {
-                config: this._experimentSearchConfig
-            },
+            width: 'max(1000px, 70%)', data: {},
         });
         dialogRef.componentInstance.selected.subscribe((experiment: Experiment) => {
             this.addExperiment(experiment);
-        });
-        dialogRef.componentInstance.searchConfig.subscribe((config: ExperimentSearchConfig) => {
-            if (config != null) {
-                this._experimentSearchConfig = config;
-            }
         });
     }
 

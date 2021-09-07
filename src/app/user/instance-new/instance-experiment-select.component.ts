@@ -12,14 +12,6 @@ export interface OrderBy {
     descending: boolean;
 }
 
-export interface ExperimentSearchConfig {
-    instrument: Instrument;
-    fromYear: number;
-    toYear: number;
-    orderBy: OrderBy;
-    pageSize: number;
-}
-
 @Component({
     selector: 'visa-instance-experiment-select',
     templateUrl: './instance-experiment-select.component.html',
@@ -27,14 +19,18 @@ export interface ExperimentSearchConfig {
 })
 export class InstanceExperimentSelectComponent implements OnInit {
 
+    private static USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY = 'user.instance.experiments.instrumentId';
+    private static USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY = 'user.instance.experiments.fromYear';
+    private static USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY = 'user.instance.experiments.toYear';
+    private static USER_INSTANCE_EXPERIMENTS_SORT_ID_KEY = 'user.instance.experiments.sortId';
+    private static USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY = 'user.instance.experiments.pageSize';
+
     @Output()
     public selected: Subject<Experiment> = new Subject();
 
-    @Output()
-    public searchConfig: BehaviorSubject<ExperimentSearchConfig> = new BehaviorSubject<ExperimentSearchConfig>(null);
-
     public instruments: Instrument[] = [];
-    public instrument: Instrument = null;
+    private _instrument: Instrument = null;
+    private _instrumentId: number;
     public loading = false;
 
     public fromYears: number[];
@@ -45,7 +41,7 @@ export class InstanceExperimentSelectComponent implements OnInit {
         {id: 2, label: 'instrument', value: 'instrument', descending: false },
         {id: 3, label: 'proposal', value: 'proposal', descending: false }
     ];
-    public orderBy: OrderBy = this.orderings[0];
+    private _orderBy: OrderBy = this.orderings[1];
 
     public pageSizes: number [] = [5, 10, 25, 50, 100];
 
@@ -55,6 +51,20 @@ export class InstanceExperimentSelectComponent implements OnInit {
 
     public experiments: Paginated<Experiment[]> = new Paginated(1, 1, this.pageSizes[0], []);
 
+    get instrument(): Instrument {
+        return this._instrument;
+    }
+
+    set instrument(value: Instrument) {
+        this._instrument = value;
+        this._instrumentId = value ? value.id : null;
+        if (this._instrumentId) {
+            localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY, `${this._instrumentId}`);
+        } else {
+            localStorage.removeItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY);
+        }
+    }
+
     get fromYear(): number {
         return this._fromYear;
     }
@@ -62,6 +72,7 @@ export class InstanceExperimentSelectComponent implements OnInit {
     set fromYear(value: number) {
         this._fromYear = value;
         this.toYears = this._allYears.getValue().filter(year => year >= this._fromYear);
+        localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY, `${this._fromYear}`);
     }
 
     get toYear(): number {
@@ -71,18 +82,42 @@ export class InstanceExperimentSelectComponent implements OnInit {
     set toYear(value: number) {
         this._toYear = value;
         this.fromYears = this._allYears.getValue().filter(year => year <= this._toYear);
+        localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY, `${this._toYear}`);
+    }
+
+    get orderBy(): OrderBy {
+        return this._orderBy;
+    }
+
+    set orderBy(value: OrderBy) {
+        this._orderBy = value;
+        localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_SORT_ID_KEY, `${this._orderBy.id}`);
     }
 
     constructor(public dialogRef: MatDialogRef<InstanceExperimentSelectComponent>,
                 private accountService: AccountService,
                 @Inject(MAT_DIALOG_DATA) public data) {
-        const config: ExperimentSearchConfig = data.config;
-        if (config) {
-            this.instrument = config.instrument;
-            this._fromYear = config.fromYear;
-            this._toYear = config.toYear;
-            this.orderBy = this.orderings.find(ordering => ordering.id === config.orderBy.id);
-            this.experiments.limit = config.pageSize;
+
+        const localInstrumentId = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY);
+        const localFromYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY);
+        const localToYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY);
+        const localSortId = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_SORT_ID_KEY);
+        const localPageSize = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY);
+
+        if (localInstrumentId) {
+            this._instrumentId = +localInstrumentId;
+        }
+        if (localFromYear) {
+            this._fromYear = +localFromYear;
+        }
+        if (localToYear) {
+            this._toYear = +localToYear;
+        }
+        if (localSortId) {
+            this.orderBy = this.orderings.find(ordering => ordering.id === +localSortId);
+        }
+        if (localPageSize) {
+            this.experiments.limit = +localPageSize;
         }
     }
 
@@ -95,15 +130,15 @@ export class InstanceExperimentSelectComponent implements OnInit {
 
         this.accountService.getInstruments().subscribe(instruments => {
             this.instruments = instruments;
-            if (this.instrument) {
-                this.instrument = instruments.find(instrument => this.instrument.id === instrument.id);
+            if (this._instrumentId) {
+                this.instrument = instruments.find(instrument => this._instrumentId === instrument.id);
             }
         });
 
         this.accountService.getExperimentYears().subscribe(years => {
             const minYear = Math.min(...years);
             const maxYear = Math.max(...years);
-            const allYears = Array.from({length: maxYear - minYear + 1}, (v, k) => minYear + k);
+            const allYears = Array.from({length: maxYear - minYear + 1}, (v, k) => minYear + k).reverse();
             this._allYears.next(allYears);
 
             this.fromYear = !this._fromYear ? minYear : this._fromYear;
@@ -133,26 +168,18 @@ export class InstanceExperimentSelectComponent implements OnInit {
     private fetchExperiments(page: number): void {
         this.loading = true;
         this.accountService.getExperiments(this.experiments.limit, page, {
-            instrument: this.instrument,
+            instrumentId: this._instrumentId,
             fromYear: this.fromYear,
             toYear: this.toYear
         }, this.orderBy)
             .subscribe((data) => {
                 this.loading = false;
                 this.experiments = data;
+                localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY, `${this.experiments.limit}`);
             });
     }
 
     public onClose(): void {
-        const config: ExperimentSearchConfig = {
-            instrument: this.instrument,
-            fromYear: this._fromYear,
-            toYear: this._toYear,
-            orderBy: this.orderBy,
-            pageSize: this.experiments.limit
-        };
-        this.searchConfig.next(config);
-
         this.dialogRef.close();
     }
 
