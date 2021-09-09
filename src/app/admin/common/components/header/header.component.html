@@ -17,20 +17,12 @@
                     <clr-icon shape="wrench" class="is-solid"></clr-icon>
                     Sessions
                 </a>
-                <a href="" class="admin-tab" routerLink="/admin/images" routerLinkActive="admin-tab--selected">
-                    <clr-icon shape="image" class="is-solid"></clr-icon>
-                    Images
-                </a>
-                <a href="" class="admin-tab" routerLink="/admin/flavours" routerLinkActive="admin-tab--selected">
-                    <clr-icon shape="organization" class="is-solid"></clr-icon>
-                    Flavours
-                </a>
-                <a href="" class="admin-tab" routerLink="/admin/plans" routerLinkActive="admin-tab--selected">
-                    <clr-icon shape="map" class="is-solid"></clr-icon>
-                    Plans
+                <a href="" class="admin-tab" routerLink="/admin/cloud/images" [ngClass]="{'admin-tab--selected': routeStartsWith('/admin/cloud')}">
+                    <clr-icon shape="cloud" class="is-solid"></clr-icon>
+                    Cloud
                 </a>
                 <a href="" class="admin-tab" routerLink="/admin/users" routerLinkActive="admin-tab--selected">
-                    <clr-icon shape="user" class="is-solid"></clr-icon>
+                    <clr-icon shape="users" class="is-solid"></clr-icon>
                     Users
                 </a>
                 <a href="" class="admin-tab" routerLink="/admin/notifications" routerLinkActive="admin-tab--selected">

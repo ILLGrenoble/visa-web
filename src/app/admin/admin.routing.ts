@@ -30,13 +30,13 @@ export const ROUTES: Routes = [
                 path: 'instances', component: InstancesComponent,
             },
             {
-                path: 'images', component: ImagesComponent,
+                path: 'cloud/images', component: ImagesComponent,
             },
             {
-                path: 'flavours', component: FlavoursComponent,
+                path: 'cloud/flavours', component: FlavoursComponent,
             },
             {
-                path: 'plans', component: PlansComponent,
+                path: 'cloud/plans', component: PlansComponent,
             },
             {
                 path: 'instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],

@@ -57,6 +57,11 @@ export class HeaderComponent implements OnInit , OnDestroy{
         return this.router.url.split('?')[0] === url;
     }
 
+    public routeStartsWith(url: string): boolean {
+        const urlBase = this.router.url.split('?')[0];
+        return urlBase.startsWith(url);
+    }
+
     public ngOnDestroy(): void {
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
