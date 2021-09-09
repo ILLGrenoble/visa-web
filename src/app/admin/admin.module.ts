@@ -51,7 +51,6 @@ import {
     UsersComponent,
     UsersFilterComponent
 } from './components';
-import {FlavourService, ImageService, InstanceService, PlanService, SessionService} from './services';
 
 @NgModule({
     imports: [
@@ -60,11 +59,6 @@ import {FlavourService, ImageService, InstanceService, PlanService, SessionServi
         RouterModule.forChild(ROUTES),
     ],
     providers: [
-        ImageService,
-        PlanService,
-        FlavourService,
-        SessionService,
-        InstanceService,
         InstanceActivate,
     ],
     declarations: [

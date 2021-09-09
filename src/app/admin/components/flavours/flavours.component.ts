@@ -1,12 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
-import {CloudFlavour, Flavour, FlavourConnection, PageInfo, Pagination} from '../../../core/graphql/types';
-import {FlavourService} from '../../services/';
+import {CloudFlavour, Flavour, PageInfo, Pagination} from '../../../core/graphql/types';
 import {FlavourNewComponent} from '../flavour-new';
 import {FlavourUpdateComponent} from '../flavour-update';
 import {FlavourDeleteComponent} from '../flavour-delete';
+import {Apollo} from 'apollo-angular';
+import gql from 'graphql-tag';
+import {map, takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 @Component({
     selector: 'visa-admin-flavours',
@@ -14,7 +17,7 @@ import {FlavourDeleteComponent} from '../flavour-delete';
     templateUrl: './flavours.component.html',
 })
 
-export class FlavoursComponent implements OnInit {
+export class FlavoursComponent implements OnInit, OnDestroy {
 
     @ViewChild('datagridRef') public datagrid: any;
 
@@ -23,42 +26,111 @@ export class FlavoursComponent implements OnInit {
     public cloudFlavours: CloudFlavour[] = [];
     public flavourCloudFlavourName: string[] = [];
     public flavours: Flavour[] = [];
-    private flavourConnection: FlavourConnection;
     private flavourPagination: Pagination;
     private state = {page: {from: 0, size: this.pageSize}};
 
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
+
     public loading: boolean;
 
-    constructor(private flavourService: FlavourService,
+    constructor(private apollo: Apollo,
                 private snackBar: MatSnackBar,
                 private dialog: MatDialog) {
     }
 
-    public async ngOnInit(): Promise<void> {
+    public ngOnInit(): void {
         this.flavourPagination = {offset: this.state.page.from, limit: this.state.page.size};
-        await this.loadAll();
+        this.loadAll();
     }
 
-    public async onRefresh(): Promise<void> {
-        await this.loadAll();
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
-    public async loadAll(): Promise<void> {
+    public onRefresh(): void {
+        this.loadAll();
+    }
+
+    public loadAll(): void {
         this.loading = true;
-        const {flavourConnection, cloudFlavours} = await this.flavourService.getAll(this.flavourPagination);
-        this.flavours = flavourConnection.data;
-        this.pageInfo = flavourConnection.pageInfo;
-        this.cloudFlavours = cloudFlavours;
-        this.flavourCloudFlavourName = this.cloudFlavourNameMap(cloudFlavours);
-        this.loading = false;
+        this.apollo.query<any>({
+            query: gql`
+                query AllFlavours($pagination: Pagination!){
+                    flavours(pagination:$pagination) {
+                        pageInfo {
+                            currentPage
+                            totalPages
+                            count
+                            offset
+                            limit
+                            hasNextPage
+                            hasPrevPage
+                        }
+                        data {
+                            id
+                            name
+                            memory
+                            cpu
+                            computeId
+                        }
+                    }
+                    cloudFlavours{
+                      id
+                      name
+                      cpus
+                      disk
+                      ram
+                  }
+                }
+            `,
+            variables: {pagination: this.flavourPagination},
+        }).pipe(
+            map(({data}) => ({flavourConnection: data.flavours, cloudFlavours: data.cloudFlavours})),
+            takeUntil(this._destroy$)
+        ).subscribe(({flavourConnection, cloudFlavours}) => {
+            this.flavours = flavourConnection.data;
+            this.pageInfo = flavourConnection.pageInfo;
+            this.cloudFlavours = cloudFlavours;
+            this.flavourCloudFlavourName = this.cloudFlavourNameMap(cloudFlavours);
+            this.loading = false;
+        });
     }
 
-    public async loadFlavours(): Promise<void> {
+    public loadFlavours(): void {
         this.loading = true;
-        this.flavourConnection = await this.flavourService.getFlavours(this.flavourPagination);
-        this.flavours = this.flavourConnection.data;
-        this.pageInfo = this.flavourConnection.pageInfo;
-        this.loading = false;
+        this.apollo.query<any>({
+            query: gql`
+                query AllFlavours($pagination: Pagination!){
+                    flavours(pagination:$pagination) {
+                        pageInfo {
+                            currentPage
+                            totalPages
+                            count
+                            offset
+                            limit
+                            hasNextPage
+                            hasPrevPage
+                        }
+                        data {
+                            id
+                            name
+                            memory
+                            cpu
+                            computeId
+                        }
+                    }
+                }
+            `,
+            variables: {pagination: this.flavourPagination},
+        }).pipe(
+            map(({data}) => (data.flavours)),
+            takeUntil(this._destroy$)
+        ).subscribe(flavourConnection => {
+            this.flavours = flavourConnection.data;
+            this.pageInfo = flavourConnection.pageInfo;
+            this.loading = false;
+        });
     }
 
     public cloudFlavourNameMap(cloudFlavours: CloudFlavour[]): (string | null)[] {
@@ -77,15 +149,29 @@ export class FlavoursComponent implements OnInit {
             width: '800px',
             data: {cloudFlavours: this.cloudFlavours},
         });
-        dialogRef.componentInstance.create.subscribe((data: any) => {
-            this.flavourService.createFlavour(data).then(() => {
-                dialogRef.close();
-                this.flavourSnackBar('Flavour created');
-                this.loadAll().then();
-            }).catch((error) => {
-                this.flavourSnackBar(error);
-            });
-
+        dialogRef.componentInstance.create.subscribe((flavourInput: any) => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation CreateFlavour($input: CreateFlavourInput!){
+                        createFlavour(input:$input) {
+                            id
+                            name
+                            memory
+                            cpu
+                            computeId
+                        }
+                    }
+                `,
+                variables: {input: flavourInput},
+            }).toPromise()
+                .then(() => {
+                    dialogRef.close();
+                    this.flavourSnackBar('Flavour created');
+                    this.loadAll();
+                })
+                .catch((error) => {
+                    this.flavourSnackBar(error);
+                });
         });
     }
 
@@ -93,12 +179,21 @@ export class FlavoursComponent implements OnInit {
         const dialogRef = this.dialog.open(FlavourDeleteComponent, {
             width: '300px', data: {flavour: this.flavours.find((x) => x.id === flavourId)},
         });
-        dialogRef.componentInstance.delete.subscribe(async () => {
-            const response = await this.flavourService.deleteFlavour(flavourId).then();
-            if (response) {
-                this.flavourSnackBar('Flavour deleted');
-                await this.loadFlavours();
-            }
+        dialogRef.componentInstance.delete.subscribe(() => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation DeleteFlavour($id: Int!){
+                        deleteFlavour(id:$id) {
+                            id
+                        }
+                    }
+                `,
+                variables: {id: flavourId},
+            }).toPromise()
+                .then(() => {
+                    this.flavourSnackBar('Flavour deleted');
+                    this.loadFlavours();
+                });
         });
     }
 
@@ -109,14 +204,29 @@ export class FlavoursComponent implements OnInit {
                 cloudFlavours: this.cloudFlavours,
             },
         });
-        dialogRef.componentInstance.update.subscribe(async (data) => {
-            this.flavourService.updateFlavour(flavour.id, data).then(() => {
-                dialogRef.close();
-                this.flavourSnackBar('Flavour updated');
-                this.loadAll().then();
-            }).catch((error) => {
-                this.flavourSnackBar(error);
-            });
+        dialogRef.componentInstance.update.subscribe((flavourInput) => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation UpdateFlavour($id: Int!,$input: UpdateFlavourInput!){
+                        updateFlavour(id:$id,input:$input) {
+                            id
+                            name
+                            memory
+                            cpu
+                            computeId
+                        }
+                    }
+                `,
+                variables: {id: flavour.id, input: flavourInput},
+            }).toPromise()
+                .then(() => {
+                    dialogRef.close();
+                    this.flavourSnackBar('Flavour updated');
+                    this.loadAll();
+                })
+                .catch((error) => {
+                    this.flavourSnackBar(error);
+                });
         });
     }
 

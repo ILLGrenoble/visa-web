@@ -9,7 +9,6 @@ import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
 import * as screenfull from 'screenfull';
 import {Screenfull} from 'screenfull';
 import {environment} from '../../../../environments/environment';
-import {SessionService} from '../../services';
 
 @Component({
     selector: 'visa-admin-sessions',
@@ -63,7 +62,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
         this._gridContainer = value;
     }
 
-    constructor(private sessionService: SessionService, private apollo: Apollo, private notifierService: NotifierService) {
+    constructor(private apollo: Apollo, private notifierService: NotifierService) {
     }
 
     public handleRefresh($event: void): void {

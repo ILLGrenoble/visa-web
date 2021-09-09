@@ -1,12 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CloudImage, Image, ImageConnection, ImageProtocol, PageInfo, Pagination} from 'app/core/graphql/types';
 import {cloneDeep} from 'lodash';
-import {ImageService} from '../../services';
 import {ImageDeleteComponent} from '../image-delete';
 import {ImageNewComponent} from '../image-new';
 import {ImageUpdateComponent} from '../image-update';
+import {Subject} from 'rxjs';
+import gql from 'graphql-tag';
+import {Apollo} from 'apollo-angular';
+import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-images',
@@ -14,7 +17,7 @@ import {ImageUpdateComponent} from '../image-update';
     templateUrl: './images.component.html',
 })
 
-export class ImagesComponent implements OnInit {
+export class ImagesComponent implements OnInit, OnDestroy {
 
     @ViewChild('datagridRef') public datagrid: any;
     public pageInfo: PageInfo;
@@ -31,47 +34,136 @@ export class ImagesComponent implements OnInit {
     private imageIcons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
     private state = {page: {from: 0, size: this.pageSize}};
 
-    constructor(private imageService: ImageService,
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
+
+    constructor(private apollo: Apollo,
                 private snackBar: MatSnackBar,
                 private dialog: MatDialog) {
     }
 
-    public async ngOnInit(): Promise<void> {
+    public ngOnInit(): void {
         this.imagePagination = {offset: this.state.page.from, limit: this.state.page.size};
-        await this.loadProtocolsImages();
-        setTimeout(() => this.datagrid.resize());
+        this.loadProtocolsImages();
     }
 
-    public async onRefresh(): Promise<void> {
-        await this.loadImages();
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
-    public async loadProtocolsImages(): Promise<void> {
+    public onRefresh(): void {
+        this.loadImages();
+    }
+
+    public loadProtocolsImages(): void {
         this.loading = true;
 
-        const {imageConnection, protocols, cloudImages} = await this.imageService.getAll(this.imagePagination);
-        this.images = imageConnection.data;
-        this.pageInfo = imageConnection.pageInfo;
-        this.protocols = protocols;
-        this.cloudImages = cloudImages;
+        this.apollo.query<any>({
+            query: gql`
+                query All($pagination: Pagination!){
+                    images(pagination:$pagination) {
+                         pageInfo {
+                            currentPage
+                            totalPages
+                            count
+                            offset
+                            limit
+                            hasNextPage
+                            hasPrevPage
+                        }
+                        data{
+                            id
+                            name
+                            version
+                            description
+                            visible
+                            deleted
+                            icon
+                            computeId
+                            protocols{
+                                id
+                                name
+                            }
+                            bootCommand
+                            autologin
+                        }
+                    }
+                    imageProtocols {
+                        id
+                        name
+                    }
+                    cloudImages {
+                        id
+                        name
+                    }
+                }
+            `,
+            variables: {pagination: this.imagePagination},
+        }).pipe(
+            map(({data}) => ({imageConnection: data.images, protocols: data.imageProtocols, cloudImages: data.cloudImages})),
+            takeUntil(this._destroy$)
+        ).subscribe(({imageConnection, protocols, cloudImages}) => {
+            this.images = imageConnection.data;
+            this.pageInfo = imageConnection.pageInfo;
+            this.protocols = protocols;
+            this.cloudImages = cloudImages;
 
-        this.imageCloudImageName = this.images.map((image) => {
-            const resultCloudImage = cloudImages.find((cloudImage) => cloudImage.id === image.computeId);
-            if (resultCloudImage) {
-                return resultCloudImage.name;
-            } else {
-                return null;
-            }
+            this.imageCloudImageName = this.images.map((image) => {
+                const resultCloudImage = cloudImages.find((cloudImage) => cloudImage.id === image.computeId);
+                if (resultCloudImage) {
+                    return resultCloudImage.name;
+                } else {
+                    return null;
+                }
+            });
+            this.loading = false;
+            setTimeout(() => this.datagrid.resize());
         });
-        this.loading = false;
     }
 
-    public async loadImages(): Promise<void> {
+    public loadImages(): void {
         this.loading = true;
-        this.imageConnection = await this.imageService.getImages(this.imagePagination);
-        this.images = this.imageConnection.data;
-        this.pageInfo = this.imageConnection.pageInfo;
-        this.loading = false;
+
+        this.apollo.query<any>({
+            query: gql`
+                query AllImages($pagination: Pagination!){
+                    images(pagination:$pagination) {
+                         pageInfo {
+                            currentPage
+                            totalPages
+                            count
+                            offset
+                            limit
+                            hasNextPage
+                            hasPrevPage
+                        }
+                        data{
+                            id
+                            name
+                            version
+                            description
+                            visible
+                            deleted
+                            icon
+                            computeId
+                            protocols{
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: {pagination: this.imagePagination},
+        }).pipe(
+            map(({data}) => (data.images)),
+            takeUntil(this._destroy$)
+        ).subscribe((imageConnection) => {
+            this.imageConnection = imageConnection;
+            this.images = this.imageConnection.data;
+            this.pageInfo = this.imageConnection.pageInfo;
+            this.loading = false;
+        });
     }
 
     public onCreate(): void {
@@ -79,14 +171,29 @@ export class ImagesComponent implements OnInit {
             width: '900px',
             data: {imageIcons: this.imageIcons, cloudImages: this.cloudImages, protocols: this.protocols},
         });
-        dialogRef.componentInstance.create.subscribe((data: any) => {
-            this.imageService.createImage(data).then(async () => {
-                dialogRef.close();
-                this.imageSnackBar('Image created');
-                await this.loadProtocolsImages();
-            }).catch((error) => {
-                this.imageSnackBar(error);
-            });
+        dialogRef.componentInstance.create.subscribe((imageInput: any) => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation CreateImage($input: CreateImageInput!){
+                        createImage(input:$input) {
+                          id
+                          name
+                          version
+                          description
+                          icon
+                          computeId
+                        }
+                    }
+                `,
+                variables: {input: imageInput},
+            }).toPromise()
+                .then(() => {
+                    dialogRef.close();
+                    this.imageSnackBar('Image created');
+                    this.loadProtocolsImages();
+                }).catch((error) => {
+                    this.imageSnackBar(error);
+                });
         });
     }
 
@@ -94,12 +201,21 @@ export class ImagesComponent implements OnInit {
         const dialogRef = this.dialog.open(ImageDeleteComponent, {
             width: '300px', data: {image: this.images.find((x) => x.id === imageId)},
         });
-        dialogRef.componentInstance.delete.subscribe(async () => {
-            const response = await this.imageService.deleteImage(imageId).then();
-            if (response) {
-                this.imageSnackBar('Image deleted');
-                await this.loadImages();
-            }
+        dialogRef.componentInstance.delete.subscribe(() => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation DeleteImage($id: Int!){
+                        deleteImage(id:$id) {
+                            id
+                        }
+                    }
+                `,
+                variables: {id: imageId},
+            }).toPromise()
+                .then(() => {
+                    this.imageSnackBar('Image deleted');
+                    this.loadImages();
+                });
         });
     }
 
@@ -111,13 +227,23 @@ export class ImagesComponent implements OnInit {
             },
         });
         dialogRef.componentInstance.update.subscribe(async (data) => {
-            this.imageService.updateImage(image.id, data).then(async () => {
-                dialogRef.close();
-                this.imageSnackBar('Image Updated');
-                await this.loadProtocolsImages();
-            }).catch((error) => {
-                this.imageSnackBar(error);
-            });
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation UpdateImage($id: Int!,$input: UpdateImageInput!){
+                        updateImage(id:$id,input:$input) {
+                            id
+                        }
+                    }
+            `,
+                variables: {id: image.id, input: data},
+            }).toPromise()
+                .then(() => {
+                    dialogRef.close();
+                    this.imageSnackBar('Image Updated');
+                    this.loadProtocolsImages();
+                }).catch((error) => {
+                    this.imageSnackBar(error);
+                });
         });
     }
 
