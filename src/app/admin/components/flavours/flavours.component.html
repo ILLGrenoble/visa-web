@@ -19,7 +19,7 @@
                 <clr-dg-cell>{{flavour.memory}}</clr-dg-cell>
                 <clr-dg-cell>{{flavour.cpu}}</clr-dg-cell>
                 <clr-dg-cell>
-                    <button (click)="onUpdate(flavour)" class="btn btn-sm">Update</button>
+                    <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
                     <button (click)="onDelete(flavour.id)" class="btn btn-warning-outline btn-sm">Delete</button>
                 </clr-dg-cell>
             </clr-dg-row>
@@ -27,12 +27,6 @@
             <clr-dg-footer>
                 <button class="btn btn-sm" type="button" (click)="onCreate()">New</button>
                 <button class="btn btn-sm" type="button" (click)="onRefresh()"><clr-icon shape="refresh"></clr-icon></button>
-                <clr-dg-pagination #pagination [clrDgPageSize]="pageSize"
-                                   [clrDgPage]="pageInfo?.currentPage"
-                                   [clrDgLastPage]="pageInfo?.totalPages">
-                    {{pagination.firstItem + 1}} - {{pagination.lastItem + 1 <  pageInfo?.count ? pagination.lastItem + 1 : pageInfo?.count}}
-                    of {{ pageInfo?.count }} flavours
-                </clr-dg-pagination>
             </clr-dg-footer>
         </clr-datagrid>
     </div>

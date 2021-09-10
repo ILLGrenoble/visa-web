@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
-import {CloudFlavour, Flavour, PageInfo, Pagination} from '../../../core/graphql/types';
+import {CloudFlavour, Flavour, FlavourLimit, PageInfo, Pagination} from '../../../core/graphql/types';
 import {FlavourNewComponent} from '../flavour-new';
 import {FlavourUpdateComponent} from '../flavour-update';
 import {FlavourDeleteComponent} from '../flavour-delete';
@@ -26,7 +26,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     public cloudFlavours: CloudFlavour[] = [];
     public flavourCloudFlavourName: string[] = [];
     public flavours: Flavour[] = [];
-    private flavourPagination: Pagination;
+    public flavourLimits: FlavourLimit[] = [];
     private state = {page: {from: 0, size: this.pageSize}};
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
@@ -39,7 +39,6 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.flavourPagination = {offset: this.state.page.from, limit: this.state.page.size};
         this.loadAll();
     }
 
@@ -56,26 +55,23 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.apollo.query<any>({
             query: gql`
-                query AllFlavours($pagination: Pagination!){
-                    flavours(pagination:$pagination) {
-                        pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data {
-                            id
-                            name
-                            memory
-                            cpu
-                            computeId
+                query AllFlavours {
+                    flavours {
+                        id
+                        name
+                        memory
+                        cpu
+                        computeId
+                    }
+                    flavourLimits  {
+                        id
+                        objectId
+                        objectType
+                        flavour {
+                          id
                         }
                     }
-                    cloudFlavours{
+                    cloudFlavours {
                       id
                       name
                       cpus
@@ -84,51 +80,14 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                   }
                 }
             `,
-            variables: {pagination: this.flavourPagination},
         }).pipe(
-            map(({data}) => ({flavourConnection: data.flavours, cloudFlavours: data.cloudFlavours})),
+            map(({data}) => ({flavours: data.flavours, cloudFlavours: data.cloudFlavours, flavourLimits: data.flavourLimits})),
             takeUntil(this._destroy$)
-        ).subscribe(({flavourConnection, cloudFlavours}) => {
-            this.flavours = flavourConnection.data;
-            this.pageInfo = flavourConnection.pageInfo;
+        ).subscribe(({flavours, cloudFlavours, flavourLimits}) => {
+            this.flavours = flavours;
             this.cloudFlavours = cloudFlavours;
+            this.flavourLimits = flavourLimits;
             this.flavourCloudFlavourName = this.cloudFlavourNameMap(cloudFlavours);
-            this.loading = false;
-        });
-    }
-
-    public loadFlavours(): void {
-        this.loading = true;
-        this.apollo.query<any>({
-            query: gql`
-                query AllFlavours($pagination: Pagination!){
-                    flavours(pagination:$pagination) {
-                        pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data {
-                            id
-                            name
-                            memory
-                            cpu
-                            computeId
-                        }
-                    }
-                }
-            `,
-            variables: {pagination: this.flavourPagination},
-        }).pipe(
-            map(({data}) => (data.flavours)),
-            takeUntil(this._destroy$)
-        ).subscribe(flavourConnection => {
-            this.flavours = flavourConnection.data;
-            this.pageInfo = flavourConnection.pageInfo;
             this.loading = false;
         });
     }
@@ -192,7 +151,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     this.flavourSnackBar('Flavour deleted');
-                    this.loadFlavours();
+                    this.loadAll();
                 });
         });
     }
@@ -202,6 +161,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             width: '800px', data: {
                 flavour: cloneDeep(flavour),
                 cloudFlavours: this.cloudFlavours,
+                flavourLimits: this.flavourLimits,
             },
         });
         dialogRef.componentInstance.update.subscribe((flavourInput) => {

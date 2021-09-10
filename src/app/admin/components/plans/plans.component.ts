@@ -23,8 +23,6 @@ export class PlansComponent implements OnInit, OnDestroy {
     public pageInfo: PageInfo;
     public pageSize = 100;
     public plans: Plan[] = [];
-    private planPagination: Pagination;
-    private pagination: Pagination;
 
     public loading: boolean;
     private images: Image[] = [];
@@ -40,10 +38,6 @@ export class PlansComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-
-        this.planPagination = {offset: this.state.page.from, limit: this.state.page.size};
-        this.pagination = {offset: 0};
-
         this.loadPlansImagesFlavours();
         setTimeout(() => this.datagrid.resize());
     }
@@ -62,59 +56,36 @@ export class PlansComponent implements OnInit, OnDestroy {
 
         this.apollo.query<any>({
             query: gql`
-                query AllFlavours($pagination: Pagination!){
-                    flavours(pagination:$pagination) {
-                        pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data {
-                            id
-                            name
-                            memory
-                            cpu
-                            computeId
-                        }
+                query AllFlavours {
+                    flavours {
+                        id
+                        name
+                        memory
+                        cpu
+                        computeId
                     },
-                    images(pagination:$pagination) {
-                         pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data{
+                    images {
+                        id
+                        name
+                        version
+                        description
+                        visible
+                        deleted
+                        icon
+                        computeId
+                        protocols{
                             id
                             name
-                            version
-                            description
-                            visible
-                            deleted
-                            icon
-                            computeId
-                            protocols{
-                                id
-                                name
-                            }
                         }
                     }
                 }
             `,
-            variables: {pagination: this.pagination},
         }).pipe(
-            map(({data}) => ({flavours: data.flavours.data, images: data.images.data})),
+            map(({data}) => ({flavours: data.flavours, images: data.images})),
             takeUntil(this._destroy$)
-        ).subscribe(data => {
-            this.flavours = data.flavours;
-            this.images = data.images;
+        ).subscribe(({flavours, images}) => {
+            this.flavours = flavours;
+            this.images = images;
             this.loading = false;
             this.loadPlans();
         });
@@ -123,48 +94,35 @@ export class PlansComponent implements OnInit, OnDestroy {
     public loadPlans(): void {
         this.apollo.query<any>({
             query: gql`
-                query allPlans($pagination: Pagination!){
-                    plans(pagination:$pagination){
-                        pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data {
+                query allPlans {
+                    plans {
+                        id
+                        image {
                             id
-                            image {
-                                id
-                                name
-                                description
-                                version
-                                icon
-                                computeId
-                                visible
-                                deleted
-                            }
-                            flavour {
-                                id
-                                name
-                                memory
-                                cpu
-                                computeId
-                            }
-                            preset
+                            name
+                            description
+                            version
+                            icon
+                            computeId
+                            visible
+                            deleted
                         }
+                        flavour {
+                            id
+                            name
+                            memory
+                            cpu
+                            computeId
+                        }
+                        preset
                     }
                 }
             `,
-            variables : {pagination: this.planPagination},
         }).pipe(
             map(({data}) => (data.plans)),
             takeUntil(this._destroy$)
-        ).subscribe(planConnection => {
-            this.plans = planConnection.data;
-            this.pageInfo = planConnection.pageInfo;
+        ).subscribe(plans => {
+            this.plans = plans;
         });
     }
 

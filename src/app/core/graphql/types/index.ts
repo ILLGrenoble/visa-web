@@ -112,6 +112,15 @@ export type FlavourConnection = {
     data?: Maybe<Array<Maybe<Flavour>>>;
 };
 
+export type FlavourLimit = {
+    __typename?: 'FlavourLimit';
+    id: Scalars['Int'];
+    objectId: Scalars['Int'];
+    objectType: Scalars['String'];
+    objectName: Scalars['String'];
+    flavour: Flavour;
+};
+
 export type Image = {
     __typename?: 'Image';
     id: Scalars['Int'];

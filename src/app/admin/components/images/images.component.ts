@@ -26,9 +26,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
     public imageCloudImageName: string[] = [];
     public loading: boolean;
 
-    private imageConnection: ImageConnection;
-    private imagePagination: Pagination;
-
     private cloudImages: CloudImage[];
     private protocols: ImageProtocol[] = [];
     private imageIcons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
@@ -42,7 +39,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.imagePagination = {offset: this.state.page.from, limit: this.state.page.size};
         this.loadProtocolsImages();
     }
 
@@ -60,33 +56,22 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
         this.apollo.query<any>({
             query: gql`
-                query All($pagination: Pagination!){
-                    images(pagination:$pagination) {
-                         pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data{
+                query All {
+                    images {
+                        id
+                        name
+                        version
+                        description
+                        visible
+                        deleted
+                        icon
+                        computeId
+                        protocols{
                             id
                             name
-                            version
-                            description
-                            visible
-                            deleted
-                            icon
-                            computeId
-                            protocols{
-                                id
-                                name
-                            }
-                            bootCommand
-                            autologin
                         }
+                        bootCommand
+                        autologin
                     }
                     imageProtocols {
                         id
@@ -98,13 +83,11 @@ export class ImagesComponent implements OnInit, OnDestroy {
                     }
                 }
             `,
-            variables: {pagination: this.imagePagination},
         }).pipe(
-            map(({data}) => ({imageConnection: data.images, protocols: data.imageProtocols, cloudImages: data.cloudImages})),
+            map(({data}) => ({images: data.images, protocols: data.imageProtocols, cloudImages: data.cloudImages})),
             takeUntil(this._destroy$)
-        ).subscribe(({imageConnection, protocols, cloudImages}) => {
-            this.images = imageConnection.data;
-            this.pageInfo = imageConnection.pageInfo;
+        ).subscribe(({images, protocols, cloudImages}) => {
+            this.images = images;
             this.protocols = protocols;
             this.cloudImages = cloudImages;
 
@@ -126,42 +109,28 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
         this.apollo.query<any>({
             query: gql`
-                query AllImages($pagination: Pagination!){
-                    images(pagination:$pagination) {
-                         pageInfo {
-                            currentPage
-                            totalPages
-                            count
-                            offset
-                            limit
-                            hasNextPage
-                            hasPrevPage
-                        }
-                        data{
+                query AllImages {
+                    images {
+                        id
+                        name
+                        version
+                        description
+                        visible
+                        deleted
+                        icon
+                        computeId
+                        protocols{
                             id
                             name
-                            version
-                            description
-                            visible
-                            deleted
-                            icon
-                            computeId
-                            protocols{
-                                id
-                                name
-                            }
                         }
                     }
                 }
             `,
-            variables: {pagination: this.imagePagination},
         }).pipe(
             map(({data}) => (data.images)),
             takeUntil(this._destroy$)
-        ).subscribe((imageConnection) => {
-            this.imageConnection = imageConnection;
-            this.images = this.imageConnection.data;
-            this.pageInfo = this.imageConnection.pageInfo;
+        ).subscribe((images) => {
+            this.images = images;
             this.loading = false;
         });
     }

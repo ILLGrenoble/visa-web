@@ -29,11 +29,6 @@
                 <button class="btn btn-sm" type="button" (click)="onRefresh()">
                     <clr-icon shape="refresh"></clr-icon>
                 </button>
-                <clr-dg-pagination #pagination [clrDgPageSize]="pageSize" [clrDgPage]="pageInfo?.currentPage"
-                                   [clrDgLastPage]="pageInfo?.totalPages">{{pagination.firstItem + 1}}
-                    - {{pagination.lastItem + 1 < pageInfo?.count ? pagination.lastItem + 1 : pageInfo?.count}}
-                    of {{ pageInfo?.count }} plans
-                </clr-dg-pagination>
             </clr-dg-footer>
         </clr-datagrid>
     </div>

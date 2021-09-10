@@ -29,6 +29,20 @@
             <label for="cpu">CPU</label>
             <input clrInput readonly id="cpu" class="form-control" [value]="cpu">
         </clr-input-container>
+
+        <clr-combobox-container>
+            <label>Limit to the following instruments</label>
+            <clr-combobox [(ngModel)]="selectedInstruments" name="multiSelect" clrMulti="true">
+                <ng-container *clrOptionSelected="let selected">
+                    {{selected?.name}}
+                </ng-container>
+                <clr-options>
+                    <clr-option *clrOptionItems="let instrument of instruments; " [clrValue]="instrument">
+                        {{instrument.name}}
+                    </clr-option>
+                </clr-options>
+            </clr-combobox>
+        </clr-combobox-container>
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
