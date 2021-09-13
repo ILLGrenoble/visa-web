@@ -21,15 +21,22 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     @ViewChild('datagridRef') public datagrid: any;
 
-    public cloudFlavours: CloudFlavour[] = [];
-    public flavourCloudFlavourName: string[] = [];
-    public flavours: Flavour[] = [];
-    public flavourLimits: FlavourLimit[] = [];
-    public instruments: Instrument[];
+    private _cloudFlavours: CloudFlavour[] = [];
+    private _flavours: Flavour[] = [];
+    private _flavourLimits: FlavourLimit[] = [];
+    private _instruments: Instrument[];
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
-    public loading: boolean;
+    private _loading: boolean;
+
+    get flavours(): Flavour[] {
+        return this._flavours;
+    }
+
+    get loading(): boolean {
+        return this._loading;
+    }
 
     constructor(private apollo: Apollo,
                 private snackBar: MatSnackBar,
@@ -51,7 +58,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     }
 
     public loadAll(): void {
-        this.loading = true;
+        this._loading = true;
         this.apollo.query<any>({
             query: gql`
                 query AllFlavours {
@@ -83,11 +90,10 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             map(({data}) => ({flavours: data.flavours, cloudFlavours: data.cloudFlavours, flavourLimits: data.flavourLimits})),
             takeUntil(this._destroy$)
         ).subscribe(({flavours, cloudFlavours, flavourLimits}) => {
-            this.flavours = flavours;
-            this.cloudFlavours = cloudFlavours;
-            this.flavourLimits = flavourLimits;
-            this.flavourCloudFlavourName = this.cloudFlavourNameMap(cloudFlavours);
-            this.loading = false;
+            this._flavours = flavours;
+            this._cloudFlavours = cloudFlavours;
+            this._flavourLimits = flavourLimits;
+            this._loading = false;
         });
     }
 
@@ -105,30 +111,24 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             map(({data}) => (data.instruments)),
             takeUntil(this._destroy$)
         ).subscribe((instruments) => {
-            this.instruments = instruments;
+            this._instruments = instruments;
         });
     }
 
-    public cloudFlavourNameMap(cloudFlavours: CloudFlavour[]): (string | null)[] {
-        return this.flavours.map((flavour) => {
-            const resultCloudFlavour = cloudFlavours.find((cloudFlavour) => cloudFlavour.id === flavour.computeId);
-            if (resultCloudFlavour) {
-                return resultCloudFlavour.name;
-            } else {
-                return null;
-            }
-        });
+    public cloudFlavourName(flavour: Flavour): string {
+        const cloudFlavour = this._cloudFlavours.find(aCloudFlavour => aCloudFlavour.id === flavour.computeId);
+        return cloudFlavour ? cloudFlavour.name : null;
     }
 
     public onCreate(): void {
         const dialogRef = this.dialog.open(FlavourNewComponent, {
             width: '800px',
             data: {
-                cloudFlavours: this.cloudFlavours,
-                instruments: this.instruments
+                cloudFlavours: this._cloudFlavours,
+                instruments: this._instruments
             },
         });
-        dialogRef.componentInstance.create.subscribe((flavourInput: any) => {
+        dialogRef.componentInstance.onCreate$.subscribe((flavourInput: any) => {
             this.apollo.mutate<any>({
                 mutation: gql`
                     mutation CreateFlavour($input: FlavourInput!){
@@ -180,12 +180,12 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         const dialogRef = this.dialog.open(FlavourUpdateComponent, {
             width: '800px', data: {
                 flavour: cloneDeep(flavour),
-                cloudFlavours: this.cloudFlavours,
-                flavourLimits: this.flavourLimits,
-                instruments: this.instruments
+                cloudFlavours: this._cloudFlavours,
+                flavourLimits: this._flavourLimits,
+                instruments: this._instruments
             },
         });
-        dialogRef.componentInstance.update.subscribe(({flavourInput, instruments}) => {
+        dialogRef.componentInstance.onUpdate$.subscribe(({flavourInput, instruments}) => {
             this.apollo.mutate<any>({
                 mutation: gql`
                     mutation UpdateFlavour($id: Int!,$input: FlavourInput!){

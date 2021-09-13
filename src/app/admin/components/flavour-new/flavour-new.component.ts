@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudFlavour} from '@core';
-import {FlavourInput, Instrument} from '../../../core/graphql/types';
+import {CloudFlavour, FlavourInput, Instrument} from '../../../core/graphql/types';
 
 @Component({
     selector: 'visa-admin-flavour-new',
@@ -10,51 +9,90 @@ import {FlavourInput, Instrument} from '../../../core/graphql/types';
 })
 export class FlavourNewComponent implements OnInit {
 
-    public create: EventEmitter<any> = new EventEmitter();
+    private _onCreate$: EventEmitter<any> = new EventEmitter();
 
-    public cloudFlavours: CloudFlavour[];
-    public selectedCloudFlavourId: string;
-    public nameInput: string;
-    public memory: number;
-    public cpu: number;
+    private _cloudFlavours: CloudFlavour[];
+    private _selectedCloudFlavour: CloudFlavour;
+    private _name: string;
 
-    public instruments: Instrument[];
-    public selectedInstruments: Instrument[] = [];
+    private _instruments: Instrument[];
+    private _selectedInstruments: Instrument[] = [];
 
-    constructor(public dialogRef: MatDialogRef<FlavourNewComponent>,
-                @Inject(MAT_DIALOG_DATA) public data) {
+    get onCreate$(): EventEmitter<any> {
+        return this._onCreate$;
+    }
+
+    get cloudFlavours(): CloudFlavour[] {
+        return this._cloudFlavours;
+    }
+
+    get selectedCloudFlavourId(): string {
+        return this._selectedCloudFlavour ? this._selectedCloudFlavour.id : null;
+    }
+
+    set selectedCloudFlavourId(value: string) {
+        this._selectedCloudFlavour = this._cloudFlavours.find(cloudFlavour => cloudFlavour.id === value);
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    set name(value: string) {
+        this._name = value;
+    }
+
+    get instruments(): Instrument[] {
+        return this._instruments;
+    }
+
+    get selectedInstruments(): Instrument[] {
+        return this._selectedInstruments;
+    }
+
+    set selectedInstruments(value: Instrument[]) {
+        this._selectedInstruments = value;
+    }
+
+    get memory(): number {
+        return this._selectedCloudFlavour ? this._selectedCloudFlavour.ram / 1024 : 0;
+    }
+
+    get cpu(): number {
+        return this._selectedCloudFlavour ? this._selectedCloudFlavour.cpus : 0;
+    }
+
+    constructor(private _dialogRef: MatDialogRef<FlavourNewComponent>,
+                @Inject(MAT_DIALOG_DATA) private _data) {
+        this._dialogRef.keydownEvents().subscribe(event => {
+            if (event.key === 'Escape') {
+                this._dialogRef.close();
+            }
+        });
+
+        this._dialogRef.backdropClick().subscribe(event => {
+            this._dialogRef.close();
+        });
     }
 
     public ngOnInit(): void {
-        this.cloudFlavours = this.data.cloudFlavours;
-        this.instruments = this.data.instruments;
-        this.memory = 0;
-        this.cpu = 0;
+        this._cloudFlavours = this._data.cloudFlavours;
+        this._instruments = this._data.instruments;
     }
 
-    public onNoClick(): void {
-        this.dialogRef.close();
+    public onCancel(): void {
+        this._dialogRef.close();
     }
 
-    public onCloudFlavourSelect(): void {
-        if (this.selectedCloudFlavourId) {
-            this.memory = this.cloudFlavours.find((cloudFlavour) => cloudFlavour.id === this.selectedCloudFlavourId).ram;
-            this.cpu = this.cloudFlavours.find((cloudFlavour) => cloudFlavour.id === this.selectedCloudFlavourId).cpus;
-        } else {
-            this.memory = 0;
-            this.cpu = 0;
-        }
-    }
-
-    public submit(): void {
+    public onCreate(): void {
         const input: FlavourInput = {
-            name: this.nameInput,
-            computeId: this.selectedCloudFlavourId,
-            memory: this.memory,
-            cpu: this.cpu,
+            name: this._name,
+            computeId: this._selectedCloudFlavour.id,
+            memory: this._selectedCloudFlavour.ram,
+            cpu: this._selectedCloudFlavour.cpus,
             instrumentIds: this.selectedInstruments ? this.selectedInstruments.map(instrument => instrument.id) : []
         };
-        this.create.emit(input);
+        this._onCreate$.emit(input);
     }
 
 }
