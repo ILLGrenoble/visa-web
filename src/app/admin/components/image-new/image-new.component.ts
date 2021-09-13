@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudImage, Protocol} from '@core';
-import {CreateImageInput} from '../../../core/graphql/types';
+import {CloudImage, ImageInput, ImageProtocol} from '../../../core/graphql/types';
 
 @Component({
     selector: 'visa-admin-image-new',
@@ -12,21 +11,22 @@ export class ImageNewComponent implements OnInit {
 
     public create: EventEmitter<any> = new EventEmitter();
 
-    public protocols: Protocol[];
+    public protocols: ImageProtocol[];
     public cloudImages: CloudImage[];
 
     public nameInput: string;
     public versionInput: string;
     public descriptionInput: string;
     public selectedCloudImageId: string;
-    public selectedProtocols: Protocol[] = [];
+    public selectedProtocols: ImageProtocol[] = [];
     public selectedIcon: string;
     public imageVisible = false;
     public bootCommand: string = null;
     public autologin: string = null;
     public imageIcons: string[];
 
-    constructor(public dialogRef: MatDialogRef<ImageNewComponent>, @Inject(MAT_DIALOG_DATA) public data) {
+    constructor(public dialogRef: MatDialogRef<ImageNewComponent>,
+                @Inject(MAT_DIALOG_DATA) public data) {
     }
 
     public ngOnInit(): void {
@@ -44,8 +44,7 @@ export class ImageNewComponent implements OnInit {
         this.selectedProtocols.forEach((protocol) => {
             selectedProtocolsId.push(protocol.id);
         });
-        const autologin = this.autologin? this.autologin:null;
-        const imageInput: CreateImageInput = {
+        const imageInput: ImageInput = {
             name: this.nameInput,
             version: this.versionInput,
             description: this.descriptionInput,
@@ -55,7 +54,7 @@ export class ImageNewComponent implements OnInit {
             deleted: false,
             protocolIds: selectedProtocolsId,
             bootCommand: this.bootCommand,
-            autologin: autologin
+            autologin: this.autologin
         };
         this.create.emit(imageInput);
     }

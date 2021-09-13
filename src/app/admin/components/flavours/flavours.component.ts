@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
-import {CloudFlavour, Flavour, FlavourLimit, PageInfo, Pagination} from '../../../core/graphql/types';
+import {CloudFlavour, Flavour, FlavourLimit, Instrument} from '../../../core/graphql/types';
 import {FlavourNewComponent} from '../flavour-new';
 import {FlavourUpdateComponent} from '../flavour-update';
 import {FlavourDeleteComponent} from '../flavour-delete';
@@ -21,13 +21,11 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     @ViewChild('datagridRef') public datagrid: any;
 
-    public pageInfo: PageInfo;
-    public pageSize = 20;
     public cloudFlavours: CloudFlavour[] = [];
     public flavourCloudFlavourName: string[] = [];
     public flavours: Flavour[] = [];
     public flavourLimits: FlavourLimit[] = [];
-    private state = {page: {from: 0, size: this.pageSize}};
+    public instruments: Instrument[];
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -40,6 +38,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.loadAll();
+        this.loadInstruments();
     }
 
     public ngOnDestroy(): void {
@@ -92,6 +91,24 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         });
     }
 
+    private loadInstruments(): void {
+        this.apollo.query<any>({
+            query: gql`
+                query instruments {
+                    instruments {
+                        id
+                        name
+                   }
+                }
+            `,
+        }).pipe(
+            map(({data}) => (data.instruments)),
+            takeUntil(this._destroy$)
+        ).subscribe((instruments) => {
+            this.instruments = instruments;
+        });
+    }
+
     public cloudFlavourNameMap(cloudFlavours: CloudFlavour[]): (string | null)[] {
         return this.flavours.map((flavour) => {
             const resultCloudFlavour = cloudFlavours.find((cloudFlavour) => cloudFlavour.id === flavour.computeId);
@@ -106,12 +123,15 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     public onCreate(): void {
         const dialogRef = this.dialog.open(FlavourNewComponent, {
             width: '800px',
-            data: {cloudFlavours: this.cloudFlavours},
+            data: {
+                cloudFlavours: this.cloudFlavours,
+                instruments: this.instruments
+            },
         });
         dialogRef.componentInstance.create.subscribe((flavourInput: any) => {
             this.apollo.mutate<any>({
                 mutation: gql`
-                    mutation CreateFlavour($input: CreateFlavourInput!){
+                    mutation CreateFlavour($input: FlavourInput!){
                         createFlavour(input:$input) {
                             id
                             name
@@ -138,7 +158,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         const dialogRef = this.dialog.open(FlavourDeleteComponent, {
             width: '300px', data: {flavour: this.flavours.find((x) => x.id === flavourId)},
         });
-        dialogRef.componentInstance.delete.subscribe(() => {
+        dialogRef.componentInstance.onDelete$.subscribe(() => {
             this.apollo.mutate<any>({
                 mutation: gql`
                     mutation DeleteFlavour($id: Int!){
@@ -162,12 +182,13 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 flavour: cloneDeep(flavour),
                 cloudFlavours: this.cloudFlavours,
                 flavourLimits: this.flavourLimits,
+                instruments: this.instruments
             },
         });
-        dialogRef.componentInstance.update.subscribe((flavourInput) => {
+        dialogRef.componentInstance.update.subscribe(({flavourInput, instruments}) => {
             this.apollo.mutate<any>({
                 mutation: gql`
-                    mutation UpdateFlavour($id: Int!,$input: UpdateFlavourInput!){
+                    mutation UpdateFlavour($id: Int!,$input: FlavourInput!){
                         updateFlavour(id:$id,input:$input) {
                             id
                             name
@@ -187,6 +208,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 .catch((error) => {
                     this.flavourSnackBar(error);
                 });
+
         });
     }
 

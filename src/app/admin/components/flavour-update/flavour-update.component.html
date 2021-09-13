@@ -31,7 +31,7 @@
         </clr-input-container>
 
         <clr-combobox-container>
-            <label>Limit to the following instruments</label>
+            <label>Selected instruments</label>
             <clr-combobox [(ngModel)]="selectedInstruments" name="multiSelect" clrMulti="true">
                 <ng-container *clrOptionSelected="let selected">
                     {{selected?.name}}

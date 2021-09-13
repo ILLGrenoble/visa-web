@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {CloudImage, Image, ImageConnection, ImageProtocol, PageInfo, Pagination} from 'app/core/graphql/types';
+import {CloudImage, Image, ImageProtocol} from 'app/core/graphql/types';
 import {cloneDeep} from 'lodash';
 import {ImageDeleteComponent} from '../image-delete';
 import {ImageNewComponent} from '../image-new';
@@ -20,8 +20,6 @@ import {map, takeUntil} from 'rxjs/operators';
 export class ImagesComponent implements OnInit, OnDestroy {
 
     @ViewChild('datagridRef') public datagrid: any;
-    public pageInfo: PageInfo;
-    public pageSize = 20;
     public images: Image[] = [];
     public imageCloudImageName: string[] = [];
     public loading: boolean;
@@ -29,7 +27,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private cloudImages: CloudImage[];
     private protocols: ImageProtocol[] = [];
     private imageIcons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
-    private state = {page: {from: 0, size: this.pageSize}};
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -143,7 +140,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
         dialogRef.componentInstance.create.subscribe((imageInput: any) => {
             this.apollo.mutate<any>({
                 mutation: gql`
-                    mutation CreateImage($input: CreateImageInput!){
+                    mutation CreateImage($input: ImageInput!){
                         createImage(input:$input) {
                           id
                           name
@@ -198,7 +195,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
         dialogRef.componentInstance.update.subscribe(async (data) => {
             this.apollo.mutate<any>({
                 mutation: gql`
-                    mutation UpdateImage($id: Int!,$input: UpdateImageInput!){
+                    mutation UpdateImage($id: Int!,$input: ImageInput!){
                         updateImage(id:$id,input:$input) {
                             id
                         }

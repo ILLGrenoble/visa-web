@@ -6,22 +6,6 @@ import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {SystemNotification} from '../../../core/graphql/types';
 
-interface SystemNotificationQueryResponse {
-    systemNotifications: [SystemNotification];
-}
-
-interface CreateSystemNotificationQueryResponse {
-    createSystemNotification: SystemNotification;
-}
-
-interface DeleteSystemNotificationQueryResponse {
-    deleteSystemNotification: SystemNotification;
-}
-
-interface UpdateSystemNotificationQueryResponse {
-    updateSystemNotification: SystemNotification;
-}
-
 @Component({
     selector: 'visa-admin-notifications',
     styleUrls: ['./notifications.component.scss'],
@@ -125,7 +109,10 @@ export class NotificationsComponent implements OnInit {
     }
 
     public onUpdate(notificationController: AbstractControl): void {
-        const inputNotification = {level: notificationController.get('level').value, message: notificationController.get('message').value};
+        const inputNotification = {
+            level: notificationController.get('level').value,
+            message: notificationController.get('message').value
+        };
         if (notificationController.get('id').value) {
             const id = notificationController.get('id').value;
             this.update(id, inputNotification).then(
@@ -149,7 +136,7 @@ export class NotificationsComponent implements OnInit {
     }
 
     public fetch(): Promise<SystemNotification[]> {
-        return this.apollo.watchQuery<SystemNotificationQueryResponse>({
+        return this.apollo.watchQuery<any>({
             query: gql`{
             systemNotifications {
                 id
@@ -166,9 +153,9 @@ export class NotificationsComponent implements OnInit {
     }
 
     public create(input): Promise<SystemNotification> {
-        return this.apollo.watchQuery<CreateSystemNotificationQueryResponse>({
+        return this.apollo.watchQuery<any>({
             query: gql`
-            mutation create($input: CreateSystemNotificationInput!) {
+            mutation create($input: SystemNotificationInput!) {
                 createSystemNotification(input: $input) {
                     id
                     level
@@ -184,9 +171,9 @@ export class NotificationsComponent implements OnInit {
     }
 
     public update(id, input): Promise<SystemNotification> {
-        return this.apollo.watchQuery<UpdateSystemNotificationQueryResponse>({
+        return this.apollo.watchQuery<any>({
             query: gql`
-            mutation update($id: Int!,$input: UpdateSystemNotificationInput!) {
+            mutation update($id: Int!,$input: SystemNotificationInput!) {
                 updateSystemNotification(id: $id,input:$input) {
                     id
                     level
@@ -202,7 +189,7 @@ export class NotificationsComponent implements OnInit {
     }
 
     public delete(id): Promise<SystemNotification> {
-        return this.apollo.watchQuery<DeleteSystemNotificationQueryResponse>({
+        return this.apollo.watchQuery<any>({
             query: gql`
               mutation delete($id: Int!) {
                 deleteSystemNotification(id: $id) {

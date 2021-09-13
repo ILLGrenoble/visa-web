@@ -1,9 +1,7 @@
 import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudFlavour, Flavour, FlavourLimit, Instrument, UpdateFlavourInput} from '../../../core/graphql/types';
+import {CloudFlavour, Flavour, FlavourLimit, Instrument, FlavourInput} from '../../../core/graphql/types';
 import {Apollo} from 'apollo-angular';
-import {map, takeUntil} from 'rxjs/operators';
-import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 
 @Component({
@@ -11,7 +9,7 @@ import {Subject} from 'rxjs';
     styleUrls: ['./flavour-update.component.scss'],
     templateUrl: './flavour-update.component.html',
 })
-export class FlavourUpdateComponent implements OnInit, OnDestroy {
+export class FlavourUpdateComponent implements OnInit {
 
     public update: EventEmitter<any> = new EventEmitter();
     public flavour: Flavour;
@@ -23,10 +21,7 @@ export class FlavourUpdateComponent implements OnInit, OnDestroy {
     public instruments: Instrument[];
     public selectedInstruments: Instrument[] = [];
 
-    private _destroy$: Subject<boolean> = new Subject<boolean>();
-
-    constructor(private apollo: Apollo,
-                public dialogRef: MatDialogRef<FlavourUpdateComponent>,
+    constructor(public dialogRef: MatDialogRef<FlavourUpdateComponent>,
                 @Inject(MAT_DIALOG_DATA) public data) {
     }
 
@@ -34,16 +29,18 @@ export class FlavourUpdateComponent implements OnInit, OnDestroy {
         this.flavour = this.data.flavour;
         this.cloudFlavours = this.data.cloudFlavours;
         this.flavourLimits = this.data.flavourLimits;
+        this.instruments = this.data.instruments;
+
+        const flavourInstrumentIds = this.flavourLimits
+            .filter(limit => limit.flavour.id === this.flavour.id)
+            .filter(limit => limit.objectType === 'INSTRUMENT')
+            .map(limit => limit.objectId);
+
+        this.selectedInstruments = this.instruments
+            .filter(instrument => (flavourInstrumentIds.includes(instrument.id)));
 
         this.memory = this.flavour.memory;
         this.cpu = this.flavour.cpu;
-
-        this.loadInstruments();
-    }
-
-    public ngOnDestroy(): void {
-        this._destroy$.next(true);
-        this._destroy$.unsubscribe();
     }
 
     public onCloudFlavourSelect(): void {
@@ -56,38 +53,13 @@ export class FlavourUpdateComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const input: UpdateFlavourInput = {
+        const input: FlavourInput = {
             name: this.flavour.name,
             computeId: this.flavour.computeId,
             cpu: this.flavour.cpu,
             memory: this.flavour.memory,
+            instrumentIds: this.selectedInstruments ? this.selectedInstruments.map(instrument => instrument.id) : []
         };
-        this.update.emit(input);
-    }
-
-    private loadInstruments(): void {
-        this.apollo.query<any>({
-            query: gql`
-                query instruments {
-                    instruments {
-                        id
-                        name
-                   }
-                }
-            `,
-        }).pipe(
-            map(({data}) => (data.instruments)),
-            takeUntil(this._destroy$)
-        ).subscribe((instruments) => {
-            this.instruments = instruments;
-
-            const flavourInstrumentIds = this.flavourLimits
-                .filter(limit => limit.flavour.id === this.flavour.id)
-                .filter(limit => limit.objectType === 'INSTRUMENT')
-                .map(limit => limit.objectId);
-
-            this.selectedInstruments = this.instruments
-                .filter(instrument => (flavourInstrumentIds.includes(instrument.id)));
-        });
+        this.update.emit({flavourInput: input});
     }
 }

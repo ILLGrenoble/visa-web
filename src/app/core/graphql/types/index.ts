@@ -53,30 +53,6 @@ export type CloudLimit = {
     totalCoresUsed: Scalars['Int'];
 };
 
-export type CreateFlavourInput = {
-    name: Scalars['String'];
-    memory: Scalars['Int'];
-    cpu: Scalars['Int'];
-    computeId: Scalars['String'];
-};
-
-export type CreateImageInput = {
-    name: Scalars['String'];
-    version?: Maybe<Scalars['String']>;
-    description?: Maybe<Scalars['String']>;
-    icon?: Maybe<Scalars['String']>;
-    computeId: Scalars['String'];
-    visible: Scalars['Boolean'];
-    deleted: Scalars['Boolean'];
-    protocolIds?: Maybe<Array<Scalars['Int']>>;
-    bootCommand?: Maybe<Scalars['String']>;
-    autologin?: Maybe<Scalars['String']>;
-};
-
-export type CreatePlanInput = {
-    imageId: Scalars['Int'];
-    flavourId: Scalars['Int'];
-};
 
 export type CreateRoleInput = {
     name: Scalars['String'];
@@ -125,6 +101,7 @@ export type Image = {
     __typename?: 'Image';
     id: Scalars['Int'];
     name: Scalars['String'];
+    version: Scalars['String'];
     description?: Maybe<Scalars['String']>;
     icon?: Maybe<Scalars['String']>;
     computeId: Scalars['String'];
@@ -133,6 +110,7 @@ export type Image = {
     deleted: Scalars['Boolean'];
     autologin: Maybe<Scalars['String']>;
     protocols?: Maybe<Array<Maybe<ImageProtocol>>>;
+    bootCommand: Scalars['String'];
 };
 
 export type ImageConnection = {
@@ -190,7 +168,7 @@ export type InstanceAttribute = {
     id: Scalars['Int'];
     name: Scalars['String'];
     value: Scalars['String'];
-}
+};
 
 export type InstanceSession = {
     __typename?: 'InstanceSession';
@@ -302,89 +280,8 @@ export type Mutation = {
     deleteInstance: Message;
     /** Update an instance termination date */
     updateInstanceTerminationDate: Message;
-    /** Create a role */
-    createRole: Role;
-    /** Delete a role */
-    deleteRole: Role;
 };
 
-
-export type MutationCreateImageArgs = {
-    input: CreateImageInput;
-};
-
-
-export type MutationUpdateImageArgs = {
-    id: Scalars['Int'];
-    input: UpdateImageInput;
-};
-
-
-export type MutationDeleteImageArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationCreateFlavourArgs = {
-    input: CreateFlavourInput;
-};
-
-
-export type MutationUpdateFlavourArgs = {
-    id: Scalars['Int'];
-    input: UpdateFlavourInput;
-};
-
-
-export type MutationDeleteFlavourArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationCreatePlanArgs = {
-    input?: Maybe<CreatePlanInput>;
-};
-
-
-export type MutationUpdatePlanArgs = {
-    id: Scalars['Int'];
-    input: UpdatePlanInput;
-};
-
-
-export type MutationDeletePlanArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationRebootInstanceArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationStartInstanceArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationShutdownInstanceArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationDeleteInstanceArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type MutationCreateRoleArgs = {
-    input: CreateRoleInput;
-};
-
-
-export type MutationDeleteRoleArgs = {
-    id: Scalars['Int'];
-};
 
 export type OrderBy = {
     name: Scalars['String'];
@@ -606,14 +503,15 @@ export type Role = {
     name: Scalars['String'];
 };
 
-export type UpdateFlavourInput = {
+export type FlavourInput = {
     name: Scalars['String'];
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
+    instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
 };
 
-export type UpdateImageInput = {
+export type ImageInput = {
     name: Scalars['String'];
     version?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
@@ -626,9 +524,14 @@ export type UpdateImageInput = {
     autologin?: Maybe<Scalars['String']>;
 };
 
-export type UpdatePlanInput = {
+export type PlanInput = {
     imageId: Scalars['Int'];
     flavourId: Scalars['Int'];
+};
+
+export type SystemNotificationInput = {
+    level: Scalars['String'];
+    message: Scalars['String'];
 };
 
 

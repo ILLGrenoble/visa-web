@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Inject,  OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Image} from '@core';
+import {Image} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-image-delete',

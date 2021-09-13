@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Flavour, Image, Plan} from '@core';
+import {Flavour, Image, Plan} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-plan-update',

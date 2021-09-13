@@ -1,7 +1,7 @@
-import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CloudFlavour} from '@core';
-import {CreateFlavourInput} from '../../../core/graphql/types';
+import {FlavourInput, Instrument} from '../../../core/graphql/types';
 
 @Component({
     selector: 'visa-admin-flavour-new',
@@ -18,11 +18,16 @@ export class FlavourNewComponent implements OnInit {
     public memory: number;
     public cpu: number;
 
-    constructor(public dialogRef: MatDialogRef<FlavourNewComponent>, @Inject(MAT_DIALOG_DATA) public data) {
+    public instruments: Instrument[];
+    public selectedInstruments: Instrument[] = [];
+
+    constructor(public dialogRef: MatDialogRef<FlavourNewComponent>,
+                @Inject(MAT_DIALOG_DATA) public data) {
     }
 
     public ngOnInit(): void {
         this.cloudFlavours = this.data.cloudFlavours;
+        this.instruments = this.data.instruments;
         this.memory = 0;
         this.cpu = 0;
     }
@@ -42,11 +47,12 @@ export class FlavourNewComponent implements OnInit {
     }
 
     public submit(): void {
-        const input: CreateFlavourInput = {
+        const input: FlavourInput = {
             name: this.nameInput,
             computeId: this.selectedCloudFlavourId,
             memory: this.memory,
-            cpu: this.cpu
+            cpu: this.cpu,
+            instrumentIds: this.selectedInstruments ? this.selectedInstruments.map(instrument => instrument.id) : []
         };
         this.create.emit(input);
     }

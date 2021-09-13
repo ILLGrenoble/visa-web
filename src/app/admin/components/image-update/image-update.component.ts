@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudImage, Image, Protocol} from '@core';
-import {UpdateImageInput} from '../../../core/graphql/types';
+import {CloudImage, Image, ImageInput, ImageProtocol} from '../../../core/graphql/types';
 
 @Component({
     selector: 'visa-admin-image-update',
@@ -11,9 +10,9 @@ import {UpdateImageInput} from '../../../core/graphql/types';
 export class ImageUpdateComponent implements OnInit {
 
     private _update: EventEmitter<any> = new EventEmitter();
-    private _protocols: Protocol[];
+    private _protocols: ImageProtocol[];
     private _cloudImages: CloudImage[];
-    private _selectedProtocols: Protocol[] = [];
+    private _selectedProtocols: ImageProtocol[] = [];
     private _image: Image;
     private _imageIcons;
     private _autologin: string;
@@ -26,11 +25,11 @@ export class ImageUpdateComponent implements OnInit {
         this._update = value;
     }
 
-    get protocols(): Protocol[] {
+    get protocols(): ImageProtocol[] {
         return this._protocols;
     }
 
-    set protocols(value: Protocol[]) {
+    set protocols(value: ImageProtocol[]) {
         this._protocols = value;
     }
 
@@ -42,11 +41,11 @@ export class ImageUpdateComponent implements OnInit {
         this._cloudImages = value;
     }
 
-    get selectedProtocols(): Protocol[] {
+    get selectedProtocols(): ImageProtocol[] {
         return this._selectedProtocols;
     }
 
-    set selectedProtocols(value: Protocol[]) {
+    set selectedProtocols(value: ImageProtocol[]) {
         this._selectedProtocols = value;
     }
 
@@ -95,8 +94,7 @@ export class ImageUpdateComponent implements OnInit {
         this.selectedProtocols.forEach((protocol) => {
             selectedProtocolsId.push(protocol.id);
         });
-        const autologin = this.image.autologin? this.image.autologin:null;
-        const imageInput: UpdateImageInput = {
+        const imageInput: ImageInput = {
             name: this.image.name,
             version: this.image.version,
             description: this.image.description,
@@ -105,7 +103,7 @@ export class ImageUpdateComponent implements OnInit {
             protocolIds: selectedProtocolsId,
             visible: this.image.visible,
             bootCommand:  this.image.bootCommand,
-            autologin: autologin,
+            autologin: this.image.autologin,
             deleted: false
         };
         this._update.emit(imageInput);

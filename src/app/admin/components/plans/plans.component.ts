@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
-import {Flavour, Image, PageInfo, Pagination, Plan} from '../../../core/graphql/types';
+import {Flavour, Image, Plan} from '../../../core/graphql/types';
 import {PlanNewComponent} from '../plan-new';
 import {PlanUpdateComponent} from '../plan-update';
 import gql from 'graphql-tag';
@@ -20,15 +20,11 @@ export class PlansComponent implements OnInit, OnDestroy {
 
     @ViewChild('datagridRef') public datagrid: any;
 
-    public pageInfo: PageInfo;
-    public pageSize = 100;
     public plans: Plan[] = [];
 
     public loading: boolean;
     private images: Image[] = [];
     private flavours: Flavour[] = [];
-
-    private state = {page: {from: 0, size: this.pageSize}};
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -134,7 +130,7 @@ export class PlansComponent implements OnInit, OnDestroy {
         dialogRef.componentInstance.create.subscribe((planInput: any) => {
             this.apollo.mutate<any>({
                 mutation: gql`
-                    mutation CreatePlan($input: CreatePlanInput!){
+                    mutation CreatePlan($input: PlanInput!){
                         createPlan(input:$input) {
                             id
                             image {
@@ -178,7 +174,7 @@ export class PlansComponent implements OnInit, OnDestroy {
         dialogRef.componentInstance.update.subscribe((data) => {
             this.apollo.mutate<any>({
                 mutation: gql`
-                    mutation UpdatePlan($id: Int!,$input: UpdatePlanInput!){
+                    mutation UpdatePlan($id: Int!,$input: PlanInput!){
                         updatePlan(id:$id,input:$input) {
                             id
                             image {
