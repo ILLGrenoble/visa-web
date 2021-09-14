@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
@@ -18,8 +18,6 @@ import {Subject} from 'rxjs';
 })
 
 export class FlavoursComponent implements OnInit, OnDestroy {
-
-    @ViewChild('datagridRef') public datagrid: any;
 
     private _cloudFlavours: CloudFlavour[] = [];
     private _flavours: Flavour[] = [];

@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudFlavour, FlavourInput, Instrument} from '../../../core/graphql/types';
+import {CloudFlavour, FlavourInput, Instrument} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-flavour-new',
