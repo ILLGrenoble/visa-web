@@ -47,6 +47,8 @@ import {
     PlansComponent,
     PlanUpdateComponent,
     SessionsComponent,
+    SecurityGroupsComponent,
+    SecurityGroupFilterNewComponent,
     UserSearchComponent,
     UsersComponent,
     UsersFilterComponent
@@ -102,6 +104,8 @@ import {
         NotificationsComponent,
         UserSearchComponent,
         LatestActiveUsersBoxComponent,
+        SecurityGroupsComponent,
+        SecurityGroupFilterNewComponent,
         UsersComponent,
         UsersFilterComponent
     ],
@@ -116,6 +120,7 @@ import {
         FlavourUpdateComponent,
         PlanNewComponent,
         PlanUpdateComponent,
+        SecurityGroupFilterNewComponent
     ],
 })
 export class AdminModule {

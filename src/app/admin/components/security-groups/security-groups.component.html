@@ -1,0 +1,76 @@
+<visa-admin-header></visa-admin-header>
+<visa-cloud-admin-header></visa-cloud-admin-header>
+
+<div class="admin-container">
+    <div class="admin-container--main">
+
+        <div class="clr-row">
+            <div class="clr-col-8">
+                <div class="filters-box">
+                    <div class="filters-box-header">
+                        <h3 class="filters-box-title">Security Group Filters </h3>
+                        <button type="button" class="filters-box-action-btn" (click)="onCreate()">
+                            New user role filter
+                        </button>
+                        <button type="button" class="filters-box-action-btn" (click)="onCreate()">
+                            New instrument filter
+                        </button>
+                    </div>
+                    <div class="filters-box-body">
+                        <clr-datagrid [clrDgLoading]="loading">
+                            <clr-dg-column [clrDgField]="'securityGroup.name'">Name</clr-dg-column>
+                            <clr-dg-column [clrDgField]="'objectType'">Object Type</clr-dg-column>
+                            <clr-dg-column [clrDgField]="'objectId'">Object ID</clr-dg-column>
+                            <clr-dg-column [clrDgField]="'objectName'">Object Name</clr-dg-column>
+                            <clr-dg-column>Actions</clr-dg-column>
+                            <clr-dg-row *clrDgItems="let securityGroupFilter of securityGroupFilters">
+                                <clr-dg-cell>{{securityGroupFilter.securityGroup.name}}</clr-dg-cell>
+                                <clr-dg-cell>{{securityGroupFilter.objectType}}</clr-dg-cell>
+                                <clr-dg-cell>{{securityGroupFilter.objectId}}</clr-dg-cell>
+                                <clr-dg-cell>
+                                    <ng-container *ngIf="!securityGroupFilter.objectName">
+                                        <span class="badge badge-danger">Object not found</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="securityGroupFilter.objectName">
+                                        {{securityGroupFilter.objectName}}
+                                    </ng-container>
+                                </clr-dg-cell>
+                                <clr-dg-cell>
+                                    <button (click)="onDelete(securityGroupFilter)"
+                                            class="btn btn-warning-outline btn-sm">
+                                        Delete
+                                    </button>
+                                </clr-dg-cell>
+                            </clr-dg-row>
+                            <!--                    <clr-dg-footer>-->
+
+                            <!--                        <div class="btn-group btn-outline-primary btn-sm">-->
+                            <!--                            <button class="btn" type="button" (click)="onCreate()">New instrument filter</button>-->
+                            <!--                            <button class="btn" type="button" (click)="onCreate()">New user role filter</button>-->
+                            <!--                        </div>-->
+                            <!--                        <div class="btn-group btn-outline-primary btn-sm">-->
+                            <!--                            <button class="btn" type="button" (click)="onRefresh()">-->
+                            <!--                                <clr-icon shape="refresh"></clr-icon>-->
+                            <!--                            </button>-->
+                            <!--                        </div>-->
+                            <!--                    </clr-dg-footer>-->
+                        </clr-datagrid>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clr-col-4">
+                <div class="filters-box">
+                    <div class="filters-box-header">
+                        <h3 class="filters-box-title">Security Groups </h3>
+                    </div>
+                    <div class="filters-box-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

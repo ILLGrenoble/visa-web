@@ -2,18 +2,29 @@
     <div class="admin-header-container">
         <div class="admin-tabs">
             <div class="admin-tabs-body">
-                <a href="" class="admin-tab" routerLink="/admin/cloud/images" routerLinkActive="admin-tab--selected">
+                <a class="admin-tab" routerLink="/admin/cloud/images" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="image" class="is-solid"></clr-icon>
                     Images
                 </a>
-                <a href="" class="admin-tab" routerLink="/admin/cloud/flavours" routerLinkActive="admin-tab--selected">
+                <a class="admin-tab" routerLink="/admin/cloud/flavours" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="organization" class="is-solid"></clr-icon>
                     Flavours
                 </a>
-                <a href="" class="admin-tab" routerLink="/admin/cloud/plans" routerLinkActive="admin-tab--selected">
+                <a class="admin-tab" routerLink="/admin/cloud/plans" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="map" class="is-solid"></clr-icon>
                     Plans
                 </a>
+                <a class="admin-tab" routerLink="/admin/cloud/security_groups" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="lock" class="is-solid"></clr-icon>
+                    Security Groups
+                </a>
+
+            </div>
+            <div class="admin-tabs-action" *ngIf="isRouteActive('/admin/cloud/security_groups')">
+                <button class="admin-tabs-btn">
+                    <clr-icon shape="plus"></clr-icon>
+                    New security group filter
+                </button>
             </div>
         </div>
     </div>
