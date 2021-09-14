@@ -66,7 +66,6 @@ export class PlansComponent implements OnInit, OnDestroy {
                         version
                         description
                         visible
-                        deleted
                         icon
                         computeId
                         protocols{
@@ -101,7 +100,6 @@ export class PlansComponent implements OnInit, OnDestroy {
                             icon
                             computeId
                             visible
-                            deleted
                         }
                         flavour {
                             id
@@ -140,7 +138,6 @@ export class PlansComponent implements OnInit, OnDestroy {
                                 icon
                                 computeId
                                 visible
-                                deleted
                             }
                             flavour {
                                 id
@@ -184,7 +181,6 @@ export class PlansComponent implements OnInit, OnDestroy {
                                 icon
                                 computeId
                                 visible
-                                deleted
                             }
                             flavour {
                                 id

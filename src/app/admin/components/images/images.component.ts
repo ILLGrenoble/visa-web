@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CloudImage, Image, ImageProtocol} from 'app/core/graphql/types';
@@ -19,7 +19,6 @@ import {map, takeUntil} from 'rxjs/operators';
 
 export class ImagesComponent implements OnInit, OnDestroy {
 
-    @ViewChild('datagridRef') public datagrid: any;
     public images: Image[] = [];
     public imageCloudImageName: string[] = [];
     public loading: boolean;
@@ -60,7 +59,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
                         version
                         description
                         visible
-                        deleted
                         icon
                         computeId
                         protocols{
@@ -97,7 +95,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
                 }
             });
             this.loading = false;
-            setTimeout(() => this.datagrid.resize());
         });
     }
 
@@ -113,7 +110,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
                         version
                         description
                         visible
-                        deleted
                         icon
                         computeId
                         protocols{
@@ -137,7 +133,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
             width: '900px',
             data: {imageIcons: this.imageIcons, cloudImages: this.cloudImages, protocols: this.protocols},
         });
-        dialogRef.componentInstance.create.subscribe((imageInput: any) => {
+        dialogRef.componentInstance.onCreate$.subscribe((imageInput: any) => {
             this.apollo.mutate<any>({
                 mutation: gql`
                     mutation CreateImage($input: ImageInput!){
@@ -167,7 +163,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
         const dialogRef = this.dialog.open(ImageDeleteComponent, {
             width: '300px', data: {image: this.images.find((x) => x.id === imageId)},
         });
-        dialogRef.componentInstance.delete.subscribe(() => {
+        dialogRef.componentInstance.onDelete$.subscribe(() => {
             this.apollo.mutate<any>({
                 mutation: gql`
                     mutation DeleteImage($id: Int!){
@@ -185,14 +181,16 @@ export class ImagesComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onUpdate(image): void {
+    public onUpdate(image: Image): void {
         const dialogRef = this.dialog.open(ImageUpdateComponent, {
             width: '900px', data: {
-                image: cloneDeep(image), imageIcons: this.imageIcons,
-                cloudImages: this.cloudImages, protocols: this.protocols,
+                image: image,
+                imageIcons: this.imageIcons,
+                cloudImages: this.cloudImages,
+                protocols: this.protocols,
             },
         });
-        dialogRef.componentInstance.update.subscribe(async (data) => {
+        dialogRef.componentInstance.onUpdate$.subscribe(async (data) => {
             this.apollo.mutate<any>({
                 mutation: gql`
                     mutation UpdateImage($id: Int!,$input: ImageInput!){

@@ -3,12 +3,12 @@
     <form clrForm #f="ngForm">
         <clr-input-container>
             <label for="name">Name</label>
-            <input clrInput id="name" name="name" type="text" class="form-control" [(ngModel)]="nameInput"
-                   #name="ngModel"
+            <input clrInput id="name" name="name" type="text" class="form-control" [(ngModel)]="imageInput.name"
+                   #imageName="ngModel"
                    required>
-            <div *ngIf="name.invalid && (name.dirty || name.touched)"
+            <div *ngIf="imageName.invalid && (imageName.dirty || imageName.touched)"
                  class="alert alert-danger">
-                <div *ngIf="name.errors.required">
+                <div *ngIf="imageName.errors.required">
                     Name is required.
                 </div>
             </div>
@@ -16,29 +16,29 @@
         <clr-input-container>
             <label for="description">Description</label>
             <input clrInput id="description" name="description" type="text" class="form-control"
-                   [(ngModel)]="descriptionInput">
+                   [(ngModel)]="imageInput.description">
         </clr-input-container>
         <clr-input-container>
             <label for="version">Version</label>
-            <input clrInput id="version" name="version" type="text" class="form-control" [(ngModel)]="versionInput">
+            <input clrInput id="version" name="version" type="text" class="form-control" [(ngModel)]="imageInput.version">
         </clr-input-container>
         <clr-select-container>
             <label for="icon">Icon</label>
-            <select clrSelect name="icon" class="selector" id="icon" [(ngModel)]="selectedIcon" required>
+            <select clrSelect name="icon" class="selector" id="icon" [(ngModel)]="imageInput.icon" required>
                 <option *ngFor="let imageIcon of imageIcons"
                         [value]="imageIcon">{{imageIcon}}</option>
             </select>
         </clr-select-container>
         <clr-select-container>
             <label for="cloudImages">Cloud Image</label>
-            <select clrSelect name="cloudImages" class="selector" id="cloudImages" [(ngModel)]="selectedCloudImageId" required>
+            <select clrSelect name="cloudImages" class="selector" id="cloudImages" [(ngModel)]="imageInput.computeId" required>
                 <option *ngFor="let cloudImage of cloudImages"
                         [value]="cloudImage.id">{{cloudImage.name}}</option>
             </select>
         </clr-select-container>
         <clr-select-container>
             <label for="autologin">Autologin</label>
-            <select clrSelect name="autologin" class="selector" id="autologin" [(ngModel)]="autologin">
+            <select clrSelect name="autologin" class="selector" id="autologin" [(ngModel)]="imageInput.autologin">
                 <option value=""></option>
                 <option value="VISA_PAM">VISA PAM</option>
             </select>
@@ -58,17 +58,17 @@
         </clr-combobox-container>
         <clr-input-container>
             <label for="visible">Visible</label>
-            <input clrInput id="visible" name="visible" type="checkbox" clrToggle [(ngModel)]="imageVisible"/>
+            <input clrInput id="visible" name="visible" type="checkbox" clrToggle [(ngModel)]="imageInput.visible"/>
         </clr-input-container>
         <clr-textarea-container>
             <label for="bootCommand">Boot command</label>
-            <textarea clrTextarea name="bootCommand" rows="10" cols="80" [(ngModel)]="bootCommand"
+            <textarea clrTextarea name="bootCommand" rows="10" cols="80" [(ngModel)]="imageInput.bootCommand"
                       id="bootCommand"></textarea>
         </clr-textarea-container>
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
     <button mat-button (click)="submit()" [disabled]="f.invalid">Create
     </button>
 </div>

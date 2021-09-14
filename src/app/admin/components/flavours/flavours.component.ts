@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
-import {CloudFlavour, Flavour, FlavourLimit, Instrument} from '../../../core/graphql/types';
+import {CloudFlavour, Flavour, FlavourLimit, Instrument} from '../../../core/graphql';
 import {FlavourNewComponent} from '../flavour-new';
 import {FlavourUpdateComponent} from '../flavour-update';
 import {FlavourDeleteComponent} from '../flavour-delete';

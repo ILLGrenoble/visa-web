@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudImage, Image, ImageInput, ImageProtocol} from '../../../core/graphql/types';
+import {CloudImage, ImageInput, ImageProtocol} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-image-update',
@@ -9,36 +9,31 @@ import {CloudImage, Image, ImageInput, ImageProtocol} from '../../../core/graphq
 })
 export class ImageUpdateComponent implements OnInit {
 
-    private _update: EventEmitter<any> = new EventEmitter();
+    private _onUpdate$: EventEmitter<any> = new EventEmitter();
+
     private _protocols: ImageProtocol[];
     private _cloudImages: CloudImage[];
+
+    private _imageInput: ImageInput;
+
     private _selectedProtocols: ImageProtocol[] = [];
-    private _image: Image;
+
     private _imageIcons;
-    private _autologin: string;
 
-    get update(): EventEmitter<any> {
-        return this._update;
-    }
-
-    set update(value: EventEmitter<any>) {
-        this._update = value;
+    get onUpdate$(): EventEmitter<any> {
+        return this._onUpdate$;
     }
 
     get protocols(): ImageProtocol[] {
         return this._protocols;
     }
 
-    set protocols(value: ImageProtocol[]) {
-        this._protocols = value;
-    }
-
     get cloudImages(): CloudImage[] {
         return this._cloudImages;
     }
 
-    set cloudImages(value: CloudImage[]) {
-        this._cloudImages = value;
+    get imageInput(): ImageInput {
+        return this._imageInput;
     }
 
     get selectedProtocols(): ImageProtocol[] {
@@ -49,64 +44,44 @@ export class ImageUpdateComponent implements OnInit {
         this._selectedProtocols = value;
     }
 
-    get image(): Image {
-        return this._image;
-    }
-
-    set image(value: Image) {
-        this._image = value;
-    }
-
-    get imageIcons(): any {
+    get imageIcons(): string[] {
         return this._imageIcons;
     }
 
-    set imageIcons(value) {
-        this._imageIcons = value;
-    }
-
-    get autologin(): string {
-        return this._autologin;
-    }
-
-    set autologin(value: string) {
-        this._autologin = value;
-    }
-
-    constructor(public dialogRef: MatDialogRef<ImageUpdateComponent>, @Inject(MAT_DIALOG_DATA) public data) {
+    constructor(private dialogRef: MatDialogRef<ImageUpdateComponent>,
+                @Inject(MAT_DIALOG_DATA) private _data) {
     }
 
     public ngOnInit(): void {
-        this.image = this.data.image;
-        this.imageIcons = this.data.imageIcons;
-        this.protocols = this.data.protocols;
-        this.cloudImages = this.data.cloudImages;
-        this.selectedProtocols = this.data.image.protocols;
-        this.autologin = this.data.autologin;
+        const image = this._data.image;
+        this._imageInput = {
+            name: image.name,
+            version: image.version,
+            description: image.description,
+            icon : image.icon,
+            computeId : image.computeId,
+            visible: image.visible,
+            bootCommand: image.bootCommand,
+            autologin: image.autologin
+        };
+        this._imageIcons = this._data.imageIcons;
+        this._protocols = this._data.protocols;
+        this._cloudImages = this._data.cloudImages;
+
+        this._selectedProtocols = [...this._data.image.protocols];
     }
 
-    public onNoClick(): void {
+    public onCancel(): void {
         this.dialogRef.close();
     }
 
     public submit(): void {
         const selectedProtocolsId: number[] = [];
-        this.selectedProtocols.forEach((protocol) => {
+        this._selectedProtocols.forEach((protocol) => {
             selectedProtocolsId.push(protocol.id);
         });
-        const imageInput: ImageInput = {
-            name: this.image.name,
-            version: this.image.version,
-            description: this.image.description,
-            icon : this.image.icon,
-            computeId : this.image.computeId,
-            protocolIds: selectedProtocolsId,
-            visible: this.image.visible,
-            bootCommand:  this.image.bootCommand,
-            autologin: this.image.autologin,
-            deleted: false
-        };
-        this._update.emit(imageInput);
+        this._imageInput.protocolIds = selectedProtocolsId;
+        this._onUpdate$.emit(this._imageInput);
     }
 
 }

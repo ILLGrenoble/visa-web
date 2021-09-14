@@ -9,24 +9,33 @@ import {Image} from '../../../core/graphql';
 })
 export class ImageDeleteComponent implements OnInit {
 
-    public delete: EventEmitter<any> = new EventEmitter();
+    private _onDelete$: EventEmitter<any> = new EventEmitter();
 
-    public image: Image;
+    private _image: Image;
 
-    constructor(public dialogRef: MatDialogRef<ImageDeleteComponent>, @Inject(MAT_DIALOG_DATA) private data) {
+    get onDelete$(): EventEmitter<any> {
+        return this._onDelete$;
+    }
+
+    get image(): Image {
+        return this._image;
+    }
+
+    constructor(private _dialogRef: MatDialogRef<ImageDeleteComponent>,
+                @Inject(MAT_DIALOG_DATA) private _data) {
     }
 
     public ngOnInit(): void {
-        this.image = this.data.image;
+        this._image = this._data.image;
     }
 
-    public onNoClick(): void {
-        this.dialogRef.close();
+    public onCancel(): void {
+        this._dialogRef.close();
     }
 
     public onDelete(): void {
-        this.delete.emit();
-        this.dialogRef.close();
+        this._onDelete$.emit();
+        this._dialogRef.close();
     }
 
 }
