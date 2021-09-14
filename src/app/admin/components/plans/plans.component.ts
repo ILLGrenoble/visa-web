@@ -18,24 +18,29 @@ import {Subject} from 'rxjs';
 
 export class PlansComponent implements OnInit, OnDestroy {
 
-    @ViewChild('datagridRef') public datagrid: any;
+    private _plans: Plan[] = [];
 
-    public plans: Plan[] = [];
-
-    public loading: boolean;
-    private images: Image[] = [];
-    private flavours: Flavour[] = [];
+    private _loading: boolean;
+    private _images: Image[] = [];
+    private _flavours: Flavour[] = [];
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
-    constructor(private apollo: Apollo,
-                private snackBar: MatSnackBar,
-                private dialog: MatDialog) {
+    get plans(): Plan[] {
+        return this._plans;
+    }
+
+    get loading(): boolean {
+        return this._loading;
+    }
+
+    constructor(private _apollo: Apollo,
+                private _snackBar: MatSnackBar,
+                private _dialog: MatDialog) {
     }
 
     public ngOnInit(): void {
         this.loadPlansImagesFlavours();
-        setTimeout(() => this.datagrid.resize());
     }
 
     public ngOnDestroy(): void {
@@ -48,9 +53,9 @@ export class PlansComponent implements OnInit, OnDestroy {
     }
 
     public loadPlansImagesFlavours(): void {
-        this.loading = true;
+        this._loading = true;
 
-        this.apollo.query<any>({
+        this._apollo.query<any>({
             query: gql`
                 query AllFlavours {
                     flavours {
@@ -79,15 +84,15 @@ export class PlansComponent implements OnInit, OnDestroy {
             map(({data}) => ({flavours: data.flavours, images: data.images})),
             takeUntil(this._destroy$)
         ).subscribe(({flavours, images}) => {
-            this.flavours = flavours;
-            this.images = images;
-            this.loading = false;
+            this._flavours = flavours;
+            this._images = images;
+            this._loading = false;
             this.loadPlans();
         });
     }
 
     public loadPlans(): void {
-        this.apollo.query<any>({
+        this._apollo.query<any>({
             query: gql`
                 query allPlans {
                     plans {
@@ -116,17 +121,17 @@ export class PlansComponent implements OnInit, OnDestroy {
             map(({data}) => (data.plans)),
             takeUntil(this._destroy$)
         ).subscribe(plans => {
-            this.plans = plans;
+            this._plans = plans;
         });
     }
 
     public onCreate(): void {
-        const dialogRef = this.dialog.open(PlanNewComponent, {
+        const dialogRef = this._dialog.open(PlanNewComponent, {
             width: '800px',
-            data: {images: this.images, flavours: this.flavours},
+            data: {images: this._images, flavours: this._flavours},
         });
-        dialogRef.componentInstance.create.subscribe((planInput: any) => {
-            this.apollo.mutate<any>({
+        dialogRef.componentInstance.onCreate$.subscribe((planInput: any) => {
+            this._apollo.mutate<any>({
                 mutation: gql`
                     mutation CreatePlan($input: PlanInput!){
                         createPlan(input:$input) {
@@ -163,13 +168,13 @@ export class PlansComponent implements OnInit, OnDestroy {
     }
 
     public onUpdate(plan): void {
-        const dialogRef = this.dialog.open(PlanUpdateComponent, {
+        const dialogRef = this._dialog.open(PlanUpdateComponent, {
             width: '800px', data: {
-                plan: cloneDeep(plan), images: this.images, flavours: this.flavours,
+                plan: cloneDeep(plan), images: this._images, flavours: this._flavours,
             },
         });
-        dialogRef.componentInstance.update.subscribe((data) => {
-            this.apollo.mutate<any>({
+        dialogRef.componentInstance.onUpdate$.subscribe((data) => {
+            this._apollo.mutate<any>({
                 mutation: gql`
                     mutation UpdatePlan($id: Int!,$input: PlanInput!){
                         updatePlan(id:$id,input:$input) {
@@ -206,7 +211,7 @@ export class PlansComponent implements OnInit, OnDestroy {
     }
 
     private planSnackBar(message): void {
-        this.snackBar.open(message, 'OK', {
+        this._snackBar.open(message, 'OK', {
             duration: 4000,
         });
 

@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Flavour, Image, Plan} from '../../../core/graphql';
+import {Flavour, Image, PlanInput} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-plan-update',
@@ -9,31 +9,49 @@ import {Flavour, Image, Plan} from '../../../core/graphql';
 })
 export class PlanUpdateComponent implements OnInit {
 
-    public update: EventEmitter<any> = new EventEmitter();
+    private _onUpdate$: EventEmitter<any> = new EventEmitter();
 
-    public plan: Plan;
-    public images: Image[];
-    public flavours: Flavour[];
+    private _planInput: PlanInput;
+    private _images: Image[];
+    private _flavours: Flavour[];
 
-    constructor(public dialogRef: MatDialogRef<PlanUpdateComponent>, @Inject(MAT_DIALOG_DATA) public data) {
+    get onUpdate$(): EventEmitter<any> {
+        return this._onUpdate$;
+    }
+
+    get planInput(): PlanInput {
+        return this._planInput;
+    }
+
+    get images(): Image[] {
+        return this._images;
+    }
+
+    get flavours(): Flavour[] {
+        return this._flavours;
+    }
+
+    constructor(private _dialogRef: MatDialogRef<PlanUpdateComponent>,
+                @Inject(MAT_DIALOG_DATA) private _data) {
     }
 
     public ngOnInit(): void {
-        this.plan = this.data.plan;
-        this.images = this.data.images;
-        this.flavours = this.data.flavours;
+        const plan = this._data.plan;
+        this._planInput = {
+            imageId: plan.image.id,
+            flavourId: plan.flavour.id,
+            preset: plan.preset
+        };
+        this._images = this._data.images;
+        this._flavours = this._data.flavours;
     }
 
-    public onNoClick(): void {
-        this.dialogRef.close();
+    public onCancel(): void {
+        this._dialogRef.close();
     }
 
-    public submit(): void {
-        const input: any = {};
-        input.imageId = this.plan.image.id;
-        input.flavourId = this.plan.flavour.id;
-        input.preset = this.plan.preset;
-        this.update.emit(input);
+    public onUpdate(): void {
+        this._onUpdate$.emit(this._planInput);
     }
 
 }

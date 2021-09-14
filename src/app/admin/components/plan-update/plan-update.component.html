@@ -9,7 +9,7 @@
                        bindValue="id"
                        placeholder="Choose an image"
                        required
-                       [(ngModel)]="plan.image.id">
+                       [(ngModel)]="planInput.imageId">
                 <ng-template ng-label-tmp let-item="item">
                     <span >{{ item.name + ' (' + item.version + ')' }}</span>
                 </ng-template>
@@ -26,17 +26,17 @@
                        bindValue="id"
                        placeholder="Choose a flavour"
                        required
-                       [(ngModel)]="plan.flavour.id">
+                       [(ngModel)]="planInput.flavourId">
             </ng-select>
         </div>
         <clr-input-container>
             <label for="preset">Preset</label>
-            <input clrInput id="preset" name="preset" type="checkbox" clrToggle [(ngModel)]="plan.preset"/>
+            <input clrInput id="preset" name="preset" type="checkbox" clrToggle [(ngModel)]="planInput.preset"/>
         </clr-input-container>
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-    <button mat-button (click)="onNoClick()">Cancel</button>
-    <button mat-button  (click)="submit()" [disabled]="f.invalid">Update
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button  (click)="onUpdate()" [disabled]="f.invalid">Update
     </button>
 </div>

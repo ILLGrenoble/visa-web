@@ -525,6 +525,7 @@ export type ImageInput = {
 export type PlanInput = {
     imageId: Scalars['Int'];
     flavourId: Scalars['Int'];
+    preset: Scalars['Boolean'];
 };
 
 export type SystemNotificationInput = {

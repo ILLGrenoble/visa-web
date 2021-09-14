@@ -9,7 +9,7 @@
                        bindValue="id"
                        placeholder="Choose an image "
                        required
-                       [(ngModel)]="selectedImage">
+                       [(ngModel)]="selectedImageId">
                 <ng-template ng-label-tmp let-item="item">
                     <span >{{ item.name + ' (' + item.version + ')' }}</span>
                 </ng-template>
@@ -26,7 +26,7 @@
                        bindValue="id"
                        placeholder="Choose a flavour"
                        required
-                       [(ngModel)]="selectedFlavour">
+                       [(ngModel)]="selectedFlavourId">
             </ng-select>
         </div>
         <clr-input-container>
@@ -36,7 +36,7 @@
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-    <button mat-button (click)="onNoClick()">Cancel</button>
-    <button mat-button  (click)="submit()" [disabled]="f.invalid">Create
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onCreate()" [disabled]="f.invalid">Create
     </button>
 </div>
