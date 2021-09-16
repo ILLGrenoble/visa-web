@@ -9,21 +9,35 @@
                 <div class="filters-box">
                     <div class="filters-box-header">
                         <h3 class="filters-box-title">Security Group Filters </h3>
-                        <button type="button" class="filters-box-action-btn" (click)="onCreate()">
+                        <button type="button" class="filters-box-action-btn" (click)="onCreate('ROLE')">
                             New user role filter
                         </button>
-                        <button type="button" class="filters-box-action-btn" (click)="onCreate()">
+                        <button type="button" class="filters-box-action-btn" (click)="onCreate('INSTRUMENT')">
                             New instrument filter
                         </button>
                     </div>
                     <div class="filters-box-body">
+                        <div class="alert alert-info" role="alert">
+                            <div class="alert-items">
+                                <div class="alert-item static">
+                                    <div class="alert-icon-wrapper">
+                                        <clr-icon class="alert-icon" shape="info-circle"></clr-icon>
+                                    </div>
+                                    <span class="alert-text">
+                                        Security groups are applied to instances upon creation and are dependent on the logged-in user's role and the associated experiments.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <clr-datagrid [clrDgLoading]="loading">
+                            <clr-dg-column [clrDgField]="'id'">ID</clr-dg-column>
                             <clr-dg-column [clrDgField]="'securityGroup.name'">Name</clr-dg-column>
                             <clr-dg-column [clrDgField]="'objectType'">Object Type</clr-dg-column>
                             <clr-dg-column [clrDgField]="'objectId'">Object ID</clr-dg-column>
                             <clr-dg-column [clrDgField]="'objectName'">Object Name</clr-dg-column>
                             <clr-dg-column>Actions</clr-dg-column>
                             <clr-dg-row *clrDgItems="let securityGroupFilter of securityGroupFilters">
+                                <clr-dg-cell>{{securityGroupFilter.id}}</clr-dg-cell>
                                 <clr-dg-cell>{{securityGroupFilter.securityGroup.name}}</clr-dg-cell>
                                 <clr-dg-cell>{{securityGroupFilter.objectType}}</clr-dg-cell>
                                 <clr-dg-cell>{{securityGroupFilter.objectId}}</clr-dg-cell>

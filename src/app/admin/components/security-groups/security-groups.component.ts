@@ -83,9 +83,18 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
         this._refresh$.next();
     }
 
-    public onCreate(): void {
+    public onCreate(objectType: string): void {
         const dialogRef = this.dialog.open(SecurityGroupFilterNewComponent, {
             width: '600px',
+            data: {
+                objectType
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.snackBar.open('Successfully created new security group filter rule', 'OK', { duration: 4000});
+                this._refresh$.next();
+            }
         });
     }
 
