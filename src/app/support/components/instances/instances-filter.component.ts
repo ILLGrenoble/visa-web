@@ -23,7 +23,6 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
-
     public get destroy$(): Subject<boolean> {
         return this._destroy$;
     }

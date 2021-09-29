@@ -1,5 +1,4 @@
 import {Routes} from '@angular/router';
-import {AuthenticationGuard} from '@core';
 import {AuthenticatedContainerComponent} from '@shared';
 import {
     DashboardComponent,
@@ -9,9 +8,11 @@ import {
     InstanceComponent,
     InstancesComponent,
     NotificationsComponent,
-    PlansComponent, UsersComponent,
+    PlansComponent,
+    SecurityGroupsOverviewComponent,
+    UsersComponent,
+    SessionsComponent
 } from './components';
-import {SessionsComponent} from './components/sessions';
 
 export const ROUTES: Routes = [
     {
@@ -37,6 +38,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'cloud/plans', component: PlansComponent,
+            },
+            {
+                path: 'cloud/security_groups', component: SecurityGroupsOverviewComponent,
             },
             {
                 path: 'instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],

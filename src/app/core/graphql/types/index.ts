@@ -584,3 +584,22 @@ export type SystemNotification = {
     message: Scalars['String'];
 };
 
+export type SecurityGroup = {
+    __typename?: 'SecurityGroup';
+    id: Scalars['Int'];
+    name: Scalars['String'];
+};
+
+export type SecurityGroupFilter = {
+    __typename?: 'SecurityGroupFilter';
+    id: Scalars['Int'];
+    securityGroup: SecurityGroup;
+    objectId: Scalars['Int'];
+    objectType: Scalars['String'];
+    objectName: Maybe<Scalars['String']>;
+};
+
+export type CloudSecurityGroup = {
+    name: Scalars['String'];
+    integration: Maybe<SecurityGroup>;
+};

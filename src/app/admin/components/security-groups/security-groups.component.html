@@ -1,0 +1,23 @@
+<div class="filters-box-header">
+    <h3 class="filters-box-title">Security Groups</h3>
+    <button type="button" class="filters-box-action-btn" (click)="onImport()">
+        Import a cloud security group
+    </button>
+</div>
+<div class="filters-box-body">
+    <clr-datagrid [clrDgLoading]="loading">
+        <clr-dg-column>Security Group</clr-dg-column>
+        <clr-dg-column>Actions</clr-dg-column>
+        <clr-dg-row *clrDgItems="let securityGroup of securityGroups">
+            <clr-dg-cell>{{securityGroup.name}}</clr-dg-cell>
+            <clr-dg-cell>
+                <button (click)="onDelete(securityGroup)"
+                        class="btn btn-danger-outline btn-sm">
+                    <clr-icon shape="trash"></clr-icon>
+                    Delete
+                </button>
+            </clr-dg-cell>
+        </clr-dg-row>
+        <clr-dg-placeholder>No configured security groups</clr-dg-placeholder>
+    </clr-datagrid>
+</div>

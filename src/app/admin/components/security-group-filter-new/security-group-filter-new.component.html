@@ -1,0 +1,48 @@
+<h1 mat-dialog-title>Create security group filter</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <div class="alert alert-info" role="alert">
+            <div class="alert-items">
+                <div class="alert-item static">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="info-circle"></clr-icon>
+                    </div>
+                    <span class="alert-text" *ngIf="objectType === 'ROLE'">
+                        The chosen security group will be applied to the instance on creation if the logged in user's role matches this rule.
+                    </span>
+                    <span class="alert-text" *ngIf="objectType === 'INSTRUMENT'">
+                        The chosen security group will be applied to the instance on creation if the instruments selected matches this rule.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+            <clr-select-container>
+                <label for="securityGroup">Security Group</label>
+                <select clrSelect id="securityGroup"
+                        formControlName="securityGroup" required>
+                    <option *ngFor="let securityGroup of securityGroups"
+                            [ngValue]="securityGroup">{{securityGroup.name}}</option>
+                </select>
+                <clr-control-helper>Please select a security group</clr-control-helper>
+            </clr-select-container>
+            <clr-select-container>
+                <label for="objectIdentifier" *ngIf="objectType === 'ROLE'">User role</label>
+                <label for="objectIdentifier" *ngIf="objectType === 'INSTRUMENT'">Instrument</label>
+                <select clrSelect id="objectIdentifier" formControlName="objectIdentifier" required>
+                    <option *ngFor="let objectIdentifier of objectIdentifiers"
+                            [ngValue]="objectIdentifier">{{objectIdentifier.name}}</option>
+                </select>
+                <clr-control-helper *ngIf="objectType === 'ROLE'">Please select a user role</clr-control-helper>
+                <clr-control-helper *ngIf="objectType === 'INSTRUMENT'">Please select an instrument</clr-control-helper>
+            </clr-select-container>
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</ng-container>
+
