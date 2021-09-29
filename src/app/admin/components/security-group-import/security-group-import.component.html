@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>Import a cloud security group</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+            <clr-select-container>
+                <label for="securityGroup">Security Group</label>
+                <select clrSelect id="securityGroup"
+                        formControlName="securityGroup" required>
+                    <option *ngFor="let securityGroup of securityGroups"
+                            [ngValue]="securityGroup">{{securityGroup.name}}</option>
+                </select>
+                <clr-control-helper>Please select a cloud security group to import</clr-control-helper>
+            </clr-select-container>
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="form.invalid">
+            Import
+        </button>
+    </div>
+</ng-container>
+

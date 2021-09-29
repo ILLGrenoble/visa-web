@@ -45,10 +45,6 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         return this._objectIdentifiers;
     }
 
-    set objectIdentifiers(value: { id: number; name: string }[]) {
-        this._objectIdentifiers = value;
-    }
-
     get objectType(): string {
         return this._objectType;
     }
@@ -66,21 +62,34 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         const {securityGroup, objectIdentifier} = this.form.value;
         this._apollo.query<any>({
             query: gql`
-               query SecurityGroupFilterBySecurityIdAndObjectIdAndType($securityGroupId: Int!, $objectId: Int!, $objectType: String!) {
-                    securityGroupFilterBySecurityIdAndObjectIdAndType(securityGroupId: $securityGroupId, objectId: $objectId, objectType: $objectType) {
-                        id
+               query allSecurityGroupFilters($filter: QueryFilter!) {
+                     securityGroupFilters(filter: $filter) {
+                       id
                     }
                 }
                     `,
             variables: {
-                securityGroupId: securityGroup.id,
-                objectId: objectIdentifier.id,
-                objectType: this._objectType
+
+                filter: {
+                    query: 'sg.id = :securityGroupId AND objectId = :objectId AND objectType = :objectType',
+                    parameters: [{
+                        name: 'securityGroupId',
+                        value: securityGroup.id
+                    },
+                        {
+                            name: 'objectId',
+                            value: objectIdentifier.id
+                        },
+                        {
+                            name: 'objectType',
+                            value: this._objectType
+                        }]
+                }
             }
         }).pipe(
             takeUntil(this._destroy$),
         ).subscribe(({data}) => {
-            if (data.securityGroupFilterByObjectIdAndType) {
+            if (data.securityGroupFilters.length > 0) {
                 this._snackBar.open(`A rule already exists for these given parameters`, 'OK', {duration: 4000});
             } else {
                 this.createFilter(securityGroup, objectIdentifier);
@@ -154,8 +163,8 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                 });
             }
             this.form = new FormGroup({
-                securityGroup: new FormControl(this._securityGroups[0]),
-                objectIdentifier: new FormControl(this._objectIdentifiers[0])
+                securityGroup: new FormControl(),
+                objectIdentifier: new FormControl()
             });
         });
 

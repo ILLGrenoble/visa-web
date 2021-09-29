@@ -598,3 +598,8 @@ export type SecurityGroupFilter = {
     objectType: Scalars['String'];
     objectName: Maybe<Scalars['String']>;
 };
+
+export type CloudSecurityGroup = {
+    name: Scalars['String'];
+    integration: Maybe<SecurityGroup>;
+};

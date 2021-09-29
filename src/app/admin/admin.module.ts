@@ -47,11 +47,14 @@ import {
     PlansComponent,
     PlanUpdateComponent,
     SessionsComponent,
-    SecurityGroupsComponent,
-    SecurityGroupFilterNewComponent,
+    SecurityGroupsOverviewComponent,
+    SecurityGroupImportComponent,
+    SecurityGroupFiltersComponent,
     UserSearchComponent,
     UsersComponent,
-    UsersFilterComponent
+    UsersFilterComponent,
+    SecurityGroupsComponent,
+    SecurityGroupFilterNewComponent, SecurityGroupFilterDeleteComponent, SecurityGroupDeleteComponent
 } from './components';
 
 @NgModule({
@@ -105,7 +108,12 @@ import {
         UserSearchComponent,
         LatestActiveUsersBoxComponent,
         SecurityGroupsComponent,
+        SecurityGroupsOverviewComponent,
+        SecurityGroupImportComponent,
+        SecurityGroupFiltersComponent,
         SecurityGroupFilterNewComponent,
+        SecurityGroupFilterDeleteComponent,
+        SecurityGroupDeleteComponent,
         UsersComponent,
         UsersFilterComponent
     ],
@@ -120,7 +128,10 @@ import {
         FlavourUpdateComponent,
         PlanNewComponent,
         PlanUpdateComponent,
-        SecurityGroupFilterNewComponent
+        SecurityGroupImportComponent,
+        SecurityGroupFilterNewComponent,
+        SecurityGroupFilterDeleteComponent,
+        SecurityGroupDeleteComponent
     ],
 })
 export class AdminModule {

@@ -1,0 +1,38 @@
+<div class="filters-box-header">
+    <h3 class="filters-box-title">Security Group Filters </h3>
+    <button type="button" class="filters-box-action-btn" (click)="onCreate('ROLE')">
+        New user role filter
+    </button>
+    <button type="button" class="filters-box-action-btn" (click)="onCreate('INSTRUMENT')">
+        New instrument filter
+    </button>
+</div>
+<div class="filters-box-body">
+    <clr-datagrid [clrDgLoading]="loading">
+        <clr-dg-column [clrDgField]="'securityGroup.name'">Security Group</clr-dg-column>
+        <clr-dg-column [clrDgField]="'objectType'">Object Type</clr-dg-column>
+        <clr-dg-column [clrDgField]="'objectId'">Object ID</clr-dg-column>
+        <clr-dg-column [clrDgField]="'objectName'">Object Name</clr-dg-column>
+        <clr-dg-column>Actions</clr-dg-column>
+        <clr-dg-row *clrDgItems="let securityGroupFilter of securityGroupFilters">
+            <clr-dg-cell>{{securityGroupFilter.securityGroup.name}}</clr-dg-cell>
+            <clr-dg-cell>{{securityGroupFilter.objectType}}</clr-dg-cell>
+            <clr-dg-cell>{{securityGroupFilter.objectId}}</clr-dg-cell>
+            <clr-dg-cell>
+                <ng-container *ngIf="!securityGroupFilter.objectName">
+                    <span class="badge badge-danger">Object not found</span>
+                </ng-container>
+                <ng-container *ngIf="securityGroupFilter.objectName">
+                    {{securityGroupFilter.objectName}}
+                </ng-container>
+            </clr-dg-cell>
+            <clr-dg-cell>
+                <button (click)="onDelete(securityGroupFilter)"
+                        class="btn btn-warning-outline btn-sm">
+                    <clr-icon shape="trash"></clr-icon> Delete
+                </button>
+            </clr-dg-cell>
+        </clr-dg-row>
+        <clr-dg-placeholder>Couldn't find any security group filters</clr-dg-placeholder>
+    </clr-datagrid>
+</div>

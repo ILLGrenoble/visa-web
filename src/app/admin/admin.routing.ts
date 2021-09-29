@@ -9,10 +9,10 @@ import {
     InstancesComponent,
     NotificationsComponent,
     PlansComponent,
-    SecurityGroupsComponent,
-    UsersComponent
+    SecurityGroupsOverviewComponent,
+    UsersComponent,
+    SessionsComponent
 } from './components';
-import {SessionsComponent} from './components/sessions';
 
 export const ROUTES: Routes = [
     {
@@ -40,7 +40,7 @@ export const ROUTES: Routes = [
                 path: 'cloud/plans', component: PlansComponent,
             },
             {
-                path: 'cloud/security_groups', component: SecurityGroupsComponent,
+                path: 'cloud/security_groups', component: SecurityGroupsOverviewComponent,
             },
             {
                 path: 'instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],
