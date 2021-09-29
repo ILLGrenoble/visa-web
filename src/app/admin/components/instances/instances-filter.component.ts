@@ -144,17 +144,14 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                         id
                         name
                     }
-                    images(pagination: {offset: 0}) {
-                        data {
-                            id
-                            name
-                        }
+                    images {
+                        id
+                        name
+                        version
                     }
-                    flavours(pagination: {offset: 0, limit: 50}) {
-                        data {
-                            id
-                            name
-                        }
+                    flavours {
+                        id
+                        name
                     }
                 }
             `,

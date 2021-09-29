@@ -76,8 +76,8 @@
                 <div class="filter-body" *ngIf="data">
                     <select formControlName="image" class="filter-input">
                         <option [ngValue]="null">All images</option>
-                        <option *ngFor="let image of data.images.data" [ngValue]="image.id">
-                            {{ image.name }}
+                        <option *ngFor="let image of data.images" [ngValue]="image.id">
+                            {{ image.name }} ({{ image.version }})
                         </option>
                     </select>
                 </div>
@@ -89,7 +89,7 @@
                 <div class="filter-body" *ngIf="data">
                     <select formControlName="flavour" class="filter-input">
                         <option [ngValue]="null">All flavours</option>
-                        <option *ngFor="let flavour of data.flavours.data" [ngValue]="flavour.id">{{ flavour.name }}
+                        <option *ngFor="let flavour of data.flavours" [ngValue]="flavour.id">{{ flavour.name }}
                         </option>
                     </select>
                 </div>
