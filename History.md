@@ -1,3 +1,16 @@
+2.0.2 30/09/2021
+================
+ * Add security group and security group filter management admin UIs
+ * Add flavour limits management
+ * Remove all admin service classes and put graphql into specific components
+ * Create Cloud admin menu with image, flavour, plan sub menus
+ * Persist keyboard layout and experiment search criteria in local storage
+ * Remove all references to Cycles
+ * Add image version number to admin dashboard and instances pages
+ * Handle errors in paginated responses
+ * Add query parameters to instance creation route to allow experiments to be automatically selected for an instance (allows links to data catalogues)
+ * Add users admin UI
+
 2.0.1 26/07/2021
 ================
  * Add editable termination date to admin instance ui
