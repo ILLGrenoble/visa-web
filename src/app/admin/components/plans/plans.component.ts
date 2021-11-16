@@ -1,8 +1,8 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
-import {Flavour, Image, Plan} from '../../../core/graphql/types';
+import {Flavour, Image, Plan} from '../../../core/graphql';
 import {PlanNewComponent} from '../plan-new';
 import {PlanUpdateComponent} from '../plan-update';
 import gql from 'graphql-tag';

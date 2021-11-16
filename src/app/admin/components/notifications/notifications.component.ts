@@ -4,7 +4,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {ClrForm} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {SystemNotification} from '../../../core/graphql/types';
+import {SystemNotification} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-notifications',

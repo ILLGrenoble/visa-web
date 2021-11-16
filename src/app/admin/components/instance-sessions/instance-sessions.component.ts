@@ -4,7 +4,7 @@ import {Instance} from 'app/core/graphql';
 import gql from 'graphql-tag';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {map, takeUntil, tap} from 'rxjs/operators';
-import {InstanceSessionMember} from '../../../core/graphql/types';
+import {InstanceSessionMember} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-instance-sessions',
