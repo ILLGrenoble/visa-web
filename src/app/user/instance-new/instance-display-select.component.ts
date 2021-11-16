@@ -123,7 +123,7 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
             });
         }
 
-        combineLatest(this.selectedArrangement, this._selectedSingleScreenResolution).pipe(
+        combineLatest([this.selectedArrangement, this._selectedSingleScreenResolution]).pipe(
             takeUntil(this.destroy$),
             filter(([selectedArrangement, selectedSingleScreenResolution]) =>
                 selectedArrangement != null && selectedSingleScreenResolution != null)

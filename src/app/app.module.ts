@@ -34,6 +34,7 @@ import {CookieService} from 'ngx-cookie-service';
                 loadChildren: () => import(`./support/support.module`).then((m) => m.SupportModule),
             },
             {
+                canActivate: [AuthenticationGuard],
                 path: 'help',
                 loadChildren: () => import(`./documentation/documentation.module`).then((m) => m.DocumentationModule),
             },

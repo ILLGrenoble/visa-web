@@ -2,7 +2,7 @@ import {SharedModule} from '@shared';
 import {NgModule} from '@angular/core';
 import {ROUTING} from './support.routing';
 import {InstancesComponent, InstancesFilterComponent} from './components';
-import {HeaderComponent} from './common/components';
+import {HeaderComponent} from './common';
 
 @NgModule({
     imports: [

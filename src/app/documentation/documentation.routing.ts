@@ -1,4 +1,3 @@
-import {ModuleWithProviders} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthenticatedContainerComponent} from '@shared';
 import {DocumentationPageComponent} from './documentation-page.component';

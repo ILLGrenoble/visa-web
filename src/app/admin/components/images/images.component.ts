@@ -2,7 +2,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CloudImage, Image, ImageProtocol} from 'app/core/graphql/types';
-import {cloneDeep} from 'lodash';
 import {ImageDeleteComponent} from '../image-delete';
 import {ImageNewComponent} from '../image-new';
 import {ImageUpdateComponent} from '../image-update';
@@ -154,8 +153,8 @@ export class ImagesComponent implements OnInit, OnDestroy {
                     this.imageSnackBar('Image created');
                     this.loadProtocolsImages();
                 }).catch((error) => {
-                    this.imageSnackBar(error);
-                });
+                this.imageSnackBar(error);
+            });
         });
     }
 
@@ -184,7 +183,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     public onUpdate(image: Image): void {
         const dialogRef = this.dialog.open(ImageUpdateComponent, {
             width: '900px', data: {
-                image: image,
+                image,
                 imageIcons: this.imageIcons,
                 cloudImages: this.cloudImages,
                 protocols: this.protocols,
@@ -206,8 +205,8 @@ export class ImagesComponent implements OnInit, OnDestroy {
                     this.imageSnackBar('Image Updated');
                     this.loadProtocolsImages();
                 }).catch((error) => {
-                    this.imageSnackBar(error);
-                });
+                this.imageSnackBar(error);
+            });
         });
     }
 

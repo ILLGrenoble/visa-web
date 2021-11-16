@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService, ConfigService, Configuration} from '@core';
-import {Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-not-found',
@@ -10,9 +11,11 @@ import {Subscription} from 'rxjs';
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-    public returnUrl;
-    private queryParamsSubscription: Subscription;
+    private _returnUrl: string;
+
     private _config: Configuration = null;
+
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     get config(): Configuration {
         return this._config;
@@ -22,33 +25,30 @@ export class LoginComponent implements OnInit, OnDestroy {
         this._config = value;
     }
 
-    constructor(private authenticationService: AuthenticationService,
-                private route: ActivatedRoute,
-                private router: Router,
-                private configService: ConfigService) {
+    constructor(private _authenticationService: AuthenticationService,
+                private _route: ActivatedRoute,
+                private _router: Router,
+                private _configService: ConfigService) {
     }
 
     public ngOnInit(): void {
-        this.configService.load().then(config => {
+        this._configService.load().then(config => {
             this.config = config;
         });
-        this.queryParamsSubscription = this.route.queryParams
+        this._route.queryParams
+            .pipe(takeUntil(this._destroy$))
             .subscribe((params) => {
-                this.returnUrl = params.returnUrl || '/';
+                this._returnUrl = params.returnUrl || '/';
             });
-        if (this.authenticationService.isLoggedIn().then((isLoggedIn) => {
-            if (isLoggedIn) {
-                this.router.navigateByUrl('/');
-            }
-        })) {
-        }
     }
 
     public handleLogin(): void {
-        this.authenticationService.login(this.returnUrl);
+        this._authenticationService.login(this._returnUrl);
     }
 
     public ngOnDestroy(): void {
-        this.queryParamsSubscription.unsubscribe();
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
+
 }

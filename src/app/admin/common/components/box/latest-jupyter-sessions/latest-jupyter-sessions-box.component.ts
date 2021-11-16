@@ -71,7 +71,8 @@ export class LatestJupyterSessionsBoxComponent implements OnInit, OnDestroy {
                     this.notifierService.notify('error', `There was an error fetching the latest Jupyter sessions`);
                 }
                 this.data = data.jupyterSessions.data.reduce((reduced, session) => {
-                    const existingSession = reduced.find(reducedSession => reducedSession.instance.id === session.instance.id && reducedSession.user.id === session.user.id);
+                    const existingSession = reduced.find(reducedSession => reducedSession.instance.id === session.instance.id
+                                                         && reducedSession.user.id === session.user.id);
                     if (existingSession) {
                         if (existingSession.duration > session.duration) {
                             reduced = reduced.filter(aSession => aSession.id !== existingSession.id);

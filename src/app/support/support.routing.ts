@@ -1,6 +1,5 @@
 import {RouterModule, Routes} from '@angular/router';
 import {AuthenticatedContainerComponent} from '@shared';
-import {AuthenticationGuard} from '@core';
 import {InstancesComponent} from './components';
 
 export const ROUTES: Routes = [

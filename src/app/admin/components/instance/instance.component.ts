@@ -186,7 +186,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         const terminationDateString = moment(this._terminationDate).format('YYYY-MM-DD');
         const instanceTerminationDateString = moment(new Date(this.instance.terminationDate)).format('YYYY-MM-DD');
 
-        return terminationDateString != instanceTerminationDateString;
+        return terminationDateString !== instanceTerminationDateString;
 
     }
 

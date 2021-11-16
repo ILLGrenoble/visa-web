@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit, Output} from '@angular/core';
 import {AccountService, Experiment, Instrument, Paginated} from '@core';
-import {BehaviorSubject} from 'rxjs';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ClrDatagridStateInterface} from '@clr/angular';
 
@@ -36,10 +35,10 @@ export class InstanceExperimentSelectComponent implements OnInit {
     public fromYears: number[];
     public toYears: number[];
     public orderings: OrderBy[] = [
-        {id: 0, label: 'date (oldest first)', value: 'date', descending: false },
-        {id: 1, label: 'date (newest first)', value: 'date', descending: true },
-        {id: 2, label: 'instrument', value: 'instrument', descending: false },
-        {id: 3, label: 'proposal', value: 'proposal', descending: false }
+        {id: 0, label: 'date (oldest first)', value: 'date', descending: false},
+        {id: 1, label: 'date (newest first)', value: 'date', descending: true},
+        {id: 2, label: 'instrument', value: 'instrument', descending: false},
+        {id: 3, label: 'proposal', value: 'proposal', descending: false}
     ];
     private _orderBy: OrderBy = this.orderings[1];
 
@@ -175,7 +174,9 @@ export class InstanceExperimentSelectComponent implements OnInit {
             .subscribe((data) => {
                 this.loading = false;
                 this.experiments = data;
-                localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY, `${this.experiments.limit}`);
+                localStorage.setItem(
+                    InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY,
+                    `${this.experiments.limit}`);
             });
     }
 

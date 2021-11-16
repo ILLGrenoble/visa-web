@@ -10,7 +10,7 @@ import {
 } from '@core';
 import {Store} from '@ngrx/store';
 import {Observable, timer} from 'rxjs';
-import {InvalidAccountDialogComponent} from '../../components/dialogs';
+import {InvalidAccountDialogComponent} from '../../components';
 import {filter, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 

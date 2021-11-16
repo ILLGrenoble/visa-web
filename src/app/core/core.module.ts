@@ -7,7 +7,6 @@ import {APOLLO_OPTIONS, ApolloModule} from 'apollo-angular';
 import {HttpLink, HttpLinkModule} from 'apollo-angular-link-http';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {environment} from 'environments/environment';
-import {KeycloakAngularModule} from 'keycloak-angular';
 import {AccountEffects} from './effects';
 import {AuthenticationGuard} from './guards';
 import {accountReducer} from './reducers';
@@ -30,12 +29,28 @@ import {
     NotificationService,
     ObjectMapperService,
 } from './services';
+import {OAuthModule} from 'angular-oauth2-oidc';
 
 @NgModule({
     imports: [
         CommonModule,
         HttpClientModule,
-        KeycloakAngularModule,
+        OAuthModule.forRoot(
+            {
+                resourceServer: {
+                    sendAccessToken: true,
+                    customUrlValidation: (url) => {
+                        const excludedUrls = ['/api/docs/(.*)+', '/api/configuration', '/api/notifications'];
+                        for (const excludedUrl of excludedUrls) {
+                            if (url.match(excludedUrl)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+        ),
         ApolloModule,
         HttpLinkModule,
         StoreModule.forRoot({account: accountReducer}),
@@ -47,7 +62,6 @@ import {
         AnalyticsService,
         HelperService,
         InstrumentService,
-        AuthenticationService,
         ObjectMapperService,
         ConfigService,
         NotificationService,
@@ -66,7 +80,7 @@ import {
         {
             provide: APP_INITIALIZER,
             useFactory: function initializer(authenticationService: AuthenticationService): () => Promise<any> {
-                return authenticationService.initialiseKeycloak();
+                return authenticationService.init();
             },
             multi: true,
             deps: [AuthenticationService],

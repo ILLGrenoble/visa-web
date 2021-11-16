@@ -10,6 +10,7 @@ const reducer = createReducer(
     initialState,
     on(AccountActions.loadAccountSuccess, (state, {user}) => ({...state, user})),
     on(AccountActions.loadAccount, () => initialState),
+    on(AccountActions.clearAccount, (state) => ({...state, user: null})),
 );
 
 export function accountReducer(state, action): AccountState {

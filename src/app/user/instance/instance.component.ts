@@ -1,8 +1,16 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
-import {AccountService, AnalyticsService, ApplicationState, ConfigService, Instance, selectLoggedInUser, User} from '@core';
+import {
+    AccountService,
+    AnalyticsService,
+    ApplicationState,
+    ConfigService,
+    Instance,
+    selectLoggedInUser,
+    User
+} from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {ScaleMode, VirtualDesktopManager} from '@vdi';
 import {NotifierService} from 'angular-notifier';
@@ -688,7 +696,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
         this.manager.setFocused(true);
     }
-
 
 
     private createMembersConnectedDialog(): void {

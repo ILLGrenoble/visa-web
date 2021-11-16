@@ -11,8 +11,8 @@ import {Store} from '@ngrx/store';
     templateUrl: './documentation.component.html'
 })
 export class DocumentationComponent implements OnInit {
-    
-    public contactEmail;
+
+    private _contactEmail;
 
     private _user$: Observable<User>;
 
@@ -24,6 +24,14 @@ export class DocumentationComponent implements OnInit {
 
     public set sections(value: Observable<DocumentationSection[]>) {
         this._sections = value;
+    }
+
+    get contactEmail(): string {
+        return this._contactEmail;
+    }
+
+    set contactEmail(value: string) {
+        this._contactEmail = value;
     }
 
     get user$(): Observable<User> {
@@ -48,7 +56,7 @@ export class DocumentationComponent implements OnInit {
         this.analyticsService.trackPageView(title);
 
         this.configService.load().then(config => {
-            this.contactEmail = config.contactEmail;
+            this._contactEmail = config.contactEmail;
         });
 
         this._user$.subscribe(user => {
