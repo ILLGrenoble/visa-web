@@ -3,7 +3,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
-import {APOLLO_OPTIONS, ApolloModule} from 'apollo-angular';
+import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink, HttpLinkModule} from 'apollo-angular-link-http';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {environment} from 'environments/environment';
@@ -51,7 +51,6 @@ import {OAuthModule} from 'angular-oauth2-oidc';
                 }
             }
         ),
-        ApolloModule,
         HttpLinkModule,
         StoreModule.forRoot({account: accountReducer}),
         EffectsModule.forRoot([AccountEffects]),

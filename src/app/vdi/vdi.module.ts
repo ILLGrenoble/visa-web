@@ -45,7 +45,7 @@ export class HammerConfig extends HammerGestureConfig {
         DisconnectedMessageComponent,
         ConnectingMessageComponent,
         StatusBarComponent,
-        StatusBarItemComponent,
+        StatusBarItemComponent
     ],
     entryComponents: [],
     bootstrap: [RemoteDesktopComponent],

@@ -26,7 +26,7 @@ export class CardComponent implements OnInit, OnDestroy {
     public dropdownElement: ElementRef;
 
     @Output()
-    public doUpdateParent: Subject<null> = new Subject();
+    public doUpdateParent: Subject<void> = new Subject();
 
     @Input()
     set instance(value: Instance) {

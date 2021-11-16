@@ -8,7 +8,7 @@ export class FilterProvider {
     constructor(attributes: { [key: string]: FilterAttribute }) {
         Object.entries(attributes).forEach(
             ([key, value]) => {
-                if (!this.attributes.has(name)) {
+                if (!this.attributes.has(key)) {
                     this.attributes.set(key, value);
                 }
             },

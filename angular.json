@@ -39,8 +39,6 @@
                             "moment-duration-format",
                             "js-yaml",
                             "@ctrl/ngx-codemirror",
-                            "keycloak-angular.js",
-                            "keycloak-js",
                             "blueimp-md5",
                             "zen-observable"
                         ]
@@ -50,7 +48,6 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
-                            "extractCss": true,
                             "namedChunks": false,
                             "aot": true,
                             "extractLicenses": true,
@@ -122,8 +119,7 @@
     "defaultProject": "visa",
     "schematics": {
         "@schematics/angular:component": {
-            "prefix": "visa",
-            "styleext": "scss"
+            "prefix": "visa"
         },
         "@schematics/angular:directive": {
             "prefix": "visa"

@@ -17,8 +17,7 @@ import {VirtualDesktopManager} from '../services';
 import {ConnectingMessageComponent} from './messages/connecting-message.component';
 import {DisconnectedMessageComponent} from './messages/disconnected-message.component';
 import {ErrorMessageComponent} from './messages/error-message.component';
-import * as screenfull from 'screenfull';
-import {Screenfull} from 'screenfull';
+import screenfull from 'screenfull';
 
 /**
  * The main component for displaying a remote desktop
@@ -235,12 +234,10 @@ export class RemoteDesktopComponent implements OnInit, OnDestroy {
      * Exit full screen and show the toolbar
      */
     private exitFullScreen(): void {
-        // @ts-ignore
-        if (!(screenfull as Screenfull).isFullscreen) {
+        if (!screenfull.isFullscreen) {
             return;
         }
-        // @ts-ignore
-        (screenfull as Screenfull).exit();
+        screenfull.exit();
     }
 
     /**

@@ -9,6 +9,7 @@ import {UserModule} from '@user';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CookieService} from 'ngx-cookie-service';
+import {CommonModule} from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,7 @@ import {CookieService} from 'ngx-cookie-service';
         BrowserAnimationsModule,
         HttpClientModule,
         CoreModule,
+        CommonModule,
         UserModule,
         RouterModule.forRoot([
             {

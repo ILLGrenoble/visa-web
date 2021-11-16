@@ -1,14 +1,13 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
-import {ApolloQueryResult} from 'apollo-client';
 import {Instance, InstanceSessionMember} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
-import * as screenfull from 'screenfull';
-import {Screenfull} from 'screenfull';
 import {environment} from '../../../../environments/environment';
+import screenfull from 'screenfull';
+import {ApolloQueryResult} from '@apollo/client';
 
 @Component({
     selector: 'visa-admin-sessions',
@@ -108,17 +107,15 @@ export class SessionsComponent implements OnInit, OnDestroy {
      * Enter full screen mode and auto hide the toolbar
      */
     public enterFullScreen(): void {
-        if ((screenfull as Screenfull).isFullscreen) {
+        if (screenfull.isFullscreen) {
             return;
         }
         const containerElement = this._gridContainer.nativeElement;
-        (screenfull as Screenfull).request(containerElement);
-        (screenfull as Screenfull).on('change', (change: any) => {
-        });
+        screenfull.request(containerElement);
     }
 
     public isFullScreen(): boolean {
-        return (screenfull as Screenfull).isFullscreen;
+        return screenfull.isFullscreen;
     }
 
     private fetch(): Observable<ApolloQueryResult<any>> {

@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
-import {ApolloQueryResult} from 'apollo-client';
+import {ApolloQueryResult} from '@apollo/client';
 import gql from 'graphql-tag';
 import * as Highcharts from 'highcharts';
 import {Observable, Subject} from 'rxjs';

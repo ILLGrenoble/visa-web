@@ -18,8 +18,8 @@ export class AnalyticsService {
         window._paq = window._paq || [];
     }
 
-    public init(): () => Promise<any> {
-        return (): Promise<any> => {
+    public init(): () => Promise<void> {
+        return (): Promise<void> => {
             return new Promise(async (resolve, reject) => {
                 try {
                     const config = await this.configService.load();
