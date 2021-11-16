@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CodemirrorComponent} from '@ctrl/ngx-codemirror';
 import {BehaviorSubject, ReplaySubject, Subject, timer} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {VirtualDesktopManager} from '@vdi';
+import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 
 @Component({
     selector: 'visa-instance-clipboard-dialog',
@@ -81,7 +81,7 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 @Inject(MAT_DIALOG_DATA) private data: { manager: VirtualDesktopManager }) {
         this._manager = data.manager;
         this._clipboardSubscription$ = this._manager.onRemoteClipboardData;
-        this._clipboardSubscription$.subscribe((text) => this._text = text.content);
+        this._clipboardSubscription$.pipe(takeUntil(this._destroy$)).subscribe((text) => this._text = text.content);
     }
 
     private handleOnKeydown(event: KeyboardEvent): void {
