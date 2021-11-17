@@ -1,5 +1,9 @@
 2.1.0 17/11/2021
 ================
+ * Only require HTTPS if issuer URL starts with https
+
+2.1.0 17/11/2021
+================
  * Use node 14 in dockerfile
  * Update dependencies and upgrade to angular 13
  * Remove keycloak dependency and add generic openid connect implementation
