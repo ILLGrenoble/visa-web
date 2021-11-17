@@ -1,3 +1,9 @@
+2.1.0 17/11/2021
+================
+ * Use node 14 in dockerfile
+ * Update dependencies and upgrade to angular 13
+ * Remove keycloak dependency and add generic openid connect implementation
+
 2.0.2 30/09/2021
 ================
  * Add security group and security group filter management admin UIs
