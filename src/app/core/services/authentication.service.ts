@@ -72,6 +72,7 @@ export class AuthenticationService {
     public init(): () => Promise<any> {
         return (): Promise<any> => {
             return new Promise(async (resolve, reject) => {
+                this._removeCookie();
                 const config = await this._configService.load();
                 const {issuer, clientId, scope, showDebugInformation, sessionChecksEnabled} = config.login;
                 const redirectUri = `${window.location.origin}/home`;
