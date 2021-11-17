@@ -1,4 +1,4 @@
-2.1.0 17/11/2021
+2.1.1 17/11/2021
 ================
  * Only require HTTPS if issuer URL starts with https
 
