@@ -42,11 +42,10 @@ export class AuthenticationService {
     }
 
     private _updateCookie(): void {
-        const {hostname} = window.location;
         const accessToken = this._oauthService.getAccessToken();
         const accessTokenExpiration = new Date(this._oauthService.getAccessTokenExpiration());
         const isHttps = this._isHttps();
-        this._cookieService.set('access_token', accessToken, accessTokenExpiration, '/', hostname, isHttps, 'Strict');
+        this._cookieService.set('access_token', accessToken, accessTokenExpiration, '/', undefined, isHttps, 'Strict');
     }
 
     private _removeCookie(): void {
