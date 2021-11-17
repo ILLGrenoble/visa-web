@@ -84,7 +84,8 @@ export class AuthenticationService {
                     redirectUri,
                     postLogoutRedirectUri,
                     sessionChecksEnabled,
-                    responseType: 'code'
+                    responseType: 'code',
+                    requireHttps: issuer.startsWith('https')
                 };
 
                 this._oauthService.configure(authConfig);
