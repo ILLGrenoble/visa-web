@@ -5,7 +5,6 @@ import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink, HttpLinkModule} from 'apollo-angular-link-http';
-import {InMemoryCache} from 'apollo-cache-inmemory';
 import {environment} from 'environments/environment';
 import {AccountEffects} from './effects';
 import {AuthenticationGuard} from './guards';
@@ -30,6 +29,7 @@ import {
     ObjectMapperService,
 } from './services';
 import {OAuthModule} from 'angular-oauth2-oidc';
+import {InMemoryCache} from '@apollo/client/core';
 
 @NgModule({
     imports: [
