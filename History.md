@@ -1,3 +1,7 @@
+2.1.2 23/11/2021
+================
+ * Fixed apollo memory cache issue due to bug: https://github.com/apollographql/apollo-client/issues/8566
+
 2.1.1 17/11/2021
 ================
  * Only require HTTPS if issuer URL starts with https
