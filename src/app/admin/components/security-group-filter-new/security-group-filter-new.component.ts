@@ -6,7 +6,7 @@ import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {SecurityGroup} from '../../../core/graphql';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {NotifierService} from 'angular-notifier';
 
 
 @Component({
@@ -20,7 +20,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _securityGroups: SecurityGroup[];
     private _objectIdentifiers: { id: number, name: string }[];
-    private readonly _snackBar: MatSnackBar;
+    private readonly _notifierService: NotifierService;
     private readonly _objectType: string;
     private readonly _apollo: Apollo;
 
@@ -51,10 +51,10 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
 
     constructor(dialogRef: MatDialogRef<SecurityGroupFilterNewComponent>,
                 apollo: Apollo, @Inject(MAT_DIALOG_DATA) public data,
-                snackBar: MatSnackBar) {
+                notifierService: NotifierService) {
         this._dialogRef = dialogRef;
         this._apollo = apollo;
-        this._snackBar = snackBar;
+        this._notifierService = notifierService;
         this._objectType = data.objectType;
     }
 
@@ -90,7 +90,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
             takeUntil(this._destroy$),
         ).subscribe(({data}) => {
             if (data.securityGroupFilters.length > 0) {
-                this._snackBar.open(`A rule already exists for these given parameters`, 'OK', {duration: 4000});
+                this._notifierService.notify('warning', `A rule already exists for these given parameters`);
             } else {
                 this.createFilter(securityGroup, objectIdentifier);
             }

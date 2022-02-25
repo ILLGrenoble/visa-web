@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
 import {CloudFlavour, Flavour, FlavourLimit, Instrument} from '../../../core/graphql';
 import {FlavourNewComponent} from '../flavour-new';
@@ -10,6 +9,7 @@ import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-flavours',
@@ -37,7 +37,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     }
 
     constructor(private apollo: Apollo,
-                private snackBar: MatSnackBar,
+                private notifierService: NotifierService,
                 private dialog: MatDialog) {
     }
 
@@ -143,11 +143,11 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     dialogRef.close();
-                    this.flavourSnackBar('Flavour created');
+                    this.showSuccessNotification('Flavour created');
                     this.loadAll();
                 })
                 .catch((error) => {
-                    this.flavourSnackBar(error);
+                    this.showErrorNotification(error);
                 });
         });
     }
@@ -168,7 +168,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 variables: {id: flavourId},
             }).toPromise()
                 .then(() => {
-                    this.flavourSnackBar('Flavour deleted');
+                    this.showSuccessNotification('Flavour deleted');
                     this.loadAll();
                 });
         });
@@ -200,20 +200,21 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     dialogRef.close();
-                    this.flavourSnackBar('Flavour updated');
+                    this.showSuccessNotification('Flavour updated');
                     this.loadAll();
                 })
                 .catch((error) => {
-                    this.flavourSnackBar(error);
+                    this.showErrorNotification(error);
                 });
 
         });
     }
 
-    private flavourSnackBar(message): void {
-        this.snackBar.open(message, 'OK', {
-            duration: 4000,
-        });
+    private showSuccessNotification(message): void {
+        this.notifierService.notify('success', message);
+    }
 
+    private showErrorNotification(message): void {
+        this.notifierService.notify('error', message);
     }
 }

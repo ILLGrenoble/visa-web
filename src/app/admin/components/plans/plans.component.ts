@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {cloneDeep} from 'lodash';
 import {Flavour, Image, Plan} from '../../../core/graphql';
 import {PlanNewComponent} from '../plan-new';
@@ -9,6 +8,7 @@ import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import {Subject} from 'rxjs';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-plans',
@@ -35,7 +35,7 @@ export class PlansComponent implements OnInit, OnDestroy {
     }
 
     constructor(private _apollo: Apollo,
-                private _snackBar: MatSnackBar,
+                private _notifierService: NotifierService,
                 private _dialog: MatDialog) {
     }
 
@@ -158,11 +158,11 @@ export class PlansComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     dialogRef.close();
-                    this.planSnackBar('Plan created');
+                    this.showSuccessNotification('Plan created');
                     this.loadPlans();
                 })
                 .catch((error) => {
-                    this.planSnackBar(error);
+                    this.showErrorNotification(error);
                 });
         });
     }
@@ -201,19 +201,20 @@ export class PlansComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     dialogRef.close();
-                    this.planSnackBar('Plan updated');
+                    this.showSuccessNotification('Plan updated');
                     this.loadPlans();
                 })
                 .catch((error) => {
-                    this.planSnackBar(error);
+                    this.showErrorNotification(error);
                 });
         });
     }
 
-    private planSnackBar(message): void {
-        this._snackBar.open(message, 'OK', {
-            duration: 4000,
-        });
+    private showSuccessNotification(message): void {
+        this._notifierService.notify('success', message);
+    }
 
+    private showErrorNotification(message): void {
+        this._notifierService.notify('error', message);
     }
 }

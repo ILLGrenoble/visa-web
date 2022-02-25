@@ -26,7 +26,6 @@ import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
-import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -97,8 +96,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 private notifierService: NotifierService,
                 private analyticsService: AnalyticsService,
                 private store: Store<ApplicationState>,
-                private configurationService: ConfigService,
-                private snackBar: MatSnackBar) {
+                private configurationService: ConfigService) {
     }
 
     public ngOnInit(): void {
@@ -577,9 +575,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private handleSendRemoteClipboardData(text: string): void {
         if (text) {
-            // this.snackBar.open('Sent clipboard data to instance', 'OK', {
-            //     duration: 3000
-            // });
+            // this.notifierService.notify('success', 'Sent clipboard data to instance');
             this.manager.sendRemoteClipboardData(text);
         }
     }

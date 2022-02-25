@@ -13,7 +13,6 @@ import { HttpClient } from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {NgxErrorsModule} from '@hackages/ngxerrors';
 import {NotifierModule} from 'angular-notifier';
 import {MarkdownModule, MarkedOptions, MarkedRenderer} from 'ngx-markdown';
@@ -95,7 +94,6 @@ export function markedOptionsFactory(): MarkedOptions {
         MatCommonModule,
         MatButtonModule,
         MatDialogModule,
-        MatSnackBarModule,
         MomentModule,
         NgSelectModule,
         ReactiveFormsModule,
@@ -154,7 +152,6 @@ export function markedOptionsFactory(): MarkedOptions {
         ClarityModule,
         DragDropModule,
         MatDialogModule,
-        MatSnackBarModule,
         MatButtonModule,
         NgPipesModule,
         RouterModule,

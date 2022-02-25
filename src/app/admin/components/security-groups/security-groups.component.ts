@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
@@ -8,6 +7,7 @@ import {Subject} from 'rxjs';
 import {SecurityGroup} from '../../../core/graphql';
 import {SecurityGroupImportComponent} from '../security-group-import';
 import {SecurityGroupDeleteComponent} from '../security-group-delete';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-security-groups',
@@ -22,7 +22,7 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _securityGroups: SecurityGroup[] = [];
     private _apollo: Apollo;
-    private _snackBar: MatSnackBar;
+    private _notifierService: NotifierService;
     private _dialog: MatDialog;
 
     get securityGroups(): SecurityGroup[] {
@@ -51,10 +51,10 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
     }
 
     constructor(apollo: Apollo,
-                snackBar: MatSnackBar,
+                notifierService: NotifierService,
                 dialog: MatDialog) {
         this._apollo = apollo;
-        this._snackBar = snackBar;
+        this._notifierService = notifierService;
         this._dialog = dialog;
     }
 
@@ -112,9 +112,7 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
                         id: securityGroup.id
                     },
                 }).toPromise().then(_ => {
-                    this._snackBar.open('Successfully delete security group', 'OK', {
-                        duration: 4000,
-                    });
+                    this._notifierService.notify('success', 'Successfully deleted security group');
                     this._refresh$.next();
                 });
             }
@@ -127,7 +125,7 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this._snackBar.open('Successfully imported security group from the cloud', 'OK', {duration: 4000});
+                this._notifierService.notify('success', 'Successfully imported security group from the cloud');
                 this._refresh$.next();
             }
         });

@@ -1,5 +1,4 @@
 import {AfterViewChecked, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
@@ -7,7 +6,6 @@ import {
     AnalyticsService,
     ApplicationState,
     CatalogueService,
-    ConfigService,
     Experiment,
     HelperService,
     ImagePlans,
@@ -20,10 +18,11 @@ import {
 import {Store} from '@ngrx/store';
 import {InstanceForm} from '@shared';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {filter, map } from 'rxjs/operators';
 import {InstanceExperimentSelectComponent} from './instance-experiment-select.component';
 import {MatDialog} from '@angular/material/dialog';
 import {QueryParameterBag} from '../../admin/http';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-instance-new',
@@ -141,7 +140,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
                 private _router: Router,
                 private _helperService: HelperService,
                 private _catalogueService: CatalogueService,
-                private snackBar: MatSnackBar,
+                private notifierService: NotifierService,
                 private route: ActivatedRoute,
                 private analyticsService: AnalyticsService,
                 private titleService: Title,
@@ -247,16 +246,14 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
             this._canSubmit = false;
 
             this._accountService.createInstance(instance, true)
-                .subscribe(() => {
+                .subscribe({next: () => {
                     this._router.navigate([''], {replaceUrl: true});
-                    this.snackBar.open('Your instance is being created.', 'OK', {
-                        duration: 2000,
-                    });
+                    this.notifierService.notify('success', 'Your instance is being created.');
 
-                }, (error) => {
+                }, error: (error) => {
                     console.log('An error occurred: ' + error.message);
                     this._canSubmit = true;
-                });
+                }});
         }
     }
 

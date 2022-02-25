@@ -2,8 +2,8 @@ import {Component, ElementRef, Input, OnDestroy, OnInit, Output, ViewChild, View
 import {AccountService, Instance} from '@core';
 import {Subject, Subscription, timer} from 'rxjs';
 import {DetailsDialog, ExperimentsDialog, MembersDialog} from '../dialogs';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-instance-list-card',
@@ -46,7 +46,7 @@ export class CardComponent implements OnInit, OnDestroy {
     public canConnect = false;
 
     constructor(private ref: ElementRef,
-                private snackBar: MatSnackBar,
+                private notifierService: NotifierService,
                 private dialog: MatDialog,
                 private accountService: AccountService) {
 
@@ -80,9 +80,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.snackBar.open('Successfully updated instance details', 'OK', {
-                    duration: 2000,
-                });
+                this.notifierService.notify('success', 'Successfully updated instance details');
                 this.doUpdateParent.next();
             }
         });
@@ -100,9 +98,7 @@ export class CardComponent implements OnInit, OnDestroy {
             if (result == null) {
                 return;
             }
-            this.snackBar.open('Successfully updated members', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Successfully updated members');
         });
     }
 
@@ -139,9 +135,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this.accountService.instanceReboot(this.instance).subscribe((instance) => {
             this.instance = instance;
-            this.snackBar.open('Rebooting instance', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Rebooting instance');
         });
     }
 
@@ -151,9 +145,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this.accountService.instanceShutdown(this.instance).subscribe((instance) => {
             this.instance = instance;
-            this.snackBar.open('Shutting down instance', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Shutting down instance');
         });
     }
 
@@ -167,9 +159,7 @@ export class CardComponent implements OnInit, OnDestroy {
             if (confirmation) {
                 this.accountService.deleteInstance(this.instance).subscribe((instance) => {
                     this.instance = instance;
-                    this.snackBar.open('Your instance is being deleted', 'OK', {
-                        duration: 4000,
-                    });
+                    this.notifierService.notify('success', 'Your instance is being deleted');
                 });
             }
         }
@@ -181,9 +171,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this.accountService.instanceStart(this.instance).subscribe((instance) => {
             this.instance = instance;
-            this.snackBar.open('Your instance is starting.', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Your instance is starting');
         });
 
     }

@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {AccountService} from '@core';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {InstancesFilterState} from './instances-filter-state';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-instances-filter',
@@ -79,7 +79,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this._loading = value;
     }
 
-    constructor(private apollo: Apollo, private accountService: AccountService, private snackBar: MatSnackBar) {
+    constructor(private apollo: Apollo, private accountService: AccountService, private notifierService: NotifierService) {
         this._form = this.createForm();
     }
 
@@ -159,7 +159,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
             this.data = result.data;
             this.loading = result.loading;
             if (result.errors) {
-                this.snackBar.open('There was an error loading the filters', 'OK');
+                this.notifierService.notify('error', 'There was an error loading the filters');
             }
         });
         if (this.state.filters.user != null) {

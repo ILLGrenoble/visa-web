@@ -2,16 +2,16 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '
 import {Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Instance} from 'app/core/graphql';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {map} from 'rxjs/operators';
+import {NotifierService} from 'angular-notifier';
 
 @Injectable()
 export class InstanceActivate implements CanActivate {
 
     constructor(private router: Router,
-                private snackBar: MatSnackBar,
+                private notifierService: NotifierService,
                 private apollo: Apollo,
     ) {
 
@@ -38,7 +38,7 @@ export class InstanceActivate implements CanActivate {
                     return true;
                 } else {
                     this.router.navigate(['/admin']);
-                    this.snackBar.open('Instance not found', 'OK');
+                    this.notifierService.notify('error', 'Instance not found');
                     return false;
                 }
             }));

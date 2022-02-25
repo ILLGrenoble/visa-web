@@ -3,9 +3,9 @@ import {Injectable} from '@angular/core';
 import {ActivatedRoute, ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from '@angular/router';
 import {DocumentationService} from '@core';
 import {FrontMatterResult} from 'front-matter';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
+import {NotifierService} from 'angular-notifier';
 
 @Injectable()
 export class DocumentationPageResolver implements Resolve<Observable<FrontMatterResult<any>>> {
@@ -13,7 +13,7 @@ export class DocumentationPageResolver implements Resolve<Observable<FrontMatter
     constructor(private documentationService: DocumentationService,
                 private route: ActivatedRoute,
                 private router: Router,
-                private snackBar: MatSnackBar) {
+                private notifierService: NotifierService) {
     }
 
     public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<FrontMatterResult<any>> {
@@ -23,7 +23,7 @@ export class DocumentationPageResolver implements Resolve<Observable<FrontMatter
         return this.documentationService.getPage(`${section}/${page}`)
             .pipe(catchError((err: any) => {
                 this.router.navigate(['/']).then(() => {
-                    this.snackBar.open('Documentation page not found', 'OK');
+                    this.notifierService.notify('error', 'Documentation page not found');
                 });
                 return throwError('Error fetching page');
             }));

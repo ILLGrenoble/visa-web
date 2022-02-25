@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Apollo} from 'apollo-angular';
 import {Instance} from 'app/core/graphql/types';
@@ -8,6 +7,7 @@ import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import {delay, map, retryWhen, share, switchMap, take, takeUntil} from 'rxjs/operators';
 import {environment} from '../../../../environments/environment';
 import * as moment from 'moment';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-instance',
@@ -76,7 +76,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     constructor(private apollo: Apollo,
                 private route: ActivatedRoute,
                 private router: Router,
-                private snackBar: MatSnackBar) {
+                private notifierService: NotifierService) {
 
     }
 
@@ -117,9 +117,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 },
             }).toPromise().then(() => {
                 this.router.navigate(['/admin/dashboard']).then(() => {
-                    this.snackBar.open('The instance will be deleted', 'OK', {
-                        duration: 2000,
-                    });
+                    this.notifierService.notify('success', 'The instance will be deleted');
                 });
             });
         }
@@ -138,9 +136,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 id: this.instance.id,
             },
         }).toPromise().then(() => {
-            this.snackBar.open('Shutting down instance', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Shutting down instance');
         });
     }
 
@@ -157,9 +153,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 id: this.instance.id,
             },
         }).toPromise().then(() => {
-            this.snackBar.open('Starting instance', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Starting instance');
         });
     }
 
@@ -176,9 +170,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 id: this.instance.id,
             },
         }).toPromise().then(() => {
-            this.snackBar.open('Rebooting instance', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Rebooting instance');
         });
     }
 
@@ -207,9 +199,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             },
         }).toPromise().then(() => {
             this.instance.terminationDate = this._terminationDate.toString();
-            this.snackBar.open('Updated instance termination date', 'OK', {
-                duration: 2000,
-            });
+            this.notifierService.notify('success', 'Updated instance termination date');
         });
     }
 

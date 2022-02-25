@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {ClrForm} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {SystemNotification} from '../../../core/graphql';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-notifications',
@@ -22,7 +22,7 @@ export class NotificationsComponent implements OnInit {
 
     public tableRows = this.notificationTable.get('tableRows') as FormArray;
 
-    constructor(private apollo: Apollo, private snackBar: MatSnackBar) {
+    constructor(private apollo: Apollo, private notifierService: NotifierService) {
     }
 
     public ngOnInit(): void {
@@ -64,7 +64,7 @@ export class NotificationsComponent implements OnInit {
             };
             this.create(inputNotification).then(
                 () => {
-                    this.notificationSnackBar('Created Notification message');
+                    this.showNotification('Created Notification message');
                     this.fetch().then((notifications) => {
                         this.notifications = notifications;
                         this.initFormTable();
@@ -79,7 +79,7 @@ export class NotificationsComponent implements OnInit {
             const id = notificationController.get('id').value;
             this.delete(id).then(
                 () => {
-                    this.notificationSnackBar('Deleted Notification message');
+                    this.showNotification('Deleted Notification message');
                     this.fetch().then((notifications) => {
                         this.notifications = notifications;
                         this.tableRows.removeAt(index);
@@ -117,7 +117,7 @@ export class NotificationsComponent implements OnInit {
             const id = notificationController.get('id').value;
             this.update(id, inputNotification).then(
                 () => {
-                    this.notificationSnackBar('Updated Notification message');
+                    this.showNotification('Updated Notification message');
                     this.fetch().then((notifications) => {
                         this.notifications = notifications;
                     });
@@ -129,10 +129,8 @@ export class NotificationsComponent implements OnInit {
 
     }
 
-    public notificationSnackBar(message: string): void {
-        this.snackBar.open(message, 'OK', {
-            duration: 2000,
-        });
+    public showNotification(message: string): void {
+        this.notifierService.notify('success', message);
     }
 
     public fetch(): Promise<SystemNotification[]> {

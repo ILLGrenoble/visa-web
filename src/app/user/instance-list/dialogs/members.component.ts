@@ -1,9 +1,9 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {AccountService, Instance, Member, User} from '@core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-instance-list-members-dialog',
@@ -42,7 +42,7 @@ export class MembersDialog implements OnInit {
     public selectedSupportRole = this.roles[1];
 
     constructor(private accountService: AccountService,
-                private snackBar: MatSnackBar,
+                private notifierService: NotifierService,
                 private dialogRef: MatDialogRef<MembersDialog>,
                 @Inject(MAT_DIALOG_DATA)
                 private data: { instance: Instance }) {
@@ -62,11 +62,11 @@ export class MembersDialog implements OnInit {
     public handleAdd($event): void {
         const member = Member.create(this.selectedUser, this.selectedRole.id);
         if (this.isMember(this.selectedUser)) {
-            this.createSnackbar('User selected is already a member of this instance');
+            this.showNotification('User selected is already a member of this instance');
         } else {
             this.accountService.createMemberForInstance(this.instance, member).subscribe((_) => {
                 this.loadMembers();
-                this.createSnackbar('Successfully added member');
+                this.showNotification('Successfully added member');
                 this.selectedUser = null;
             });
         }
@@ -78,11 +78,11 @@ export class MembersDialog implements OnInit {
     public handleAddSupport($event): void {
         const member = Member.create(this.selectedSupportUser, this.selectedSupportRole.id);
         if (this.isMember(this.selectedSupportUser)) {
-            this.createSnackbar('User selected is already a member of this instance');
+            this.showNotification('User selected is already a member of this instance');
         } else {
             this.accountService.createMemberForInstance(this.instance, member).subscribe((_) => {
                 this.loadMembers();
-                this.createSnackbar('Successfully added member');
+                this.showNotification('Successfully added member');
                 this.selectedSupportUser = null;
             });
         }
@@ -107,7 +107,7 @@ export class MembersDialog implements OnInit {
         if (confirmation) {
             this.accountService.deleteMemberFromInstance(this.instance, member).subscribe((_) => {
                 this.loadMembers();
-                this.createSnackbar('Deleted member');
+                this.showNotification('Deleted member');
             });
         }
     }
@@ -117,7 +117,7 @@ export class MembersDialog implements OnInit {
      */
     public handleRoleChange($event, member): void {
         this.accountService.updateMemberForInstance(this.instance, member).subscribe((result) => {
-                this.createSnackbar('Successfully updated members role');
+                this.showNotification('Successfully updated members role');
                 this.loadMembers();
             },
             (error) => {
@@ -141,10 +141,8 @@ export class MembersDialog implements OnInit {
         return this.members.find((member) => member.user.id === user.id);
     }
 
-    private createSnackbar(text: string): void {
-        this.snackBar.open(text, 'OK', {
-            duration: 2000,
-        });
+    private showNotification(text: string): void {
+        this.notifierService.notify('success', text);
     }
 
     private loadUsers(): void {

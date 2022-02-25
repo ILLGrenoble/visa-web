@@ -1,6 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
@@ -8,6 +7,7 @@ import {Subject} from 'rxjs';
 import {SecurityGroupFilter} from '../../../core/graphql';
 import {SecurityGroupFilterNewComponent} from '../security-group-filter-new';
 import {SecurityGroupFilterDeleteComponent} from '../security-group-filter-delete';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-security-group-filters',
@@ -21,7 +21,7 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _securityGroupFilters: SecurityGroupFilter[] = [];
     private _apollo: Apollo;
-    private _snackBar: MatSnackBar;
+    private _notifierService: NotifierService;
     private _dialog: MatDialog;
 
     get securityGroupFilters(): SecurityGroupFilter[] {
@@ -51,10 +51,10 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
     }
 
     constructor(apollo: Apollo,
-                snackBar: MatSnackBar,
+                notifierService: NotifierService,
                 dialog: MatDialog) {
         this._apollo = apollo;
-        this._snackBar = snackBar;
+        this._notifierService = notifierService;
         this._dialog = dialog;
     }
 
@@ -107,7 +107,7 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this._snackBar.open('Successfully created new security group filter rule', 'OK', {duration: 4000});
+                this._notifierService.notify('success', 'Successfully created new security group filter rule');
                 this._refresh$.next();
             }
         });
@@ -131,9 +131,7 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
                         id: securityGroupFilter.id
                     },
                 }).toPromise().then(_ => {
-                    this._snackBar.open('Successfully delete security group filter rule', 'OK', {
-                        duration: 4000,
-                    });
+                    this._notifierService.notify('success', 'Successfully delete security group filter rule');
                     this._refresh$.next();
                 });
             }

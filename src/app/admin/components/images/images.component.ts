@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {CloudImage, Image, ImageProtocol} from 'app/core/graphql/types';
 import {ImageDeleteComponent} from '../image-delete';
 import {ImageNewComponent} from '../image-new';
@@ -9,6 +8,7 @@ import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {map, takeUntil} from 'rxjs/operators';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-images',
@@ -29,7 +29,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private apollo: Apollo,
-                private snackBar: MatSnackBar,
+                private notifierService: NotifierService,
                 private dialog: MatDialog) {
     }
 
@@ -150,10 +150,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     dialogRef.close();
-                    this.imageSnackBar('Image created');
+                    this.showSuccessNotification('Image created');
                     this.loadProtocolsImages();
                 }).catch((error) => {
-                this.imageSnackBar(error);
+                this.showErrorNotification(error);
             });
         });
     }
@@ -174,7 +174,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
                 variables: {id: imageId},
             }).toPromise()
                 .then(() => {
-                    this.imageSnackBar('Image deleted');
+                    this.showSuccessNotification('Image deleted');
                     this.loadImages();
                 });
         });
@@ -202,17 +202,19 @@ export class ImagesComponent implements OnInit, OnDestroy {
             }).toPromise()
                 .then(() => {
                     dialogRef.close();
-                    this.imageSnackBar('Image Updated');
+                    this.showSuccessNotification('Image Updated');
                     this.loadProtocolsImages();
                 }).catch((error) => {
-                this.imageSnackBar(error);
+                this.showErrorNotification(error);
             });
         });
     }
 
-    private imageSnackBar(message): void {
-        this.snackBar.open(message, 'OK', {
-            duration: 4000,
-        });
+    private showSuccessNotification(message): void {
+        this.notifierService.notify('success', message);
+    }
+
+    private showErrorNotification(message): void {
+        this.notifierService.notify('error', message);
     }
 }

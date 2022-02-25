@@ -6,7 +6,7 @@ import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {CloudSecurityGroup} from '../../../core/graphql';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {NotifierService} from 'angular-notifier';
 
 
 @Component({
@@ -19,7 +19,7 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
     private _form: FormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _securityGroups: CloudSecurityGroup[];
-    private readonly _snackBar: MatSnackBar;
+    private readonly _notifierService: NotifierService;
     private readonly _apollo: Apollo;
 
     get form(): FormGroup {
@@ -40,10 +40,10 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
 
     constructor(dialogRef: MatDialogRef<SecurityGroupImportComponent>,
                 apollo: Apollo, @Inject(MAT_DIALOG_DATA) public data,
-                snackBar: MatSnackBar) {
+                notifierService: NotifierService) {
         this._dialogRef = dialogRef;
         this._apollo = apollo;
-        this._snackBar = snackBar;
+        this._notifierService = notifierService;
     }
 
     submit(): void {
@@ -70,7 +70,7 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
             map(({data}) => data.securityGroups)
         ).subscribe(securityGroups => {
             if (securityGroups.length > 0) {
-                this._snackBar.open(`This security group has already been imported`, 'OK', {duration: 4000});
+                this._notifierService.notify('success', `This security group has already been imported`);
             } else {
                 this.importSecurityGroup(securityGroup);
             }
