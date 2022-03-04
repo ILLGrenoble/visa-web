@@ -17,5 +17,5 @@
     </div>
 </div>
 <div *ngIf="instance != null" class="jupyter-container">
-    <iframe width="100%" height="100%" [src]="jupyterUrl | sanitizer" style="border: 0"></iframe>
+    <iframe #jupyter_iframe width="100%" height="100%" [src]="jupyterUrl | sanitizer" style="border: 0" (load)="resizeJupyter()"></iframe>
 </div>

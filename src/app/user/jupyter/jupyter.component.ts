@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {AccountService, AnalyticsService, Instance} from '@core';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -9,6 +9,8 @@ import {environment} from 'environments/environment';
     templateUrl: './jupyter.component.html',
 })
 export class JupyterComponent implements OnInit {
+
+    @ViewChild('jupyter_iframe') jupyterIframe: ElementRef;
 
     private _instance: Instance;
     private _error: string = null;
@@ -63,6 +65,20 @@ export class JupyterComponent implements OnInit {
                     this._error = 'Failed to connect to the instance';
                 }
             });
+    }
+
+    public resizeJupyter(retry?: number): void {
+        retry = retry || 0;
+        const jupyterMain = this.jupyterIframe.nativeElement.contentWindow.document.getElementById('main');
+        if (jupyterMain == null) {
+            if (retry < 50) {
+                setTimeout(() => {
+                    this.resizeJupyter.call(this, ++retry);
+                }, 200);
+            }
+        } else {
+            jupyterMain.style.height = '100vh';
+        }
     }
 
 }
