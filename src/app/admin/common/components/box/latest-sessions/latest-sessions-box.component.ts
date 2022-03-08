@@ -103,6 +103,7 @@ export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
                                 id
                                 instance {
                                     id
+                                    uid
                                     name
                                 }
                                 current

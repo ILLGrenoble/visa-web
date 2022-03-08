@@ -100,7 +100,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
 
     public getThumbnailUrlForInstance(instance: Instance): string {
         const baseUrl = environment.paths.api;
-        return `${baseUrl}/instances/${instance.id}/thumbnail`;
+        return `${baseUrl}/instances/${instance.uid}/thumbnail`;
     }
 
     /**
@@ -144,6 +144,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                 id
                                 instance {
                                     id
+                                    uid
                                     name
                                 }
                                 current

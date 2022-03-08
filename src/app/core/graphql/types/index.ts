@@ -129,6 +129,7 @@ export type ImageProtocol = {
 export type Instance = {
     __typename?: 'Instance';
     id: Scalars['Int'];
+    uid: Scalars['String'];
     name: Scalars['String'];
     comments?: Maybe<Scalars['String']>;
     state: InstanceState;

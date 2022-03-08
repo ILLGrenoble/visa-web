@@ -117,6 +117,7 @@ export class LatestJupyterSessionsBoxComponent implements OnInit, OnDestroy {
                             duration
                             instance {
                                 id
+                                uid
                                 name
                             }
                             sessionId

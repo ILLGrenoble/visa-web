@@ -123,6 +123,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                             }
                             data {
                                 id
+                                uid
                                 name
                                 state
                                 terminationDate
@@ -156,6 +157,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                       connectionId
                                        instance {
                                          id
+                                         uid
                                          name
                                        }
                                     }

@@ -101,6 +101,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                               connectionId
                                instance {
                                  id
+                                 uid
                                  name
                                }
                             }

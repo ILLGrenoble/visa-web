@@ -85,6 +85,7 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                   recentInstances(pagination: { limit: 15, offset: 0 }) {
                     data {
                       id
+                      uid
                       name
                       createdAt
                       plan {

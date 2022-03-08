@@ -26,6 +26,7 @@ export class InstanceActivate implements CanActivate {
               query Instance($id: Int!) {
                 instance(id: $id) {
                     id
+                    uid
                   }
                 }
               `,

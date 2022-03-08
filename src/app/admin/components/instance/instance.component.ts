@@ -215,6 +215,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 query Instance($id: Int!) {
                     instance(id: $id) {
                         id
+                        uid
                         name
                         comments
                         state
@@ -269,7 +270,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     public getThumbnailUrlForInstance(instance: Instance): string {
         const baseUrl = environment.paths.api;
-        return `${baseUrl}/instances/${instance.id}/thumbnail`;
+        return `${baseUrl}/instances/${instance.uid}/thumbnail`;
     }
 
     public formatImageName(image): void {
