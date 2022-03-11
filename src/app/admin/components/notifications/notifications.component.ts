@@ -1,10 +1,21 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ClrForm} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {SystemNotification} from '../../../core/graphql';
+import {SystemNotification, SystemNotificationInput} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
+import {MatDialog} from '@angular/material/dialog';
+import {NotificationUpdateComponent} from '../notification-update';
+import * as moment from 'moment';
+import {NotificationDeleteComponent} from '../notification-delete';
+
+interface SystemNotificationHolder {
+    id: number,
+    message: string;
+    level: string;
+    activated: boolean;
+    activatedAt: string;
+    originalText: string;
+}
 
 @Component({
     selector: 'visa-admin-notifications',
@@ -12,195 +23,188 @@ import {NotifierService} from 'angular-notifier';
     templateUrl: './notifications.component.html',
 })
 export class NotificationsComponent implements OnInit {
-    @ViewChild(ClrForm) public clrForm;
 
-    public notifications: SystemNotification[];
+    public notifications: SystemNotificationHolder[];
 
-    public notificationTable = new FormGroup({
-        tableRows: new FormArray([]),
-    });
-
-    public tableRows = this.notificationTable.get('tableRows') as FormArray;
-
-    constructor(private apollo: Apollo, private notifierService: NotifierService) {
+    constructor(private apollo: Apollo,
+                private notifierService: NotifierService,
+                private dialog: MatDialog) {
     }
 
     public ngOnInit(): void {
         this.fetch().then((notifications) => {
                 this.notifications = notifications;
-                this.initFormTable();
             },
         );
     }
 
-    public initFormTable(): void {
-        while (this.tableRows.length) {
-            this.tableRows.removeAt(0);
-        }
-        this.notifications.forEach((notification) => {
-            this.tableRows.push(new FormGroup({
-                id: new FormControl(notification.id),
-                level: new FormControl(notification.level, Validators.required),
-                message: new FormControl(notification.message, Validators.required),
-            }));
-        });
-    }
-
     public addRow(): void {
-        this.tableRows.push(new FormGroup({
-            id: new FormControl(''),
-            level: new FormControl('', Validators.required),
-            message: new FormControl('', Validators.required),
-        }));
+        this.notifications.push({
+            id: null,
+            message: '',
+            level: 'INFO',
+            activatedAt: null,
+            activated: false,
+            originalText: '',
+        } as SystemNotificationHolder);
     }
 
-   public onCreate(notificationController: AbstractControl): void {
-        if (notificationController.invalid) {
-            notificationController.markAsDirty();
+    public toggleActivated(notification: SystemNotificationHolder): void {
+        if (notification.activatedAt === null) {
+            notification.activatedAt = moment(new Date()).format('YYYY-MM-DD hh:mm:ss');
+
         } else {
-            const inputNotification = {
-                level: notificationController.get('level').value,
-                message: notificationController.get('message').value,
-            };
-            this.create(inputNotification).then(
-                () => {
-                    this.showNotification('Created Notification message');
-                    this.fetch().then((notifications) => {
-                        this.notifications = notifications;
-                        this.initFormTable();
-                    });
+            notification.activatedAt = null;
+        }
+        this.onDataChange(notification);
+    }
+
+    public onTextChange(notification: SystemNotificationHolder): void {
+        if (notification.id) {
+            const dialogRef = this.dialog.open(NotificationUpdateComponent, {
+                width: '400px', data: {notification},
+            });
+            dialogRef.componentInstance.onUpdate$.subscribe(() => {
+                this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt})
+                    .then(() => this.onDataChange(notification));
+            });
+
+        } else {
+            this.onDataChange(notification);
+        }
+    }
+
+    public onDataChange(notification: SystemNotificationHolder): void {
+        if (notification.message === '') {
+            return;
+        }
+
+        if (notification.id) {
+            this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).then((data) => {
+                notification.message = data.message;
+                notification.originalText = data.message;
+                notification.activatedAt = data.activatedAt;
+                notification.activated = notification.activatedAt != null;
+                notification.level = data.level;
+
+                this.showNotification('The system notification has been updated');
+            }).catch((error) => {
+                console.error(error);
+                this.showErrorNotification('Failed to update the system notification');
+
+            });
+        } else {
+            this.create({level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).then((data) => {
+                notification.id = data.id;
+                notification.message = data.message;
+                notification.originalText = data.message;
+                notification.activatedAt = data.activatedAt;
+                notification.activated = notification.activatedAt != null;
+                notification.level = data.level;
+
+                this.showNotification('The system notification has been created');
+            }).catch((error) => {
+                console.error(error);
+                this.showErrorNotification('Failed to create the system notification');
+            });
+        }
+    }
+
+    public onDelete(notification: SystemNotificationHolder): void {
+        if (notification.id != null) {
+            const dialogRef = this.dialog.open(NotificationDeleteComponent, {
+                width: '400px',
+            });
+            dialogRef.componentInstance.onDelete$.subscribe(() => {
+                this.delete(notification.id).then(() => {
+                    this.notifications = this.notifications.filter((aNotification) => aNotification.id !== notification.id);
+
+                    this.showNotification('The system notification has been deleted');
+                }).catch((error) => {
+                    console.error(error);
+                    this.showErrorNotification('Failed to delete the system notification');
                 });
-        }
+            });
 
-    }
-
-    public onDelete(notificationController: AbstractControl, index: number): void {
-        if (notificationController.get('id').value) {
-            const id = notificationController.get('id').value;
-            this.delete(id).then(
-                () => {
-                    this.showNotification('Deleted Notification message');
-                    this.fetch().then((notifications) => {
-                        this.notifications = notifications;
-                        this.tableRows.removeAt(index);
-                    });
-                },
-            );
         } else {
-            this.tableRows.removeAt(index);
+            this.notifications = this.notifications.filter(aNotification => aNotification !== notification);
         }
     }
 
-    public notificationChange(notificationController: AbstractControl, index: number): boolean {
-        if (notificationController.get('id').value) {
-            return notificationController.get('message').value !== this.notifications[index].message ||
-                notificationController.get('level').value !== this.notifications[index].level;
-        } else  {
-            return !notificationController.invalid;
-        }
-    }
-
-    public isUpdate(notificationController: AbstractControl): void {
-        if (notificationController.get('id').value) {
-            this.onUpdate(notificationController);
-        } else {
-            this.onCreate(notificationController);
-        }
-    }
-
-    public onUpdate(notificationController: AbstractControl): void {
-        const inputNotification = {
-            level: notificationController.get('level').value,
-            message: notificationController.get('message').value
-        };
-        if (notificationController.get('id').value) {
-            const id = notificationController.get('id').value;
-            this.update(id, inputNotification).then(
-                () => {
-                    this.showNotification('Updated Notification message');
-                    this.fetch().then((notifications) => {
-                        this.notifications = notifications;
-                    });
-                },
-            );
-        } else {
-
-        }
-
-    }
-
-    public showNotification(message: string): void {
+    private showNotification(message: string): void {
         this.notifierService.notify('success', message);
     }
 
-    public fetch(): Promise<SystemNotification[]> {
+    private showErrorNotification(message: string): void {
+        this.notifierService.notify('error', message);
+    }
+
+    public fetch(): Promise<SystemNotificationHolder[]> {
         return this.apollo.watchQuery<any>({
             query: gql`{
             systemNotifications {
                 id
                 level
                 message
+                activatedAt
             }
         }`,
         }).result()
             .then(({data}) => {
-                return data.systemNotifications;
-            }).catch((error) => {
-                throw new Error(error);
+                return data.systemNotifications.map(({id, message, level, activatedAt}) => ({
+                    id, message, level, activatedAt, originalText: message, activated: activatedAt !== null
+                }));
             });
     }
 
-    public create(input): Promise<SystemNotification> {
-        return this.apollo.watchQuery<any>({
-            query: gql`
-            mutation create($input: SystemNotificationInput!) {
-                createSystemNotification(input: $input) {
-                    id
-                    level
-                    message
-                }
-            }`, variables: {input},
-        }).result()
+    private create(input: SystemNotificationInput): Promise<SystemNotification> {
+        return this.apollo.mutate<any>({
+            mutation: gql`
+                mutation create($input: SystemNotificationInput!) {
+                    createSystemNotification(input: $input) {
+                        id
+                        level
+                        message
+                        activatedAt
+                    }
+                }`, variables: {input},
+        }).toPromise()
             .then(({data}) => {
                 return data.createSystemNotification;
-            }).catch((error) => {
-                throw new Error(error);
-            });
+            }).catch(error => { throw error; });
     }
 
-    public update(id, input): Promise<SystemNotification> {
-        return this.apollo.watchQuery<any>({
-            query: gql`
-            mutation update($id: Int!,$input: SystemNotificationInput!) {
-                updateSystemNotification(id: $id,input:$input) {
-                    id
-                    level
-                    message
-                }
-            }`, variables: {id, input},
-        }).result()
+    private update(id, input: SystemNotificationInput): Promise<SystemNotification> {
+        return this.apollo.mutate<any>({
+            mutation: gql`
+                mutation updateSystemNotification($id: Int!, $input: SystemNotificationInput!) {
+                    updateSystemNotification(id: $id, input:$input) {
+                        id
+                        level
+                        message
+                        activatedAt
+                    }
+                }`, variables: {id, input},
+        }).toPromise()
             .then(({data}) => {
                 return data.updateSystemNotification;
-            }).catch((error) => {
-                throw new Error(error);
-            });
+            }).catch(error => { throw error; });
     }
 
-    public delete(id): Promise<SystemNotification> {
-        return this.apollo.watchQuery<any>({
-            query: gql`
-              mutation delete($id: Int!) {
+    private delete(id): Promise<SystemNotification> {
+        return this.apollo.mutate<any>({
+            mutation: gql`
+              mutation deleteSystemNotification($id: Int!) {
                 deleteSystemNotification(id: $id) {
                     id
                     level
                     message
+                    activatedAt
                 }
-               }`, variables: {id},
-        }).result()
+              }`, variables: {id},
+        }).toPromise()
             .then(({data}) => {
                 return data.deleteSystemNotification;
-            }).catch((error) => {
-                throw new Error(error);
-            });
+            }).catch(error => { throw error; });
     }
 }

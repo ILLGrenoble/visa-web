@@ -19,6 +19,8 @@ export * from './instance-attributes';
 export * from './instance-cloud-details';
 export * from './instance-experiments';
 export * from './notifications';
+export * from './notification-update';
+export * from './notification-delete';
 export * from './user-search';
 export * from './users';
 export * from './security-groups-overview';

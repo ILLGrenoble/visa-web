@@ -531,6 +531,7 @@ export type PlanInput = {
 export type SystemNotificationInput = {
     level: Scalars['String'];
     message: Scalars['String'];
+    activatedAt?: Maybe<Scalars['String']>;
 };
 
 
@@ -582,6 +583,7 @@ export type SystemNotification = {
     id: Scalars['Int'];
     level: Scalars['String'];
     message: Scalars['String'];
+    activatedAt?: Maybe<Scalars['String']>;
 };
 
 export type SecurityGroup = {
