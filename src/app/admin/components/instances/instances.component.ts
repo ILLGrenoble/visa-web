@@ -130,6 +130,9 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                 lastInteractionAt
                                 owner {
                                     fullName
+                                    affiliation {
+                                      name
+                                    }
                                 }
                                 createdAt
                                 plan {

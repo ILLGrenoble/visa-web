@@ -154,6 +154,9 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                 fullName
                                 firstName
                                 lastName
+                                affiliation {
+                                    name
+                                }
                             }
                         }
 

@@ -126,6 +126,9 @@ export class LatestJupyterSessionsBoxComponent implements OnInit, OnDestroy {
                                 fullName
                                 firstName
                                 lastName
+                                affiliation {
+                                  name
+                                }
                             }
                         }
                     }
