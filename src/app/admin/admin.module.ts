@@ -43,6 +43,8 @@ import {
     InstanceSessionsComponent,
     InstancesFilterComponent,
     NotificationsComponent,
+    NotificationUpdateComponent,
+    NotificationDeleteComponent,
     PlanNewComponent,
     PlansComponent,
     PlanUpdateComponent,
@@ -105,6 +107,8 @@ import {
         InstanceMembersComponent,
         InstanceAttributesComponent,
         NotificationsComponent,
+        NotificationUpdateComponent,
+        NotificationDeleteComponent,
         UserSearchComponent,
         LatestActiveUsersBoxComponent,
         SecurityGroupsComponent,
@@ -131,7 +135,9 @@ import {
         SecurityGroupImportComponent,
         SecurityGroupFilterNewComponent,
         SecurityGroupFilterDeleteComponent,
-        SecurityGroupDeleteComponent
+        SecurityGroupDeleteComponent,
+        NotificationUpdateComponent,
+        NotificationDeleteComponent,
     ],
 })
 export class AdminModule {

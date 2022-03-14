@@ -10,6 +10,7 @@
             <tr>
                 <th>Instance</th>
                 <th>User</th>
+                <th>Affiliation</th>
                 <th>Kernels</th>
                 <th>Created</th>
                 <th>Time connected</th>
@@ -23,6 +24,7 @@
                     </a>
                 </td>
                 <td>{{jupyterSession.user.fullName}}</td>
+                <td>{{jupyterSession.user.affiliation.name}}</td>
                 <td>{{jupyterSession.kernelCount}}</td>
                 <td>
                     <clr-tooltip>

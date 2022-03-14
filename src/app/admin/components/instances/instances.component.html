@@ -26,6 +26,11 @@
                                     Owner
                                 </ng-container>
                             </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Affiliation
+                                </ng-container>
+                            </clr-dg-column>
                             <clr-dg-column [clrDgSortBy]="'state'" [clrDgSortOrder]="isColumnSorted('state')">
                                 <ng-container>
                                     State
@@ -62,6 +67,7 @@
                                 <clr-dg-cell>{{ instance.id }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.fullName }}</clr-dg-cell>
+                                <clr-dg-cell>{{ instance.owner.affiliation.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.state }}</clr-dg-cell>
                                 <clr-dg-cell>
                                     <span *ngIf="instance.activeSessions.length == 0">

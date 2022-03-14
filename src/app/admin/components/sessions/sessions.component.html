@@ -11,6 +11,7 @@
                         <clr-dg-column>Instance Name</clr-dg-column>
                         <clr-dg-column>Creation</clr-dg-column>
                         <clr-dg-column>User</clr-dg-column>
+                        <clr-dg-column>Affiliation</clr-dg-column>
                         <clr-dg-column>Role</clr-dg-column>
                         <clr-dg-column>Time connected</clr-dg-column>
                         <clr-dg-column>Last interaction</clr-dg-column>
@@ -23,6 +24,7 @@
                             <clr-dg-cell>{{instanceSessionMember.instanceSession.instance.name}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.createdAt | date:'dd-MM-yyyy HH:mm'}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.user.fullName}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.user.affiliation.name}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.role}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.duration | timeConversion}}</clr-dg-cell>
                             <clr-dg-cell>

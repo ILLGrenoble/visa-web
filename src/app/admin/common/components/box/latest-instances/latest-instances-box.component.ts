@@ -104,6 +104,9 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                       owner {
                         id
                         fullName
+                        affiliation {
+                          name
+                        }
                       }
                     }
                   }

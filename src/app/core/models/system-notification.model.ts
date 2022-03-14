@@ -16,6 +16,9 @@ export class SystemNotification {
     @JsonProperty('id', Number)
     private _id: number = undefined;
 
+    @JsonProperty('uid', Number)
+    private _uid: number = undefined;
+
     @JsonProperty('message', String)
     private _message: string = undefined;
 
@@ -27,6 +30,10 @@ export class SystemNotification {
 
     get id(): number{
         return this._id;
+    }
+
+    get uid(): number {
+        return this._uid;
     }
 
     get message(): string {
