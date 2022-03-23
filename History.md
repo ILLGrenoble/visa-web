@@ -1,3 +1,11 @@
+2.2.0 23/03/2022
+================
+ * Show user affiliation in admin UIs
+ * Allow re-use of system notifications (enable/disable button)
+ * Use a UID rather than ID for instance URLs (eg remote desktop)
+ * Fix bug on JupyterLab not taking up full window height
+ * Fix bug on tab/enter changing page while using remote desktop
+
 2.1.2 23/11/2021
 ================
  * Fixed apollo memory cache issue due to bug: https://github.com/apollographql/apollo-client/issues/8566
