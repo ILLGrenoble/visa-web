@@ -65,6 +65,7 @@ export class NotificationsComponent implements OnInit {
                 width: '400px', data: {notification},
             });
             dialogRef.componentInstance.onUpdate$.subscribe(() => {
+                notification.activatedAt = notification.activatedAt != null ? moment(new Date()).format('YYYY-MM-DD hh:mm:ss') : null;
                 this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt})
                     .then(() => this.onDataChange(notification));
             });
@@ -80,6 +81,8 @@ export class NotificationsComponent implements OnInit {
         }
 
         if (notification.id) {
+            notification.activatedAt = notification.activatedAt != null ? moment(new Date()).format('YYYY-MM-DD hh:mm:ss') : null;
+
             this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).then((data) => {
                 notification.message = data.message;
                 notification.originalText = data.message;
