@@ -606,3 +606,22 @@ export type CloudSecurityGroup = {
     name: Scalars['String'];
     integration: Maybe<SecurityGroup>;
 };
+
+export type ApplicationCredentialDetail = {
+    __typename?: 'ApplicationCredentialDetail';
+    id: Scalars['Int'];
+    name: Scalars['String'];
+    applicationId: Scalars['String'];
+};
+
+export type ApplicationCredential = {
+    __typename?: 'ApplicationCredential';
+    id: Scalars['Int'];
+    name: Scalars['String'];
+    applicationId: Scalars['String'];
+    applicationSecret: Scalars['String'];
+};
+
+export type ApplicationCredentialInput = {
+    name: Scalars['String'];
+};

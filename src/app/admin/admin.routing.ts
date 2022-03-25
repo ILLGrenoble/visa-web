@@ -11,7 +11,7 @@ import {
     PlansComponent,
     SecurityGroupsOverviewComponent,
     UsersComponent,
-    SessionsComponent
+    SessionsComponent, ApplicationCredentialsComponent
 } from './components';
 
 export const ROUTES: Routes = [
@@ -52,7 +52,10 @@ export const ROUTES: Routes = [
                 path: 'sessions', component: SessionsComponent,
             },
             {
-                path: 'notifications', component: NotificationsComponent,
+                path: 'settings/notifications', component: NotificationsComponent,
+            },
+            {
+                path: 'settings/applications', component: ApplicationCredentialsComponent,
             },
         ],
     },

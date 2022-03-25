@@ -12,6 +12,7 @@ import {
     FlavourDistributionBoxComponent,
     HeaderComponent,
     CloudHeaderComponent,
+    SettingsHeaderComponent,
     ImageCountStatComponent,
     ImageDistributionBoxComponent,
     InstanceCountStatComponent,
@@ -56,7 +57,12 @@ import {
     UsersComponent,
     UsersFilterComponent,
     SecurityGroupsComponent,
-    SecurityGroupFilterNewComponent, SecurityGroupFilterDeleteComponent, SecurityGroupDeleteComponent
+    SecurityGroupFilterNewComponent,
+    SecurityGroupFilterDeleteComponent,
+    SecurityGroupDeleteComponent,
+    ApplicationCredentialsComponent,
+    ApplicationCredentialNewComponent,
+    ApplicationCredentialDeleteComponent,
 } from './components';
 
 @NgModule({
@@ -73,6 +79,7 @@ import {
         InstancesComponent,
         HeaderComponent,
         CloudHeaderComponent,
+        SettingsHeaderComponent,
         InstanceComponent,
         ImagesComponent,
         ImageNewComponent,
@@ -119,7 +126,10 @@ import {
         SecurityGroupFilterDeleteComponent,
         SecurityGroupDeleteComponent,
         UsersComponent,
-        UsersFilterComponent
+        UsersFilterComponent,
+        ApplicationCredentialsComponent,
+        ApplicationCredentialNewComponent,
+        ApplicationCredentialDeleteComponent,
     ],
     exports: [
         DashboardComponent,
@@ -138,6 +148,8 @@ import {
         SecurityGroupDeleteComponent,
         NotificationUpdateComponent,
         NotificationDeleteComponent,
+        ApplicationCredentialNewComponent,
+        ApplicationCredentialDeleteComponent,
     ],
 })
 export class AdminModule {
