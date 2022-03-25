@@ -7,11 +7,9 @@ import {ApplicationCredential} from '../../../core/graphql';
     styleUrls: ['./application-credential-delete.component.scss'],
     templateUrl: './application-credential-delete.component.html',
 })
-export class ApplicationCredentialDeleteComponent implements OnInit {
+export class ApplicationCredentialDeleteComponent {
 
     private _onDelete$: EventEmitter<any> = new EventEmitter();
-
-    private _applicationCredential: ApplicationCredential;
 
     get onDelete$(): EventEmitter<any> {
         return this._onDelete$;
@@ -22,11 +20,7 @@ export class ApplicationCredentialDeleteComponent implements OnInit {
     }
 
     constructor(private _dialogRef: MatDialogRef<ApplicationCredentialDeleteComponent>,
-                @Inject(MAT_DIALOG_DATA) private _data) {
-    }
-
-    public ngOnInit(): void {
-        this._applicationCredential = this._data.applicationCredential;
+                @Inject(MAT_DIALOG_DATA) private _applicationCredential) {
     }
 
     public onCancel(): void {

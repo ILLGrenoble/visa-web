@@ -33,3 +33,4 @@ export * from './security-group-delete';
 export * from './application-credentials';
 export * from './application-credential-new';
 export * from './application-credential-delete';
+export * from './application-credential-update';

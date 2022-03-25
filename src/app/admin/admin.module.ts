@@ -63,6 +63,7 @@ import {
     ApplicationCredentialsComponent,
     ApplicationCredentialNewComponent,
     ApplicationCredentialDeleteComponent,
+    ApplicationCredentialUpdateComponent,
 } from './components';
 
 @NgModule({
@@ -130,6 +131,7 @@ import {
         ApplicationCredentialsComponent,
         ApplicationCredentialNewComponent,
         ApplicationCredentialDeleteComponent,
+        ApplicationCredentialUpdateComponent,
     ],
     exports: [
         DashboardComponent,
@@ -150,6 +152,7 @@ import {
         NotificationDeleteComponent,
         ApplicationCredentialNewComponent,
         ApplicationCredentialDeleteComponent,
+        ApplicationCredentialUpdateComponent,
     ],
 })
 export class AdminModule {

@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter } from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 import {ApplicationCredentialInput} from '../../../core/graphql';
 
 @Component({
@@ -7,7 +7,7 @@ import {ApplicationCredentialInput} from '../../../core/graphql';
     styleUrls: ['./application-credential-new.component.scss'],
     templateUrl: './application-credential-new.component.html',
 })
-export class ApplicationCredentialNewComponent implements OnInit {
+export class ApplicationCredentialNewComponent {
 
     private _onCreate$: EventEmitter<any> = new EventEmitter();
 
@@ -23,11 +23,7 @@ export class ApplicationCredentialNewComponent implements OnInit {
         return this._applicationCredentialInput;
     }
 
-    constructor(private _dialogRef: MatDialogRef<ApplicationCredentialNewComponent>,
-                @Inject(MAT_DIALOG_DATA) private _data) {
-    }
-
-    public ngOnInit(): void {
+    constructor(private _dialogRef: MatDialogRef<ApplicationCredentialNewComponent>) {
     }
 
     public onCancel(): void {

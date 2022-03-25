@@ -5,9 +5,10 @@ import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {map, takeUntil} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
-import {ApplicationCredential, ApplicationCredentialDetail} from '../../../core/graphql';
+import {ApplicationCredential, ApplicationCredentialDetail, ApplicationCredentialInput} from '../../../core/graphql';
 import {ApplicationCredentialNewComponent} from '../application-credential-new';
 import {ApplicationCredentialDeleteComponent} from '../application-credential-delete';
+import {ApplicationCredentialUpdateComponent} from '../application-credential-update';
 
 @Component({
     selector: 'visa-admin-application-credentials',
@@ -75,7 +76,7 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
 
     public onCreate(): void {
         const dialogRef = this.dialog.open(ApplicationCredentialNewComponent, {
-            width: '900px',
+            width: '600px',
         });
         dialogRef.componentInstance.onCreate$.subscribe((applicationCredentialInput: any) => {
             this.apollo.mutate<any>({
@@ -103,9 +104,9 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onDelete(applicationCredentialId): void {
+    public onDelete(applicationCredential: ApplicationCredentialDetail): void {
         const dialogRef = this.dialog.open(ApplicationCredentialDeleteComponent, {
-            width: '300px', data: {applicationCredential: this.applicationCredentials.find((x) => x.id === applicationCredentialId)},
+            width: '600px', data: applicationCredential,
         });
         dialogRef.componentInstance.onDelete$.subscribe(() => {
             this.apollo.mutate<any>({
@@ -116,7 +117,7 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
                         }
                     }
                 `,
-                variables: {id: applicationCredentialId},
+                variables: {id: applicationCredential.id},
             }).toPromise()
                 .then(() => {
                     this.showSuccessNotification('Application Credentials deleted');
@@ -124,36 +125,35 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
                 });
         });
     }
-    //
-    // public onUpdate(applicationCredential: Image): void {
-    //     const dialogRef = this.dialog.open(ImageUpdateComponent, {
-    //         width: '900px', data: {
-    //             applicationCredential,
-    //             applicationCredentialIcons: this.applicationCredentialIcons,
-    //             cloudImages: this.cloudImages,
-    //             protocols: this.protocols,
-    //         },
-    //     });
-    //     dialogRef.componentInstance.onUpdate$.subscribe(async (data) => {
-    //         this.apollo.mutate<any>({
-    //             mutation: gql`
-    //                 mutation UpdateImage($id: Int!,$input: ImageInput!){
-    //                     updateImage(id:$id,input:$input) {
-    //                         id
-    //                     }
-    //                 }
-    //         `,
-    //             variables: {id: applicationCredential.id, input: data},
-    //         }).toPromise()
-    //             .then(() => {
-    //                 dialogRef.close();
-    //                 this.showSuccessNotification('Image Updated');
-    //                 this.loadProtocolsImages();
-    //             }).catch((error) => {
-    //             this.showErrorNotification(error);
-    //         });
-    //     });
-    // }
+
+    public onUpdate(applicationCredential: ApplicationCredentialDetail): void {
+        const applicationCredentialToUpdate: ApplicationCredentialInput = {
+            name: applicationCredential.name,
+        };
+
+        const dialogRef = this.dialog.open(ApplicationCredentialUpdateComponent, {
+            width: '900px', data: applicationCredentialToUpdate,
+        });
+        dialogRef.componentInstance.onUpdate$.subscribe(async (data) => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation updateApplicationCredential($id: Int!,$input: ApplicationCredentialInput!){
+                        updateApplicationCredential(id:$id, input:$input) {
+                            id
+                        }
+                    }
+            `,
+                variables: {id: applicationCredential.id, input: data},
+            }).toPromise()
+                .then(() => {
+                    dialogRef.close();
+                    this.showSuccessNotification('Application Credentials updated');
+                    this.loadApplicationCredentials();
+                }).catch((error) => {
+                this.showErrorNotification(error);
+            });
+        });
+    }
 
     public copyToClipboard(text: string): void {
         if (!navigator.clipboard) {
