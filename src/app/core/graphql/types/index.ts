@@ -612,6 +612,7 @@ export type ApplicationCredentialDetail = {
     id: Scalars['Int'];
     name: Scalars['String'];
     applicationId: Scalars['String'];
+    lastUsedAt: Scalars['String'];
 };
 
 export type ApplicationCredential = {

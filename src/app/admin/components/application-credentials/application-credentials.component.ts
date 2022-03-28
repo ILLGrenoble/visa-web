@@ -62,6 +62,7 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
                         id
                         name
                         applicationId
+                        lastUsedAt
                     }
                 }
             `,
