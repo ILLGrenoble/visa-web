@@ -39,14 +39,16 @@ export class CatalogueService {
 
     public convertPlansToImagePlans(plans: Plan[]): ImagePlans[] {
         const allImagePlans = new Array<ImagePlans>();
-        plans.forEach((plan) => {
-            let imagePlans = allImagePlans.find((anImagePlans) => anImagePlans.image.id === plan.image.id);
-            if (imagePlans == null) {
-                imagePlans = new ImagePlans(plan.image);
-                allImagePlans.push(imagePlans);
-            }
-            imagePlans.addPlan(plan);
-        });
+        if (plans != null) {
+            plans.forEach((plan) => {
+                let imagePlans = allImagePlans.find((anImagePlans) => anImagePlans.image.id === plan.image.id);
+                if (imagePlans == null) {
+                    imagePlans = new ImagePlans(plan.image);
+                    allImagePlans.push(imagePlans);
+                }
+                imagePlans.addPlan(plan);
+            });
+        }
 
         return allImagePlans;
     }

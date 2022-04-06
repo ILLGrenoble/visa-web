@@ -85,7 +85,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
     }
 
     get canBeExperimentFree(): boolean {
-        return this._user != null && this._user.hasAnyRole(['ADMIN', 'STAFF']);
+        return this._user != null && this._user.hasAnyRole(['ADMIN', 'STAFF', 'GUEST']);
     }
 
     get experimentFree(): boolean {
@@ -174,6 +174,10 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
             }
         });
 
+        // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
+        if (this.totalExperiments === 0 && this.canBeExperimentFree) {
+            this.experimentFree = true;
+        }
 
         this._experimentsObservable.subscribe(experiments => {
             const experimentIds = experiments.map((experiment) => experiment.id);

@@ -61,7 +61,8 @@
             <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (totalExperiments > 0 || canBeExperimentFree)">
                 <div class="clr-col-12">
                     <div class="sections">
-                        <div class="section">
+
+                        <div class="section" *ngIf="totalExperiments > 0">
                             <div class="title">
                                 <h2>Experiments</h2>
                                 <div *ngIf="!canBeExperimentFree" class="title-not-experiment-free">
@@ -82,10 +83,6 @@
                                 <button class="btn" (click)="openExperimentSearch()">
                                     Search for experiments
                                 </button>
-<!--                                <visa-instance-experiment-select (selected)="addExperiment($event)"></visa-instance-experiment-select>-->
-
-
-
 
                                 <clr-datagrid [clrDgRowSelection]="true">
                                     <clr-dg-column [style.width.px]="150">Proposal</clr-dg-column>
