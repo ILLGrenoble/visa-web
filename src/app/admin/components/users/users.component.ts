@@ -89,10 +89,12 @@ export class UsersComponent implements OnInit, OnDestroy {
             const state = {
                 filters: {
                     userId: params.getString('userId', null),
+                    activated: params.getBoolean('activated', true),
+                    role:  params.getString('role', null),
                 },
                 page: params.getNumber('page', 1),
-                descending: params.getBoolean('descending', true),
-                orderBy: params.getString('orderBy', 'id'),
+                descending: params.getBoolean('descending', false),
+                orderBy: params.getString('orderBy', 'activatedAt'),
             };
             this.state$.next(state);
         });
@@ -246,6 +248,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     private createFilter(): FilterProvider {
         return new FilterProvider({
             userId: new FilterAttribute('id', 'userId', '='),
+            role: new FilterAttribute('role', 'role', '='),
         });
     }
 
@@ -257,8 +260,8 @@ export class UsersComponent implements OnInit, OnDestroy {
                 queryParams: {
                     ...this.currentState.filters,
                     page: currentState.page === 1 ? null : currentState.page,
-                    orderBy: currentState.orderBy === 'id' ? null : currentState.orderBy,
-                    descending: currentState.descending === true ? null : currentState.descending,
+                    orderBy: currentState.orderBy === 'activatedAt' ? null : currentState.orderBy,
+                    descending: currentState.descending === false ? null : currentState.descending,
                 },
                 queryParamsHandling: 'merge',
                 replaceUrl: true,
@@ -274,7 +277,10 @@ export class UsersComponent implements OnInit, OnDestroy {
                 query.setParameter(key, value);
             }
         });
-        query.addFixedQuery('activatedAt IS NOT NULL');
+
+        if (this.currentState.filters.activated) {
+            query.addFixedQuery('activatedAt IS NOT NULL');
+        }
         return query.execute();
     }
 

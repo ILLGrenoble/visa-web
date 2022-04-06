@@ -1,6 +1,8 @@
 export interface UsersFilterState {
     filters: {
-        userId: number;
+        userId: string;
+        activated: boolean;
+        role: string;
     };
     page: number;
     descending: boolean;

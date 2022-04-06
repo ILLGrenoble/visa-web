@@ -9,10 +9,34 @@
         <div class="filters-box-body">
             <div class="filter-box">
                 <div class="filter-title">
+                    Activated Users
+                </div>
+                <div class="filter-body">
+                    <clr-checkbox-wrapper class="filter-checkbox">
+                        <label for="activateUsers">Include only activated users</label>
+                        <input formControlName="activated" clrCheckbox type="checkbox" id="activateUsers" name="activateUsers">
+                    </clr-checkbox-wrapper>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
                     User
                 </div>
                 <div class="filter-body">
-                    <visa-admin-user-search [form]="form"></visa-admin-user-search>
+                    <visa-admin-user-search [form]="form" [activatedUsersOnly]="false"></visa-admin-user-search>
+                </div>
+            </div>
+            <div class="filter-box">
+                <div class="filter-title">
+                    Role
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="role" class="filter-input">
+                        <option [ngValue]="null"></option>
+                        <option *ngFor="let role of data.roles" [ngValue]="role.name">
+                            {{ role.name }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>

@@ -27,8 +27,10 @@ export class FilterQuery {
             const attribute = this.attributes.get(parameter.name);
             if (attribute) {
                 return `${attribute.alias} ${attribute.comparator} :${attribute.placeholder}`;
+            } else {
+                return null;
             }
-        });
+        }).filter(value => value != null);
 
         return {
             query: dynamicQueries.concat(this.fixedQueries).join(' AND '),
@@ -39,7 +41,7 @@ export class FilterQuery {
                     const {value} = parameter;
                     return {name: placeholder, value: value.toString()};
                 }
-            }),
+            }).filter(value => value != null),
         };
     }
 }

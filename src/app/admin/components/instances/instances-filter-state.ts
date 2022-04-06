@@ -6,7 +6,7 @@ export interface InstancesFilterState {
         image: number;
         instrument: number;
         state: string;
-        user: number;
+        user: string;
     };
     columns: {
         image: boolean;

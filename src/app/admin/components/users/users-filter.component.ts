@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {UsersFilterState} from './users-filter-state';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-users-filter',
@@ -76,7 +77,7 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
         this._loading = value;
     }
 
-    constructor(private apollo: Apollo) {
+    constructor(private apollo: Apollo, private notifierService: NotifierService) {
         this._form = this.createForm();
     }
 
@@ -86,6 +87,8 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
             ...this.state,
             filters: {
                 userId: null,
+                activated: null,
+                role: null
             },
             page: 1,
         });
@@ -97,6 +100,24 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         this.form.patchValue(this.state.filters);
+
+        this.apollo.query<any>({
+            errorPolicy: 'all',
+            query: gql`
+                {
+                    roles {
+                        name
+                    }
+                }
+            `,
+        }).pipe(takeUntil(this.destroy$)).subscribe((result) => {
+            this.data = result.data;
+            this.loading = result.loading;
+            if (result.errors) {
+                this.notifierService.notify('error', 'There was an error loading the filters');
+            }
+        });
+
         if (this.state.filters.userId != null) {
             this.apollo.query<any>({
                 errorPolicy: 'all',
@@ -132,15 +153,19 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
     private createForm(): FormGroup {
         return new FormGroup({
             user: new FormControl(null),
+            activated: new FormControl(null),
+            role: new FormControl(null),
         });
     }
 
     private processForm(): UsersFilterState {
-        const {user} = this._form.value;
+        const {user, activated, role} = this._form.value;
         return {
             ...this._state,
             filters: {
                 userId: user ? user.id : null,
+                activated,
+                role
             },
             page: 1,
         };

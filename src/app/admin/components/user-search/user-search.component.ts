@@ -19,6 +19,8 @@ export class UserSearchComponent implements OnInit {
 
     private _users$: Observable<any[]>;
 
+    private _activatedUsersOnly: boolean = true;
+
     get users$(): Observable<any[]> {
         return this._users$;
     }
@@ -34,6 +36,11 @@ export class UserSearchComponent implements OnInit {
     @Input()
     set form(value: FormGroup) {
         this._form = value;
+    }
+
+    @Input()
+    set activatedUsersOnly(value: boolean) {
+        this._activatedUsersOnly = value;
     }
 
     get loading(): boolean {
@@ -66,9 +73,10 @@ export class UserSearchComponent implements OnInit {
                     return this.apollo.query<any>({
                         errorPolicy: 'all',
                         query: gql`
-                            query searchForUserByLastName($lastName: String!) {
+                            query searchForUserByLastName($lastName: String!, $activatedUsersOnly: Boolean!) {
                               searchForUserByLastName(
                                 lastName: $lastName
+                                onlyActivatedUsers: $activatedUsersOnly
                                 pagination: { limit: 200, offset: 0 }
                               ) {
                                 data {
@@ -82,6 +90,7 @@ export class UserSearchComponent implements OnInit {
                      `,
                         variables: {
                             lastName: term,
+                            activatedUsersOnly: this._activatedUsersOnly
                         },
                     }).pipe(tap(() => this._loading = false), map((result) => {
                         if (result.data) {
