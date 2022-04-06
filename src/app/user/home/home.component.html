@@ -10,6 +10,18 @@
 </div>
 <div class="content-container">
     <div class="content-area">
+        <div class="content-small-container alert alert-warning home-guest-access" role="alert" *ngIf="isGuest">
+            <div class="alert-items">
+                <div class="alert-item static">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="info-circle"></clr-icon>
+                    </div>
+                    <span *ngIf="guestExpiryDate">You have been granted guest access to create compute instances using VISA. Your guest access will expire on {{guestExpiryDate | date:'medium'}}</span>
+                    <span *ngIf="!guestExpiryDate">You have been granted guest access to create compute instances using VISA.</span>
+                </div>
+            </div>
+        </div>
+
         <div class="content-small-container" [hidden]="instances.length > 0">
             <div class="information-panel">
                 <h4 class="information-panel-title">

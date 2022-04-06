@@ -1,15 +1,19 @@
 import {Component, OnInit} from '@angular/core';
 import {Title} from '@angular/platform-browser';
-import {AccountService, Experiment, Instance} from '@core';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {takeUntil, tap} from 'rxjs/operators';
+import {AccountService, ApplicationState, Experiment, Instance, selectLoggedInUser, User} from '@core';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {filter, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
+import {Store} from '@ngrx/store';
 
 @Component({
     styleUrls: ['./home.component.scss'],
     templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
+
+    private _user$: Observable<User>;
+    private _user: User;
 
     private _instances: Instance[] = [];
     private _selectedExperiment: Experiment = null;
@@ -58,11 +62,23 @@ export class HomeComponent implements OnInit {
         this._loading = value;
     }
 
+    get isGuest(): boolean {
+        return this._user != null && this._user.hasOnlyRole('GUEST');
+    }
+
+    get guestExpiryDate(): Date {
+        if (this.isGuest) {
+            return this._user.getUserRole('GUEST').expiresAt;
+        }
+        return null;
+    }
+
     constructor(private accountService: AccountService,
                 private titleService: Title,
                 private route: ActivatedRoute,
+                private store: Store<ApplicationState>,
     ) {
-
+        this._user$ = store.select(selectLoggedInUser);
     }
 
     get refresh$(): Subject<void> {
@@ -80,6 +96,10 @@ export class HomeComponent implements OnInit {
             tap(() => this.loading = true),
             takeUntil(this.destroy$),
         ).subscribe(this.refresh.bind(this));
+
+        this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
+            this._user = user;
+        });
     }
 
     public refresh(): void {

@@ -18,3 +18,4 @@ export * from './configuration.model';
 export * from './system-notification.model';
 export * from './documentation-section.model';
 export * from './quota.model';
+export * from './role.model';

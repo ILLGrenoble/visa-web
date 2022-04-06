@@ -1,5 +1,6 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {Employer} from './employer.model';
+import {Role} from './role.model';
 
 @JsonObject('User')
 export class User {
@@ -25,8 +26,8 @@ export class User {
     @JsonProperty('email', String, true)
     public email: string = undefined;
 
-    @JsonProperty('roles', [String], true)
-    public roles: string[] = undefined;
+    @JsonProperty('userRoles', [Role], true)
+    private userRoles: Role[] = undefined;
 
     get admin(): boolean {
         return this.hasRole('ADMIN');
@@ -34,6 +35,11 @@ export class User {
 
     get support(): boolean {
         return this.hasAnyRole(['IT_SUPPORT', 'INSTRUMENT_CONTROL', 'INSTRUMENT_SCIENTIST', 'SCIENTIFIC_SUPPORT']);
+    }
+
+    get roles(): string[] {
+        const now = Date.now();
+        return this.userRoles.filter(role => role.expiresAt == null || role.expiresAt.getTime() > now).map(role => role.name);
     }
 
     get humanReadableSupportRole(): string {
@@ -67,5 +73,13 @@ export class User {
             }
         }
         return false;
+    }
+
+    public hasOnlyRole(role: string): boolean {
+        return this.roles.length === 1 && this.roles[0] === role;
+    }
+
+    public getUserRole(roleName: string): Role {
+        return this.userRoles.find(role => role.name === roleName);
     }
 }
