@@ -15,6 +15,7 @@ import {User} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-users',
+    styleUrls: ['./users.component.scss'],
     templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit, OnDestroy {
@@ -156,7 +157,10 @@ export class UsersComponent implements OnInit, OnDestroy {
             )
             .subscribe((data) => {
                 this.users = data;
-                this.users.data.forEach((user: any) => user.isAdmin = this.userIsAdmin(user));
+                this.users.data.forEach((user: any) => {
+                    user.isAdmin = this.userHasRole(user, 'ADMIN');
+                    user.isGuest = this.userHasRole(user, 'GUEST');
+                });
                 this.updateUrl();
             });
     }
@@ -195,12 +199,8 @@ export class UsersComponent implements OnInit, OnDestroy {
         return ClrDatagridSortOrder.UNSORTED;
     }
 
-    public userIsAdmin(user: User): boolean {
-        return user.roles.find(role => role.name === 'ADMIN') != null;
-    }
-
-    public userIsStaff(user: User): boolean {
-        return user.roles.find(role => role.name === 'STAFF') != null;
+    public userHasRole(user: User, roleName: string): boolean {
+        return user.roles.find(role => role.name === roleName) != null;
     }
 
     public userIsSupport(user: User): boolean {
@@ -209,7 +209,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         });
     }
 
-    public toggleAdmin(user: any): void {
+    public toggleRole(user: any, roleName: string): void {
         this.apollo.mutate({
             mutation: gql`
               mutation updateUserRole($userId: String!, $roleName: String!, $isEnabled: Boolean!) {
@@ -235,13 +235,14 @@ export class UsersComponent implements OnInit, OnDestroy {
             `,
             variables: {
                 userId: user.id,
-                roleName: 'ADMIN',
-                isEnabled: !this.userIsAdmin(user)
+                roleName,
+                isEnabled: !this.userHasRole(user, roleName)
             },
         }).toPromise().then((result: any) => {
             const returnedUser = result.data.updateUserRole;
             user.roles = returnedUser.roles;
-            user.isAdmin = this.userIsAdmin(user);
+            user.isAdmin = this.userHasRole(user, 'ADMIN');
+            user.isGuest = this.userHasRole(user, 'GUEST');
         });
     }
 

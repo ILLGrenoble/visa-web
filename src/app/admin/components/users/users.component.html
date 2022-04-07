@@ -51,6 +51,11 @@
                                     Support
                                 </ng-container>
                             </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Guest
+                                </ng-container>
+                            </clr-dg-column>
 
                             <clr-dg-placeholder>We couldn't find any users!</clr-dg-placeholder>
 
@@ -76,11 +81,16 @@
                                 </clr-dg-cell>
                                 <clr-dg-cell>
                                     <clr-toggle-wrapper>
-                                        <input type="checkbox" clrToggle [(ngModel)]="user.isAdmin" [disabled]="(user$ | async)?.id === user.id" (change)="toggleAdmin(user)" />
+                                        <input type="checkbox" clrToggle [(ngModel)]="user.isAdmin" [disabled]="(user$ | async)?.id === user.id" (change)="toggleRole(user, 'ADMIN')" />
                                     </clr-toggle-wrapper>
                                 </clr-dg-cell>
-                                <clr-dg-cell><clr-icon shape="check" *ngIf="userIsStaff(user)"></clr-icon></clr-dg-cell>
+                                <clr-dg-cell><clr-icon shape="check" *ngIf="userHasRole(user, 'STAFF')"></clr-icon></clr-dg-cell>
                                 <clr-dg-cell><clr-icon shape="check" *ngIf="userIsSupport(user)"></clr-icon></clr-dg-cell>
+                                <clr-dg-cell>
+                                    <clr-toggle-wrapper>
+                                        <input type="checkbox" clrToggle [(ngModel)]="user.isGuest" (change)="toggleRole(user, 'GUEST')" />
+                                    </clr-toggle-wrapper>
+                                </clr-dg-cell>
                             </clr-dg-row>
 
                             <clr-dg-footer>

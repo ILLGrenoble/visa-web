@@ -77,6 +77,10 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
         this._loading = value;
     }
 
+    public get activatedUsersOnly(): boolean {
+        return this._form.value.activated;
+    }
+
     constructor(private apollo: Apollo, private notifierService: NotifierService) {
         this._form = this.createForm();
     }
