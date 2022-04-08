@@ -126,7 +126,8 @@ export class CardComponent implements OnInit, OnDestroy {
     public canAccessJupyter(): boolean {
         const hasJupyterProtocol = this.instance.plan.image.hasProtocolWithName('JUPYTER');
 
-        return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
+        // return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
+        return (this.canConnect &&  hasJupyterProtocol);
     }
 
     public onRebootClicked(event): void {
