@@ -1,0 +1,136 @@
+<visa-admin-header></visa-admin-header>
+<div class="admin-container" *ngIf="user">
+    <div class="admin-container--main">
+        <div class="clr-row">
+            <div class="clr-col-lg-12">
+                <div class="admin-box admin-box-borderless">
+                    <div class="admin-box-header">
+                        <div class="admin-box-title">
+                            <ul class="admin-breadcrumbs">
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin']">Administration</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin/users']">Users</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    {{ user.fullName }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="admin-box-actions">
+                            <button class="admin-box-btn" (click)="handleEdit()">
+                                <clr-icon shape="edit"></clr-icon>
+                                Edit user
+                            </button>
+                        </div>
+                    </div>
+                    <div class="admin-box-body p-t-10 p-b-10">
+                        <dl class="admin-details-list">
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>ID</b>
+                                </dt>
+                                <dd>
+                                    {{ user.id }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Name</b>
+                                </dt>
+                                <dd>
+                                    {{ user.fullName }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Email</b>
+                                </dt>
+                                <dd>
+                                    {{ user.email }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Affiliation</b>
+                                </dt>
+                                <dd>
+                                    {{ user.affiliation?.name }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt><b>Last seen at</b></dt>
+                                <dd *ngIf="user.lastSeenAt">
+                                    {{ user.lastSeenAt | date:'dd-MM-yyyy HH:mm' }}
+                                </dd>
+                                <dd *ngIf="!user.lastSeenAt">
+                                    User has not logged in
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt><b>Activated at</b></dt>
+                                <dd *ngIf="user.activatedAt">
+                                    {{ user.activatedAt | date:'dd-MM-yyyy HH:mm' }}
+                                </dd>
+                                <dd *ngIf="!user.activatedAt">
+                                    User has not logged in
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Roles</b>
+                                </dt>
+                                <dd>
+                                    <span *ngIf="user.roles.length == 0">User has no roles</span>
+                                    <span *ngFor="let role of user?.roles"
+                                          class="admin-details-list-item-tag">{{ role.name }}</span>
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Instance Quota</b>
+                                </dt>
+                                <dd>
+                                    {{ user.instanceQuota }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <visa-tabs>
+                        <visa-tab id="experiments">
+                            <visa-tab-title>Experiments</visa-tab-title>
+                            <visa-tab-content>
+                                <visa-admin-user-experiments [userId]="user.id"></visa-admin-user-experiments>
+                            </visa-tab-content>
+                        </visa-tab>
+                        <visa-tab id="instances">
+                            <visa-tab-title>Instances</visa-tab-title>
+                            <visa-tab-content>
+                                <clr-datagrid>
+                                    <clr-dg-column>ID</clr-dg-column>
+                                    >
+                                    <clr-dg-column>Name</clr-dg-column>
+                                    <clr-dg-column>Termination date</clr-dg-column>
+                                    <clr-dg-column>Username</clr-dg-column>
+                                    <clr-dg-column>Role</clr-dg-column>
+                                    <clr-dg-placeholder>User does not have any instances</clr-dg-placeholder>
+                                    <clr-dg-row *ngFor="let instance of user.instances"
+                                                [routerLink]="['/admin/instances/', instance.id]">>
+                                        <clr-dg-cell>{{ instance.id }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
+                                        <clr-dg-cell>{{ instance.username }}</clr-dg-cell>
+                                        <clr-dg-cell *ngIf=" instance.owner.id == user.id">Owner</clr-dg-cell>
+                                        <clr-dg-cell *ngIf=" instance.owner.id != user.id">Member</clr-dg-cell>
+                                    </clr-dg-row>
+                                </clr-datagrid>
+                            </visa-tab-content>
+                        </visa-tab>
+
+                    </visa-tabs>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

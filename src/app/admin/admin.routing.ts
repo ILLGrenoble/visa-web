@@ -11,7 +11,10 @@ import {
     PlansComponent,
     SecurityGroupsOverviewComponent,
     UsersComponent,
-    SessionsComponent, ApplicationCredentialsComponent
+    ApplicationCredentialsComponent,
+    SessionsComponent,
+    UserComponent,
+    UserActivate
 } from './components';
 
 export const ROUTES: Routes = [
@@ -47,6 +50,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'users', component: UsersComponent,
+            },
+            {
+                path: 'users/:id', component: UserComponent, canActivate: [UserActivate],
             },
             {
                 path: 'sessions', component: SessionsComponent,

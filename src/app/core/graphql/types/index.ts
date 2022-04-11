@@ -523,6 +523,12 @@ export type ImageInput = {
     autologin?: Maybe<Scalars['String']>;
 };
 
+export type UserInput = {
+    instanceQuota: Scalars['Int'],
+    admin: Scalars['Boolean'];
+};
+
+
 export type PlanInput = {
     imageId: Scalars['Int'];
     flavourId: Scalars['Int'];

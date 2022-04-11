@@ -678,37 +678,31 @@ $candy-app-theme: mat-light-theme(
         }
 
         .admin-box-btn {
+            color: #24292e;
+            background-color: #fafbfc;
+            position: relative;
+            display: inline-block;
+            padding: 6px 8px;
+            font-size: 14px;
             font-weight: 600;
+            line-height: 16px;
             white-space: nowrap;
             vertical-align: middle;
+            margin-left: 5px;
             cursor: pointer;
             user-select: none;
-            border: 1px solid #b74a01;
+            background-repeat: repeat-x;
+            background-position: -1px -1px;
+            background-size: 110% 110%;
+            border: 1px solid rgba(27, 31, 35, 0.2);
             border-radius: 0.25em;
             appearance: none;
-            color: #ffffff;
-            background-color: #fd6a08;
-            padding: 5px 15px;
-            font-size: 12px;
-            line-height: 16px;
-
-            &:focus {
-                outline: 0;
-            }
-
-            &:disabled {
-                background: #e8e8e8;
-                border-color: #e8e8e8;
-
-                &:hover {
-                    background: #e8e8e8;
-                    cursor: default;
-                }
-            }
+            margin-bottom: 5px;
+            outline: none;
 
             &:hover {
-                color: #ffffff;
-                background-color: #ea5f02;
+                background-color: #f3f4f6;
+                transition-duration: .1s;
             }
         }
 

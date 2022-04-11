@@ -59,7 +59,7 @@
 
                             <clr-dg-placeholder>We couldn't find any users!</clr-dg-placeholder>
 
-                            <clr-dg-row *ngFor="let user of users?.data" [style.cursor]="'pointer'">
+                            <clr-dg-row *ngFor="let user of users?.data" [style.cursor]="'pointer'" [routerLink]="['/admin/users', user.id]">
                                 <clr-dg-cell>{{ user.id }}</clr-dg-cell>
                                 <clr-dg-cell>{{ user.fullName }}</clr-dg-cell>
                                 <clr-dg-cell>{{ user.affiliation ? user.affiliation.name : 'No affiliation' }}</clr-dg-cell>

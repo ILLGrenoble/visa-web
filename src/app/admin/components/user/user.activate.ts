@@ -8,7 +8,7 @@ import {map} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 
 @Injectable()
-export class InstanceActivate implements CanActivate {
+export class UserActivate implements CanActivate {
 
     constructor(private router: Router,
                 private notifierService: NotifierService,
@@ -23,10 +23,9 @@ export class InstanceActivate implements CanActivate {
     ): Observable<boolean> {
         return this.apollo.query<Instance>({
             query: gql`
-              query Instance($id: Int!) {
-                instance(id: $id) {
+              query User($id: String!) {
+                user(id: $id) {
                     id
-                    uid
                   }
                 }
               `,
@@ -39,7 +38,7 @@ export class InstanceActivate implements CanActivate {
                     return true;
                 } else {
                     this.router.navigate(['/admin']);
-                    this.notifierService.notify('error', 'Instance not found');
+                    this.notifierService.notify('error', 'User not found');
                     return false;
                 }
             })

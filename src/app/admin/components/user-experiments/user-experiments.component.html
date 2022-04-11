@@ -1,0 +1,39 @@
+<clr-datagrid (clrDgRefresh)="onGridChange($event)" [clrDgLoading]="loading">
+    <clr-dg-column [clrDgField]="'proposal'">Proposal</clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            Title
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            Instrument
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            Start date
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-placeholder>We couldn't find any experiments!</clr-dg-placeholder>
+
+    <clr-dg-row *ngFor="let experiment of experiments?.data" [style.cursor]="'pointer'">
+        <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
+        <clr-dg-cell>{{ experiment.proposal.title }}</clr-dg-cell>
+        <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
+        <clr-dg-cell>{{ experiment.startDate | date: 'dd-MM-yyyy' }}</clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-footer>
+        <clr-dg-column-toggle [hidden]="true">
+        </clr-dg-column-toggle>
+        <button class="btn btn-sm" type="button" (click)="reload()">
+            <clr-icon shape="refresh"></clr-icon>
+        </button>
+        <clr-dg-pagination #pagination [clrDgPageSize]="25" [clrDgPage]="currentState.page"
+                           [clrDgLastPage]="experiments?.pageInfo.totalPages">{{pagination.firstItem + 1}}
+            - {{pagination.lastItem + 1 < experiments?.pageInfo.count ? pagination.lastItem + 1 : experiments?.pageInfo.count}}
+            of {{ experiments?.pageInfo.count }} experiments
+        </clr-dg-pagination>
+    </clr-dg-footer>
+</clr-datagrid>
