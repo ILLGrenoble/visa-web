@@ -3,31 +3,6 @@
     display: inline-block;
 }
 
-.instance-card-details {
-    display: flex;
-    width: 100%;
-    padding: 10px;
-}
-
-.instance-thumbnail {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-right: 15px;
-    width: 200px;
-}
-.instance-thumbnail-img  {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 0;
-    max-height: 110px;
-    max-width: 100%;
-    height: auto;
-    width: 100%;
-    display: flex;
-    object-fit: contain;
-}
-
 .instance-card-dropdown-link {
     font-weight: normal;
     white-space: nowrap;
@@ -37,17 +12,17 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    border: none;
     border-radius: 0.25em;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     color: #24292e;
-    background-color: transparent;
     padding: 5px 10px;
     font-size: 12px;
     line-height: 16px;
-
+    border: 1px solid #d3d3d3;
+    background: #f9f9f9;
+    margin-right: 10px;
 
     &:focus,
     &:active {
@@ -180,23 +155,55 @@
     user-select: none;
 }
 
-.instance-card-container {
-    margin-top: 10px;
+.instance-card-details {
     display: flex;
     width: 100%;
-    border: 1px solid #f1f1f1;
-    flex-direction: column;
-
-    &__expiration-1 {
-        border: 1px solid #CB2431;
-    }
-
-    &__expiration-24 {
-        border: 1px solid #fd6a08;
-    }
-
+    padding-top: 10px;
 }
 
+.instance-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-right: 15px;
+    width: 150px;
+}
+
+.instance-thumbnail-img  {
+    background-color: #fff;
+    border-radius: 0;
+    max-height: 110px;
+    max-width: 100%;
+    height: auto;
+    width: 100%;
+    display: flex;
+    object-fit: contain;
+}
+
+.instance-card-container {
+    margin-top: 24px;
+    display: flex;
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 5px 5px 10px 5px;
+    flex-direction: column;
+
+    &:hover {
+        border: 1px solid #eee;
+        background: #fefefe;
+    }
+}
+
+.instance-card-container-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.instance-card-container-header-title {
+    font-size: 0.8rem;
+    font-weight: 400;
+}
 
 .instance-delete {
     align-items: center;
@@ -206,7 +213,6 @@
 }
 
 .instance-access {
-    margin-right: 32px;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -264,7 +270,8 @@
 
 .instance-actions {
     display: flex;
-    align-items: center;
+    align-items: center
+;
     justify-content: flex-start;
     margin-left: 10px;
     margin-right: 10px;
@@ -277,21 +284,21 @@
 }
 
 .instance-card-experiments {
-    border-top: 1px solid #f1f1f1;
-    font-size: 0.6rem;
-    color: #000;
-    padding: 5px 10px 5px 10px;
-    display: flex;
-
     &__label {
-        padding-right: 5px;
-        border-radius: 3px;
-
-        &:not(:last-child)::after {
-            content: ",";
-        }
-
-        color: #000c;
+        font-size: 0.45rem;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        //line-height: 0.458333rem;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 0.5rem 1px;
+        height: 0.875rem;
+        margin: 0 0.25rem 0 0;
+        white-space: nowrap;
+        color: #111;
+        background: #eff0f191;
+        border: none;
     }
 
     &__title {
@@ -302,67 +309,57 @@
 }
 
 .instance-card-expiration-24 {
-    background: repeating-linear-gradient(
-            45deg,
-            rgba(255, 255, 255, 0.0),
-            rgba(255, 255, 255, 0.0) 10px,
-            rgba(255, 255, 255, 0.1) 10px,
-            rgba(255, 255, 255, 0.1) 20px
-    ), linear-gradient(
-            to right,
-            #fd6a08,
-            #fd6a08,
-            #ffd2c1
-    );
+    border: 1px solid #fd6a08;
 }
 
 .instance-card-expiration-1 {
-    background: repeating-linear-gradient(
-            45deg,
-            rgba(255, 255, 255, 0.0),
-            rgba(255, 255, 255, 0.0) 10px,
-            rgba(255, 255, 255, 0.1) 10px,
-            rgba(255, 255, 255, 0.1) 20px
-    ), linear-gradient(
-            to right,
-            #CB2431,
-            #CB2431,
-            #faa2a2
-    );
+    border: 1px solid #CB2431;
 }
 
 .instance-card-expiration {
-    border-top: 1px solid #f1f1f1;
-    color: #fff;
-    padding: 2px 10px 2px 10px;
-    line-height: 0.7rem;
+    background: white;
+    margin: 0px 0px 7px;
+    border-radius: 3px;
+    color: black;
+    line-height: .7rem;
+    display: flex;
+    align-items: center;
+    padding: 5px 0px 4px 2px;
 
     &__text {
-        font-size: 0.5rem;
         font-weight: 500;
         padding-right: 5px;
+        display: flex;
     }
 
     &__info {
-        font-size: 0.4rem;
-        padding-right: 5px;
     }
+}
+
+.instance-card-expiration-1-warning {
+    color: #CB2431;
+    margin-right: 4px;
+}
+
+.instance-card-expiration-24-warning {
+    color: #fd6a08;
+    margin-right: 4px;
 }
 
 .instance-state {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    //justify-content: flex-start;
     margin-left: 10px;
-    margin-right: 10px;
+    //margin-right: 10px;
     min-width: auto;
-    flex: 1;
+    //flex: 1;
     color: #24292e;
     font-size: 12px;
 
     &--icon {
         width: 15px;
-        margin-right: 10px;
+        margin-right: 16px;
     }
 
     &--danger {
@@ -435,9 +432,10 @@
     }
 
     .instance-text {
+        margin-top: 4px;
         color: #000;
-        font-size: 0.55rem;
-        line-height: 1;
+        font-size: 0.6rem;
+        line-height: 1.3;
         font-weight: 400;
 
         &--larger {
@@ -446,7 +444,6 @@
         }
 
         &--smaller {
-            margin-top: 4px;
             font-size: 0.55rem;
             color: #666;
         }

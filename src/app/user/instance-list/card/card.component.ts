@@ -270,13 +270,13 @@ export class CardComponent implements OnInit, OnDestroy {
         const minutes = Math.floor((durationMs % (hour)) / (minute));
 
         if (durationMs > hour) {
-            this.expirationCountdown = ` in about ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}.`;
+            this.expirationCountdown = ` in about ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
 
         } else if (durationMs > 0) {
-            this.expirationCountdown = ` in about ${minutes} minute${minutes > 1 ? 's' : ''}.`;
+            this.expirationCountdown = ` in about ${minutes} minute${minutes > 1 ? 's' : ''}`;
 
         } else {
-            this.expirationCountdown = '.';
+            this.expirationCountdown = '';
         }
     }
 
