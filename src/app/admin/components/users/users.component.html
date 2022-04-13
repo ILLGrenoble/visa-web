@@ -59,11 +59,11 @@
 
                             <clr-dg-placeholder>We couldn't find any users!</clr-dg-placeholder>
 
-                            <clr-dg-row *ngFor="let user of users?.data" [style.cursor]="'pointer'" [routerLink]="['/admin/users', user.id]">
-                                <clr-dg-cell>{{ user.id }}</clr-dg-cell>
-                                <clr-dg-cell>{{ user.fullName }}</clr-dg-cell>
-                                <clr-dg-cell>{{ user.affiliation ? user.affiliation.name : 'No affiliation' }}</clr-dg-cell>
-                                <clr-dg-cell>
+                            <clr-dg-row *ngFor="let user of users?.data" [style.cursor]="'pointer'">
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]">{{ user.id }}</clr-dg-cell>
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]">{{ user.fullName }}</clr-dg-cell>
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]">{{ user.affiliation ? user.affiliation.name : 'No affiliation' }}</clr-dg-cell>
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]">
                                     <clr-tooltip>
                                         <span clrTooltipTrigger>{{ user.activatedAt | timeDuration:'date' }}</span>
                                         <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
@@ -71,7 +71,7 @@
                                         </clr-tooltip-content>
                                     </clr-tooltip>
                                 </clr-dg-cell>
-                                <clr-dg-cell>
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]">
                                     <clr-tooltip>
                                         <span clrTooltipTrigger>{{ user.lastSeenAt | timeDuration:'date' }}</span>
                                         <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
@@ -84,8 +84,8 @@
                                         <input type="checkbox" clrToggle [(ngModel)]="user.isAdmin" [disabled]="(user$ | async)?.id === user.id" (change)="toggleRole(user, 'ADMIN')" />
                                     </clr-toggle-wrapper>
                                 </clr-dg-cell>
-                                <clr-dg-cell><clr-icon shape="check" *ngIf="userHasRole(user, 'STAFF')"></clr-icon></clr-dg-cell>
-                                <clr-dg-cell><clr-icon shape="check" *ngIf="userIsSupport(user)"></clr-icon></clr-dg-cell>
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]"><clr-icon shape="check" *ngIf="userHasRole(user, 'STAFF')"></clr-icon></clr-dg-cell>
+                                <clr-dg-cell [routerLink]="['/admin/users', user.id]"><clr-icon shape="check" *ngIf="userIsSupport(user)"></clr-icon></clr-dg-cell>
                                 <clr-dg-cell>
                                     <clr-toggle-wrapper>
                                         <input type="checkbox" clrToggle [(ngModel)]="user.isGuest" (change)="toggleRole(user, 'GUEST')" />

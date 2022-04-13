@@ -501,6 +501,13 @@ export type Role = {
     __typename?: 'Role';
     id: Scalars['Int'];
     name: Scalars['String'];
+    expiresAt: Scalars['String'];
+};
+
+export type UserRole = {
+    __typename?: 'UserRole';
+    role: Role;
+    expiresAt: Maybe<Scalars['String']>;
 };
 
 export type FlavourInput = {
@@ -526,6 +533,8 @@ export type ImageInput = {
 export type UserInput = {
     instanceQuota: Scalars['Int'],
     admin: Scalars['Boolean'];
+    guest: Scalars['Boolean'];
+    guestExpiresAt: Scalars['String'];
 };
 
 
@@ -560,7 +569,7 @@ export type User = {
     affiliation?: Maybe<Employer>;
     instances?: Maybe<Array<Maybe<Instance>>>;
     experiments?: Maybe<Array<Maybe<Experiment>>>;
-    roles?: Maybe<Array<Maybe<Role>>>;
+    userRoles?: Maybe<Array<Maybe<UserRole>>>;
     lastSeenAt?: Maybe<Scalars['String']>;
     activatedAt?: Maybe<Scalars['String']>;
 };

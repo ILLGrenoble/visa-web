@@ -82,9 +82,9 @@
                                     <b>Roles</b>
                                 </dt>
                                 <dd>
-                                    <span *ngIf="user.roles.length == 0">User has no roles</span>
-                                    <span *ngFor="let role of user?.roles"
-                                          class="admin-details-list-item-tag">{{ role.name }}</span>
+                                    <span *ngIf="user.userRoles.length == 0">User has no roles</span>
+                                    <span *ngFor="let userRole of user?.userRoles"
+                                          class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
                                 </dd>
                             </div>
                             <div class="admin-details-list-item">

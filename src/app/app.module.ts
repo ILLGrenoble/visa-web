@@ -1,6 +1,6 @@
 import {FullscreenOverlayContainer, OverlayContainer} from '@angular/cdk/overlay';
 import {HttpClientModule} from '@angular/common/http';
-import {NgModule} from '@angular/core';
+import {LOCALE_ID, NgModule} from '@angular/core';
 import {MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
 import {AuthenticationGuard, CoreModule} from '@core';
@@ -9,7 +9,10 @@ import {UserModule} from '@user';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CookieService} from 'ngx-cookie-service';
-import {CommonModule} from '@angular/common';
+import {CommonModule, registerLocaleData} from '@angular/common';
+import localeGB from '@angular/common/locales/en-GB';
+
+registerLocaleData(localeGB);
 
 @NgModule({
     declarations: [
@@ -48,6 +51,7 @@ import {CommonModule} from '@angular/common';
     providers: [
         {provide: OverlayContainer, useClass: FullscreenOverlayContainer},
         {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {disableClose: true, hasBackdrop: true}},
+        {provide: LOCALE_ID, useValue: 'en-GB'},
         CookieService
     ],
     bootstrap: [AppComponent],

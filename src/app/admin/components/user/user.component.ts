@@ -50,14 +50,7 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        timer(1, 2500).pipe(
-            switchMap(() => this.refresh()),
-            retryWhen((errors) => errors.pipe(delay(1000), take(10))),
-            share(),
-            takeUntil(this.destroy$),
-        ).subscribe((data) => {
-            this.user = data;
-        });
+        this.refresh();
     }
 
 
@@ -83,14 +76,15 @@ export class UserComponent implements OnInit, OnDestroy {
                         input
                     },
                 }).toPromise().then(() => {
+                    this.refresh();
                     this.notifierService.notify('success', 'Updated user successfully');
                 });
             });
     }
 
-    public refresh(): Observable<any> {
+    public refresh(): void {
         const id = this.route.snapshot.params.id;
-        return this.apollo.query<any>({
+        this.apollo.query<any>({
             query: gql`
                 query User($id: String!) {
                     user(id: $id) {
@@ -105,8 +99,11 @@ export class UserComponent implements OnInit, OnDestroy {
                         instanceQuota
                         lastSeenAt
                         activatedAt
-                        roles {
-                            name
+                        userRoles {
+                            role {
+                                name
+                            }
+                            expiresAt
                         }
                         instances {
                             id
@@ -131,7 +128,9 @@ export class UserComponent implements OnInit, OnDestroy {
             .pipe(
                 map(({data}) => data.user),
                 takeUntil(this.destroy$)
-            );
+            ).subscribe((data) => {
+                this._user = data;
+            });
     }
 
 

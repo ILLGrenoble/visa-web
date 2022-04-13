@@ -12,6 +12,7 @@ import {UsersFilterState} from './users-filter-state';
 import {Store} from '@ngrx/store';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
 import {User} from '../../../core/graphql';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
     selector: 'visa-admin-users',
@@ -71,7 +72,8 @@ export class UsersComponent implements OnInit, OnDestroy {
         private apollo: Apollo,
         private router: Router,
         private route: ActivatedRoute,
-        private store: Store<ApplicationState>) {
+        private store: Store<ApplicationState>,
+        private notifierService: NotifierService) {
         this._user$ = store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1));
     }
 
@@ -130,8 +132,11 @@ export class UsersComponent implements OnInit, OnDestroy {
                                     town
                                     countryCode
                                 }
-                                roles {
-                                    name
+                                userRoles {
+                                    role {
+                                        name
+                                    }
+                                    expiresAt
                                 }
                                 lastSeenAt
                                 activatedAt
@@ -200,12 +205,12 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
 
     public userHasRole(user: User, roleName: string): boolean {
-        return user.roles.find(role => role.name === roleName) != null;
+        return user.userRoles.find(userRole => userRole.role.name === roleName) != null;
     }
 
     public userIsSupport(user: User): boolean {
         return ['IT_SUPPORT', 'INSTRUMENT_CONTROL', 'INSTRUMENT_SCIENTIST'].some(supportRole => {
-            return user.roles.map(role => role.name).includes(supportRole);
+            return user.userRoles.map(userRole => userRole.role.name).includes(supportRole);
         });
     }
 
@@ -225,8 +230,11 @@ export class UsersComponent implements OnInit, OnDestroy {
                         town
                         countryCode
                     }
-                    roles {
-                        name
+                    userRoles {
+                        role {
+                            name
+                        }
+                        expiresAt
                     }
                     lastSeenAt
                     activatedAt
@@ -240,9 +248,10 @@ export class UsersComponent implements OnInit, OnDestroy {
             },
         }).toPromise().then((result: any) => {
             const returnedUser = result.data.updateUserRole;
-            user.roles = returnedUser.roles;
+            user.userRoles = returnedUser.userRoles;
             user.isAdmin = this.userHasRole(user, 'ADMIN');
             user.isGuest = this.userHasRole(user, 'GUEST');
+            this.notifierService.notify('success', 'Updated user roles successfully');
         });
     }
 

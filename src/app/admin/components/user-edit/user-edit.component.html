@@ -12,6 +12,15 @@
                 <input type="checkbox" clrToggle formControlName="admin" required/>
             </clr-toggle-wrapper>
         </clr-toggle-container>
+        <clr-toggle-container>
+            <label>Guest?</label>
+            <clr-toggle-wrapper>
+                <input type="checkbox" clrToggle formControlName="guest" required/>
+            </clr-toggle-wrapper>
+        </clr-toggle-container>
+        <clr-date-container *ngIf="showGuestExpiryDate">
+            <input type="date" clrDate formControlName="guestExpiresAt" [min]="minDate">
+        </clr-date-container>
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
