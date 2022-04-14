@@ -53,29 +53,39 @@
         <div class="instance-card">
 
             <div *ngIf="willExpireIn1Hour()" class="instance-card-expiration instance-card-expiration-1">
-                <clr-icon class="is-solid instance-card-expiration-1-warning" shape="danger"  size="24"></clr-icon>
-                <div class="instance-card-expiration__text instance-card-expiration-1-warning">
-                    WARNING!
+                <div class="instance-card-expiration-details">
+                    <clr-icon class="is-solid instance-card-expiration-1-warning" shape="danger"  size="24"></clr-icon>
+                    <div class="instance-card-expiration__text instance-card-expiration-1-warning">
+                        WARNING!
+                    </div>
+                    <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
+                        This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
+                    </span>
+                    <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
+                        This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
+                    </span>
                 </div>
-                <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">This instance is scheduled to be
-                    deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
-                </span>
-                <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
-                    This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
-                </span>
+                <button *ngIf="!willExpireFromInactivity()" class="instance-card-button" (click)="requestExtension($event)">
+                    <clr-icon shape="pencil" class="is-solid"> </clr-icon> Request extension
+                </button>
             </div>
 
             <div *ngIf="willExpireIn24Hours()" class="instance-card-expiration instance-card-expiration-24">
-                <clr-icon class="is-solid instance-card-expiration-24-warning" shape="danger" size="24"></clr-icon>
-                <div class="instance-card-expiration__text instance-card-expiration-24-warning">
-                    WARNING!
+                <div class="instance-card-expiration-details">
+                    <clr-icon class="is-solid instance-card-expiration-24-warning" shape="danger" size="24"></clr-icon>
+                    <div class="instance-card-expiration__text instance-card-expiration-24-warning">
+                        WARNING!
+                    </div>
+                    <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
+                        This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
+                    </span>
+                    <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
+                        This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
+                    </span>
                 </div>
-                <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
-                    This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
-                </span>
-                <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
-                    This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
-                </span>
+                <button *ngIf="!willExpireFromInactivity()" class="instance-card-button" (click)="requestExtension($event)">
+                    <clr-icon shape="pencil" class="is-solid"> </clr-icon>Request extension
+                </button>
             </div>
 
 
@@ -103,8 +113,8 @@
                 <div class="instance-actions">
                     <div class="instance-card-dropdown" #dropdown>
                         <button [disabled]="['DELETING', 'DELETED'].includes(instance.state)"
-                                class="instance-card-dropdown-link" (click)="toggleSettings()">
-                            <clr-icon shape="cog" class="is-solid"></clr-icon> Settings
+                                class="instance-card-button" (click)="toggleSettings()">
+                            <clr-icon shape="cog" class="is-solid"></clr-icon>Settings
                         </button>
                         <div class="instance-card-dropdown-menu" *ngIf="isSettingsOpen">
                             <ul class="instance-card-dropdown-list">

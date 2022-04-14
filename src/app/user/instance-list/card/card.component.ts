@@ -1,7 +1,7 @@
 import {Component, ElementRef, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {AccountService, Instance} from '@core';
+import {AccountService, ConfigService, Configuration, Instance} from '@core';
 import {Subject, Subscription, timer} from 'rxjs';
-import {DetailsDialog, ExperimentsDialog, MembersDialog} from '../dialogs';
+import {DetailsDialog, ExperimentsDialog, MembersDialog, RequestExtensionDialog} from '../dialogs';
 import {MatDialog} from '@angular/material/dialog';
 import {NotifierService} from 'angular-notifier';
 
@@ -21,6 +21,7 @@ export class CardComponent implements OnInit, OnDestroy {
     private static BACKGROUND_UPDATE_PERIOD = 30000;
 
     private _instance: Instance;
+    private _configuration: Configuration;
 
     @ViewChild('dropdown')
     public dropdownElement: ElementRef;
@@ -36,6 +37,11 @@ export class CardComponent implements OnInit, OnDestroy {
 
     get instance(): Instance {
         return this._instance;
+    }
+
+    @Input()
+    set configuration(value: Configuration) {
+        this._configuration = value;
     }
 
     public isSettingsOpen = false;
@@ -270,10 +276,10 @@ export class CardComponent implements OnInit, OnDestroy {
         const minutes = Math.floor((durationMs % (hour)) / (minute));
 
         if (durationMs > hour) {
-            this.expirationCountdown = ` in about ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            this.expirationCountdown = ` in ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
 
         } else if (durationMs > 0) {
-            this.expirationCountdown = ` in about ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            this.expirationCountdown = ` in ${minutes} minute${minutes > 1 ? 's' : ''}`;
 
         } else {
             this.expirationCountdown = '';
@@ -297,5 +303,21 @@ export class CardComponent implements OnInit, OnDestroy {
             this._timerSubscription.unsubscribe();
             this._timerSubscription = null;
         }
+    }
+
+    public requestExtension($event): void {
+        $event.preventDefault();
+        const dialogRef = this.dialog.open(RequestExtensionDialog, {
+            width: '1000px',
+            data: {instance: this._instance, configuration: this._configuration},
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result == null) {
+                return;
+            }
+            this.notifierService.notify('success', 'Successfully requested lifetime extension');
+        });
+
     }
 }

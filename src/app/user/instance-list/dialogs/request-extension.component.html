@@ -1,0 +1,21 @@
+<h1 mat-dialog-title style="margin-bottom: 0px;">Lifetime extension request</h1>
+<div>
+    <p>By submitting this form you will request the extension of the lifetime of your instance '{{instance.name}}'.</p>
+    <p>This request will be handled as quickly as possible by the VISA support team. The team are available at {{configuration.contactEmail}} if you wish to contact them regarding this request or need any other support.</p>
+</div>
+<div mat-dialog-content style="display: flex;flex-direction: column;">
+    <form name="request-extension" clrForm clrLayout="horizontal">
+        <div class="clr-row">
+            <div class="clr-col-12">
+                <p>Please provide details of why you would like the lifetime of your instance to be extended:</p>
+            </div>
+            <div class="clr-col-12">
+                <textarea id="comments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" [(ngModel)]="comments"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+    <button mat-button (click)="handleClose()">Cancel</button>
+    <button mat-button (click)="submit()">Submit</button>
+</div>

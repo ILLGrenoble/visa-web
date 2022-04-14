@@ -71,7 +71,7 @@
                     </visa-tab-actions>
                     <visa-tab-content>
                         <div class="col" [hidden]="instances.length == 0">
-                            <visa-instance-list [instances]="(instances | instanceFilterPipe: ['OWNER']: selectedExperiment)"
+                            <visa-instance-list [instances]="(instances | instanceFilterPipe: ['OWNER']: selectedExperiment)" [configuration]="configuration"
                                 (doUpdateParent)="handleUpdate()">
                             </visa-instance-list>
                         </div>

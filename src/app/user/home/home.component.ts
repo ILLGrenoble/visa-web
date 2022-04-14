@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {Title} from '@angular/platform-browser';
-import {AccountService, ApplicationState, Experiment, Instance, selectLoggedInUser, User} from '@core';
+import {AccountService, ApplicationState, ConfigService, Experiment, Instance, selectLoggedInUser, User, Configuration} from '@core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {filter, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {Store} from '@ngrx/store';
+import {WebSocketLink} from '@apollo/client/link/ws';
 
 @Component({
     styleUrls: ['./home.component.scss'],
@@ -21,6 +22,7 @@ export class HomeComponent implements OnInit {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _loading = false;
     private _experiments: Experiment[] = [];
+    private _configuration: Configuration;
 
     get destroy$(): Subject<boolean> {
         return this._destroy$;
@@ -73,10 +75,15 @@ export class HomeComponent implements OnInit {
         return null;
     }
 
+    get configuration(): Configuration {
+        return this._configuration;
+    }
+
     constructor(private accountService: AccountService,
                 private titleService: Title,
                 private route: ActivatedRoute,
                 private store: Store<ApplicationState>,
+                private configService: ConfigService,
     ) {
         this._user$ = store.select(selectLoggedInUser);
     }
@@ -100,6 +107,8 @@ export class HomeComponent implements OnInit {
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
         });
+
+        this.configService.load().then(configuration => this._configuration = configuration);
     }
 
     public refresh(): void {

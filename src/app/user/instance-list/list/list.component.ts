@@ -1,5 +1,5 @@
 import {Component, Input, Output} from '@angular/core';
-import {Instance} from '@core';
+import {Configuration, Instance} from '@core';
 import {Subject} from 'rxjs';
 
 @Component({
@@ -14,6 +14,8 @@ export class ListComponent {
 
     private _instances: Instance[];
 
+    private _configuration: Configuration;
+
     get instances(): Instance[] {
         return this._instances;
     }
@@ -21,6 +23,15 @@ export class ListComponent {
     @Input()
     set instances(value: Instance[]) {
         this._instances = value || [];
+    }
+
+    get configuration(): Configuration {
+        return this._configuration;
+    }
+
+    @Input()
+    set configuration(value: Configuration) {
+        this._configuration = value;
     }
 
     constructor() {

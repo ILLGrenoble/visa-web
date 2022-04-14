@@ -349,4 +349,14 @@ export class AccountService {
         return `${baseUrl}/account/instances/${instance.uid}/thumbnail`;
     }
 
+    public requestInstanceLifetimeExtension(instance: Instance, comments: string): Observable<any> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/extension`;
+        return this.http.post<any>(url, {comments}).pipe(map((response) => {
+            const data = response.data;
+            return data.instance;
+        }));
+
+    }
+
 }

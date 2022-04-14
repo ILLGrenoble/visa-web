@@ -3,51 +3,6 @@
     display: inline-block;
 }
 
-.instance-card-dropdown-link {
-    font-weight: normal;
-    white-space: nowrap;
-    vertical-align: middle;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    border-radius: 0.25em;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    color: #24292e;
-    padding: 5px 10px;
-    font-size: 12px;
-    line-height: 16px;
-    border: 1px solid #d3d3d3;
-    background: #f9f9f9;
-    margin-right: 10px;
-
-    &:focus,
-    &:active {
-        outline: 0;
-    }
-
-    &:hover {
-        background-color: #e6ebf1;
-        background-image: linear-gradient(180deg, #f0f3f6, #e6ebf1 90%);
-        border-color: #a5a9ac;
-        border-color: rgba(27, 31, 35, 0.35);
-        outline: 0;
-    }
-
-    &:disabled {
-        color: #ccc;
-
-        &:hover {
-            cursor: default;
-        }
-    }
-
-
-}
-
 .instance-card-dropdown-menu {
     transform: translate3d(calc(-50% + 0.5px), 0, 0);
     margin-bottom: 20px;
@@ -155,6 +110,52 @@
     user-select: none;
 }
 
+.instance-card-button {
+    font-weight: normal;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border-radius: 0.25em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: #24292e;
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 16px;
+    border: 1px solid #d3d3d3;
+    background: #f9f9f9;
+
+    &:focus,
+    &:active {
+        outline: 0;
+    }
+
+    &:hover {
+        background-color: #e6ebf1;
+        background-image: linear-gradient(180deg, #f0f3f6, #e6ebf1 90%);
+        border-color: #a5a9ac;
+        border-color: rgba(27, 31, 35, 0.35);
+        outline: 0;
+    }
+
+    &:disabled {
+        color: #ccc;
+
+        &:hover {
+            cursor: default;
+        }
+    }
+
+    clr-icon {
+        margin-right: 6px;
+    }
+}
+
 .instance-card-details {
     display: flex;
     width: 100%;
@@ -163,7 +164,7 @@
 
 .instance-thumbnail {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: flex-start;
     margin-right: 15px;
     width: 150px;
@@ -213,13 +214,11 @@
 }
 
 .instance-access {
-    align-items: center;
+    align-items: baseline;
     justify-content: center;
     display: flex;
 
     .instance-access-btn {
-        height: 29px;
-
         font-weight: 600;
         white-space: nowrap;
         vertical-align: middle;
@@ -270,8 +269,7 @@
 
 .instance-actions {
     display: flex;
-    align-items: center
-;
+    align-items: baseline;
     justify-content: flex-start;
     margin-left: 10px;
     margin-right: 10px;
@@ -324,7 +322,8 @@
     line-height: .7rem;
     display: flex;
     align-items: center;
-    padding: 5px 0px 4px 2px;
+    justify-content: space-between;
+    padding: 6px;
 
     &__text {
         font-weight: 500;
@@ -334,6 +333,11 @@
 
     &__info {
     }
+}
+
+.instance-card-expiration-details {
+    display: flex;
+    align-items: center;
 }
 
 .instance-card-expiration-1-warning {
