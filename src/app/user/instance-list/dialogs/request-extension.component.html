@@ -4,18 +4,23 @@
     <p>This request will be handled as quickly as possible by the VISA support team. The team are available at {{configuration.contactEmail}} if you wish to contact them regarding this request or need any other support.</p>
 </div>
 <div mat-dialog-content style="display: flex;flex-direction: column;">
-    <form name="request-extension" clrForm clrLayout="horizontal">
+    <form name="request-extension" [formGroup]="form" clrForm clrLayout="horizontal">
         <div class="clr-row">
             <div class="clr-col-12">
                 <p>Please provide details of why you would like the lifetime of your instance to be extended:</p>
             </div>
             <div class="clr-col-12">
-                <textarea id="comments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" [(ngModel)]="comments"></textarea>
+                <textarea id="comments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments"></textarea>
+                <div ngxErrors="comments" class="text-danger">
+                    <div ngxError="maxlength">
+                        Comments cannot exceed 4000 characters.
+                    </div>
+                </div>
             </div>
         </div>
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
     <button mat-button (click)="handleClose()">Cancel</button>
-    <button mat-button (click)="submit()">Submit</button>
+    <button mat-button (click)="submit()" [disabled]="!canSubmit()">Submit</button>
 </div>

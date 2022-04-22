@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Configuration, Instance} from '@core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
     selector: 'visa-instance-request-extension-dialog',
@@ -11,9 +12,9 @@ export class RequestExtensionDialog implements OnInit {
 
     public _instance: Instance;
 
-    private _configuration: Configuration;
+    private readonly _configuration: Configuration;
 
-    private _comments: string;
+    private _form: FormGroup;
 
     get instance(): Instance {
         return this._instance;
@@ -23,12 +24,12 @@ export class RequestExtensionDialog implements OnInit {
         return this._configuration;
     }
 
-    get comments(): string {
-        return this._comments;
+    get form(): FormGroup {
+        return this._form;
     }
 
-    set comments(value: string) {
-        this._comments = value;
+    set form(value: FormGroup) {
+        this._form = value;
     }
 
     constructor(public dialogRef: MatDialogRef<RequestExtensionDialog>,
@@ -40,6 +41,11 @@ export class RequestExtensionDialog implements OnInit {
 
     public ngOnInit(): void {
         this.bindDialogHandlers();
+        this.createForm();
+        // Disable the form if the user is not the owner
+        if (this.instance.membership.role !== 'OWNER') {
+            this.form.disable();
+        }
     }
 
     private bindDialogHandlers(): void {
@@ -53,9 +59,23 @@ export class RequestExtensionDialog implements OnInit {
             }
         });
     }
+    private createForm(): void {
+        this.form = new FormGroup({
+            comments: new FormControl('', Validators.compose([Validators.maxLength(4000), Validators.required])),
+        });
+    }
+
+    public isValidData(): boolean {
+        return this._form.valid;
+    }
+
+    public canSubmit(): boolean {
+        return this.isValidData();
+    }
 
     public submit(): void {
-        this.accountService.requestInstanceLifetimeExtension(this.instance, this._comments)
+        const {comments} = this._form.value;
+        this.accountService.requestInstanceLifetimeExtension(this.instance, comments)
             .subscribe((instance) => {
                 this.dialogRef.close(instance);
             });
@@ -64,6 +84,4 @@ export class RequestExtensionDialog implements OnInit {
     public handleClose(): void {
         this.dialogRef.close();
     }
-
-
 }
