@@ -65,7 +65,7 @@
                         This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
                     </span>
                 </div>
-                <button *ngIf="!willExpireFromInactivity()" class="instance-card-button" (click)="requestExtension($event)">
+                <button *ngIf="!willExpireFromInactivity()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="!requestExtensionEnabled">
                     <clr-icon shape="pencil" class="is-solid"> </clr-icon> Request extension
                 </button>
             </div>
@@ -83,7 +83,7 @@
                         This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
                     </span>
                 </div>
-                <button *ngIf="!willExpireFromInactivity()" class="instance-card-button" (click)="requestExtension($event)">
+                <button *ngIf="!willExpireFromInactivity()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="!requestExtensionEnabled">
                     <clr-icon shape="pencil" class="is-solid"> </clr-icon>Request extension
                 </button>
             </div>

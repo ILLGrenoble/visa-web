@@ -22,6 +22,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
     private _instance: Instance;
     private _configuration: Configuration;
+    private _requestExtensionEnabled = false;
 
     @ViewChild('dropdown')
     public dropdownElement: ElementRef;
@@ -42,6 +43,10 @@ export class CardComponent implements OnInit, OnDestroy {
     @Input()
     set configuration(value: Configuration) {
         this._configuration = value;
+    }
+
+    get requestExtensionEnabled(): boolean {
+        return this._requestExtensionEnabled;
     }
 
     public isSettingsOpen = false;
@@ -243,6 +248,13 @@ export class CardComponent implements OnInit, OnDestroy {
                 this.restartUpdateTimers(CardComponent.BACKGROUND_UPDATE_PERIOD);
 
             }
+
+            if (this.willExpireIn24Hours() && !this.willExpireFromInactivity()) {
+                this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
+                    this._requestExtensionEnabled = (instanceLifetimeExtension == null);
+                });
+            }
+
         }, (error) => {
             this.stopUpdateTimers();
 
@@ -317,6 +329,7 @@ export class CardComponent implements OnInit, OnDestroy {
                 return;
             }
             this.notifierService.notify('success', 'Successfully requested lifetime extension');
+            this._requestExtensionEnabled = false;
         });
 
     }

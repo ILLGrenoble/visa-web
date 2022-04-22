@@ -10,6 +10,7 @@ export * from './instance.model';
 export * from './paginated.model';
 export * from './image.model';
 export * from './instanceSessionMember.model';
+export * from './instanceExtensionRequest.model';
 export * from './flavour.model';
 export * from './plan.model';
 export * from './protocol.model';
