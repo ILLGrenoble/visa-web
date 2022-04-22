@@ -76,8 +76,8 @@ export class RequestExtensionDialog implements OnInit {
     public submit(): void {
         const {comments} = this._form.value;
         this.accountService.requestInstanceLifetimeExtension(this.instance, comments)
-            .subscribe((instance) => {
-                this.dialogRef.close(instance);
+            .subscribe((data) => {
+                this.dialogRef.close(data);
             });
     }
 

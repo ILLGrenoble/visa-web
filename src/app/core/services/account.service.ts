@@ -353,8 +353,9 @@ export class AccountService {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/extension`;
         return this.http.post<any>(url, {comments}).pipe(map((response) => {
-            const data = response.data;
-            return data.instance;
+            // const data = response.data;
+            // return data.instanceExtensionRequest;
+            return {}
         }));
 
     }
