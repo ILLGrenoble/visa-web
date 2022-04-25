@@ -641,3 +641,11 @@ export type ApplicationCredential = {
 export type ApplicationCredentialInput = {
     name: Scalars['String'];
 };
+
+export type InstanceExtensionRequest = {
+    __typename?: 'ApplicationCredential';
+    id: Scalars['Int'];
+    comments: Scalars['String'];
+    createdAt: Scalars['String'];
+    instance: Instance;
+};

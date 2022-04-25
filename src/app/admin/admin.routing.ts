@@ -14,7 +14,8 @@ import {
     ApplicationCredentialsComponent,
     SessionsComponent,
     UserComponent,
-    UserActivate
+    UserActivate,
+    ExtensionRequestsComponent,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -35,6 +36,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'compute/sessions', component: SessionsComponent,
+            },
+            {
+                path: 'compute/extension_requests', component: ExtensionRequestsComponent,
             },
             {
                 path: 'compute/instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],

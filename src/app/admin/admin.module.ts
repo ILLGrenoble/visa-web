@@ -68,7 +68,8 @@ import {
     UsersComponent,
     UserSearchComponent,
     UsersFilterComponent,
-    UserEditComponent
+    UserEditComponent,
+    ExtensionRequestsComponent,
 } from './components';
 
 @NgModule({
@@ -142,6 +143,7 @@ import {
         ApplicationCredentialNewComponent,
         ApplicationCredentialDeleteComponent,
         ApplicationCredentialUpdateComponent,
+        ExtensionRequestsComponent,
     ],
     exports: [
         DashboardComponent,
