@@ -8,6 +8,7 @@ import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {environment} from '../../../../environments/environment';
 import screenfull from 'screenfull';
 import {ApolloQueryResult} from '@apollo/client';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-sessions',
@@ -61,7 +62,9 @@ export class SessionsComponent implements OnInit, OnDestroy {
         this._gridContainer = value;
     }
 
-    constructor(private apollo: Apollo, private notifierService: NotifierService) {
+    constructor(private apollo: Apollo,
+                private notifierService: NotifierService,
+                private titleService: Title) {
     }
 
     public handleRefresh($event: void): void {
@@ -69,6 +72,8 @@ export class SessionsComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Sessions | Compute | Admin | VISA`);
+
         const selectedTab = localStorage.getItem(SessionsComponent.SELECTED_TAB_KEY);
         this._selectedTab = selectedTab;
 

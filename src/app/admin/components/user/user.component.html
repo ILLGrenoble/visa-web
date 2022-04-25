@@ -116,7 +116,7 @@
                                     <clr-dg-column>Role</clr-dg-column>
                                     <clr-dg-placeholder>User does not have any instances</clr-dg-placeholder>
                                     <clr-dg-row *ngFor="let instance of user.instances"
-                                                [routerLink]="['/admin/instances/', instance.id]">>
+                                                [routerLink]="['/admin/compute/instances/', instance.id]">>
                                         <clr-dg-cell>{{ instance.id }}</clr-dg-cell>
                                         <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                         <clr-dg-cell>{{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>

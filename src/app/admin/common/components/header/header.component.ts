@@ -68,7 +68,9 @@ export class HeaderComponent implements OnInit , OnDestroy{
     }
 
     public ngOnInit(): void {
-        this.titleService.setTitle(`Admin | VISA`);
+        if (!this.titleService.getTitle().endsWith(`Admin | VISA`)) {
+            this.titleService.setTitle(`Admin | VISA`);
+        }
         this._autoRefresh = (localStorage.getItem(HeaderComponent.REFRESH_DASHBOARD_KEY) === 'true');
 
         timer(1, 30000)

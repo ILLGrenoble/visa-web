@@ -13,11 +13,9 @@ export class CloudHeaderComponent implements OnInit {
         this.router = router;
     }
 
-    public isRouteActive(url: string): boolean {
-        return this.router.url.split('?')[0] === url;
-    }
-
     public ngOnInit(): void {
-        this.titleService.setTitle(`Cloud | Admin | VISA`);
+        if (!this.titleService.getTitle().endsWith(`Cloud | Admin | VISA`)) {
+            this.titleService.setTitle(`Cloud | Admin | VISA`);
+        }
     }
 }

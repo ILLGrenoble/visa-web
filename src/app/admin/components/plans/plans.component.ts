@@ -9,6 +9,7 @@ import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import {Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-plans',
@@ -36,10 +37,12 @@ export class PlansComponent implements OnInit, OnDestroy {
 
     constructor(private _apollo: Apollo,
                 private _notifierService: NotifierService,
-                private _dialog: MatDialog) {
+                private _dialog: MatDialog,
+                private _titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this._titleService.setTitle(`Plans | Cloud | Admin | VISA`);
         this.loadPlansImagesFlavours();
     }
 

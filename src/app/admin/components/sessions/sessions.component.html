@@ -1,4 +1,5 @@
 <visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<visa-compute-admin-header></visa-compute-admin-header>
 <div class="admin-container">
     <div class="admin-container--main">
         <visa-tabs [(selected)]="selectedTab">
@@ -57,7 +58,7 @@
                         </div>
                         <div class="admin-session-grid">
                             <a class="session-box" *ngFor="let instanceSessionMember of sessions; let index = index"
-                               [routerLink]="['/admin/instances/', instanceSessionMember.instanceSession.instance.id]">
+                               [routerLink]="['/admin/compute/instances/', instanceSessionMember.instanceSession.instance.id]">
                                 <div class="session-box__details">
                                 <span class="session-box__details__content" style="text-align: left; font-size: 13px">
                                     {{instanceSessionMember.instanceSession.instance.name}}

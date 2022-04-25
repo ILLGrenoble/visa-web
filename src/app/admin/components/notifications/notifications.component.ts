@@ -7,6 +7,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {NotificationUpdateComponent} from '../notification-update';
 import * as moment from 'moment';
 import {NotificationDeleteComponent} from '../notification-delete';
+import {Title} from '@angular/platform-browser';
 
 interface SystemNotificationHolder {
     id: number,
@@ -28,10 +29,12 @@ export class NotificationsComponent implements OnInit {
 
     constructor(private apollo: Apollo,
                 private notifierService: NotifierService,
-                private dialog: MatDialog) {
+                private dialog: MatDialog,
+                private titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Notifications | Settings | Admin | VISA`);
         this.fetch().then((notifications) => {
                 this.notifications = notifications;
             },

@@ -8,6 +8,7 @@ import {SecurityGroup} from '../../../core/graphql';
 import {SecurityGroupImportComponent} from '../security-group-import';
 import {SecurityGroupDeleteComponent} from '../security-group-delete';
 import {NotifierService} from 'angular-notifier';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-security-groups',
@@ -21,9 +22,6 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
 
     private _loading: boolean;
     private _securityGroups: SecurityGroup[] = [];
-    private _apollo: Apollo;
-    private _notifierService: NotifierService;
-    private _dialog: MatDialog;
 
     get securityGroups(): SecurityGroup[] {
         return this._securityGroups;
@@ -50,15 +48,14 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
         this._refresh$ = value;
     }
 
-    constructor(apollo: Apollo,
-                notifierService: NotifierService,
-                dialog: MatDialog) {
-        this._apollo = apollo;
-        this._notifierService = notifierService;
-        this._dialog = dialog;
+    constructor(private _apollo: Apollo,
+                private _notifierService: NotifierService,
+                private _dialog: MatDialog,
+                private _titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this._titleService.setTitle(`Security Groups | Cloud | Admin | VISA`);
         this._refresh$
             .pipe(
                 startWith(0),

@@ -23,6 +23,7 @@ import {
     LatestJupyterSessionsBoxComponent,
     LatestSessionsBoxComponent,
     SettingsHeaderComponent,
+    ComputeHeaderComponent,
 } from './common';
 import {
     ApplicationCredentialDeleteComponent,
@@ -86,6 +87,7 @@ import {
         HeaderComponent,
         CloudHeaderComponent,
         SettingsHeaderComponent,
+        ComputeHeaderComponent,
         InstanceComponent,
         ImagesComponent,
         ImageNewComponent,

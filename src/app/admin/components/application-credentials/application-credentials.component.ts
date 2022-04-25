@@ -9,6 +9,7 @@ import {ApplicationCredential, ApplicationCredentialDetail, ApplicationCredentia
 import {ApplicationCredentialNewComponent} from '../application-credential-new';
 import {ApplicationCredentialDeleteComponent} from '../application-credential-delete';
 import {ApplicationCredentialUpdateComponent} from '../application-credential-update';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-application-credentials',
@@ -31,10 +32,12 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
 
     constructor(private apollo: Apollo,
                 private notifierService: NotifierService,
-                private dialog: MatDialog) {
+                private dialog: MatDialog,
+                private titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Application Credentials | Settings | Admin | VISA`);
         this._createdApplicationCredential = null;
         this.loadApplicationCredentials();
     }

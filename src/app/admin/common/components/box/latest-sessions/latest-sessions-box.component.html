@@ -19,7 +19,7 @@
             <tbody *ngFor="let sessionMember of data">
             <tr>
                 <td>
-                    <a [routerLink]="['/admin/instances',sessionMember.instanceSession.instance.id]">
+                    <a [routerLink]="['/admin/compute/instances',sessionMember.instanceSession.instance.id]">
                         {{ sessionMember.instanceSession.instance.name }}
                     </a>
                 </td>
@@ -50,6 +50,6 @@
         </div>
     </div>
     <div class="admin-box-footer">
-        <a class="uppercase" routerLink="/admin/sessions">View all sessions</a>
+        <a class="uppercase" routerLink="/admin/compute/sessions">View all sessions</a>
     </div>
 </div>

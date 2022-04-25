@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {map, takeUntil} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-images',
@@ -30,10 +31,12 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
     constructor(private apollo: Apollo,
                 private notifierService: NotifierService,
-                private dialog: MatDialog) {
+                private dialog: MatDialog,
+                private titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Images | Cloud | Admin | VISA`);
         this.loadProtocolsImages();
     }
 

@@ -8,6 +8,7 @@ import {delay, map, retryWhen, share, switchMap, take, takeUntil} from 'rxjs/ope
 import {environment} from '../../../../environments/environment';
 import * as moment from 'moment';
 import {NotifierService} from 'angular-notifier';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-instance',

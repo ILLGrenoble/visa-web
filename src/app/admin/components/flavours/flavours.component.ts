@@ -10,6 +10,7 @@ import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-flavours',
@@ -38,10 +39,12 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     constructor(private apollo: Apollo,
                 private notifierService: NotifierService,
-                private dialog: MatDialog) {
+                private dialog: MatDialog,
+                private titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Flavours | Cloud | Admin | VISA`);
         this.loadAll();
         this.loadInstruments();
     }

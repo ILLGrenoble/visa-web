@@ -31,7 +31,13 @@ export const ROUTES: Routes = [
                 path: 'dashboard', component: DashboardComponent,
             },
             {
-                path: 'instances', component: InstancesComponent,
+                path: 'compute/instances', component: InstancesComponent,
+            },
+            {
+                path: 'compute/sessions', component: SessionsComponent,
+            },
+            {
+                path: 'compute/instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],
             },
             {
                 path: 'cloud/images', component: ImagesComponent,
@@ -46,16 +52,10 @@ export const ROUTES: Routes = [
                 path: 'cloud/security_groups', component: SecurityGroupsOverviewComponent,
             },
             {
-                path: 'instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],
-            },
-            {
                 path: 'users', component: UsersComponent,
             },
             {
                 path: 'users/:id', component: UserComponent, canActivate: [UserActivate],
-            },
-            {
-                path: 'sessions', component: SessionsComponent,
             },
             {
                 path: 'settings/notifications', component: NotificationsComponent,

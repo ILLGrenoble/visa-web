@@ -9,6 +9,7 @@ import {map, takeUntil, tap} from 'rxjs/operators';
 import {QueryParameterBag} from '../../http';
 import {FilterAttribute, FilterProvider} from '../../services';
 import {InstancesFilterState} from './instances-filter-state';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-instances',
@@ -61,10 +62,13 @@ export class InstancesComponent implements OnInit, OnDestroy {
     constructor(
         private apollo: Apollo,
         private router: Router,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private titleService: Title) {
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Instances | Compute | Admin | VISA`);
+
         this.state$.pipe(
             takeUntil(this.destroy$),
         ).subscribe((state) => {

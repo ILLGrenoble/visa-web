@@ -19,7 +19,7 @@
             <tbody *ngFor="let jupyterSession of data">
             <tr>
                 <td>
-                    <a [routerLink]="['/admin/instances',jupyterSession.instance.id]">
+                    <a [routerLink]="['/admin/compute/instances',jupyterSession.instance.id]">
                         {{ jupyterSession.instance.name }}
                     </a>
                 </td>

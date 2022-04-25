@@ -20,7 +20,7 @@
             </thead>
             <tbody>
             <tr *ngFor="let instance of data">
-                <td><a [routerLink]="['/admin/instances',instance.id]">{{ instance.name}}</a></td>
+                <td><a [routerLink]="['/admin/compute/instances',instance.id]">{{ instance.name}}</a></td>
                 <td>{{ instance.owner?.fullName }}</td>
                 <td>{{ instance.owner?.affiliation.name}}</td>
                 <td>{{ instance.cloudInstance?.address || 'No IP address'}}</td>
@@ -45,6 +45,6 @@
         </div>
     </div>
     <div class="admin-box-footer">
-        <a [routerLink]="['/admin/instances']" class="uppercase">View all instances</a>
+        <a [routerLink]="['/admin/compute/instances']" class="uppercase">View all instances</a>
     </div>
 </div>

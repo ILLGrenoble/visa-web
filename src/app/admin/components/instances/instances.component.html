@@ -1,4 +1,5 @@
 <visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<visa-compute-admin-header></visa-compute-admin-header>
 <div class="admin-container">
     <div class="admin-container--left">
         <visa-admin-instances-filter (onState)="onFilter($event)" [state]="currentState">
@@ -63,7 +64,7 @@
                             </clr-dg-column>
                             <clr-dg-placeholder>We couldn't find any instances!</clr-dg-placeholder>
                             <clr-dg-row *ngFor="let instance of instances?.data" [style.cursor]="'pointer'"
-                                        [routerLink]="['/admin/instances/', instance.id]">
+                                        [routerLink]="['/admin/compute/instances/', instance.id]">
                                 <clr-dg-cell>{{ instance.id }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.fullName }}</clr-dg-cell>

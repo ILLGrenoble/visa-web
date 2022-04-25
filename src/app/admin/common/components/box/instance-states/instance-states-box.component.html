@@ -7,7 +7,7 @@
     <div class="admin-box-body">
         <ul class="admin-box-pills" *ngIf="data && !loading">
             <li *ngFor="let state of data">
-                <a [routerLink]="['/admin/instances']" [queryParams]="{ state: state.state }">{{ state.state | titlecase }} <span class="pull-right">{{ state.count }}</span></a>
+                <a [routerLink]="['/admin/compute/instances']" [queryParams]="{ state: state.state }">{{ state.state | titlecase }} <span class="pull-right">{{ state.count }}</span></a>
             </li>
         </ul>
         <div class="admin-box-blankslate" *ngIf="loading">
