@@ -7,6 +7,7 @@ import {Title} from '@angular/platform-browser';
 import {InstanceExtensionRequest} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
+import {ExtensionRequestHandlerComponent} from '../extension-request-handler';
 
 @Component({
     selector: 'visa-admin-extension-requests',
@@ -48,6 +49,34 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
         return image.version ? `${image.name} (${image.version})` : image.name;
     }
 
+    public onHandle(request: InstanceExtensionRequest): void {
+        const dialogRef = this.dialog.open(ExtensionRequestHandlerComponent, {
+            width: '900px', data: { request },
+        });
+        dialogRef.componentInstance.onHandled$.subscribe(async (data) => {
+            this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation handleInstanceExtensionRequest($requestId: Int!, $response: InstanceExtensionResponseInput!){
+                        handleInstanceExtensionRequest(requestId:$requestId, response:$response) {
+                            id
+                            comments
+                            state
+                        }
+                    }
+            `,
+                variables: {requestId: request.id, response: data},
+            }).toPromise()
+                .then(() => {
+                    dialogRef.close();
+                    this.showSuccessNotification('Instance extension request has been handled successfully');
+                    this.load();
+
+                }).catch((error) => {
+                    this.showErrorNotification(error);
+                });
+        });
+    }
+
     private load(): void {
         this._loading = true;
 
@@ -81,7 +110,9 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
                                 affiliation {
                                     name
                                 }
+                                email
                             }
+                            username
                         }
                     }
                 }

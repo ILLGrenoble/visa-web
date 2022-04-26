@@ -70,6 +70,7 @@ import {
     UsersFilterComponent,
     UserEditComponent,
     ExtensionRequestsComponent,
+    ExtensionRequestHandlerComponent,
 } from './components';
 
 @NgModule({
@@ -144,6 +145,7 @@ import {
         ApplicationCredentialDeleteComponent,
         ApplicationCredentialUpdateComponent,
         ExtensionRequestsComponent,
+        ExtensionRequestHandlerComponent,
     ],
     exports: [
         DashboardComponent,
@@ -165,7 +167,8 @@ import {
         ApplicationCredentialNewComponent,
         ApplicationCredentialDeleteComponent,
         ApplicationCredentialUpdateComponent,
-        UserEditComponent
+        UserEditComponent,
+        ExtensionRequestHandlerComponent,
     ],
 })
 export class AdminModule {

@@ -38,3 +38,4 @@ export * from './application-credential-new';
 export * from './application-credential-delete';
 export * from './application-credential-update';
 export * from './extension-requests';
+export * from './extension-request-handler';

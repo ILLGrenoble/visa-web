@@ -643,9 +643,16 @@ export type ApplicationCredentialInput = {
 };
 
 export type InstanceExtensionRequest = {
-    __typename?: 'ApplicationCredential';
+    __typename?: 'InstanceExtensionRequest';
     id: Scalars['Int'];
     comments: Scalars['String'];
     createdAt: Scalars['String'];
     instance: Instance;
+};
+
+export type InstanceExtensionResponseInput = {
+    handlerId: Scalars['String'];
+    handlerComments: Scalars['String'];
+    accepted: Scalars['Boolean'];
+    terminationDate: Scalars['String'];
 };

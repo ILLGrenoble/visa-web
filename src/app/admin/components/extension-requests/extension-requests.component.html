@@ -13,9 +13,8 @@
             <clr-dg-column>Session activity</clr-dg-column>
             <clr-dg-column>Created</clr-dg-column>
             <clr-dg-column>Termination Date</clr-dg-column>
-            <clr-dg-column>Actions</clr-dg-column>
 
-            <clr-dg-row *ngFor="let request of extensionRequests">
+            <clr-dg-row *ngFor="let request of extensionRequests" [style.cursor]="'pointer'" (click)="onHandle(request)">
                 <clr-dg-cell>{{request.instance.id}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.name}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.owner.fullName}}</clr-dg-cell>
@@ -26,7 +25,6 @@
                 <clr-dg-cell>{{request.instance.lastSeenAt | timeDuration: 'date'}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
-                <clr-dg-cell></clr-dg-cell>
             </clr-dg-row>
         </clr-datagrid>
     </div>

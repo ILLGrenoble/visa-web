@@ -59,6 +59,7 @@ export class RequestExtensionDialog implements OnInit {
             }
         });
     }
+
     private createForm(): void {
         this.form = new FormGroup({
             comments: new FormControl('', Validators.compose([Validators.maxLength(4000), Validators.required])),
