@@ -4,6 +4,7 @@ import {Subject, Subscription, timer} from 'rxjs';
 import {DetailsDialog, ExperimentsDialog, MembersDialog, RequestExtensionDialog} from '../dialogs';
 import {MatDialog} from '@angular/material/dialog';
 import {NotifierService} from 'angular-notifier';
+import * as moment from 'moment';
 
 @Component({
     selector: 'visa-instance-list-card',
@@ -210,7 +211,12 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     public willExpireFromInactivity(): boolean {
-        return this.instance.terminationDate != null && this.instance.terminationDate.getTime() !== this.instance.expirationDate.getTime();
+        if (this.instance.terminationDate == null) {
+            return false;
+        }
+        const terminationDate = moment(this.instance.terminationDate).format('YYYY-MM-DD hh:mm');
+        const expirationDate = moment(this.instance.expirationDate).format('YYYY-MM-DD hh:mm');
+        return terminationDate !== expirationDate;
     }
 
     public getThumbnailUrl(): string {

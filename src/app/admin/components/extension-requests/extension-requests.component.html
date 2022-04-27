@@ -14,6 +14,10 @@
             <clr-dg-column>Created</clr-dg-column>
             <clr-dg-column>Termination Date</clr-dg-column>
 
+            <clr-dg-placeholder>
+                There are no instance extension requests to handle
+            </clr-dg-placeholder>
+
             <clr-dg-row *ngFor="let request of extensionRequests" [style.cursor]="'pointer'" (click)="onHandle(request)">
                 <clr-dg-cell>{{request.instance.id}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.name}}</clr-dg-cell>
