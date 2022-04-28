@@ -141,6 +141,10 @@ export class CardComponent implements OnInit, OnDestroy {
         return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
     }
 
+    public isOwner(): boolean {
+        return this.instance.membership.isRole('OWNER');
+    }
+
     public onRebootClicked(event): void {
         event.preventDefault();
         this.toggleSettings();
