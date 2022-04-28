@@ -206,11 +206,22 @@ export class CardComponent implements OnInit, OnDestroy {
         return null;
     }
 
-    public willExpireIn24Hours(): boolean {
-        return !this.willExpireIn1Hour() && this.instance.willExpireInHours(24);
+    public willExpireWarning(): boolean {
+        if (this.willExpireCritical()) {
+            return false;
+        }
+
+        if (this.willExpireFromInactivity()) {
+            // Show warning 24 hours if expiring due to inactivity
+            return this.instance.willExpireInHours(24);
+
+        } else {
+            // Show warning 48 hours in advance if expiring due to lifetime
+            return this.instance.willExpireInHours(48);
+        }
     }
 
-    public willExpireIn1Hour(): boolean {
+    public willExpireCritical(): boolean {
         return this.instance.willExpireInHours(1);
     }
 
@@ -225,6 +236,23 @@ export class CardComponent implements OnInit, OnDestroy {
 
     public getThumbnailUrl(): string {
         return this.accountService.getThumbnailUrlForInstance(this.instance);
+    }
+
+    public requestExtension($event): void {
+        $event.preventDefault();
+        const dialogRef = this.dialog.open(RequestExtensionDialog, {
+            width: '1000px',
+            data: {instance: this._instance, configuration: this._configuration},
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result == null) {
+                return;
+            }
+            this.notifierService.notify('success', 'Successfully requested lifetime extension');
+            this._requestExtensionEnabled = false;
+        });
+
     }
 
     private updateInstanceState(): void {
@@ -259,7 +287,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
             }
 
-            if (this.willExpireIn24Hours() && !this.willExpireFromInactivity()) {
+            if (this.willExpireWarning() && !this.willExpireFromInactivity()) {
                 this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
                     this._requestExtensionEnabled = (instanceLifetimeExtension == null);
                 });
@@ -294,8 +322,8 @@ export class CardComponent implements OnInit, OnDestroy {
         const hour = minute * 60;
 
         const durationMs = (this.instance.expirationDate.getTime() - new Date().getTime());
-        const hours = Math.floor(durationMs / (hour));
-        const minutes = Math.floor((durationMs % (hour)) / (minute));
+        const hours = Math.floor(durationMs / hour);
+        const minutes = Math.floor((durationMs % hour) / minute);
 
         if (durationMs > hour) {
             this.expirationCountdown = ` in ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
@@ -325,22 +353,5 @@ export class CardComponent implements OnInit, OnDestroy {
             this._timerSubscription.unsubscribe();
             this._timerSubscription = null;
         }
-    }
-
-    public requestExtension($event): void {
-        $event.preventDefault();
-        const dialogRef = this.dialog.open(RequestExtensionDialog, {
-            width: '1000px',
-            data: {instance: this._instance, configuration: this._configuration},
-        });
-
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result == null) {
-                return;
-            }
-            this.notifierService.notify('success', 'Successfully requested lifetime extension');
-            this._requestExtensionEnabled = false;
-        });
-
     }
 }

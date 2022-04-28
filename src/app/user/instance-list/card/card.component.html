@@ -1,6 +1,4 @@
-<div class="instance-card-container"
-     [ngClass]="{'instance-card-container__expiration-24': willExpireIn24Hours(), 'instance-card-container__expiration-1': willExpireIn1Hour()}">
-
+<div class="instance-card-container" >
 
     <div class="instance-card-container-header">
         <div class="instance-card-container-header-title">
@@ -52,42 +50,25 @@
 
         <div class="instance-card">
 
-            <div *ngIf="willExpireIn1Hour()" class="instance-card-expiration instance-card-expiration-1">
-                <div class="instance-card-expiration-details">
-                    <clr-icon class="is-solid instance-card-expiration-1-warning" shape="danger"  size="24"></clr-icon>
-                    <div class="instance-card-expiration__text instance-card-expiration-1-warning">
-                        WARNING!
-                    </div>
-                    <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
+            <div *ngIf="willExpireWarning() || willExpireCritical()">
+                <div [ngClass]="{'instance-card-expiration-1': willExpireCritical(), 'instance-card-expiration-24': willExpireWarning()}" class="instance-card-expiration">
+                    <div class="instance-card-expiration-details">
+                        <clr-icon [ngClass]="{'instance-card-expiration-1-warning': willExpireCritical(), 'instance-card-expiration-24-warning': willExpireWarning()}" class="is-solid" shape="danger"  size="24"></clr-icon>
+                        <div [ngClass]="{'instance-card-expiration-1-warning': willExpireCritical(), 'instance-card-expiration-24-warning': willExpireWarning()}" class="instance-card-expiration__text">
+                            WARNING!
+                        </div>
+                        <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
                         This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
                     </span>
-                    <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
+                        <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
                         This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
                     </span>
-                </div>
-                <button *ngIf="!willExpireFromInactivity() && isOwner()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="!requestExtensionEnabled">
-                    <clr-icon shape="pencil" class="is-solid"> </clr-icon> Request extension
-                </button>
-            </div>
-
-            <div *ngIf="willExpireIn24Hours()" class="instance-card-expiration instance-card-expiration-24">
-                <div class="instance-card-expiration-details">
-                    <clr-icon class="is-solid instance-card-expiration-24-warning" shape="danger" size="24"></clr-icon>
-                    <div class="instance-card-expiration__text instance-card-expiration-24-warning">
-                        WARNING!
                     </div>
-                    <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
-                        This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
-                    </span>
-                    <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
-                        This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
-                    </span>
+                    <button *ngIf="!willExpireFromInactivity() && isOwner()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="!requestExtensionEnabled">
+                        <clr-icon shape="pencil" class="is-solid"> </clr-icon> Request extension
+                    </button>
                 </div>
-                <button *ngIf="!willExpireFromInactivity() && isOwner()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="!requestExtensionEnabled">
-                    <clr-icon shape="pencil" class="is-solid"> </clr-icon>Request extension
-                </button>
             </div>
-
 
             <div class="instance-block">
 
