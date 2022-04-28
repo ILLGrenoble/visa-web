@@ -1,12 +1,11 @@
 <h1 mat-dialog-title>Instance extension request</h1>
 <div mat-dialog-content>
 
-
     <h4>Instance details</h4>
 
     <div class="admin-box-body p-t-10 p-b-10">
         <dl class="admin-details-list">
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Name / ID / UID</b>
                 </dt>
@@ -14,7 +13,7 @@
                     {{ instance?.name }} / {{ instance?.id }} / {{ instance?.uid }}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>State</b>
                 </dt>
@@ -22,7 +21,7 @@
                     {{ instance.state | titlecase }}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Owner</b>
                 </dt>
@@ -31,7 +30,7 @@
                     href="mailto:{{ instance.owner.email }}">{{ instance.owner.email }}</a>)
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Employer</b>
                 </dt>
@@ -39,7 +38,7 @@
                     {{ instance.owner?.affiliation?.name }}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Creation date</b>
                 </dt>
@@ -47,7 +46,7 @@
                     {{ instance.createdAt | date:'dd-MM-yyyy HH:mm' }}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Last session activity</b>
                 </dt>
@@ -55,7 +54,7 @@
                     {{ instance.lastSeenAt | timeDuration: 'date'}}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Termination date</b>
                 </dt>
@@ -63,13 +62,13 @@
                     {{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Flavour</b>
                 </dt>
                 <dd>{{ instance.plan.flavour.name }}</dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Image</b>
                 </dt>
@@ -81,7 +80,7 @@
     <h4>Extension request</h4>
     <div class="admin-box-body p-t-10 p-b-10">
         <dl class="admin-details-list">
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>Request date</b>
                 </dt>
@@ -89,7 +88,7 @@
                     {{ extensionRequest.createdAt | date:'dd-MM-yyyy HH:mm' }}
                 </dd>
             </div>
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>User comments</b>
                 </dt>
@@ -103,7 +102,7 @@
     <h4>Extension response</h4>
     <div class="admin-box-body p-t-10 p-b-10">
         <dl class="admin-details-list">
-            <div class="admin-details-list-item">
+            <div class="admin-details-list-item extension-request-list-item">
                 <dt>
                     <b>This request is</b>
                 </dt>
@@ -112,7 +111,7 @@
                     <button [ngClass]="{'btn-warning': isAcceptedValue(false), 'btn-warning-outline': !isAcceptedValue(false)}" class="btn" (click)="setAcceptedValue(false)">Refused</button>
                 </dd>
             </div>
-            <div class="admin-details-list-item" *ngIf="isAcceptedValue(true)">
+            <div class="admin-details-list-item extension-request-list-item" *ngIf="isAcceptedValue(true)">
                 <dt>
                     <b>Extension date</b>
                 </dt>
@@ -130,7 +129,7 @@
                 <p>Please provide details of why you have refused this extension request:</p>
             </div>
             <div class="clr-col-12">
-                <textarea id="refusedComments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" formControlName="handlerCommentsRefused"></textarea>
+                <textarea id="refusedComments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="handlerCommentsRefused"></textarea>
                 <div ngxErrors="handlerCommentsRefused" class="text-danger">
                     <div ngxError="maxlength">
                         Comments cannot exceed 4000 characters.
@@ -143,7 +142,7 @@
                 <p>If you would like to provide any comments then please do so below:</p>
             </div>
             <div class="clr-col-12">
-                <textarea id="acceptedComments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" formControlName="handlerCommentsAccepted"></textarea>
+                <textarea id="acceptedComments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="handlerCommentsAccepted"></textarea>
                 <div ngxErrors="handlerCommentsAccepted" class="text-danger">
                     <div ngxError="maxlength">
                         Comments cannot exceed 4000 characters.
