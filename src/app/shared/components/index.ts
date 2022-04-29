@@ -7,4 +7,5 @@ export * from './tabs';
 export * from './owner-search';
 export * from './image';
 export * from './dialogs';
+export * from './notification-badge';
 

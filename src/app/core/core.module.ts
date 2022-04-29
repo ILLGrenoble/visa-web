@@ -8,7 +8,7 @@ import {HttpLink, HttpLinkModule} from 'apollo-angular-link-http';
 import {environment} from 'environments/environment';
 import {AccountEffects} from './effects';
 import {AuthenticationGuard} from './guards';
-import {accountReducer} from './reducers';
+import {accountReducer, notificationsReducer} from './reducers';
 import {
     AccountExperimentCountResolver,
     AccountInstanceCountResolver,
@@ -52,7 +52,7 @@ import {InMemoryCache} from '@apollo/client/core';
             }
         ),
         HttpLinkModule,
-        StoreModule.forRoot({account: accountReducer}),
+        StoreModule.forRoot({account: accountReducer, notifications: notificationsReducer}),
         EffectsModule.forRoot([AccountEffects]),
     ],
     providers: [

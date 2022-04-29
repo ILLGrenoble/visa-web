@@ -32,6 +32,7 @@ import {
     TabsComponent,
     TabTitleComponent,
     TabTitleIconComponent,
+    NotificationBadgeComponent,
 } from './components';
 import {AuthenticatedContainerComponent} from './containers';
 import {
@@ -157,7 +158,8 @@ export function markedOptionsFactory(): MarkedOptions {
         RouterModule,
         NgxErrorsModule,
         SanitizerPipe,
-        InstanceFilterPipe
+        InstanceFilterPipe,
+        NotificationBadgeComponent,
     ],
     declarations: [
         MembersRoleFilterPipe,
@@ -185,6 +187,7 @@ export function markedOptionsFactory(): MarkedOptions {
         ImageComponent,
         InvalidAccountDialogComponent,
         SanitizerPipe,
+        NotificationBadgeComponent,
     ],
     entryComponents: [
         AccountComponent,

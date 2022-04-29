@@ -36,7 +36,10 @@
             <li *ngIf="(user$ | async)?.admin">
                 <a [routerLink]="['/admin']" class="navigation-sidebar-item visa-navigation-item">
                     <div class="navigation-sidebar-item-icon">
-                        <clr-icon shape="cog"></clr-icon>
+                        <div class="navigation-sidebar-item-icon-inner">
+                            <clr-icon shape="cog"></clr-icon>
+                        </div>
+                        <visa-notification-badge></visa-notification-badge>
                     </div>
                     <span class="navigation-sidebar-item-name">Admin</span>
                 </a>
@@ -57,8 +60,8 @@
         </ul>
     </nav>
     <div style="margin-left: 75px">
-        <div *ngIf="notifications != null">
-            <visa-system-notification *ngFor="let notification of notifications" [notification]="notification" (dismissNotification)="dismissNotification($event)"></visa-system-notification>
+        <div *ngIf="systemNotifications != null">
+            <visa-system-notification *ngFor="let notification of systemNotifications" [notification]="notification" (dismissNotification)="dismissSystemNotification($event)"></visa-system-notification>
         </div>
         <router-outlet></router-outlet>
     </div>

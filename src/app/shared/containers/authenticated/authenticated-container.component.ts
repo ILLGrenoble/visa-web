@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     AccountActions,
     ApplicationState,
-    AuthenticationService,
+    AuthenticationService, NotificationPayload, NotificationsActions,
     NotificationService,
     selectLoggedInUser,
     SystemNotification,
@@ -24,8 +24,8 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
 
     private static DISMISSED_NOTIFICATIONS = 'authenticated.dismissed.notifications';
     public user$: Observable<User>;
-    public notifications: SystemNotification[] = [];
-    public dismissedNotifications: Array<number> = new Array<number>();
+    public systemNotifications: SystemNotification[] = [];
+    public dismissedSystemNotifications: Array<number> = new Array<number>();
     private _timerSubscription: Subscription = null;
 
 
@@ -47,14 +47,16 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
         const dismissedNotificationsString = localStorage.getItem(AuthenticatedContainerComponent.DISMISSED_NOTIFICATIONS);
         if (dismissedNotificationsString != null && dismissedNotificationsString.length !== undefined) {
             dismissedNotificationsString.split(',').forEach(
-                (element) => this.dismissedNotifications.push(Number(element))
+                (element) => this.dismissedSystemNotifications.push(Number(element))
             );
         }
 
-        this._timerSubscription = timer(0, 30000).subscribe(
-            () => this.notificationService.getAll().then((notifications) => {
-                this.cleanDismissedNotifications(notifications);
-                this.filterNotifications(notifications);
+        this._timerSubscription = timer(0, 10000).subscribe(
+            () => this.notificationService.getAll().then((notificationPayload: NotificationPayload) => {
+                const systemNotifications = notificationPayload.systemNotifications;
+
+                this.cleanDismissedSystemNotifications(systemNotifications);
+                this.filterSystemNotifications(systemNotifications);
             }));
     }
 
@@ -66,24 +68,24 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
         this.authenticationService.logout();
     }
 
-    public dismissNotification(notification: SystemNotification): void {
-        this.dismissedNotifications.push(notification.uid);
-        localStorage.setItem(AuthenticatedContainerComponent.DISMISSED_NOTIFICATIONS, this.dismissedNotifications.join(','));
-        this.filterNotifications(this.notifications);
+    public dismissSystemNotification(systemNotification: SystemNotification): void {
+        this.dismissedSystemNotifications.push(systemNotification.uid);
+        localStorage.setItem(AuthenticatedContainerComponent.DISMISSED_NOTIFICATIONS, this.dismissedSystemNotifications.join(','));
+        this.filterSystemNotifications(this.systemNotifications);
     }
 
-    private filterNotifications(notifications: SystemNotification[]): void {
-        this.notifications = notifications.filter(notification => {
-            return !this.dismissedNotifications.includes(notification.uid);
+    private filterSystemNotifications(systemNotifications: SystemNotification[]): void {
+        this.systemNotifications = systemNotifications.filter(notification => {
+            return !this.dismissedSystemNotifications.includes(notification.uid);
         });
     }
 
-    private cleanDismissedNotifications(notifications): void {
-        const notificationUIDs = notifications.map(notification => notification.uid);
-        this.dismissedNotifications = this.dismissedNotifications.filter((dismissedNotification) => {
+    private cleanDismissedSystemNotifications(systemNotifications: SystemNotification[]): void {
+        const notificationUIDs = systemNotifications.map(notification => notification.uid);
+        this.dismissedSystemNotifications = this.dismissedSystemNotifications.filter((dismissedNotification) => {
             return notificationUIDs.includes(dismissedNotification);
         });
-        localStorage.setItem(AuthenticatedContainerComponent.DISMISSED_NOTIFICATIONS, this.dismissedNotifications.join(','));
+        localStorage.setItem(AuthenticatedContainerComponent.DISMISSED_NOTIFICATIONS, this.dismissedSystemNotifications.join(','));
     }
 
 }

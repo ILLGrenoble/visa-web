@@ -1,0 +1,5 @@
+<div *ngIf="isActive" class="notification-badge" [ngClass]="{'with-text': showCount}">
+    <p *ngIf="showCount">
+        {{count}}
+    </p>
+</div>

@@ -2,14 +2,14 @@ import {createReducer, createSelector, on} from '@ngrx/store';
 import {AccountActions} from '../actions';
 import {AccountState, ApplicationState} from '../state';
 
-export const initialState: AccountState = {
+export const initialAccountState: AccountState = {
     user: null,
 };
 
 const reducer = createReducer(
-    initialState,
+    initialAccountState,
     on(AccountActions.loadAccountSuccess, (state, {user}) => ({...state, user})),
-    on(AccountActions.loadAccount, () => initialState),
+    on(AccountActions.loadAccount, () => initialAccountState),
     on(AccountActions.clearAccount, (state) => ({...state, user: null})),
 );
 

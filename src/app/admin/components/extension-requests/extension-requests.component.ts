@@ -8,6 +8,7 @@ import {InstanceExtensionRequest} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
 import {ExtensionRequestHandlerComponent} from '../extension-request-handler';
+import {AccountActions, NotificationsActions, NotificationService} from '../../../core';
 
 @Component({
     selector: 'visa-admin-extension-requests',
@@ -30,6 +31,7 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
     }
 
     constructor(private apollo: Apollo,
+                private notificationService: NotificationService,
                 private notifierService: NotifierService,
                 private dialog: MatDialog,
                 private titleService: Title) {
@@ -69,6 +71,9 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
                 .then(() => {
                     dialogRef.close();
                     this.showSuccessNotification('Instance extension request has been handled successfully');
+                    if (this._extensionRequests.length === 1) {
+                        this.notificationService.getAll();
+                    }
                     this.load();
 
                 }).catch((error) => {

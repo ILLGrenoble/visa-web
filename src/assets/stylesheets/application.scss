@@ -196,7 +196,20 @@ $candy-app-theme: mat-light-theme(
                         width: 24px;
                         height: 24px;
                     }
+
+                    .navigation-sidebar-item-icon-inner {
+                        display: inline-block;
+                        width: 32px;
+                    }
+
+                    .notification-badge {
+                        top: -11px;
+                        right: 5px;
+                        margin-right: -10px;
+                        margin-left: 0;
+                    }
                 }
+
 
                 line-height: 18px;
                 text-align: center;

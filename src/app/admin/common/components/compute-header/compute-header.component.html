@@ -5,6 +5,7 @@
                 <a class="admin-tab" routerLink="/admin/compute/instances" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="display" class="is-solid"></clr-icon>
                     Instances
+                    <visa-notification-badge [badgeTags]="['instance.errors']" [showCount]="true"></visa-notification-badge>
                 </a>
                 <a class="admin-tab" routerLink="/admin/compute/sessions" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="wrench" class="is-solid"></clr-icon>
@@ -13,6 +14,7 @@
                 <a class="admin-tab" routerLink="/admin/compute/extension_requests" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="clock" class="is-solid"></clr-icon>
                     Extension Requests
+                    <visa-notification-badge [badgeTags]="['instance.extension.requests']" [showCount]="true"></visa-notification-badge>
                 </a>
             </div>
         </div>

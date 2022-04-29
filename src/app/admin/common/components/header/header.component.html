@@ -12,6 +12,7 @@
                 <a href="" class="admin-tab" routerLink="/admin/compute/instances" [ngClass]="{'admin-tab--selected': routeStartsWith('/admin/compute')}">
                     <clr-icon shape="cpu" class="is-solid"></clr-icon>
                     Compute
+                    <visa-notification-badge [badgeTags]="['instance.errors', 'instance.extension.requests']" [showCount]="true"></visa-notification-badge>
                 </a>
                 <a href="" class="admin-tab" routerLink="/admin/cloud/images" [ngClass]="{'admin-tab--selected': routeStartsWith('/admin/cloud')}">
                     <clr-icon shape="cloud" class="is-solid"></clr-icon>

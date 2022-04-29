@@ -16,6 +16,8 @@ export * from './plan.model';
 export * from './protocol.model';
 export * from './image-plans.model';
 export * from './configuration.model';
+export * from './notification-payload.model';
+export * from './client-notification.model';
 export * from './system-notification.model';
 export * from './documentation-section.model';
 export * from './quota.model';
