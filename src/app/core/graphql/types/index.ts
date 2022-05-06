@@ -109,6 +109,7 @@ export type Image = {
     visible: Scalars['Boolean'];
     autologin: Maybe<Scalars['String']>;
     protocols?: Maybe<Array<Maybe<ImageProtocol>>>;
+    networks?: Maybe<Array<ImageNetwork>>;
     bootCommand: Scalars['String'];
 };
 
@@ -525,9 +526,22 @@ export type ImageInput = {
     icon?: Maybe<Scalars['String']>;
     computeId: Scalars['String'];
     visible: Scalars['Boolean'];
+    networkIds?: Maybe<Array<Scalars['Int']>>;
     protocolIds?: Maybe<Array<Scalars['Int']>>;
     bootCommand?: Maybe<Scalars['String']>;
     autologin?: Maybe<Scalars['String']>;
+};
+
+export type CloudNetwork = {
+    id: Scalars['Int'];
+    name: Scalars['String'];
+};
+
+
+export type ImageNetwork = {
+    id: Scalars['Int'];
+    networkId: Scalars['String'];
+    cloudNetwork: Maybe<CloudNetwork>;
 };
 
 export type UserInput = {

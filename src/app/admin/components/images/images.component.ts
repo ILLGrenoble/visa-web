@@ -1,43 +1,112 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {CloudImage, Image, ImageProtocol} from 'app/core/graphql/types';
-import {ImageDeleteComponent} from '../image-delete';
-import {ImageNewComponent} from '../image-new';
-import {ImageUpdateComponent} from '../image-update';
-import {Subject} from 'rxjs';
+import {lastValueFrom, Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
-import {map, takeUntil} from 'rxjs/operators';
+import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
+import {Image, ImageInput} from '../../../core/graphql';
+import {ImageDeleteComponent} from '../image-delete';
+import {ImageEditComponent} from '../image-edit';
 
 @Component({
     selector: 'visa-admin-images',
-    styleUrls: ['./images.component.scss'],
     templateUrl: './images.component.html',
 })
 
 export class ImagesComponent implements OnInit, OnDestroy {
 
-    public images: Image[] = [];
-    public imageCloudImageName: string[] = [];
-    public loading: boolean;
-
-    private cloudImages: CloudImage[];
-    private protocols: ImageProtocol[] = [];
-    private imageIcons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
-
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+    private _refresh$: Subject<void> = new Subject();
+    private _images: Image[] = [];
+    private _loading: boolean;
 
-    constructor(private apollo: Apollo,
-                private notifierService: NotifierService,
-                private dialog: MatDialog,
-                private titleService: Title) {
+    private readonly _notifierService: NotifierService;
+    private readonly _apollo: Apollo;
+    private readonly _dialog: MatDialog;
+    private readonly _titleService: Title;
+
+    constructor(apollo: Apollo,
+                notifierService: NotifierService,
+                dialog: MatDialog,
+                titleService: Title) {
+
+        this._dialog = dialog;
+        this._titleService = titleService;
+        this._apollo = apollo;
+        this._notifierService = notifierService;
+    }
+
+    get loading(): boolean {
+        return this._loading;
+    }
+
+    set loading(value: boolean) {
+        this._loading = value;
+    }
+
+    get images(): Image[] {
+        return this._images;
+    }
+
+    set images(value: Image[]) {
+        this._images = value;
+    }
+
+
+    public onRefresh(): void {
+        this._refresh$.next();
     }
 
     public ngOnInit(): void {
-        this.titleService.setTitle(`Images | Cloud | Admin | VISA`);
-        this.loadProtocolsImages();
+        this._titleService.setTitle(`Images | Cloud | Admin | VISA`);
+        this._refresh$
+            .pipe(
+                startWith(0),
+                takeUntil(this._destroy$),
+                tap(() => this._loading = true),
+                delay(250),
+                switchMap(() => this._apollo.query<any>({
+                    query: gql`
+                        query allImages {
+                            images {
+                                id
+                                name
+                                version
+                                description
+                                visible
+                                icon
+                                computeId
+                                cloudImage {
+                                    id
+                                    name
+                                }
+                                bootCommand
+                                visible
+                                autologin
+                                networks {
+                                  id
+                                  networkId
+                                  cloudNetwork {
+                                    id
+                                    name
+                                  }
+                                }
+                                protocols {
+                                    id
+                                    name
+                                }
+                            }
+                        }
+                    `
+                })),
+                map(({data}) => ({images: data.images})),
+                tap(() => this._loading = false)
+            )
+            .subscribe(({images}) => {
+                this._images = images;
+            });
     }
 
     public ngOnDestroy(): void {
@@ -45,179 +114,97 @@ export class ImagesComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
-    public onRefresh(): void {
-        this.loadImages();
-    }
-
-    public loadProtocolsImages(): void {
-        this.loading = true;
-
-        this.apollo.query<any>({
-            query: gql`
-                query All {
-                    images {
-                        id
-                        name
-                        version
-                        description
-                        visible
-                        icon
-                        computeId
-                        protocols{
-                            id
-                            name
-                        }
-                        bootCommand
-                        autologin
-                    }
-                    imageProtocols {
-                        id
-                        name
-                    }
-                    cloudImages {
-                        id
-                        name
-                    }
-                }
-            `,
-        }).pipe(
-            map(({data}) => ({images: data.images, protocols: data.imageProtocols, cloudImages: data.cloudImages})),
-            takeUntil(this._destroy$)
-        ).subscribe(({images, protocols, cloudImages}) => {
-            this.images = images;
-            this.protocols = protocols;
-            this.cloudImages = cloudImages;
-
-            this.imageCloudImageName = this.images.map((image) => {
-                const resultCloudImage = cloudImages.find((cloudImage) => cloudImage.id === image.computeId);
-                if (resultCloudImage) {
-                    return resultCloudImage.name;
-                } else {
-                    return null;
-                }
-            });
-            this.loading = false;
-        });
-    }
-
-    public loadImages(): void {
-        this.loading = true;
-
-        this.apollo.query<any>({
-            query: gql`
-                query AllImages {
-                    images {
-                        id
-                        name
-                        version
-                        description
-                        visible
-                        icon
-                        computeId
-                        protocols{
-                            id
-                            name
-                        }
-                    }
-                }
-            `,
-        }).pipe(
-            map(({data}) => (data.images)),
-            takeUntil(this._destroy$)
-        ).subscribe((images) => {
-            this.images = images;
-            this.loading = false;
-        });
-    }
 
     public onCreate(): void {
-        const dialogRef = this.dialog.open(ImageNewComponent, {
+        const dialogRef = this._dialog.open(ImageEditComponent, {
             width: '900px',
-            data: {imageIcons: this.imageIcons, cloudImages: this.cloudImages, protocols: this.protocols},
+            data: {image: null}
         });
-        dialogRef.componentInstance.onCreate$.subscribe((imageInput: any) => {
-            this.apollo.mutate<any>({
+
+        dialogRef.componentInstance.onSave$.subscribe((input: ImageInput) => {
+            const source$ = this._apollo.mutate<any>({
                 mutation: gql`
-                    mutation CreateImage($input: ImageInput!){
-                        createImage(input:$input) {
-                          id
-                          name
-                          version
-                          description
-                          icon
-                          computeId
+                        mutation CreateImage($input: ImageInput!){
+                            createImage(input:$input) {
+                              id
+                              name
+                              version
+                              description
+                              icon
+                              computeId
+                            }
                         }
-                    }
-                `,
-                variables: {input: imageInput},
-            }).toPromise()
-                .then(() => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Image created');
-                    this.loadProtocolsImages();
-                }).catch((error) => {
-                this.showErrorNotification(error);
+                    `,
+                variables: {input},
+            }).pipe(
+                takeUntil(this._destroy$)
+            );
+            lastValueFrom(source$).then(() => {
+                this._notifierService.notify('success', 'Image created');
+                this._refresh$.next();
+                dialogRef.close();
+            }).catch((error) => {
+                this._notifierService.notify('error', error);
             });
         });
     }
 
-    public onDelete(imageId): void {
-        const dialogRef = this.dialog.open(ImageDeleteComponent, {
-            width: '300px', data: {image: this.images.find((x) => x.id === imageId)},
+    public onDelete(image: Image): void {
+
+        const dialogRef = this._dialog.open(ImageDeleteComponent, {
+            width: '400px'
         });
-        dialogRef.componentInstance.onDelete$.subscribe(() => {
-            this.apollo.mutate<any>({
-                mutation: gql`
-                    mutation DeleteImage($id: Int!){
-                        deleteImage(id:$id) {
-                            id
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                const source$ = this._apollo.mutate({
+                    mutation: gql`
+                        mutation DeleteImage($id: Int!){
+                            deleteImage(id:$id) {
+                                id
+                            }
                         }
-                    }
-                `,
-                variables: {id: imageId},
-            }).toPromise()
-                .then(() => {
-                    this.showSuccessNotification('Image deleted');
-                    this.loadImages();
+                    `,
+                    variables: {id: image.id},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                );
+                lastValueFrom(source$).then(_ => {
+                    this._notifierService.notify('success', 'Successfully deleted image');
+                    this._refresh$.next();
                 });
+            }
         });
     }
 
+
     public onUpdate(image: Image): void {
-        const dialogRef = this.dialog.open(ImageUpdateComponent, {
-            width: '900px', data: {
-                image,
-                imageIcons: this.imageIcons,
-                cloudImages: this.cloudImages,
-                protocols: this.protocols,
-            },
+        const dialogRef = this._dialog.open(ImageEditComponent, {
+            width: '900px',
+            data: {image}
         });
-        dialogRef.componentInstance.onUpdate$.subscribe(async (data) => {
-            this.apollo.mutate<any>({
+
+        dialogRef.componentInstance.onSave$.subscribe((input: ImageInput) => {
+            const source$ = this._apollo.mutate<any>({
                 mutation: gql`
                     mutation UpdateImage($id: Int!,$input: ImageInput!){
                         updateImage(id:$id,input:$input) {
                             id
                         }
                     }
-            `,
-                variables: {id: image.id, input: data},
-            }).toPromise()
-                .then(() => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Image Updated');
-                    this.loadProtocolsImages();
-                }).catch((error) => {
-                this.showErrorNotification(error);
+                    `,
+                variables: {id: image.id, input},
+            }).pipe(
+                takeUntil(this._destroy$)
+            );
+            lastValueFrom(source$).then(() => {
+                this._notifierService.notify('success', 'Image saved');
+                this._refresh$.next();
+                dialogRef.close();
+            }).catch((error) => {
+                this._notifierService.notify('error', error);
             });
         });
     }
 
-    private showSuccessNotification(message): void {
-        this.notifierService.notify('success', message);
-    }
-
-    private showErrorNotification(message): void {
-        this.notifierService.notify('error', message);
-    }
 }
