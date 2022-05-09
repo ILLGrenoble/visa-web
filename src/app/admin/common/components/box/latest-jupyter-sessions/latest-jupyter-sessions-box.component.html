@@ -24,7 +24,7 @@
                     </a>
                 </td>
                 <td>{{jupyterSession.user.fullName}}</td>
-                <td>{{jupyterSession.user.affiliation.name}}</td>
+                <td>{{jupyterSession.user.affiliation ? jupyterSession.user.affiliation.name : 'No affiliation'}}</td>
                 <td>{{jupyterSession.kernelCount}}</td>
                 <td>
                     <clr-tooltip>

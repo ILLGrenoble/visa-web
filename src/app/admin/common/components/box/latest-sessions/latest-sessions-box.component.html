@@ -24,7 +24,7 @@
                     </a>
                 </td>
                 <td>{{sessionMember.user.fullName}}</td>
-                <td>{{sessionMember.user.affiliation.name}}</td>
+                <td>{{sessionMember.user.affiliation ? sessionMember.user.affiliation.name : 'No affiliation'}}</td>
                 <td>{{sessionMember.role}}</td>
                 <td>
                     <clr-tooltip>
