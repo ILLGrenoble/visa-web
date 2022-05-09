@@ -22,7 +22,7 @@
             <tr *ngFor="let instance of data">
                 <td><a [routerLink]="['/admin/compute/instances',instance.id]">{{ instance.name}}</a></td>
                 <td>{{ instance.owner?.fullName }}</td>
-                <td>{{ instance.owner?.affiliation.name}}</td>
+                <td>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation'}}</td>
                 <td>{{ instance.cloudInstance?.address || 'No IP address'}}</td>
                 <td [ngClass]="{'text-danger': instance.state ==='ERROR'}">{{ instance.state | titlecase  }}</td>
                 <td>

@@ -90,7 +90,7 @@
                                     <b>Employer</b>
                                 </dt>
                                 <dd>
-                                    {{ instance.owner?.affiliation?.name }}
+                                    {{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation' }}
                                 </dd>
                             </div>
                             <div class="admin-details-list-item">

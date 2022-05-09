@@ -25,7 +25,7 @@
                             <clr-dg-cell>{{instanceSessionMember.instanceSession.instance.name}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.createdAt | date:'dd-MM-yyyy HH:mm'}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.user.fullName}}</clr-dg-cell>
-                            <clr-dg-cell>{{instanceSessionMember.user.affiliation.name}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.user.affiliation ? instanceSessionMember.user.affiliation.name : 'No affiliation'}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.role}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.duration | timeConversion}}</clr-dg-cell>
                             <clr-dg-cell>

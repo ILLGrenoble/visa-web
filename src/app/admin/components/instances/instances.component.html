@@ -68,7 +68,7 @@
                                 <clr-dg-cell>{{ instance.id }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.fullName }}</clr-dg-cell>
-                                <clr-dg-cell>{{ instance.owner.affiliation.name }}</clr-dg-cell>
+                                <clr-dg-cell>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation' }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.state }}</clr-dg-cell>
                                 <clr-dg-cell>
                                     <span *ngIf="instance.activeSessions.length == 0">
