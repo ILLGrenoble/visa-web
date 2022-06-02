@@ -79,6 +79,7 @@ export type Flavour = {
     name: Scalars['String'];
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
+    credits: Scalars['Int'];
     computeId: Scalars['String'];
 };
 
@@ -514,6 +515,7 @@ export type FlavourInput = {
     name: Scalars['String'];
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
+    credits: Scalars['Int'];
     computeId: Scalars['String'];
     instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
 };

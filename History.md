@@ -1,6 +1,6 @@
 2.2.1 09/05/2022
 ================
-* Check for null user affiliations in admin UIs
+ * Check for null user affiliations in admin UIs
 
 2.2.0 23/03/2022
 ================

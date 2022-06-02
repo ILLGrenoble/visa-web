@@ -9,6 +9,7 @@
             <clr-dg-column>Cloud Flavour</clr-dg-column>
             <clr-dg-column>Memory / GB</clr-dg-column>
             <clr-dg-column>CPUs</clr-dg-column>
+            <clr-dg-column>Credits</clr-dg-column>
             <clr-dg-column></clr-dg-column>
 
             <clr-dg-row *ngFor="let flavour of flavours;let i = index">
@@ -18,6 +19,7 @@
 
                 <clr-dg-cell>{{flavour.memory / 1024}}</clr-dg-cell>
                 <clr-dg-cell>{{flavour.cpu}}</clr-dg-cell>
+                <clr-dg-cell>{{flavour.credits}}</clr-dg-cell>
                 <clr-dg-cell>
                     <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
                     <button (click)="onDelete(flavour.id)" class="btn btn-warning-outline btn-sm">Delete</button>

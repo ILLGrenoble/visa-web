@@ -31,6 +31,17 @@
             <label for="cpu">CPUs</label>
             <input clrInput readonly id="cpu" class="form-control" [value]="cpu">
         </clr-input-container>
+        <clr-input-container>
+            <label for="credits">Credits</label>
+            <input clrInput id="credits" name="credits" type="number" class="form-control" [(ngModel)]="credits" #flavourCredits="ngModel"
+                   required>
+            <div *ngIf="flavourCredits.invalid && (flavourName.dirty || flavourName.touched)"
+                 class="alert alert-danger">
+                <div *ngIf="flavourCredits.errors.required">
+                    Credits have to be assigned.
+                </div>
+            </div>
+        </clr-input-container>
 
         <clr-combobox-container>
             <label>Selected instruments</label>

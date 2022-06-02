@@ -14,6 +14,7 @@ export class FlavourNewComponent implements OnInit {
     private _cloudFlavours: CloudFlavour[];
     private _selectedCloudFlavour: CloudFlavour;
     private _name: string;
+    private _credits = 1;
 
     private _instruments: Instrument[];
     private _selectedInstruments: Instrument[] = [];
@@ -40,6 +41,14 @@ export class FlavourNewComponent implements OnInit {
 
     set name(value: string) {
         this._name = value;
+    }
+
+    get credits(): number {
+        return this._credits;
+    }
+
+    set credits(value: number) {
+        this._credits = value;
     }
 
     get instruments(): Instrument[] {
@@ -90,6 +99,7 @@ export class FlavourNewComponent implements OnInit {
             computeId: this._selectedCloudFlavour.id,
             memory: this._selectedCloudFlavour.ram,
             cpu: this._selectedCloudFlavour.cpus,
+            credits: this._credits,
             instrumentIds: this.selectedInstruments ? this.selectedInstruments.map(instrument => instrument.id) : []
         };
         this._onCreate$.emit(input);

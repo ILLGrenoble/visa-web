@@ -12,6 +12,7 @@ export class FlavourUpdateComponent implements OnInit {
     private _onUpdate$: EventEmitter<any> = new EventEmitter();
     private _selectedCloudFlavour: CloudFlavour;
     private _name: string;
+    private _credits: number;
     private _flavour: Flavour;
     private _cloudFlavours: CloudFlavour[];
 
@@ -36,6 +37,14 @@ export class FlavourUpdateComponent implements OnInit {
 
     set name(value: string) {
         this._name = value;
+    }
+
+    get credits(): number {
+        return this._credits;
+    }
+
+    set credits(value: number) {
+        this._credits = value;
     }
 
     get flavour(): Flavour {
@@ -82,6 +91,7 @@ export class FlavourUpdateComponent implements OnInit {
     public ngOnInit(): void {
         this._flavour = this._data.flavour;
         this._name = this._flavour.name;
+        this._credits = this._flavour.credits;
         this._cloudFlavours = this._data.cloudFlavours;
         this._instruments = this._data.instruments;
         this._selectedCloudFlavour = this._cloudFlavours.find(cloudFlavour => cloudFlavour.id === this._flavour.computeId);
@@ -105,6 +115,7 @@ export class FlavourUpdateComponent implements OnInit {
             computeId: this._selectedCloudFlavour.id,
             memory: this._selectedCloudFlavour.ram,
             cpu: this._selectedCloudFlavour.cpus,
+            credits: this._credits,
             instrumentIds: this.selectedInstruments ? this.selectedInstruments.map(instrument => instrument.id) : []
         };
         this._onUpdate$.emit({flavourInput: input});

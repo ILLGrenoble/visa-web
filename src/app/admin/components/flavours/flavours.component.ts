@@ -68,6 +68,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                         name
                         memory
                         cpu
+                        credits
                         computeId
                     }
                     flavourLimits  {
