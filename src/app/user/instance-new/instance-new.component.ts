@@ -286,4 +286,15 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         }
     }
 
+    public getCreditsView(credits): string {
+        return credits + ' Credit' + (credits !== 1 ? 's' : '');
+    }
+
+    public getMinimumCreditsNeeded(): number {
+        if (this._plans) {
+            return Math.min(...this._plans.map(plan => plan.flavour.credits));
+        }
+
+    }
+
 }

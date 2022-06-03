@@ -1,7 +1,13 @@
+.flavour-content {
+    p {
+        margin: 0
+    }
+}
+
 .flavour-title {
     h3 {
         font-size: 0.8rem;
-        margin: 0 0 0 0;
+        margin: 12px 0 6px 0;
     }
 }
 
@@ -24,25 +30,27 @@
     .flavour-box {
         $primary-color: #0747a6;
         $disabled-color: #dfdfdf;
+        $unavailable-color: #f3f3f3;
         display: inline-block;
         text-align: center;
         color: #666;
         border: 1px solid $disabled-color;
         box-sizing: border-box;
         width: 200px;
+        cursor: pointer;
 
         .flavour-details {
             text-align: center;
             border-top: 1px solid $disabled-color;
             display: block;
-            cursor: pointer;
+            cursor: inherit;
             font-size: 13px;
             outline: 0;
             padding: 10px;
         }
 
         .flavour-button {
-            cursor: pointer;
+            cursor: inherit;
             color: inherit;
             height: 110px;
             &__detail {
@@ -50,7 +58,13 @@
                 font-weight: 600;
                 display: block;
                 margin: 8px 0 10px;
-                cursor: pointer;
+                cursor: inherit;
+            }
+            &__credits {
+                font-size: 12px;
+                font-weight: 500;
+                display: block;
+                margin: 8px 0 10px;
             }
             background: #fff;
             width: 100%;
@@ -69,6 +83,18 @@
                 color: #0747a6;
                 background: #f5f9ff;
             }
+        }
+
+        &--unavailable {
+            cursor: default;
+            color: #d0d0d0;
+            border: 1px solid $unavailable-color;
+
+            .flavour-details {
+                border-top: 1px solid $unavailable-color;
+                color: #d0d0d0;
+            }
+
         }
 
     }

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, Output} from '@angular/core';
-import {CatalogueService, ImagePlans, Plan} from '@core';
+import {CatalogueService, ImagePlans, Plan, Quota} from '@core';
 import {BehaviorSubject} from 'rxjs';
 
 @Component({
@@ -27,7 +27,17 @@ export class InstanceFlavourSelectComponent {
         return this._imagePlans;
     }
 
+    @Input()
+    set quotas(quota: Quota) {
+        this._quota = quota;
+    }
+
+    get quota(): Quota {
+        return this._quota;
+    }
+
     private _imagePlans: ImagePlans = null;
+    private _quota: Quota;
 
     constructor(private _catalogueService: CatalogueService) {
     }
@@ -38,5 +48,15 @@ export class InstanceFlavourSelectComponent {
 
     public getRamView(flavour): string {
         return (Math.round(flavour.memory / 1024 * 10) / 10) + 'GB';
+    }
+
+    public getCreditsView(credits): string {
+        return credits + ' Credit' + (credits !== 1 ? 's' : '');
+    }
+
+    public onPlanSelected(selectedPlan: Plan): void {
+        if (selectedPlan.flavour.credits <= this._quota.creditsAvailable) {
+            this.selectedPlan.next(selectedPlan);
+        }
     }
 }

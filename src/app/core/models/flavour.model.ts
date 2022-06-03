@@ -18,6 +18,9 @@ export class Flavour {
     @JsonProperty('cpu', Number)
     private _cpu: number = undefined;
 
+    @JsonProperty('credits', Number)
+    private _credits: number = undefined;
+
     constructor() {
 
     }
@@ -62,6 +65,14 @@ export class Flavour {
 
     public set cpu(value: number) {
         this._cpu = value;
+    }
+
+    get credits(): number {
+        return this._credits;
+    }
+
+    set credits(value: number) {
+        this._credits = value;
     }
 
     public get computeId(): string {

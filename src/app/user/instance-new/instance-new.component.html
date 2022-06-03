@@ -32,6 +32,7 @@
                 </div>
 
             </div>
+
             <div class="blankslate" *ngIf="totalExperiments == 0 && !canBeExperimentFree">
                 <div class="title">
                     <img src="/assets/images/experiments.png" alt="experiments"/>
@@ -44,21 +45,36 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="blankslate" *ngIf="quotas.availableInstances == 0">
+
+            <div class="blankslate" *ngIf="quotas.creditsAvailable == 0">
                 <div class="title">
                     <img src="/assets/images/warning.png" alt="warning"/>
                     <h3>Instance quota reached</h3>
                 </div>
                 <div class="description">
-                    <p>You have reached the maximum number of <b>{{ quotas.maxInstances }}</b> instances that you can
-                        create.</p>
-                    <p>Please delete an existing instance if you would like to create a new one.</p>
+                    <p>You have reached the maximum number of <b>{{ quotas.creditsQuota }}</b> credits available to create instances.</p>
+                    <p>Please delete an existing instance(s) if you would like to create a new one.</p>
                 </div>
                 <div class="actions">
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (totalExperiments > 0 || canBeExperimentFree)">
+
+            <div class="blankslate" *ngIf="quotas.creditsAvailable < getMinimumCreditsNeeded()">
+                <div class="title">
+                    <img src="/assets/images/warning.png" alt="warning"/>
+                    <h3>Insufficient credits available</h3>
+                </div>
+                <div class="description">
+                    <p>You do not have a sufficient number of credits needed to create an instance. You have <b>{{getCreditsView(quotas.creditsAvailable) }}</b> remaining and require at least {{ getCreditsView(getMinimumCreditsNeeded())}} to create an instance.</p>
+                    <p>Please delete an existing instance(s) if you would like to create a new one.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
+                </div>
+            </div>
+
+            <div class="clr-row" *ngIf="quotas.creditsAvailable >= getMinimumCreditsNeeded() && (totalExperiments > 0 || canBeExperimentFree)">
                 <div class="clr-col-12">
                     <div class="sections">
 
@@ -120,6 +136,7 @@
                                 <h3><b>Environment:</b> {{selectedPlan.image.description}}</h3>
                                 <h3><b>Processor:</b> {{selectedPlan.flavour.cpu}} vCPUs</h3>
                                 <h3><b>Memory:</b> {{selectedPlan.flavour.memory / 1024}} GB RAM</h3>
+                                <p>This configuration requires {{getCreditsView(selectedPlan.flavour.credits)}}. You will have {{getCreditsView(quotas.creditsAvailable - selectedPlan.flavour.credits)}} remaining after creating this instance.</p>
                             </div>
 
                             <clr-toggle-container clrInline class="customise-settings-toggle">
@@ -145,7 +162,8 @@
                             <div>
                                 <visa-instance-flavour-select
                                     [imagePlans]="selectedImagePlans"
-                                    (selectedPlan)="setSelectedPlan($event)"></visa-instance-flavour-select>
+                                    (selectedPlan)="setSelectedPlan($event)"
+                                    [quotas]="quotas"></visa-instance-flavour-select>
                             </div>
                         </div>
 

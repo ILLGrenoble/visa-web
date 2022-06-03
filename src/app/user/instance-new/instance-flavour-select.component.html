@@ -1,11 +1,11 @@
-<div *ngIf="imagePlans != null && imagePlans.plans.length > 0">
+<div *ngIf="imagePlans != null && imagePlans.plans.length > 0" class="flavour-content">
     <div class="flavour-title">
-        <h3>Choose hardware requirements</h3>
+        <h3>Choose hardware requirements (you have {{getCreditsView(quota.creditsAvailable)}} available)</h3>
     </div>
     <div class="flavours">
         <ul>
-            <li *ngFor="let plan of imagePlans.plans" (click)="selectedPlan.next(plan)">
-                <div class="flavour-box flavour-box--selected" [ngClass]="{'flavour-box--selected': plan == selectedPlan.getValue()}">
+            <li *ngFor="let plan of imagePlans.plans" (click)="onPlanSelected(plan)">
+                <div class="flavour-box flavour-box--selected" [ngClass]="{'flavour-box--selected': plan == selectedPlan.getValue(), 'flavour-box--unavailable': plan.flavour.credits > quota.creditsAvailable}">
                     <button class="flavour-button">
                         <div class="flavour-button__detail">
                             {{getCpuView(plan.flavour)}}
@@ -13,10 +13,14 @@
                         <div class="flavour-button__detail">
                             {{getRamView(plan.flavour)}} memory
                         </div>
+                        <div class="flavour-button__credits">
+                            {{getCreditsView(plan.flavour.credits)}}
+                        </div>
                     </button>
                     <div class="flavour-details">{{plan.flavour.name}}</div>
                 </div>
             </li>
         </ul>
     </div>
+    <p>This configuration requires {{getCreditsView(selectedPlan.value.flavour.credits)}}. You will have {{getCreditsView(quota.creditsAvailable - selectedPlan.value.flavour.credits)}} remaining after creating this instance.</p>
 </div>
