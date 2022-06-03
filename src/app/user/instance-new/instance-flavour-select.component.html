@@ -22,5 +22,7 @@
             </li>
         </ul>
     </div>
-    <p>This configuration requires {{getCreditsView(selectedPlan.value.flavour.credits)}}. You will have {{getCreditsView(quota.creditsAvailable - selectedPlan.value.flavour.credits)}} remaining after creating this instance.</p>
+    <div *ngIf="selectedPlan.value != null">
+        <p>This configuration requires {{getCreditsView(selectedPlan.value.flavour.credits)}}. You will have {{getCreditsView(quota.creditsAvailable - selectedPlan.value.flavour.credits)}} remaining after creating this instance.</p>
+    </div>
 </div>

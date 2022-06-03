@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, Output} from '@angular/core';
 import {CatalogueService, ImagePlans, Plan, Quota} from '@core';
 import {BehaviorSubject} from 'rxjs';
 
@@ -14,13 +14,8 @@ export class InstanceFlavourSelectComponent {
 
     @Input()
     set imagePlans(imagePlans: ImagePlans) {
-        let selectedPlan = null;
-        if (imagePlans) {
-            selectedPlan = imagePlans.plans.find(plan => plan.preset);
-        }
-
-        this.selectedPlan.next(selectedPlan);
         this._imagePlans = imagePlans;
+        this._updateSelectedPlan();
     }
 
     get imagePlans(): ImagePlans {
@@ -30,6 +25,7 @@ export class InstanceFlavourSelectComponent {
     @Input()
     set quotas(quota: Quota) {
         this._quota = quota;
+        this._updateSelectedPlan();
     }
 
     get quota(): Quota {
@@ -58,5 +54,16 @@ export class InstanceFlavourSelectComponent {
         if (selectedPlan.flavour.credits <= this._quota.creditsAvailable) {
             this.selectedPlan.next(selectedPlan);
         }
+    }
+
+    private _updateSelectedPlan(): void {
+        let selectedPlan = null;
+        if (this._imagePlans && this._quota) {
+            selectedPlan = this._imagePlans.plans.find(plan => plan.preset);
+            if (selectedPlan && selectedPlan.flavour.credits > this._quota.creditsAvailable) {
+                selectedPlan = null;
+            }
+        }
+        this.selectedPlan.next(selectedPlan);
     }
 }
