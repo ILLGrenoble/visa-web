@@ -465,11 +465,16 @@
     }
 
     .dot {
+        margin-left: 4px;
         &:after {
             content: "\00B7";
             margin-left: 3px;
             margin-right: 3px;
         }
+    }
+
+    .spacer {
+        margin-left: 8px;
     }
 }
 

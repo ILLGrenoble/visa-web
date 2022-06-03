@@ -354,4 +354,8 @@ export class CardComponent implements OnInit, OnDestroy {
             this._timerSubscription = null;
         }
     }
+
+    public getCreditsView(credits): string {
+        return credits + ' Credit' + (credits !== 1 ? 's' : '');
+    }
 }
