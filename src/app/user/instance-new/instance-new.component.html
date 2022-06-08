@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="blankslate" *ngIf="quotas.creditsAvailable < getMinimumCreditsNeeded()">
+            <div class="blankslate" *ngIf="quotas.creditsAvailable < getMinimumCreditsNeeded() && quotas.creditsAvailable > 0">
                 <div class="title">
                     <img src="/assets/images/warning.png" alt="warning"/>
                     <h3>Insufficient credits available</h3>
