@@ -13,6 +13,7 @@
             <button clrTabLink>Stats</button>
             <clr-tab-content>
                 <visa-instance-stats [totalDataReceived]="totalDataReceived$ | async"
+                                     [dataReceivedRate]="dataReceivedRate$ | async"
                                      [timeElapsed]="timeElapsed$ | async"
                                      (close)="handleClose($event)"></visa-instance-stats>
             </clr-tab-content>

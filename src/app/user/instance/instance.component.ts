@@ -76,6 +76,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private thumbnailInterval$: Subscription;
     private _timeElapsed$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private _totalDataReceived$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private _dataReceivedRate$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private tunnelInstructionMessages$: Subscription;
     private clipboard$: Subscription;
 
@@ -85,6 +86,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     get totalDataReceived$(): BehaviorSubject<number> {
         return this._totalDataReceived$;
+    }
+
+    get dataReceivedRate$(): BehaviorSubject<number> {
+        return this._dataReceivedRate$;
     }
 
     constructor(private route: ActivatedRoute,
@@ -430,6 +435,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Update the connection stats when a new tunnel instruction is received from the remote desktop
      */
     private handleTunnelInstructionMessages(): void {
+        let messages: {size: number, time: number}[] = [];
+
         this.tunnelInstructionMessages$ = combineLatest([
             this.manager.onTunnelInstruction
                 .pipe(
@@ -439,6 +446,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                     }), map(instruction => atob(instruction.parameters[1]).length),
                     scan((ms, total) => {
                         if (this.manager.isConnected()) {
+                            messages.push({size: total, time: Date.now()});
                             return total + ms;
                         } else {
                             return 0;
@@ -459,8 +467,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
                     }, 0),
                     startWith(0),
                 )])
-            .subscribe(([dataReceived, timeElapsed]) => {
+            .subscribe(([dataReceived , timeElapsed]) => {
+                const now = Date.now();
+                messages = messages.filter(message => now - message.time <= 1000);
+                const bytesPerSecond = messages.map(message => message.size).reduce((a, b) => a + b, 0);
                 this.totalDataReceived$.next(dataReceived);
+                this.dataReceivedRate$.next(bytesPerSecond);
                 this.timeElapsed$.next(timeElapsed);
             });
     }
@@ -745,7 +757,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
             width: '450px',
             data: {
                 timeElapsed$: this.timeElapsed$,
-                totalDataReceived$: this.totalDataReceived$
+                totalDataReceived$: this.totalDataReceived$,
+                dataReceivedRate$: this.dataReceivedRate$
             },
         });
         dialog.afterClosed().subscribe((_) => this.manager.setFocused(true));

@@ -8,6 +8,12 @@
     </tr>
     <tr>
         <td class="left">
+            Data rate
+        </td>
+        <td class="left">{{ dataReceivedRate | fileSize }}/s</td>
+    </tr>
+    <tr>
+        <td class="left">
             Connection time
         </td>
         <td class="left">{{ timeElapsed | timeDuration:'milliseconds' }}</td>

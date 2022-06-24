@@ -12,6 +12,7 @@ export class SettingsComponent {
 
     private _timeElapsed$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private _totalDataReceived$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private _dataReceivedRate$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
@@ -29,10 +30,19 @@ export class SettingsComponent {
         this._totalDataReceived$ = value;
     }
 
+    get dataReceivedRate$(): BehaviorSubject<number> {
+        return this._dataReceivedRate$;
+    }
+
+    set dataReceivedRate$(value: BehaviorSubject<number>) {
+        this._dataReceivedRate$ = value;
+    }
+
     constructor(private dialogRef: MatDialogRef<SettingsComponent>,
                 @Inject(MAT_DIALOG_DATA) private data: any) {
         this.timeElapsed$ = data.timeElapsed$;
         this.totalDataReceived$ = data.totalDataReceived$;
+        this.dataReceivedRate$ = data.dataReceivedRate$;
     }
 
 

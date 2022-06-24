@@ -12,6 +12,9 @@ export class StatsComponent implements OnInit {
     public totalDataReceived: number;
 
     @Input()
+    public dataReceivedRate: number;
+
+    @Input()
     public timeElapsed: number;
 
     // tslint:disable-next-line:no-output-native
