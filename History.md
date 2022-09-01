@@ -1,6 +1,18 @@
+2.3.0 01/09/2022
+================
+ * Add data rate to stats of an instance
+ * Show instance deletion warning 48hrs in advance rather than 24hrs.
+ * Add admin submenu 'Compute' for instances and sessions and a new instance extension request admin UI
+ * Add button to request instance lifetime extension and forms to provide request information
+ * Redo layout of instance view in homepage
+ * Add Admin page for individual users (can edit role and quota)
+ * Admin management of GUEST users (and included an expiration date)
+ * All GUEST users to create instances
+ * Add Admin management of Application Credentials
+
 2.2.1 09/05/2022
 ================
-* Check for null user affiliations in admin UIs
+ * Check for null user affiliations in admin UIs
 
 2.2.0 23/03/2022
 ================
