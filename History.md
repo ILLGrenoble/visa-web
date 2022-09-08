@@ -1,3 +1,7 @@
+2.3.1 08/09/2022
+================
+* Fix admin sessions URL
+
 2.3.0 01/09/2022
 ================
  * Add data rate to stats of an instance
