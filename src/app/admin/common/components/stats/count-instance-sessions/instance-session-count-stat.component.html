@@ -4,7 +4,7 @@
         <span class="admin-stat-card-blankslate" *ngIf="loading">
             Loading...
         </span>
-        <a [routerLink]="['/admin/sessions']" *ngIf="!loading">{{ data }}</a>
+        <a [routerLink]="['/admin/compute/sessions']" *ngIf="!loading">{{ data }}</a>
         <clr-icon shape="wrench" class="is-solid" size="24"></clr-icon>
     </div>
 </div>
