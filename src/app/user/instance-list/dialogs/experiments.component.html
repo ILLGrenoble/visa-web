@@ -13,7 +13,7 @@
         <tbody>
         <tr *ngFor="let experiment of experiments">
             <td class="left">{{ experiment.proposal.identifier}}</td>
-            <td class="left">{{ experiment.proposal.title}}</td>
+            <td class="left">{{ experiment.title || experiment.proposal.title}}</td>
             <td class="left">{{ experiment.instrument.name}}</td>
             <td class="left">{{ experiment.startDate | date:'dd MMM yyyy' }}</td>
             <td class="left">{{ experiment.endDate | date:'dd MMM yyyy' }}</td>

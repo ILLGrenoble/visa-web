@@ -13,6 +13,9 @@ export class Experiment {
     @JsonProperty('proposal', Proposal)
     public proposal: Proposal = undefined;
 
+    @JsonProperty('title', String, 'isOptional')
+    public title: string = undefined;
+
     @JsonProperty('startDate', String)
     public startDate: string = undefined;
 

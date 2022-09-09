@@ -65,7 +65,7 @@
                 </clr-dg-placeholder>
                 <clr-dg-row *ngFor="let experiment of experiments" [clrDgItem]="experiment">
                     <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
-                    <clr-dg-cell>{{ experiment.proposal.title }}</clr-dg-cell>
+                    <clr-dg-cell>{{ experiment.title || experiment.proposal.title }}</clr-dg-cell>
                     <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
                     <clr-dg-cell>{{ experiment.startDate | date:'dd MMM yyyy' }}</clr-dg-cell>
                     <clr-dg-cell>{{ experiment.endDate | date:'dd MMM yyyy' }}</clr-dg-cell>

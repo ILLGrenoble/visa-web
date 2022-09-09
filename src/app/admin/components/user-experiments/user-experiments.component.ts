@@ -121,6 +121,7 @@ export class UserExperimentsComponent implements OnInit, OnDestroy {
                                 instrument {
                                     name
                                 }
+                                title
                                 startDate
                             }
                         }
