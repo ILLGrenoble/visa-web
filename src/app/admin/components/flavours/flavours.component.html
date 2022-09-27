@@ -6,6 +6,7 @@
         <clr-datagrid id="datagrid" [clrDgLoading]="loading">
             <clr-dg-column>Flavour ID</clr-dg-column>
             <clr-dg-column>Name</clr-dg-column>
+            <clr-dg-column>Cloud</clr-dg-column>
             <clr-dg-column>Cloud Flavour</clr-dg-column>
             <clr-dg-column>Memory / GB</clr-dg-column>
             <clr-dg-column>CPUs</clr-dg-column>
@@ -14,6 +15,7 @@
             <clr-dg-row *ngFor="let flavour of flavours;let i = index">
                 <clr-dg-cell>{{flavour.id}}</clr-dg-cell>
                 <clr-dg-cell>{{flavour.name}}</clr-dg-cell>
+                <clr-dg-cell>{{flavour.cloudClient.name}}</clr-dg-cell>
                 <clr-dg-cell>{{cloudFlavourName(flavour)}}</clr-dg-cell>
 
                 <clr-dg-cell>{{flavour.memory / 1024}}</clr-dg-cell>

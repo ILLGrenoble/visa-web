@@ -9,6 +9,12 @@ export type Scalars = {
     Float: number;
 };
 
+export type CloudClient = {
+    __typename?: 'CloudClient';
+    id: Scalars['Int'];
+    name: Scalars['String'];
+};
+
 export type CloudFlavour = {
     __typename?: 'CloudFlavour';
     id: Scalars['String'];
@@ -80,6 +86,7 @@ export type Flavour = {
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
+    cloudClient?: Maybe<CloudClient>;
 };
 
 export type FlavourConnection = {
@@ -110,6 +117,7 @@ export type Image = {
     autologin: Maybe<Scalars['String']>;
     protocols?: Maybe<Array<Maybe<ImageProtocol>>>;
     bootCommand: Scalars['String'];
+    cloudClient?: Maybe<CloudClient>;
 };
 
 export type ImageConnection = {
@@ -147,6 +155,7 @@ export type Instance = {
     owner?: Maybe<User>;
     username: Scalars['String'];
     attributes: Maybe<Array<Maybe<InstanceAttribute>>>;
+    cloudClient?: Maybe<CloudClient>;
 };
 
 export type InstanceConnection = {

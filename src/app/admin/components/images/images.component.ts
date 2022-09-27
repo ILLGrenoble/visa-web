@@ -69,6 +69,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
                         }
                         bootCommand
                         autologin
+                        cloudClient {
+                            id
+                            name
+                        }
                     }
                     imageProtocols {
                         id

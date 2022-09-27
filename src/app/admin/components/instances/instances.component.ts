@@ -149,7 +149,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                         name
                                     }
                                 }
-                               activeSessions {
+                                activeSessions {
                                     id
                                     user {
                                       id
@@ -168,7 +168,11 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                          name
                                        }
                                     }
-                              }
+                               }
+                               cloudClient {
+                                    id
+                                    name
+                               }
                             }
                         }
                     }

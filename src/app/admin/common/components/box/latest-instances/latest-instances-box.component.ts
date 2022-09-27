@@ -108,6 +108,10 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                           name
                         }
                       }
+                      cloudClient {
+                        id
+                        name
+                      }
                     }
                   }
                 }

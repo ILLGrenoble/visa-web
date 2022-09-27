@@ -69,6 +69,10 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                         memory
                         cpu
                         computeId
+                        cloudClient {
+                            id
+                            name
+                        }
                     }
                     flavourLimits  {
                         id
