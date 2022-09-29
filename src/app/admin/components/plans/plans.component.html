@@ -6,6 +6,7 @@
 
         <clr-datagrid id="datagrid" [clrDgLoading]="loading">
             <clr-dg-column>Plan ID</clr-dg-column>
+            <clr-dg-column>Cloud</clr-dg-column>
             <clr-dg-column>Image</clr-dg-column>
             <clr-dg-column>Version</clr-dg-column>
             <clr-dg-column>Flavour</clr-dg-column>
@@ -15,6 +16,7 @@
 
             <clr-dg-row *ngFor="let plan of plans;let i = index">
                 <clr-dg-cell>{{plan.id}}</clr-dg-cell>
+                <clr-dg-cell>{{plan.image.cloudClient.name}}</clr-dg-cell>
                 <clr-dg-cell>{{plan.image.name}}</clr-dg-cell>
                 <clr-dg-cell>{{plan.image.version}}</clr-dg-cell>
                 <clr-dg-cell>{{plan.flavour.name}}</clr-dg-cell>
@@ -22,6 +24,7 @@
                 <clr-dg-cell><input [checked]="plan.preset" disabled type="checkbox"/></clr-dg-cell>
                 <clr-dg-cell>
                     <button (click)="onUpdate(plan)" class="btn btn-sm">Edit</button>
+                    <button (click)="onCreate(plan)" class="btn btn-sm">Clone</button>
                 </clr-dg-cell>
             </clr-dg-row>
             <clr-dg-footer>

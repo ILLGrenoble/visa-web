@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+
+            <clr-select-container>
+                <label for="image">Image</label>
+                <select clrSelect id="image" formControlName="image" [compareWith]="compareImage" (change)="onImageChange()">
+                    <option *ngFor="let image of images" [ngValue]="image">{{image ? image.name + ' (version ' + image.version + ', ' + image.cloudClient.name + ' cloud)' : ''}}</option>
+                </select>
+                <clr-control-helper>Please select an image</clr-control-helper>
+            </clr-select-container>
+
+            <clr-select-container>
+                <label for="flavour">Flavour</label>
+                <select clrSelect id="flavour" formControlName="flavour" [compareWith]="compareFlavour">
+                    <option *ngFor="let flavour of flavours" [ngValue]="flavour">{{flavour?.name}}</option>
+                </select>
+                <clr-control-helper>Please select a flavour</clr-control-helper>
+            </clr-select-container>
+
+            <clr-input-container>
+                <label for="preset">Preset</label>
+                <input type="checkbox" clrInput clrToggle id="preset" formControlName="preset"/>
+                <clr-control-helper>The preset plan will be chosen by default when creating an instance. Only one plan can be preset.</clr-control-helper>
+            </clr-input-container>
+
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="form.invalid">Save</button>
+    </div>
+</ng-container>

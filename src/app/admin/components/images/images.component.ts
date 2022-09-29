@@ -103,7 +103,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     public onCreate(image?: Image): void {
         const dialogRef = this._dialog.open(ImageEditComponent, {
             width: '900px',
-            data: {image}
+            data: {image, clone: !!image}
         });
 
         dialogRef.componentInstance.onSave$.subscribe((input: ImageInput) => {

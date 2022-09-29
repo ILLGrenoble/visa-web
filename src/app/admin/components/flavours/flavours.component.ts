@@ -96,7 +96,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     public onCreate(flavour?: Flavour): void {
         const dialogRef = this._dialog.open(FlavourEditComponent, {
             width: '800px',
-            data: { flavour, instruments: this._instruments },
+            data: { flavour, instruments: this._instruments, clone: !!flavour },
         });
         dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
             const source$ = this._apollo.mutate<any>({

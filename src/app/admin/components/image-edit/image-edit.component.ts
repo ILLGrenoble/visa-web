@@ -24,7 +24,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
 
     constructor(private readonly _dialogRef: MatDialogRef<ImageEditComponent>,
                 private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {image}) {
+                @Inject(MAT_DIALOG_DATA) {image, clone}) {
 
         this._dialogRef.keydownEvents().subscribe(event => {
             if (event.key === 'Escape') {
@@ -50,7 +50,11 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         });
 
         if (image) {
-            this._title = `Edit image`;
+            if (clone) {
+                this._title = `Clone image`;
+            } else {
+                this._title = `Edit image`;
+            }
             this._createFormFromImage(image);
         } else {
             this._title = `Create image`;

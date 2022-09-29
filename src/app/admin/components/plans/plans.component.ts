@@ -1,31 +1,31 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {cloneDeep} from 'lodash';
-import {Flavour, Image, Plan} from '../../../core/graphql';
-import {PlanNewComponent} from '../plan-new';
-import {PlanUpdateComponent} from '../plan-update';
+import {FlavourInput, Plan, PlanInput} from '../../../core/graphql';
 import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
+import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
-import {Subject} from 'rxjs';
+import {lastValueFrom, Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
+import {PlanEditComponent} from '../plan-edit';
 
 @Component({
     selector: 'visa-admin-plans',
-    styleUrls: ['./plans.component.scss'],
     templateUrl: './plans.component.html',
 })
 
 export class PlansComponent implements OnInit, OnDestroy {
 
     private _plans: Plan[] = [];
-
     private _loading: boolean;
-    private _images: Image[] = [];
-    private _flavours: Flavour[] = [];
-
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+    private _refresh$: Subject<void> = new Subject();
+
+    constructor(private readonly _apollo: Apollo,
+                private readonly _notifierService: NotifierService,
+                private readonly _dialog: MatDialog,
+                private readonly _titleService: Title) {
+    }
 
     get plans(): Plan[] {
         return this._plans;
@@ -35,15 +35,58 @@ export class PlansComponent implements OnInit, OnDestroy {
         return this._loading;
     }
 
-    constructor(private _apollo: Apollo,
-                private _notifierService: NotifierService,
-                private _dialog: MatDialog,
-                private _titleService: Title) {
+    public onRefresh(): void {
+        this._refresh$.next();
     }
 
     public ngOnInit(): void {
         this._titleService.setTitle(`Plans | Cloud | Admin | VISA`);
-        this.loadPlansImagesFlavours();
+
+        this._refresh$
+            .pipe(
+                startWith(0),
+                takeUntil(this._destroy$),
+                tap(() => this._loading = true),
+                delay(250),
+                switchMap(() => this._apollo.query<any>({
+                    query: gql`
+                        query allPlans {
+                            plans {
+                                id
+                                image {
+                                    id
+                                    name
+                                    description
+                                    version
+                                    icon
+                                    computeId
+                                    visible
+                                    cloudClient {
+                                        id
+                                        name
+                                    }
+                                }
+                                flavour {
+                                    id
+                                    name
+                                    memory
+                                    cpu
+                                    computeId
+                                }
+                                preset
+                            }
+                        }
+                    `
+                })),
+                map(({data}) => ({
+                    plans: data.plans,
+                })),
+                tap(() => this._loading = false)
+            )
+            .subscribe(({plans}) => {
+                this._plans = plans;
+            });
+
     }
 
     public ngOnDestroy(): void {
@@ -51,93 +94,16 @@ export class PlansComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
-    public onRefresh(): void {
-        this.loadPlansImagesFlavours();
-    }
-
-    public loadPlansImagesFlavours(): void {
-        this._loading = true;
-
-        this._apollo.query<any>({
-            query: gql`
-                query AllFlavours {
-                    flavours {
-                        id
-                        name
-                        memory
-                        cpu
-                        computeId
-                    },
-                    images {
-                        id
-                        name
-                        version
-                        description
-                        visible
-                        icon
-                        computeId
-                        protocols{
-                            id
-                            name
-                        }
-                    }
-                }
-            `,
-        }).pipe(
-            map(({data}) => ({flavours: data.flavours, images: data.images})),
-            takeUntil(this._destroy$)
-        ).subscribe(({flavours, images}) => {
-            this._flavours = flavours;
-            this._images = images;
-            this._loading = false;
-            this.loadPlans();
-        });
-    }
-
-    public loadPlans(): void {
-        this._apollo.query<any>({
-            query: gql`
-                query allPlans {
-                    plans {
-                        id
-                        image {
-                            id
-                            name
-                            description
-                            version
-                            icon
-                            computeId
-                            visible
-                        }
-                        flavour {
-                            id
-                            name
-                            memory
-                            cpu
-                            computeId
-                        }
-                        preset
-                    }
-                }
-            `,
-        }).pipe(
-            map(({data}) => (data.plans)),
-            takeUntil(this._destroy$)
-        ).subscribe(plans => {
-            this._plans = plans;
-        });
-    }
-
-    public onCreate(): void {
-        const dialogRef = this._dialog.open(PlanNewComponent, {
+    public onCreate(plan?: Plan): void {
+        const dialogRef = this._dialog.open(PlanEditComponent, {
             width: '800px',
-            data: {images: this._images, flavours: this._flavours},
+            data: { plan, clone: !!plan },
         });
-        dialogRef.componentInstance.onCreate$.subscribe((planInput: any) => {
-            this._apollo.mutate<any>({
+        dialogRef.componentInstance.onSave$.subscribe((input: PlanInput) => {
+            const source$ = this._apollo.mutate<any>({
                 mutation: gql`
                     mutation CreatePlan($input: PlanInput!){
-                        createPlan(input:$input) {
+                        createPlan(input: $input) {
                             id
                             image {
                                 id
@@ -146,6 +112,10 @@ export class PlansComponent implements OnInit, OnDestroy {
                                 icon
                                 computeId
                                 visible
+                                cloudClient {
+                                    id
+                                    name
+                                }
                             }
                             flavour {
                                 id
@@ -157,67 +127,64 @@ export class PlansComponent implements OnInit, OnDestroy {
                         }
                     }
                 `,
-                variables: {input: planInput},
-            }).toPromise()
-                .then(() => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Plan created');
-                    this.loadPlans();
-                })
-                .catch((error) => {
-                    this.showErrorNotification(error);
-                });
+                variables: {input},
+            }).pipe(
+                takeUntil(this._destroy$)
+            );
+            lastValueFrom(source$).then(() => {
+                this._notifierService.notify('success', 'Plan created');
+                this._refresh$.next();
+                dialogRef.close();
+            }).catch((error) => {
+                this._notifierService.notify('error', error);
+            });
         });
     }
 
-    public onUpdate(plan): void {
-        const dialogRef = this._dialog.open(PlanUpdateComponent, {
-            width: '800px', data: {
-                plan: cloneDeep(plan), images: this._images, flavours: this._flavours,
-            },
+    public onUpdate(plan: Plan): void {
+        const dialogRef = this._dialog.open(PlanEditComponent, {
+            width: '800px', data: { plan },
         });
-        dialogRef.componentInstance.onUpdate$.subscribe((data) => {
-            this._apollo.mutate<any>({
+
+        dialogRef.componentInstance.onSave$.subscribe((input: PlanInput) => {
+            const source$ = this._apollo.mutate<any>({
                 mutation: gql`
-                    mutation UpdatePlan($id: Int!,$input: PlanInput!){
-                        updatePlan(id:$id,input:$input) {
-                            id
-                            image {
+                        mutation UpdatePlan($id: Int!,$input: PlanInput!){
+                            updatePlan(id:$id,input:$input) {
                                 id
-                                name
-                                description
-                                icon
-                                computeId
-                                visible
-                            }
-                            flavour {
-                                id
-                                name
-                                memory
-                                cpu
-                                computeId
+                                image {
+                                    id
+                                    name
+                                    description
+                                    icon
+                                    computeId
+                                    visible
+                                    cloudClient {
+                                        id
+                                        name
+                                    }
+                                }
+                                flavour {
+                                    id
+                                    name
+                                    memory
+                                    cpu
+                                    computeId
+                                }
                             }
                         }
-                    }
-                `,
-                variables: {id: plan.id, input: data},
-            }).toPromise()
-                .then(() => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Plan updated');
-                    this.loadPlans();
-                })
-                .catch((error) => {
-                    this.showErrorNotification(error);
-                });
+                    `,
+                variables: {id: plan.id, input},
+            }).pipe(
+                takeUntil(this._destroy$)
+            );
+            lastValueFrom(source$).then(() => {
+                this._notifierService.notify('success', 'Plan saved');
+                this._refresh$.next();
+                dialogRef.close();
+            }).catch((error) => {
+                this._notifierService.notify('error', error);
+            });
         });
-    }
-
-    private showSuccessNotification(message): void {
-        this._notifierService.notify('success', message);
-    }
-
-    private showErrorNotification(message): void {
-        this._notifierService.notify('error', message);
     }
 }

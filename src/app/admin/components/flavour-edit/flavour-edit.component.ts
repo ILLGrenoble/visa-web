@@ -23,7 +23,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
     constructor(private readonly _dialogRef: MatDialogRef<FlavourEditComponent>,
                 private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {flavour, instruments}) {
+                @Inject(MAT_DIALOG_DATA) {flavour, instruments, clone}) {
 
         this._instruments = instruments;
 
@@ -45,12 +45,17 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         });
 
         if (flavour) {
-            this._title = `Edit flavour`;
+            if (clone) {
+                this._title = `Clone flavour`;
+            } else {
+                this._title = `Edit flavour`;
+            }
             this._createFormFromFlavour(flavour);
         } else {
             this._title = `Create flavour`;
         }
     }
+
     get form(): FormGroup {
         return this._form;
     }
