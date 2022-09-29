@@ -4,22 +4,9 @@ import {Flavour} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-flavour-delete',
-    styleUrls: ['./flavour-delete.component.scss'],
     templateUrl: './flavour-delete.component.html',
 })
-export class FlavourDeleteComponent implements OnInit {
-
-    private _onDelete$: EventEmitter<any> = new EventEmitter();
-    private _flavour: Flavour;
-
-    get flavour(): Flavour {
-        return this._flavour;
-    }
-
-
-    get onDelete$(): EventEmitter<any> {
-        return this._onDelete$;
-    }
+export class FlavourDeleteComponent {
 
     constructor(private _dialogRef: MatDialogRef<FlavourDeleteComponent>, @Inject(MAT_DIALOG_DATA) private _data) {
         this._dialogRef.keydownEvents().subscribe(event => {
@@ -28,13 +15,7 @@ export class FlavourDeleteComponent implements OnInit {
             }
         });
 
-        this._dialogRef.backdropClick().subscribe(event => {
-            this._dialogRef.close();
-        });
-    }
-
-    public ngOnInit(): void {
-        this._flavour = this._data.flavour;
+        this._dialogRef.backdropClick().subscribe(this._dialogRef.close);
     }
 
     public onCancel(): void {
@@ -42,8 +23,7 @@ export class FlavourDeleteComponent implements OnInit {
     }
 
     public onDelete(): void {
-        this._onDelete$.emit();
-        this._dialogRef.close();
+        this._dialogRef.close(true);
     }
 
 }

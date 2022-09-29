@@ -1,33 +1,33 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {cloneDeep} from 'lodash';
-import {CloudFlavour, Flavour, FlavourLimit, Instrument} from '../../../core/graphql';
-import {FlavourNewComponent} from '../flavour-new';
-import {FlavourUpdateComponent} from '../flavour-update';
+import {Flavour, FlavourInput, Instrument} from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {lastValueFrom, Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
+import {FlavourEditComponent} from '../flavour-edit';
 
 @Component({
     selector: 'visa-admin-flavours',
-    styleUrls: ['./flavours.component.scss'],
     templateUrl: './flavours.component.html',
 })
 
 export class FlavoursComponent implements OnInit, OnDestroy {
 
-    private _cloudFlavours: CloudFlavour[] = [];
-    private _flavours: Flavour[] = [];
-    private _flavourLimits: FlavourLimit[] = [];
-    private _instruments: Instrument[];
-
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-
+    private _refresh$: Subject<void> = new Subject();
+    private _flavours: Flavour[] = [];
+    private _instruments: Instrument[];
     private _loading: boolean;
+
+    constructor(private readonly _apollo: Apollo,
+                private readonly _notifierService: NotifierService,
+                private readonly _dialog: MatDialog,
+                private readonly _titleService: Title) {
+    }
 
     get flavours(): Flavour[] {
         return this._flavours;
@@ -37,16 +37,55 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         return this._loading;
     }
 
-    constructor(private apollo: Apollo,
-                private notifierService: NotifierService,
-                private dialog: MatDialog,
-                private titleService: Title) {
+    public onRefresh(): void {
+        this._refresh$.next();
     }
 
     public ngOnInit(): void {
-        this.titleService.setTitle(`Flavours | Cloud | Admin | VISA`);
-        this.loadAll();
-        this.loadInstruments();
+        this._titleService.setTitle(`Flavours | Cloud | Admin | VISA`);
+        this._refresh$
+            .pipe(
+                startWith(0),
+                takeUntil(this._destroy$),
+                tap(() => this._loading = true),
+                delay(250),
+                switchMap(() => this._apollo.query<any>({
+                    query: gql`
+                        query AllFlavours {
+                            flavours {
+                                id
+                                name
+                                memory
+                                cpu
+                                computeId
+                                cloudFlavour {
+                                    id
+                                    name
+                                    cpus
+                                    ram
+                                }
+                                cloudClient {
+                                    id
+                                    name
+                                }
+                            }
+                            instruments {
+                                id
+                                name
+                            }
+                        }
+                    `
+                })),
+                map(({data}) => ({
+                    flavours: data.flavours,
+                    instruments: data.instruments
+                })),
+                tap(() => this._loading = false)
+            )
+            .subscribe(({flavours, instruments}) => {
+                this._flavours = flavours;
+                this._instruments = instruments;
+            });
     }
 
     public ngOnDestroy(): void {
@@ -54,174 +93,90 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
-    public onRefresh(): void {
-        this.loadAll();
-    }
-
-    public loadAll(): void {
-        this._loading = true;
-        this.apollo.query<any>({
-            query: gql`
-                query AllFlavours {
-                    flavours {
-                        id
-                        name
-                        memory
-                        cpu
-                        computeId
-                        cloudClient {
-                            id
-                            name
-                        }
-                    }
-                    flavourLimits  {
-                        id
-                        objectId
-                        objectType
-                        flavour {
-                          id
-                        }
-                    }
-                    cloudFlavours {
-                      id
-                      name
-                      cpus
-                      disk
-                      ram
-                  }
-                }
-            `,
-        }).pipe(
-            map(({data}) => ({flavours: data.flavours, cloudFlavours: data.cloudFlavours, flavourLimits: data.flavourLimits})),
-            takeUntil(this._destroy$)
-        ).subscribe(({flavours, cloudFlavours, flavourLimits}) => {
-            this._flavours = flavours;
-            this._cloudFlavours = cloudFlavours;
-            this._flavourLimits = flavourLimits;
-            this._loading = false;
-        });
-    }
-
-    private loadInstruments(): void {
-        this.apollo.query<any>({
-            query: gql`
-                query instruments {
-                    instruments {
-                        id
-                        name
-                   }
-                }
-            `,
-        }).pipe(
-            map(({data}) => (data.instruments)),
-            takeUntil(this._destroy$)
-        ).subscribe((instruments) => {
-            this._instruments = instruments;
-        });
-    }
-
-    public cloudFlavourName(flavour: Flavour): string {
-        const cloudFlavour = this._cloudFlavours.find(aCloudFlavour => aCloudFlavour.id === flavour.computeId);
-        return cloudFlavour ? cloudFlavour.name : null;
-    }
-
-    public onCreate(): void {
-        const dialogRef = this.dialog.open(FlavourNewComponent, {
+    public onCreate(flavour?: Flavour): void {
+        const dialogRef = this._dialog.open(FlavourEditComponent, {
             width: '800px',
-            data: {
-                cloudFlavours: this._cloudFlavours,
-                instruments: this._instruments
-            },
+            data: { flavour, instruments: this._instruments },
         });
-        dialogRef.componentInstance.onCreate$.subscribe((flavourInput: any) => {
-            this.apollo.mutate<any>({
+        dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
+            const source$ = this._apollo.mutate<any>({
                 mutation: gql`
-                    mutation CreateFlavour($input: FlavourInput!){
-                        createFlavour(input:$input) {
+                        mutation CreateFlavour($input: FlavourInput!){
+                            createFlavour(input: $input) {
+                                id
+                                name
+                                memory
+                                cpu
+                                computeId
+                            }
+                        }
+                    `,
+                variables: {input},
+            }).pipe(
+                takeUntil(this._destroy$)
+            );
+            lastValueFrom(source$).then(() => {
+                this._notifierService.notify('success', 'Flavour created');
+                this._refresh$.next();
+                dialogRef.close();
+            }).catch((error) => {
+                this._notifierService.notify('error', error);
+            });
+        });
+    }
+
+    public onDelete(flavour: Flavour): void {
+        const dialogRef = this._dialog.open(FlavourDeleteComponent, {
+            width: '400px'
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                const source$ = this._apollo.mutate({
+                    mutation: gql`
+                        mutation DeleteFlavour($id: Int!){
+                            deleteFlavour(id:$id) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {id: flavour.id},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                );
+                lastValueFrom(source$).then(_ => {
+                    this._notifierService.notify('success', 'Successfully deleted flavour');
+                    this._refresh$.next();
+                });
+            }
+        });
+    }
+
+    public onUpdate(flavour: Flavour): void {
+        const dialogRef = this._dialog.open(FlavourEditComponent, {
+            width: '800px', data: { flavour, instruments: this._instruments },
+        });
+
+        dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
+            const source$ = this._apollo.mutate<any>({
+                mutation: gql`
+                    mutation UpdateFlavour($id: Int!, $input: FlavourInput!){
+                        updateFlavour(id: $id, input: $input) {
                             id
-                            name
-                            memory
-                            cpu
-                            computeId
                         }
                     }
-                `,
-                variables: {input: flavourInput},
-            }).toPromise()
-                .then(() => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Flavour created');
-                    this.loadAll();
-                })
-                .catch((error) => {
-                    this.showErrorNotification(error);
-                });
+                    `,
+                variables: {id: flavour.id, input},
+            }).pipe(
+                takeUntil(this._destroy$)
+            );
+            lastValueFrom(source$).then(() => {
+                this._notifierService.notify('success', 'Flavour saved');
+                this._refresh$.next();
+                dialogRef.close();
+            }).catch((error) => {
+                this._notifierService.notify('error', error);
+            });
         });
-    }
-
-    public onDelete(flavourId): void {
-        const dialogRef = this.dialog.open(FlavourDeleteComponent, {
-            width: '300px', data: {flavour: this.flavours.find((x) => x.id === flavourId)},
-        });
-        dialogRef.componentInstance.onDelete$.subscribe(() => {
-            this.apollo.mutate<any>({
-                mutation: gql`
-                    mutation DeleteFlavour($id: Int!){
-                        deleteFlavour(id:$id) {
-                            id
-                        }
-                    }
-                `,
-                variables: {id: flavourId},
-            }).toPromise()
-                .then(() => {
-                    this.showSuccessNotification('Flavour deleted');
-                    this.loadAll();
-                });
-        });
-    }
-
-    public onUpdate(flavour): void {
-        const dialogRef = this.dialog.open(FlavourUpdateComponent, {
-            width: '800px', data: {
-                flavour: cloneDeep(flavour),
-                cloudFlavours: this._cloudFlavours,
-                flavourLimits: this._flavourLimits,
-                instruments: this._instruments
-            },
-        });
-        dialogRef.componentInstance.onUpdate$.subscribe(({flavourInput, instruments}) => {
-            this.apollo.mutate<any>({
-                mutation: gql`
-                    mutation UpdateFlavour($id: Int!,$input: FlavourInput!){
-                        updateFlavour(id:$id,input:$input) {
-                            id
-                            name
-                            memory
-                            cpu
-                            computeId
-                        }
-                    }
-                `,
-                variables: {id: flavour.id, input: flavourInput},
-            }).toPromise()
-                .then(() => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Flavour updated');
-                    this.loadAll();
-                })
-                .catch((error) => {
-                    this.showErrorNotification(error);
-                });
-
-        });
-    }
-
-    private showSuccessNotification(message): void {
-        this.notifierService.notify('success', message);
-    }
-
-    private showErrorNotification(message): void {
-        this.notifierService.notify('error', message);
     }
 }

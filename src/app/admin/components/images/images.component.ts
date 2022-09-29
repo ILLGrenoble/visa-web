@@ -22,20 +22,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _images: Image[] = [];
     private _loading: boolean;
 
-    private readonly _notifierService: NotifierService;
-    private readonly _apollo: Apollo;
-    private readonly _dialog: MatDialog;
-    private readonly _titleService: Title;
-
-    constructor(apollo: Apollo,
-                notifierService: NotifierService,
-                dialog: MatDialog,
-                titleService: Title) {
-
-        this._dialog = dialog;
-        this._titleService = titleService;
-        this._apollo = apollo;
-        this._notifierService = notifierService;
+    constructor(private readonly _apollo: Apollo,
+                private readonly _notifierService: NotifierService,
+                private readonly _dialog: MatDialog,
+                private readonly _titleService: Title) {
     }
 
     get loading(): boolean {
@@ -53,7 +43,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
     set images(value: Image[]) {
         this._images = value;
     }
-
 
     public onRefresh(): void {
         this._refresh$.next();

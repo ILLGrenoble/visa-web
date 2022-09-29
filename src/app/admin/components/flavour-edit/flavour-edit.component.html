@@ -1,0 +1,56 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+            <clr-input-container>
+                <label for="name">Name</label>
+                <input clrInput id="name" formControlName="name" class="form-control"/>
+                <clr-control-error>Please enter a name</clr-control-error>
+            </clr-input-container>
+
+            <clr-select-container>
+                <label for="cloud">Cloud</label>
+                <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
+                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
+                </select>
+            </clr-select-container>
+
+            <clr-select-container>
+                <label for="flavour">Cloud flavour</label>
+                <select clrSelect id="flavour" formControlName="cloudFlavour" [compareWith]="compareCloudFlavour">
+                    <option *ngFor="let cloudFlavour of cloudFlavours" [ngValue]="cloudFlavour">{{cloudFlavour?.name}}</option>
+                </select>
+            </clr-select-container>
+
+            <clr-input-container>
+                <label for="memory">Memory</label>
+                <input clrInput readonly id="memory" class="form-control" [value]="memory + ' GB'">
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="cpu">CPUs</label>
+                <input clrInput readonly id="cpu" class="form-control" [value]="cpu">
+            </clr-input-container>
+
+            <clr-combobox-container>
+                <label for="instruments">Instruments</label>
+                <clr-combobox clrMulti="true" id="protocols" formControlName="instruments">
+                    <ng-container *clrOptionSelected="let selected">
+                        {{selected?.name}}
+                    </ng-container>
+                    <clr-options>
+                        <clr-option *clrOptionItems="let instrument of instruments;" [clrValue]="instrument">
+                            {{instrument.name}}
+                        </clr-option>
+                    </clr-options>
+                </clr-combobox>
+            </clr-combobox-container>
+
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="form.invalid">Save</button>
+    </div>
+</ng-container>
+

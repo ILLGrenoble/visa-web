@@ -15,14 +15,47 @@ export class ImageEditComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup;
     private _icons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
-    private _dialogRef: MatDialogRef<ImageEditComponent>;
     private _cloudClients: CloudClient[];
     private _cloudImages: CloudImage[] = [];
     private _protocols: ImageProtocol[] = [];
-    private _apollo: Apollo;
-    private _title: string;
+    private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<ImageInput> = new Subject<ImageInput>();
+
+    constructor(private readonly _dialogRef: MatDialogRef<ImageEditComponent>,
+                private readonly _apollo: Apollo,
+                @Inject(MAT_DIALOG_DATA) {image}) {
+
+        this._dialogRef.keydownEvents().subscribe(event => {
+            if (event.key === 'Escape') {
+                this._dialogRef.close();
+            }
+        });
+
+        this._dialogRef.backdropClick().subscribe(event => {
+            this._dialogRef.close();
+        });
+
+        this._form = new FormGroup({
+            name: new FormControl(null, Validators.required),
+            version: new FormControl(null, Validators.required),
+            icon: new FormControl('data-analysis-1.jpg', Validators.required),
+            visible: new FormControl(false, Validators.required),
+            cloudClient: new FormControl(null, Validators.required),
+            cloudImage: new FormControl(null, Validators.required),
+            description: new FormControl(null),
+            protocols: new FormControl(null),
+            autologin: new FormControl(null),
+            bootCommand: new FormControl(null),
+        });
+
+        if (image) {
+            this._title = `Edit image`;
+            this._createFormFromImage(image);
+        } else {
+            this._title = `Create image`;
+        }
+    }
 
     get form(): FormGroup {
         return this._form;
@@ -56,34 +89,6 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return this._title;
     }
 
-    constructor(dialogRef: MatDialogRef<ImageEditComponent>,
-                @Inject(MAT_DIALOG_DATA) {image},
-                apollo: Apollo) {
-        this._dialogRef = dialogRef;
-        this._apollo = apollo;
-
-        this._form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            version: new FormControl(null, Validators.required),
-            icon: new FormControl('data-analysis-1.jpg', Validators.required),
-            visible: new FormControl(false, Validators.required),
-            cloudClient: new FormControl(null, Validators.required),
-            cloudImage: new FormControl(null, Validators.required),
-            description: new FormControl(null),
-            protocols: new FormControl(null),
-            autologin: new FormControl(null),
-            bootCommand: new FormControl(null),
-        });
-        if (image) {
-            this._setTitle(`Edit image`);
-            this._createFormFromImage(image);
-        } else {
-            this._setTitle(`Create image`);
-        }
-
-    }
-
-
     public compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
         if (cloudClient1 == null || cloudClient2 == null) {
             return false;
@@ -96,10 +101,6 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             return false;
         }
         return image1.id === image2.id;
-    }
-
-    private _setTitle(title: string): void {
-        this._title = title;
     }
 
     private _createFormFromImage(image: Image): void {
@@ -127,6 +128,9 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             cloudClient,
             cloudImage
         });
+
+        // Initialise cloud flavours with current cloud flavour
+        this._cloudImages = [null, cloudImage];
     }
 
     public ngOnInit(): void {
