@@ -86,6 +86,7 @@ export type Flavour = {
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
+    cloudFlavour?: Maybe<CloudFlavour>;
     cloudClient?: Maybe<CloudClient>;
 };
 
@@ -532,6 +533,7 @@ export type ImageInput = {
     version?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     icon?: Maybe<Scalars['String']>;
+    cloudId?: Maybe<Scalars['Int']>;
     computeId: Scalars['String'];
     visible: Scalars['Boolean'];
     protocolIds?: Maybe<Array<Scalars['Int']>>;

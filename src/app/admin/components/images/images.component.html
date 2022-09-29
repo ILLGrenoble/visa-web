@@ -4,8 +4,7 @@
 
 <div class="admin-container">
     <div class="admin-container--main">
-        <clr-datagrid id="datagrid" [clrDgLoading]="loading">
-            <clr-dg-column>Image ID</clr-dg-column>
+        <clr-datagrid [clrDgLoading]="loading">
             <clr-dg-column>Name</clr-dg-column>
             <clr-dg-column>Version</clr-dg-column>
             <clr-dg-column>Description</clr-dg-column>
@@ -16,23 +15,24 @@
             <clr-dg-column>Visible</clr-dg-column>
             <clr-dg-column>Actions</clr-dg-column>
 
-            <clr-dg-row *ngFor="let image of images;let i = index">
-                <clr-dg-cell>{{image.id}}</clr-dg-cell>
+            <clr-dg-row *ngFor="let image of images">
                 <clr-dg-cell>{{image.name}}</clr-dg-cell>
                 <clr-dg-cell>{{image.version}}</clr-dg-cell>
                 <clr-dg-cell>{{image.description}}</clr-dg-cell>
                 <clr-dg-cell>{{image.cloudClient.name}}</clr-dg-cell>
-                <clr-dg-cell>{{imageCloudImageName[i]}}</clr-dg-cell>
+                <clr-dg-cell>{{image.cloudImage?.name}}</clr-dg-cell>
                 <clr-dg-cell>{{image.icon}}</clr-dg-cell>
                 <clr-dg-cell>
-                    <div class="protocol" *ngFor="let protocol of image.protocols">
+                    <span class="label" *ngFor="let protocol of image.protocols">
                         {{protocol.name}}
-                    </div>
+                    </span>
                 </clr-dg-cell>
+
                 <clr-dg-cell><input [checked]="image.visible" disabled type="checkbox"/></clr-dg-cell>
                 <clr-dg-cell>
                     <button (click)="onUpdate(image)" class="btn btn-sm">Edit</button>
-                    <button (click)="onDelete(image.id)" class="btn btn-warning-outline btn-sm">Delete</button>
+                    <button (click)="onCreate(image)" class="btn btn-sm">Clone</button>
+                    <button (click)="onDelete(image)" class="btn btn-warning-outline btn-sm">Delete</button>
                 </clr-dg-cell>
             </clr-dg-row>
             <clr-dg-footer>

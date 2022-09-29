@@ -1,0 +1,74 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+            <clr-input-container>
+                <label for="name">Name</label>
+                <input clrInput id="name" formControlName="name" class="form-control"/>
+                <clr-control-error>Please enter a name</clr-control-error>
+            </clr-input-container>
+            <clr-textarea-container>
+                <label for="bootCommand">Description</label>
+                <textarea clrTextarea id="description" formControlName="description" rows="2" cols="80"></textarea>
+            </clr-textarea-container>
+            <clr-input-container>
+                <label for="version">Version</label>
+                <input clrInput id="version" formControlName="version" class="form-control"/>
+                <clr-control-error>Please enter a version</clr-control-error>
+            </clr-input-container>
+
+            <clr-select-container>
+                <label for="cloud">Cloud</label>
+                <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
+                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
+                </select>
+            </clr-select-container>
+
+            <clr-select-container>
+                <label for="image">Cloud image</label>
+                <select clrSelect id="image" formControlName="cloudImage" [compareWith]="compareCloudImage">
+                    <option *ngFor="let cloudImage of cloudImages" [ngValue]="cloudImage">{{cloudImage?.name}}</option>
+                </select>
+            </clr-select-container>
+            <clr-combobox-container>
+                <label for="protocols">Protocols</label>
+                <clr-combobox clrMulti="true" id="protocols" formControlName="protocols">
+                    <ng-container *clrOptionSelected="let selected">
+                        {{selected?.name}}
+                    </ng-container>
+                    <clr-options>
+                        <clr-option *clrOptionItems="let protocol of protocols;" [clrValue]="protocol">
+                            {{protocol.name}}
+                        </clr-option>
+                    </clr-options>
+                </clr-combobox>
+            </clr-combobox-container>
+
+            <clr-select-container>
+                <label for="icon">Icon</label>
+                <select clrSelect id="icon" formControlName="icon">
+                    <option *ngFor="let icon of icons">{{icon}}</option>
+                </select>
+            </clr-select-container>
+            <clr-select-container>
+                <label for="autologin">Autologin</label>
+                <select clrSelect id="autologin" formControlName="autologin">
+                    <option value=""></option>
+                    <option value="VISA_PAM">VISA PAM</option>
+                </select>
+            </clr-select-container>
+            <clr-textarea-container>
+                <label for="bootCommand">Boot command</label>
+                <textarea clrTextarea id="bootCommand" formControlName="bootCommand" rows="8" cols="80"></textarea>
+            </clr-textarea-container>
+            <clr-input-container>
+                <label for="visible">Visible</label>
+                <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible"/>
+            </clr-input-container>
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="form.invalid">Save</button>
+    </div>
+</ng-container>
