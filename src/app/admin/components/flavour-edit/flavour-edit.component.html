@@ -13,6 +13,7 @@
                 <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
                     <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
                 </select>
+                <clr-control-helper>Please select the cloud provider</clr-control-helper>
             </clr-select-container>
 
             <clr-select-container>
@@ -20,6 +21,7 @@
                 <select clrSelect id="flavour" formControlName="cloudFlavour" [compareWith]="compareCloudFlavour">
                     <option *ngFor="let cloudFlavour of cloudFlavours" [ngValue]="cloudFlavour">{{cloudFlavour?.name}}</option>
                 </select>
+                <clr-control-helper>Please select a cloud flavour</clr-control-helper>
             </clr-select-container>
 
             <clr-input-container>
@@ -44,6 +46,7 @@
                         </clr-option>
                     </clr-options>
                 </clr-combobox>
+                <clr-control-helper>Use of this flavour will be restricted to instruments selected here</clr-control-helper>
             </clr-combobox-container>
 
         </form>

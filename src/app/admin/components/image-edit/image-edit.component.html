@@ -15,6 +15,7 @@
                 <label for="version">Version</label>
                 <input clrInput id="version" formControlName="version" class="form-control"/>
                 <clr-control-error>Please enter a version</clr-control-error>
+                <clr-control-helper>You can specify a version as images evolve</clr-control-helper>
             </clr-input-container>
 
             <clr-select-container>
@@ -22,6 +23,7 @@
                 <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
                     <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
                 </select>
+                <clr-control-helper>Please select the cloud provider</clr-control-helper>
             </clr-select-container>
 
             <clr-select-container>
@@ -29,7 +31,9 @@
                 <select clrSelect id="image" formControlName="cloudImage" [compareWith]="compareCloudImage">
                     <option *ngFor="let cloudImage of cloudImages" [ngValue]="cloudImage">{{cloudImage?.name}}</option>
                 </select>
+                <clr-control-helper>Please select a cloud flavour</clr-control-helper>
             </clr-select-container>
+
             <clr-combobox-container>
                 <label for="protocols">Protocols</label>
                 <clr-combobox clrMulti="true" id="protocols" formControlName="protocols">
@@ -42,6 +46,7 @@
                         </clr-option>
                     </clr-options>
                 </clr-combobox>
+                <clr-control-helper>Protocols indicate to VISA which services are accessible on an active instance</clr-control-helper>
             </clr-combobox-container>
 
             <clr-select-container>
@@ -56,14 +61,19 @@
                     <option value=""></option>
                     <option value="VISA_PAM">VISA PAM</option>
                 </select>
+                <clr-control-helper>Automatic login is possible if the VISA PAM module has been installed in the image</clr-control-helper>
             </clr-select-container>
             <clr-textarea-container>
                 <label for="bootCommand">Boot command</label>
                 <textarea clrTextarea id="bootCommand" formControlName="bootCommand" rows="8" cols="80"></textarea>
+                <clr-control-helper>The boot command is executed when the instance is booting</clr-control-helper>
             </clr-textarea-container>
             <clr-input-container>
                 <label for="visible">Visible</label>
                 <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible"/>
+                <clr-control-helper>
+                    An image that is not set to visible can only seen by administrators. This is useful for testing an image before making it available to all users.
+                </clr-control-helper>
             </clr-input-container>
         </form>
     </div>
