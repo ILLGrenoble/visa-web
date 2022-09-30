@@ -14,7 +14,7 @@
         <clr-dg-column [clrDgField]="'objectId'">Object ID</clr-dg-column>
         <clr-dg-column [clrDgField]="'objectName'">Object Name</clr-dg-column>
         <clr-dg-column>Actions</clr-dg-column>
-        <clr-dg-row *clrDgItems="let securityGroupFilter of securityGroupFilters">
+        <clr-dg-row *clrDgItems="let securityGroupFilter of filteredSecurityGroupFilters">
             <clr-dg-cell>{{securityGroupFilter.securityGroup.name}}</clr-dg-cell>
             <clr-dg-cell>{{securityGroupFilter.objectType}}</clr-dg-cell>
             <clr-dg-cell>{{securityGroupFilter.objectId}}</clr-dg-cell>

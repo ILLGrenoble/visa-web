@@ -168,7 +168,7 @@ export class PlanEditComponent implements OnInit {
         const input = {
             imageId: image.id,
             flavourId: flavour.id,
-            preset,
+            preset: preset == null ? false : preset,
         } as PlanInput;
         this._onSave$.next(input);
     }

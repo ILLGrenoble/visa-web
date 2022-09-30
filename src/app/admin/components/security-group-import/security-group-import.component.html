@@ -2,6 +2,12 @@
 <ng-container *ngIf="form">
     <div mat-dialog-content>
         <form clrForm [formGroup]="form" clrLayout="horizontal">
+
+            <clr-input-container>
+                <label for="cloudClient">Cloud</label>
+                <input clrInput readonly id="cloudClient" class="form-control" [value]="cloudClient.name + ' cloud'" style="width: 400px;">
+            </clr-input-container>
+
             <clr-select-container>
                 <label for="securityGroup">Security Group</label>
                 <select clrSelect id="securityGroup"

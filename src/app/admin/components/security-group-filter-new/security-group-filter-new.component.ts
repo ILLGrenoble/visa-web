@@ -1,11 +1,11 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl, FormGroup} from '@angular/forms';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {Subject} from 'rxjs';
-import {SecurityGroup} from '../../../core/graphql';
+import {lastValueFrom, Subject} from 'rxjs';
+import {CloudClient, SecurityGroup, SecurityGroupFilter, SecurityGroupFilterInput} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 
 
@@ -15,14 +15,12 @@ import {NotifierService} from 'angular-notifier';
 })
 export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
 
-    private _dialogRef: MatDialogRef<SecurityGroupFilterNewComponent>;
     private _form: FormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _securityGroups: SecurityGroup[];
     private _objectIdentifiers: { id: number, name: string }[];
-    private readonly _notifierService: NotifierService;
     private readonly _objectType: string;
-    private readonly _apollo: Apollo;
+    private readonly _cloudClient: CloudClient;
 
     get form(): FormGroup {
         return this._form;
@@ -40,7 +38,6 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         this._securityGroups = value;
     }
 
-
     get objectIdentifiers(): { id: number; name: string }[] {
         return this._objectIdentifiers;
     }
@@ -49,13 +46,23 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         return this._objectType;
     }
 
-    constructor(dialogRef: MatDialogRef<SecurityGroupFilterNewComponent>,
-                apollo: Apollo, @Inject(MAT_DIALOG_DATA) public data,
-                notifierService: NotifierService) {
-        this._dialogRef = dialogRef;
-        this._apollo = apollo;
-        this._notifierService = notifierService;
-        this._objectType = data.objectType;
+    get cloudClient(): CloudClient {
+        return this._cloudClient;
+    }
+
+    constructor(private readonly _dialogRef: MatDialogRef<SecurityGroupFilterNewComponent>,
+                private readonly _apollo: Apollo, @Inject(MAT_DIALOG_DATA) {objectType, cloudClient},
+                private readonly _notifierService: NotifierService) {
+        this._objectType = objectType;
+        this._cloudClient = cloudClient;
+
+        this._dialogRef.keydownEvents().subscribe(event => {
+            if (event.key === 'Escape') {
+                this._dialogRef.close();
+            }
+        });
+
+        this._dialogRef.backdropClick().subscribe(this._dialogRef.close);
     }
 
     submit(): void {
@@ -64,7 +71,12 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
             query: gql`
                query allSecurityGroupFilters($filter: QueryFilter!) {
                      securityGroupFilters(filter: $filter) {
-                       id
+                        id
+                        securityGroup {
+                            cloudClient {
+                                id
+                            }
+                        }
                     }
                 }
                     `,
@@ -87,9 +99,10 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                 }
             }
         }).pipe(
+            map(({data}) => ({securityGroupFilters: data.securityGroupFilters})),
             takeUntil(this._destroy$),
-        ).subscribe(({data}) => {
-            if (data.securityGroupFilters.length > 0) {
+        ).subscribe(({securityGroupFilters}) => {
+            if (securityGroupFilters.length > 0) {
                 this._notifierService.notify('warning', `A rule already exists for these given parameters`);
             } else {
                 this.createFilter(securityGroup, objectIdentifier);
@@ -98,7 +111,13 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
     }
 
     private createFilter(securityGroup: SecurityGroup, objectIdentifier: { id: number, name: string }): void {
-        this._apollo.mutate({
+        const input = {
+            objectId: objectIdentifier.id,
+            objectType: this._objectType,
+            securityGroupId: securityGroup.id
+        } as SecurityGroupFilterInput;
+
+        const source$ = this._apollo.mutate({
             mutation: gql`
                 mutation CreateSecurityGroupFilter($input: SecurityGroupFilterInput!){
                   createSecurityGroupFilter(input: $input) {
@@ -113,15 +132,15 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                   }
                 }
             `,
-            variables: {
-                input: {
-                    objectId: objectIdentifier.id,
-                    objectType: this._objectType,
-                    securityGroupId: securityGroup.id
-                }
-            },
-        }).toPromise().then((result: any) => {
+            variables: { input },
+        }).pipe(
+            takeUntil(this._destroy$)
+        );
+        lastValueFrom(source$).then(() => {
+            this._notifierService.notify('success', 'Successfully created new security group filter rule');
             this._dialogRef.close(true);
+        }).catch((error) => {
+            this._notifierService.notify('error', error);
         });
     }
 
@@ -137,6 +156,10 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                           securityGroups {
                             id
                             name
+                            cloudClient {
+                                id
+                                name
+                            }
                           }
                           roles {
                             id
@@ -152,7 +175,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
             map(({data}) => ({securityGroups: data.securityGroups, roles: data.roles, instruments: data.instruments})),
             takeUntil(this._destroy$)
         ).subscribe(({securityGroups, roles, instruments}) => {
-            this._securityGroups = securityGroups;
+            this._securityGroups = securityGroups.filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient.id);
             if (this._objectType === 'ROLE') {
                 this._objectIdentifiers = roles.map(role => {
                     return {id: role.id, name: role.name};

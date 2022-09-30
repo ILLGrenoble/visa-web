@@ -1,10 +1,10 @@
-import {Component, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {SecurityGroup} from '../../../core/graphql';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {CloudClient, SecurityGroup} from '../../../core/graphql';
 import {SecurityGroupImportComponent} from '../security-group-import';
 import {SecurityGroupDeleteComponent} from '../security-group-delete';
 import {NotifierService} from 'angular-notifier';
@@ -22,6 +22,12 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
 
     private _loading: boolean;
     private _securityGroups: SecurityGroup[] = [];
+    private _filteredSecurityGroups: SecurityGroup[] = [];
+    private _cloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
+
+    get filteredSecurityGroups(): SecurityGroup[] {
+        return this._filteredSecurityGroups;
+    }
 
     get securityGroups(): SecurityGroup[] {
         return this._securityGroups;
@@ -48,6 +54,11 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
         this._refresh$ = value;
     }
 
+    @Input('cloudClient')
+    set cloudClient(cloudClient: CloudClient) {
+        this._cloudClient$.next(cloudClient);
+    }
+
     constructor(private _apollo: Apollo,
                 private _notifierService: NotifierService,
                 private _dialog: MatDialog,
@@ -68,6 +79,10 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
                           securityGroups {
                             id
                             name
+                            cloudClient {
+                                id
+                                name
+                            }
                           }
                         }
                     `
@@ -77,6 +92,15 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
             )
             .subscribe(({securityGroups}) => {
                 this._securityGroups = securityGroups;
+                this._filteredSecurityGroups = this._securityGroups
+                    .filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient$.getValue()?.id);
+            });
+
+        this._cloudClient$
+            .pipe(takeUntil(this._destroy$))
+            .subscribe(cloudClient => {
+                this._filteredSecurityGroups = this._securityGroups
+                    .filter(securityGroup => securityGroup.cloudClient.id === cloudClient.id);
             });
     }
 
@@ -118,11 +142,10 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
 
     public onImport(): void {
         const dialogRef = this._dialog.open(SecurityGroupImportComponent, {
-            width: '600px'
+            width: '800px', data: {cloudClient: this._cloudClient$.getValue(), currentSecurityGroups: this._filteredSecurityGroups}
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this._notifierService.notify('success', 'Successfully imported security group from the cloud');
                 this._refresh$.next();
             }
         });

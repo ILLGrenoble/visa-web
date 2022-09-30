@@ -3,15 +3,23 @@
 
 <div class="admin-container">
     <div class="admin-container--main">
+
+        <clr-select-container style="margin-bottom: 16px; margin-top: 8px;">
+            <select clrSelect id="cloud" [(ngModel)]="selectedCloudClient" (change)="onCloudChange()">
+                <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud' : ''}}</option>
+            </select>
+            <clr-control-helper>Please select the cloud provider</clr-control-helper>
+        </clr-select-container>
+
         <div class="clr-row">
             <div class="clr-col-4">
                 <div class="filters-box">
-                    <visa-admin-security-groups (onRefresh)="handleSecurityGroupRefresh($event)"></visa-admin-security-groups>
+                    <visa-admin-security-groups [cloudClient]="selectedCloudClient" (onRefresh)="handleSecurityGroupRefresh($event)"></visa-admin-security-groups>
                 </div>
             </div>
             <div class="clr-col-8">
                 <div class="filters-box">
-                    <visa-admin-security-group-filters [refresh]="refreshSecurityGroupLimits$" ></visa-admin-security-group-filters>
+                    <visa-admin-security-group-filters [cloudClient]="selectedCloudClient" [refresh]="refreshSecurityGroupLimits$" ></visa-admin-security-group-filters>
                 </div>
             </div>
         </div>

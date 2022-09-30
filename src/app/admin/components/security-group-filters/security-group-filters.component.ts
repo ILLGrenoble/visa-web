@@ -3,8 +3,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {SecurityGroupFilter} from '../../../core/graphql';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {CloudClient, SecurityGroup, SecurityGroupFilter} from '../../../core/graphql';
 import {SecurityGroupFilterNewComponent} from '../security-group-filter-new';
 import {SecurityGroupFilterDeleteComponent} from '../security-group-filter-delete';
 import {NotifierService} from 'angular-notifier';
@@ -17,12 +17,18 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<void> = new Subject();
+    private _cloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
 
     private _loading: boolean;
     private _securityGroupFilters: SecurityGroupFilter[] = [];
+    private _filteredSecurityGroupFilters: SecurityGroupFilter[] = [];
     private _apollo: Apollo;
     private _notifierService: NotifierService;
     private _dialog: MatDialog;
+
+    get filteredSecurityGroupFilters(): SecurityGroupFilter[] {
+        return this._filteredSecurityGroupFilters;
+    }
 
     get securityGroupFilters(): SecurityGroupFilter[] {
         return this._securityGroupFilters;
@@ -50,6 +56,11 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
         this._refresh$ = value;
     }
 
+    @Input('cloudClient')
+    set cloudClient(cloudClient: CloudClient) {
+        this._cloudClient$.next(cloudClient);
+    }
+
     constructor(apollo: Apollo,
                 notifierService: NotifierService,
                 dialog: MatDialog) {
@@ -73,6 +84,10 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
                             securityGroup {
                               id
                               name
+                              cloudClient {
+                                id
+                                name
+                              }
                             }
                             objectId
                             objectType
@@ -86,6 +101,15 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
             )
             .subscribe(({securityGroupFilters}) => {
                 this._securityGroupFilters = securityGroupFilters;
+                this._filteredSecurityGroupFilters = this._securityGroupFilters
+                    .filter(securityGroupFilter => securityGroupFilter.securityGroup.cloudClient.id === this._cloudClient$.getValue()?.id);
+            });
+
+        this._cloudClient$
+            .pipe(takeUntil(this._destroy$))
+            .subscribe(cloudClient => {
+                this._filteredSecurityGroupFilters = this._securityGroupFilters
+                    .filter(securityGroupFilter => securityGroupFilter.securityGroup.cloudClient.id === cloudClient.id);
             });
     }
 
@@ -102,12 +126,11 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
         const dialogRef = this._dialog.open(SecurityGroupFilterNewComponent, {
             width: '600px',
             data: {
-                objectType
+                objectType, cloudClient: this._cloudClient$.getValue()
             }
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this._notifierService.notify('success', 'Successfully created new security group filter rule');
                 this._refresh$.next();
             }
         });

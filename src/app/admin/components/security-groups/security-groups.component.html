@@ -8,7 +8,7 @@
     <clr-datagrid [clrDgLoading]="loading">
         <clr-dg-column>Security Group</clr-dg-column>
         <clr-dg-column>Actions</clr-dg-column>
-        <clr-dg-row *clrDgItems="let securityGroup of securityGroups">
+        <clr-dg-row *clrDgItems="let securityGroup of filteredSecurityGroups">
             <clr-dg-cell>{{securityGroup.name}}</clr-dg-cell>
             <clr-dg-cell>
                 <button (click)="onDelete(securityGroup)"

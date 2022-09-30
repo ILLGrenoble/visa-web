@@ -524,6 +524,7 @@ export type FlavourInput = {
     name: Scalars['String'];
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
+    cloudId?: Maybe<Scalars['Int']>;
     computeId: Scalars['String'];
     instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
 };
@@ -561,6 +562,10 @@ export type SystemNotificationInput = {
     activatedAt?: Maybe<Scalars['String']>;
 };
 
+export type SecurityGroupInput = {
+    name: Scalars['String'];
+    cloudId?: Maybe<Scalars['Int']>;
+};
 
 export type Employer = {
     __typename?: 'User';
@@ -617,6 +622,7 @@ export type SecurityGroup = {
     __typename?: 'SecurityGroup';
     id: Scalars['Int'];
     name: Scalars['String'];
+    cloudClient?: Maybe<CloudClient>;
 };
 
 export type SecurityGroupFilter = {
@@ -626,6 +632,12 @@ export type SecurityGroupFilter = {
     objectId: Scalars['Int'];
     objectType: Scalars['String'];
     objectName: Maybe<Scalars['String']>;
+};
+
+export type SecurityGroupFilterInput = {
+    securityGroupId: Scalars['Int'];
+    objectId: Scalars['Int'];
+    objectType: Scalars['String'];
 };
 
 export type CloudSecurityGroup = {
