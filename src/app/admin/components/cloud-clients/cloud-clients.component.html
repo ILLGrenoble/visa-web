@@ -1,0 +1,38 @@
+<visa-admin-header></visa-admin-header>
+<visa-cloud-admin-header></visa-cloud-admin-header>
+
+
+<div class="admin-container">
+    <div class="admin-container--main">
+        <clr-datagrid [clrDgLoading]="loading">
+            <clr-dg-column>Id</clr-dg-column>
+            <clr-dg-column>Type</clr-dg-column>
+            <clr-dg-column>Name</clr-dg-column>
+            <clr-dg-column>Server Name Prefix</clr-dg-column>
+            <clr-dg-column>Visible</clr-dg-column>
+            <clr-dg-column>Actions</clr-dg-column>
+
+            <clr-dg-row *ngFor="let cloudClient of cloudClients">
+                <clr-dg-cell>{{cloudClient.id}}</clr-dg-cell>
+                <clr-dg-cell>{{cloudClient.type}}</clr-dg-cell>
+                <clr-dg-cell>{{cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell>{{cloudClient.serverNamePrefix}}</clr-dg-cell>
+
+                <clr-dg-cell><input [checked]="cloudClient.visible" disabled type="checkbox"/></clr-dg-cell>
+
+                <clr-dg-cell *ngIf="canModify(cloudClient)">
+                    <button (click)="onUpdate(cloudClient)" class="btn btn-sm">Edit</button>
+                    <button (click)="onCreate(cloudClient)" class="btn btn-sm">Clone</button>
+                    <button (click)="onDelete(cloudClient)" class="btn btn-warning-outline btn-sm">Delete</button>
+                </clr-dg-cell>
+                <clr-dg-cell *ngIf="!canModify(cloudClient)">
+                    <button (click)="onView(cloudClient)" class="btn btn-sm">Details</button>
+                </clr-dg-cell>
+            </clr-dg-row>
+            <clr-dg-footer>
+                <button class="btn btn-sm" type="button" (click)="onCreate()">New</button>
+                <button class="btn btn-sm" type="button" (click)="onRefresh()"><clr-icon shape="refresh"></clr-icon></button>
+            </clr-dg-footer>
+        </clr-datagrid>
+    </div>
+</div>

@@ -4,6 +4,7 @@ import {
     DashboardComponent,
     FlavoursComponent,
     ImagesComponent,
+    CloudClientsComponent,
     InstanceActivate,
     InstanceComponent,
     InstancesComponent,
@@ -42,6 +43,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'compute/instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],
+            },
+            {
+                path: 'cloud/providers', component: CloudClientsComponent,
             },
             {
                 path: 'cloud/images', component: ImagesComponent,

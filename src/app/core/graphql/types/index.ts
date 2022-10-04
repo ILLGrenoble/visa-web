@@ -9,10 +9,33 @@ export type Scalars = {
     Float: number;
 };
 
+export type OpenStackProviderConfiguration = {
+    __typename?: 'OpenStackProviderConfiguration';
+    applicationId: Scalars['String'];
+    applicationSecret: Scalars['String'];
+    computeEndpoint: Scalars['String'];
+    imageEndpoint: Scalars['String'];
+    networkEndpoint: Scalars['String'];
+    identityEndpoint: Scalars['String'];
+    addressProvider: Scalars['String'];
+    addressProviderUUID: Scalars['String'];
+};
+
+export type WebProviderConfiguration = {
+    __typename?: 'WebProviderConfiguration';
+    url: Scalars['String'];
+    authToken: Scalars['String'];
+};
+
 export type CloudClient = {
     __typename?: 'CloudClient';
     id: Scalars['Int'];
     name: Scalars['String'];
+    type: Scalars['String'];
+    serverNamePrefix: Scalars['String'];
+    visible: Scalars['Boolean'];
+    openStackProviderConfiguration?: Maybe<OpenStackProviderConfiguration>;
+    webProviderConfiguration?: Maybe<WebProviderConfiguration>;
 };
 
 export type CloudFlavour = {
@@ -58,7 +81,6 @@ export type CloudLimit = {
     maxTotalCores: Scalars['Int'];
     totalCoresUsed: Scalars['Int'];
 };
-
 
 export type CreateRoleInput = {
     name: Scalars['String'];
@@ -549,11 +571,35 @@ export type UserInput = {
     guestExpiresAt: Scalars['String'];
 };
 
-
 export type PlanInput = {
     imageId: Scalars['Int'];
     flavourId: Scalars['Int'];
     preset: Scalars['Boolean'];
+};
+
+export type OpenStackProviderConfigurationInput = {
+    applicationId: Scalars['String'];
+    applicationSecret: Scalars['String'];
+    computeEndpoint: Scalars['String'];
+    imageEndpoint: Scalars['String'];
+    networkEndpoint: Scalars['String'];
+    identityEndpoint: Scalars['String'];
+    addressProvider: Scalars['String'];
+    addressProviderUUID: Scalars['String'];
+};
+
+export type WebProviderConfigurationInput = {
+    url: Scalars['String'];
+    authToken: Scalars['String'];
+};
+
+export type CloudClientInput = {
+    name: Scalars['String'];
+    type: Scalars['String'];
+    serverNamePrefix: Scalars['String'];
+    visible: Scalars['Boolean'];
+    openStackProviderConfiguration?: Maybe<OpenStackProviderConfigurationInput>;
+    webProviderConfiguration?: Maybe<WebProviderConfigurationInput>;
 };
 
 export type SystemNotificationInput = {

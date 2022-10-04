@@ -1,0 +1,107 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<ng-container *ngIf="clientForm">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="clientForm" clrLayout="horizontal" clrLabelSize="3">
+
+            <clr-select-container>
+                <label for="type">Type</label>
+                <select clrSelect id="type" formControlName="type">
+                    <option *ngFor="let providerType of providerTypes" [ngValue]="providerType.value">{{providerType.name}}</option>
+                </select>
+                <clr-control-helper>Please select a provider type</clr-control-helper>
+            </clr-select-container>
+
+            <clr-input-container>
+                <label for="name">Name</label>
+                <input clrInput id="name" formControlName="name" class="form-control"/>
+                <clr-control-helper>Please enter a name for the provider</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="serverNamePrefix">Server name prefix</label>
+                <input clrInput id="serverNamePrefix" formControlName="serverNamePrefix" class="form-control"/>
+                <clr-control-helper>Please enter a prefix that will be applied to all instance names in the provider</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="visible">Visible</label>
+                <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible"/>
+                <clr-control-helper>
+                    A provider that is not set to visible can only used by administrators (images and flavours can not be used by standard users). This is useful for testing a provider before making it public.
+                </clr-control-helper>
+            </clr-input-container>
+        </form>
+
+        <form clrForm [formGroup]="openStackForm" clrLayout="horizontal" clrLabelSize="3" *ngIf="providerType === 'openstack'">
+
+            <clr-input-container>
+                <label for="applicationId">Application Id</label>
+                <input clrInput id="applicationId" formControlName="applicationId" class="form-control"/>
+                <clr-control-helper>Please enter the Application Id used to authenticate with OpenStack</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="applicationSecret">Application Secret</label>
+                <input clrInput id="applicationSecret" formControlName="applicationSecret" class="form-control"/>
+                <clr-control-helper>Please enter the Application Secret used to authenticate with OpenStack</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="computeEndpoint">Compute Endpoint</label>
+                <input clrInput id="computeEndpoint" formControlName="computeEndpoint" class="form-control"/>
+                <clr-control-helper>Please enter the Compute endpoint URL</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="imageEndpoint">Image Endpoint</label>
+                <input clrInput id="imageEndpoint" formControlName="imageEndpoint" class="form-control"/>
+                <clr-control-helper>Please enter the Image endpoint URL</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="networkEndpoint">Network Endpoint</label>
+                <input clrInput id="networkEndpoint" formControlName="networkEndpoint" class="form-control"/>
+                <clr-control-helper>Please enter the Network endpoint URL</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="identityEndpoint">Identity Endpoint</label>
+                <input clrInput id="identityEndpoint" formControlName="identityEndpoint" class="form-control"/>
+                <clr-control-helper>Please enter the Identity endpoint URL</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="addressProvider">Address Provider</label>
+                <input clrInput id="addressProvider" formControlName="addressProvider" class="form-control"/>
+                <clr-control-helper>Please enter the Address Provider name</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="addressProviderUUID">Address Provider UUID</label>
+                <input clrInput id="addressProviderUUID" formControlName="addressProviderUUID" class="form-control"/>
+                <clr-control-helper>Please enter the Address Provider UUID</clr-control-helper>
+            </clr-input-container>
+        </form>
+
+
+        <form clrForm [formGroup]="webForm" clrLayout="horizontal" clrLabelSize="3" *ngIf="providerType === 'web'">
+            <clr-input-container>
+                <label for="url">Web cloud provider URL</label>
+                <input clrInput id="url" formControlName="url" class="form-control"/>
+                <clr-control-helper>Please enter the URL of the Web Provider</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="authToken">Authentication Token</label>
+                <input clrInput id="authToken" formControlName="authToken" class="form-control"/>
+                <clr-control-helper>Please enter the token used to authenticate with the Web cloud provider</clr-control-helper>
+            </clr-input-container>
+
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="clientForm.invalid || !providerFormValid">Save</button>
+    </div>
+</ng-container>
+
