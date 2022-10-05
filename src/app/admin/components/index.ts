@@ -3,6 +3,7 @@ export * from './instance';
 export * from './instances';
 export * from './cloud-clients';
 export * from './cloud-client-edit';
+export * from './cloud-client-delete';
 export * from './plans';
 export * from './plan-edit';
 export * from './flavours';

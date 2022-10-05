@@ -4,14 +4,11 @@ import {
     CloudClient,
     CloudClientInput,
     OpenStackProviderConfigurationInput,
-    Scalars,
     WebProviderConfigurationInput
 } from '../../../core/graphql';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-cloud-client-edit',
@@ -19,13 +16,13 @@ import {map, takeUntil} from 'rxjs/operators';
 })
 export class CloudClientEditComponent implements OnInit, OnDestroy {
 
-    private _clientForm: FormGroup;
-    private _openStackForm: FormGroup;
-    private _webForm: FormGroup;
+    private readonly _clientForm: FormGroup;
+    private readonly _openStackForm: FormGroup;
+    private readonly _webForm: FormGroup;
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<CloudClientInput> = new Subject<CloudClientInput>();
-    private readonly _readonly;
+    private readonly _readonly: boolean;
     private _providerTypes = [{value: 'openstack', name: 'OpenStack'}, {value: 'web', name: 'Web'}];
 
     constructor(private readonly _dialogRef: MatDialogRef<CloudClientEditComponent>,
@@ -68,13 +65,15 @@ export class CloudClientEditComponent implements OnInit, OnDestroy {
 
         if (cloudClient) {
             if (clone) {
-                this._title = `Clone cloud client`;
+                this._title = `Clone cloud provider`;
+            } else if (readonly) {
+                this._title = `Cloud provider details`;
             } else {
-                this._title = `Edit cloud client`;
+                this._title = `Edit cloud provider`;
             }
             this._createFormFromCloudClient(cloudClient);
         } else {
-            this._title = `Create cloud client`;
+            this._title = `Create cloud provider`;
         }
     }
 
@@ -101,7 +100,7 @@ export class CloudClientEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    get providerTypes(): ({ name: string; value: string } | { name: string; value: string })[] {
+    get providerTypes(): { name: string; value: string }[] {
         return this._providerTypes;
     }
 
@@ -115,6 +114,10 @@ export class CloudClientEditComponent implements OnInit, OnDestroy {
 
     get providerType(): string {
         return this._clientForm.value.type;
+    }
+
+    get readonly(): boolean {
+        return this._readonly;
     }
 
     private _createFormFromCloudClient(cloudClient: CloudClient): void {
