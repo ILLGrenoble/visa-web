@@ -197,6 +197,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         }).pipe(
             map(({data}) => (data.cloudImages)),
         ).subscribe((cloudImages) => {
+            cloudImages = cloudImages || [];
             cloudImages.unshift(null);
             this._cloudImages = cloudImages;
             this.form.controls.cloudImage.reset(selectedCloudImage);

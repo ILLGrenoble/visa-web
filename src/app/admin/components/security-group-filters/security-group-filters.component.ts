@@ -100,7 +100,7 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
                 tap(() => this._loading = false)
             )
             .subscribe(({securityGroupFilters}) => {
-                this._securityGroupFilters = securityGroupFilters;
+                this._securityGroupFilters = securityGroupFilters || [];
                 this._filteredSecurityGroupFilters = this._securityGroupFilters
                     .filter(securityGroupFilter => securityGroupFilter.securityGroup.cloudClient.id === this._cloudClient$.getValue()?.id);
             });

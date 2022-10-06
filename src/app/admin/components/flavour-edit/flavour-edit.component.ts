@@ -216,6 +216,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         }).pipe(
             map(({data}) => (data.cloudFlavours)),
         ).subscribe((cloudFlavours) => {
+            cloudFlavours = cloudFlavours || [];
             cloudFlavours.unshift(null);
             this._cloudFlavours = cloudFlavours;
             this.form.controls.cloudFlavour.reset(selectedCloudFlavour);

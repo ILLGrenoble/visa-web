@@ -142,7 +142,7 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
             map(({data}) => ({cloudSecurityGroups: data.cloudSecurityGroups})),
             takeUntil(this._destroy$)
         ).subscribe(({cloudSecurityGroups}) => {
-            this._securityGroups = cloudSecurityGroups
+            this._securityGroups = (cloudSecurityGroups || [])
                 .filter(cloudSecurityGroup => this._currentSecurityGroups
                     .find(securityGroup => securityGroup.name === cloudSecurityGroup.name) == null);
             this.form = new FormGroup({
