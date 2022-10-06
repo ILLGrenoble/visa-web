@@ -10,6 +10,7 @@
             <clr-dg-column>Name</clr-dg-column>
             <clr-dg-column>Server Name Prefix</clr-dg-column>
             <clr-dg-column>Visible</clr-dg-column>
+            <clr-dg-column>Instance count</clr-dg-column>
             <clr-dg-column>Actions</clr-dg-column>
 
             <clr-dg-row *ngFor="let cloudClient of cloudClients">
@@ -17,13 +18,13 @@
                 <clr-dg-cell>{{cloudClient.type}}</clr-dg-cell>
                 <clr-dg-cell>{{cloudClient.name}}</clr-dg-cell>
                 <clr-dg-cell>{{cloudClient.serverNamePrefix}}</clr-dg-cell>
-
                 <clr-dg-cell><input [checked]="cloudClient.visible" disabled type="checkbox"/></clr-dg-cell>
+                <clr-dg-cell>{{instanceCount(cloudClient)}}</clr-dg-cell>
 
                 <clr-dg-cell *ngIf="canModify(cloudClient)">
                     <button (click)="onUpdate(cloudClient)" class="btn btn-sm">Edit</button>
                     <button (click)="onCreate(cloudClient)" class="btn btn-sm">Clone</button>
-                    <button (click)="onDelete(cloudClient)" class="btn btn-warning-outline btn-sm">Delete</button>
+                    <button (click)="onDelete(cloudClient)" [disabled]="instanceCount(cloudClient) > 0" class="btn btn-warning-outline btn-sm">Delete</button>
                 </clr-dg-cell>
                 <clr-dg-cell *ngIf="!canModify(cloudClient)">
                     <button (click)="onView(cloudClient)" class="btn btn-sm">Details</button>

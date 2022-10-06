@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
 import {ApolloQueryResult} from '@apollo/client';
-import {CloudLimit} from 'app/core/graphql/types';
+import {DetailedCloudLimit, CloudLimit} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
@@ -17,7 +17,7 @@ export class CloudLimitBoxComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
-    private _data: CloudLimit;
+    private _detailedCloudLimits: DetailedCloudLimit[];
 
     private _loading = true;
 
@@ -46,12 +46,8 @@ export class CloudLimitBoxComponent implements OnInit, OnDestroy {
         this._loading = value;
     }
 
-    get data(): CloudLimit {
-        return this._data;
-    }
-
-    set data(value: CloudLimit) {
-        this._data = value;
+    get detailedCloudLimits(): DetailedCloudLimit[] {
+        return this._detailedCloudLimits;
     }
 
     constructor(private apollo: Apollo, private notifierService: NotifierService) {
@@ -69,7 +65,12 @@ export class CloudLimitBoxComponent implements OnInit, OnDestroy {
                 if (errors) {
                     this.notifierService.notify('error', `There was an error fetching the cloud limits`);
                 }
-                this.data = data.cloudLimits;
+                this._detailedCloudLimits = data.cloudLimits;
+                this._detailedCloudLimits.forEach(detailedCloudLimit => {
+                    if (detailedCloudLimit.error) {
+                        console.error(`Failed to get CloudLimit for cloud provider ${detailedCloudLimit.cloudClient.name}: ${detailedCloudLimit.error}`);
+                    }
+                })
                 this.loading = loading;
             });
     }
@@ -85,12 +86,19 @@ export class CloudLimitBoxComponent implements OnInit, OnDestroy {
                 query: gql`
               {
                 cloudLimits {
-                    maxTotalRAMSize
-                    totalRAMUsed
-                    maxTotalInstances
-                    totalInstancesUsed
-                    maxTotalCores
-                    totalCoresUsed
+                    cloudClient {
+                        id
+                        name
+                    }
+                    cloudLimit {
+                        maxTotalRAMSize
+                        totalRAMUsed
+                        maxTotalInstances
+                        totalInstancesUsed
+                        maxTotalCores
+                        totalCoresUsed
+                    }
+                    error
                   }
               }
             `,

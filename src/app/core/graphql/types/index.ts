@@ -82,6 +82,13 @@ export type CloudLimit = {
     totalCoresUsed: Scalars['Int'];
 };
 
+export type DetailedCloudLimit = {
+    __typename?: 'DetailedCloudLimit';
+    cloudClient: CloudClient;
+    cloudLimit?: Maybe<CloudLimit>;
+    error?: Scalars['String'];
+};
+
 export type CreateRoleInput = {
     name: Scalars['String'];
     description?: Maybe<Scalars['String']>;
@@ -650,7 +657,15 @@ export type NumberInstancesByFlavour = {
 };
 
 export type NumberInstancesByImage = {
-    __typename?: 'NumberInstancesByFlavour';
+    __typename?: 'NumberInstancesByImage';
+    id: Scalars['Int'];
+    version: Scalars['String'];
+    name: Scalars['String'];
+    total: Scalars['Int'];
+};
+
+export type NumberInstancesByCloudClient = {
+    __typename?: 'NumberInstancesByCloudClient';
     id: Scalars['Int'];
     name: Scalars['String'];
     total: Scalars['Int'];

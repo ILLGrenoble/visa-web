@@ -6,7 +6,7 @@ import {Apollo} from 'apollo-angular';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
-import {CloudClient, CloudClientInput} from '../../../core/graphql';
+import {CloudClient, CloudClientInput, NumberInstancesByCloudClient} from '../../../core/graphql';
 import {CloudClientEditComponent} from '../cloud-client-edit';
 import {CloudClientDeleteComponent} from '../cloud-client-delete';
 
@@ -20,6 +20,7 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<void> = new Subject();
     private _cloudClients: CloudClient[] = [];
+    private _instanceCounts: NumberInstancesByCloudClient[] = [];
     private _loading: boolean;
 
     constructor(private readonly _apollo: Apollo,
@@ -75,14 +76,20 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                                     authToken
                                 }
                             }
+                            countInstancesByCloudClients {
+                                id
+                                name
+                                total
+                            }
                         }
                     `
                 })),
-                map(({data}) => ({cloudClients: data.cloudClients})),
+                map(({data}) => ({cloudClients: data.cloudClients, instanceCounts: data.countInstancesByCloudClients})),
                 tap(() => this._loading = false)
             )
-            .subscribe(({cloudClients}) => {
+            .subscribe(({cloudClients, instanceCounts}) => {
                 this._cloudClients = cloudClients;
+                this._instanceCounts = instanceCounts;
             });
     }
 
@@ -146,6 +153,8 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                 lastValueFrom(source$).then(_ => {
                     this._notifierService.notify('success', 'Successfully deleted cloud provider');
                     this._refresh$.next();
+                }).catch((error) => {
+                    this._notifierService.notify('error', error);
                 });
             }
         });
@@ -185,6 +194,11 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
             width: '900px',
             data: {cloudClient, clone: false, readonly: true}
         });
+    }
+
+    public instanceCount(cloudClient: CloudClient): number {
+        const counter = this._instanceCounts.find(instanceCount => instanceCount.id === cloudClient.id);
+        return counter ? counter.total : 0;
     }
 
 }

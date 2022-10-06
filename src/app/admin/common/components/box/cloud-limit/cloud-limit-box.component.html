@@ -4,18 +4,30 @@
             Cloud Limits
         </h3>
     </div>
-    <div class="admin-box-body">
-        <ul class="admin-box-pills" *ngIf="data && !loading">
-            <li >
-                <label>Instances <span class="pull-right">Used <b>{{data.totalInstancesUsed}}</b> of <b>{{ data.maxTotalInstances}}</b></span></label>
-            </li>
-            <li>
-                <label>VCPUs <span class="pull-right">Used <b>{{data.totalCoresUsed}}</b> of <b>{{ data.maxTotalCores}}</b></span></label>
-            </li>
-            <li>
-                <label>Memory Used <span class="pull-right"><b>{{ data.totalRAMUsed * 1024  * 1024 | fileSize}}</b> of <b>{{ data.maxTotalRAMSize * 1024  * 1024 | fileSize }}</b></span></label>
-            </li>
-        </ul>
+    <div class="admin-box-body" *ngIf="detailedCloudLimits && !loading">
+        <div *ngFor="let detailedCloudLimit of detailedCloudLimits">
+            <div *ngIf="detailedCloudLimits.length > 1" class="admin-box-subheader">
+                <h3 class="admin-box-subtitle">
+                    {{detailedCloudLimit.cloudClient.name}}
+                </h3>
+            </div>
+            <ul class="admin-box-pills" *ngIf="detailedCloudLimit.error == null">
+                <li >
+                    <label>Instances <span class="pull-right">Used <b>{{detailedCloudLimit.cloudLimit.totalInstancesUsed}}</b> of <b>{{ detailedCloudLimit.cloudLimit.maxTotalInstances}}</b></span></label>
+                </li>
+                <li>
+                    <label>VCPUs <span class="pull-right">Used <b>{{detailedCloudLimit.cloudLimit.totalCoresUsed}}</b> of <b>{{ detailedCloudLimit.cloudLimit.maxTotalCores}}</b></span></label>
+                </li>
+                <li>
+                    <label>Memory Used <span class="pull-right"><b>{{ detailedCloudLimit.cloudLimit.totalRAMUsed * 1024  * 1024 | fileSize}}</b> of <b>{{ detailedCloudLimit.cloudLimit.maxTotalRAMSize * 1024  * 1024 | fileSize }}</b></span></label>
+                </li>
+            </ul>
+            <ul class="admin-box-pills" *ngIf="detailedCloudLimit.error">
+                <li>
+                    <label class="error">Failed to get Cloud Limit details</label>
+                </li>
+            </ul>
+        </div>
         <div class="admin-box-blankslate" *ngIf="loading">
             <div class="title">
                 <h3>Loading cloud limits....</h3>

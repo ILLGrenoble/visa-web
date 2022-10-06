@@ -750,6 +750,25 @@ $candy-app-theme: mat-light-theme(
             font-weight: normal;
         }
 
+        .admin-box-subheader {
+            color: #444;
+            background-color: #fafafa;
+            display: flex;
+            padding: 10px;
+            position: relative;
+            border-bottom: 1px solid #f4f4f4;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-box-subtitle {
+            display: inline-block;
+            margin: 0;
+            line-height: 0.8;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
         .admin-box-table {
             width: 100%;
             max-width: 100%;
@@ -800,10 +819,15 @@ $candy-app-theme: mat-light-theme(
                     position: relative;
                     display: block;
                     padding: 10px 10px;
+
+                    &.error {
+                        color: #f54f47;
+                    }
                 }
 
                 border-bottom: 1px solid #f4f4f4;
                 margin: 0;
+
             }
         }
     }
