@@ -92,6 +92,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                     user: params.getString('user', null),
                 },
                 columns: {
+                    cloudClient: columns.includes('cloudClient'),
                     image: columns.includes('image'),
                     flavour: columns.includes('flavour'),
                     terminationDate: columns.includes('terminationDate'),

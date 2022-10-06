@@ -11,6 +11,7 @@ export interface InstancesFilterState {
     columns: {
         image: boolean;
         flavour: boolean;
+        cloudClient: boolean;
         terminationDate: boolean;
     };
     page: number;

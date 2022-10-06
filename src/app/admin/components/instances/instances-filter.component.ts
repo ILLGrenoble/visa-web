@@ -112,6 +112,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     public onResetColumns(): void {
         this.state.columns = {
+            cloudClient: false,
             image: false,
             flavour: false,
             terminationDate: false,

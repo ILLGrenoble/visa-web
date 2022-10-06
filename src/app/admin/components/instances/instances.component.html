@@ -32,11 +32,6 @@
                                     Affiliation
                                 </ng-container>
                             </clr-dg-column>
-                            <clr-dg-column>
-                                <ng-container>
-                                    Cloud
-                                </ng-container>
-                            </clr-dg-column>
                             <clr-dg-column [clrDgSortBy]="'state'" [clrDgSortOrder]="isColumnSorted('state')">
                                 <ng-container>
                                     State
@@ -51,6 +46,11 @@
                                 <ng-container>
                                     Created
                                 </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-template clrDgHideableColumn [clrDgHidden]="!currentState.columns.cloudClient">
+                                    Cloud
+                                </ng-template>
                             </clr-dg-column>
                             <clr-dg-column>
                                 <ng-template clrDgHideableColumn [clrDgHidden]="!currentState.columns.image">
@@ -74,7 +74,6 @@
                                 <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.fullName }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation' }}</clr-dg-cell>
-                                <clr-dg-cell>{{ instance.cloudClient.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.state }}</clr-dg-cell>
                                 <clr-dg-cell>
                                     <span *ngIf="instance.activeSessions.length == 0">
@@ -92,6 +91,7 @@
 
                                 </clr-dg-cell>
                                 <clr-dg-cell>{{ instance.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
+                                <clr-dg-cell>{{ instance.cloudClient.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ formatImageName(instance.plan.image) }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.plan.flavour.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
