@@ -9,7 +9,7 @@
             </clr-input-container>
 
             <clr-select-container>
-                <label for="cloud">Cloud</label>
+                <label for="cloud">Cloud Provider</label>
                 <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
                     <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
                 </select>

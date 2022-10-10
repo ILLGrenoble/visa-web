@@ -28,12 +28,17 @@
                 <clr-control-helper *ngIf="!readonly">Please enter a prefix that will be applied to all instance names in the provider</clr-control-helper>
             </clr-input-container>
 
-            <clr-input-container>
+            <clr-input-container *ngIf="!readonly">
                 <label for="visible">Visible</label>
                 <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible" [readOnly]="readonly" />
                 <clr-control-helper *ngIf="!readonly">
                     A provider that is not set to visible can only used by administrators (images and flavours can not be used by standard users). This is useful for testing a provider before making it public.
                 </clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container *ngIf="readonly">
+                <label for="visible_ro">Visible</label>
+                <input clrInput id="visible_ro" formControlName="visible" class="form-control" size="40" [readOnly]="readonly"  />
             </clr-input-container>
         </form>
 

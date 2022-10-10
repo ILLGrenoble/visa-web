@@ -6,7 +6,7 @@
 
         <clr-select-container style="margin-bottom: 16px; margin-top: 8px;">
             <select clrSelect id="cloud" [(ngModel)]="selectedCloudClient" (change)="onCloudChange()">
-                <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud' : ''}}</option>
+                <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud provider' : ''}}</option>
             </select>
             <clr-control-helper>Please select the cloud provider</clr-control-helper>
         </clr-select-container>
