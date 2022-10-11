@@ -20,6 +20,7 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
     private _cloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
 
     private _loading: boolean;
+    private _multiCloudEnabled: boolean;
     private _securityGroupFilters: SecurityGroupFilter[] = [];
     private _filteredSecurityGroupFilters: SecurityGroupFilter[] = [];
     private _apollo: Apollo;
@@ -59,6 +60,11 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
     @Input('cloudClient')
     set cloudClient(cloudClient: CloudClient) {
         this._cloudClient$.next(cloudClient);
+    }
+
+    @Input('multiCloudEnabled')
+    set multiCloudEnabled(multiCloudEnabled: boolean) {
+        this._multiCloudEnabled = multiCloudEnabled;
     }
 
     constructor(apollo: Apollo,
@@ -126,7 +132,9 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
         const dialogRef = this._dialog.open(SecurityGroupFilterNewComponent, {
             width: '600px',
             data: {
-                objectType, cloudClient: this._cloudClient$.getValue()
+                objectType,
+                cloudClient: this._cloudClient$.getValue(),
+                multiCloudEnabled: this._multiCloudEnabled,
             }
         });
         dialogRef.afterClosed().subscribe(result => {

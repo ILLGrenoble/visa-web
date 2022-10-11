@@ -21,6 +21,8 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
 
     private _loading = true;
 
+    private _multiCloudEnabled: boolean;
+
     public get destroy$(): Subject<boolean> {
         return this._destroy$;
     }
@@ -54,6 +56,10 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
         this._loading = value;
     }
 
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
+    }
+
     constructor(private apollo: Apollo, private notifierService: NotifierService) {
     }
 
@@ -68,6 +74,7 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                     this.notifierService.notify('error', `There was an error fetching the latest instances`);
                 } else {
                     this.data = data.recentInstances.data;
+                    this._multiCloudEnabled = data.cloudClients.length > 1;
                 }
                 this.loading = loading;
             });
@@ -113,6 +120,9 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                         name
                       }
                     }
+                  }
+                  cloudClients {
+                    id
                   }
                 }
             `,

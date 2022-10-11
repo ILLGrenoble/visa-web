@@ -21,6 +21,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
     private _objectIdentifiers: { id: number, name: string }[];
     private readonly _objectType: string;
     private readonly _cloudClient: CloudClient;
+    private readonly _multiCloudEnabled: boolean;
 
     get form(): FormGroup {
         return this._form;
@@ -50,11 +51,17 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         return this._cloudClient;
     }
 
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
+    }
+
     constructor(private readonly _dialogRef: MatDialogRef<SecurityGroupFilterNewComponent>,
-                private readonly _apollo: Apollo, @Inject(MAT_DIALOG_DATA) {objectType, cloudClient},
+                private readonly _apollo: Apollo,
+                @Inject(MAT_DIALOG_DATA) {objectType, cloudClient, multiCloudEnabled},
                 private readonly _notifierService: NotifierService) {
         this._objectType = objectType;
         this._cloudClient = cloudClient;
+        this._multiCloudEnabled = multiCloudEnabled;
 
         this._dialogRef.keydownEvents().subscribe(event => {
             if (event.key === 'Escape') {

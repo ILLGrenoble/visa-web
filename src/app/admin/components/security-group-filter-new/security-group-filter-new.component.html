@@ -18,7 +18,7 @@
         </div>
         <form clrForm [formGroup]="form" clrLayout="horizontal">
 
-            <clr-input-container>
+            <clr-input-container *ngIf="multiCloudEnabled">
                 <label for="cloudClient">Cloud Provider</label>
                 <input clrInput readonly id="cloudClient" class="form-control" [value]="cloudClient.name + ' cloud provider'" style="width: 400px;">
             </clr-input-container>

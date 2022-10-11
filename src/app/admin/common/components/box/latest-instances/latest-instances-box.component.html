@@ -11,7 +11,7 @@
                 <th>Instance</th>
                 <th>Owner</th>
                 <th>Affiliation</th>
-                <th>Cloud Provider</th>
+                <th *ngIf="multiCloudEnabled">Cloud Provider</th>
                 <th>IP</th>
                 <th>State</th>
                 <th>Created</th>
@@ -24,7 +24,7 @@
                 <td><a [routerLink]="['/admin/compute/instances',instance.id]">{{ instance.name}}</a></td>
                 <td>{{ instance.owner?.fullName }}</td>
                 <td>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation'}}</td>
-                <td>{{ instance.cloudClient.name}}</td>
+                <td *ngIf="multiCloudEnabled">{{ instance.cloudClient.name}}</td>
                 <td>{{ instance.cloudInstance?.address || 'No IP address'}}</td>
                 <td [ngClass]="{'text-danger': instance.state ==='ERROR'}">{{ instance.state | titlecase  }}</td>
                 <td>

@@ -20,6 +20,7 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
     private _securityGroups: CloudSecurityGroup[];
     private _currentSecurityGroups: SecurityGroup[];
     private readonly _cloudClient: CloudClient;
+    private readonly _multiCloudEnabled: boolean;
 
     get form(): FormGroup {
         return this._form;
@@ -41,11 +42,17 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         return this._cloudClient;
     }
 
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
+    }
+
     constructor(private readonly _dialogRef: MatDialogRef<SecurityGroupImportComponent>,
-                private readonly _apollo: Apollo, @Inject(MAT_DIALOG_DATA) {cloudClient, currentSecurityGroups},
+                private readonly _apollo: Apollo,
+                @Inject(MAT_DIALOG_DATA) {cloudClient, currentSecurityGroups, multiCloudEnabled},
                 private readonly _notifierService: NotifierService) {
         this._cloudClient = cloudClient;
         this._currentSecurityGroups = currentSecurityGroups;
+        this._multiCloudEnabled = multiCloudEnabled;
 
         this._dialogRef.keydownEvents().subscribe(event => {
             if (event.key === 'Escape') {

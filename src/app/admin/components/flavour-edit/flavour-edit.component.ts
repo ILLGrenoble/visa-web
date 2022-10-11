@@ -20,6 +20,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<FlavourInput> = new Subject<FlavourInput>();
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _dialogRef: MatDialogRef<FlavourEditComponent>,
                 private readonly _apollo: Apollo,
@@ -90,6 +91,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
     get title(): string {
         return this._title;
+    }
+
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
     }
 
     public compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
@@ -179,6 +184,8 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             takeUntil(this._destroy$)
         ).subscribe(({flavourLimits, cloudClients}) => {
             this._cloudClients = cloudClients;
+            this._multiCloudEnabled = cloudClients.length > 1;
+
             if (this._form.value.cloudClient == null) {
                 this.form.controls.cloudClient.reset(this._cloudClients[0]);
                 this._loadCloudFlavours(this._cloudClients[0].id);

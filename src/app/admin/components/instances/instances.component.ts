@@ -27,6 +27,8 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     private _state$ = new Subject<InstancesFilterState>();
 
+    private _multiCloudEnabled = false;
+
     public get destroy$(): Subject<boolean> {
         return this._destroy$;
     }
@@ -57,6 +59,10 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     public set loading(value) {
         this._loading = value;
+    }
+
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
     }
 
     constructor(
@@ -176,6 +182,9 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                }
                             }
                         }
+                        cloudClients {
+                          id
+                        }
                     }
                   `,
             variables: {
@@ -191,11 +200,12 @@ export class InstancesComponent implements OnInit, OnDestroy {
         })
             .pipe(
                 takeUntil(this.destroy$),
-                map(({data}) => data.instances),
+                map(({data}) => ({instances: data.instances, cloudClients: data.cloudClients})),
                 tap(() => this.loading = false),
             )
-            .subscribe((data) => {
-                this.instances = data;
+            .subscribe(({instances, cloudClients}) => {
+                this.instances = instances;
+                this._multiCloudEnabled = cloudClients.length > 1;
                 this.updateUrl();
             });
     }

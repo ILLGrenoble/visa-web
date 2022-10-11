@@ -48,7 +48,7 @@
                                 </ng-container>
                             </clr-dg-column>
                             <clr-dg-column>
-                                <ng-template clrDgHideableColumn [clrDgHidden]="!currentState.columns.cloudClient">
+                                <ng-template clrDgHideableColumn [clrDgHidden]="!currentState.columns.cloudClient || !multiCloudEnabled">
                                     Cloud Provider
                                 </ng-template>
                             </clr-dg-column>

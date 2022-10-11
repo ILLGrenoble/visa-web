@@ -21,6 +21,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<ImageInput> = new Subject<ImageInput>();
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _dialogRef: MatDialogRef<ImageEditComponent>,
                 private readonly _apollo: Apollo,
@@ -93,6 +94,10 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return this._title;
     }
 
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
+    }
+
     public compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
         if (cloudClient1 == null || cloudClient2 == null) {
             return false;
@@ -161,6 +166,8 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         ).subscribe(({protocols, cloudClients}) => {
             this._protocols = protocols;
             this._cloudClients = cloudClients;
+            this._multiCloudEnabled = cloudClients.length > 1;
+
             if (this._form.value.cloudClient == null) {
                 this.form.controls.cloudClient.reset(this._cloudClients[0]);
                 this._loadCloudImages(this._cloudClients[0].id);

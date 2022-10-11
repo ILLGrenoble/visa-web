@@ -6,7 +6,7 @@
             <clr-select-container>
                 <label for="image">Image</label>
                 <select clrSelect id="image" formControlName="image" [compareWith]="compareImage" (change)="onImageChange()">
-                    <option *ngFor="let image of images" [ngValue]="image">{{image ? image.name + ' (version ' + image.version + ', ' + image.cloudClient.name + ' cloud)' : ''}}</option>
+                    <option *ngFor="let image of images" [ngValue]="image">{{imageName(image)}}</option>
                 </select>
                 <clr-control-helper>Please select an image</clr-control-helper>
             </clr-select-container>

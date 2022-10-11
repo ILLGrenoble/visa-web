@@ -21,6 +21,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _refresh$: Subject<void> = new Subject();
     private _images: Image[] = [];
     private _loading: boolean;
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
@@ -46,6 +47,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
     public onRefresh(): void {
         this._refresh$.next();
+    }
+
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
     }
 
     public ngOnInit(): void {
@@ -83,14 +88,18 @@ export class ImagesComponent implements OnInit, OnDestroy {
                                     name
                                 }
                             }
+                            cloudClients {
+                                id
+                            }
                         }
                     `
                 })),
-                map(({data}) => ({images: data.images})),
+                map(({data}) => ({images: data.images, cloudClients: data.cloudClients})),
                 tap(() => this._loading = false)
             )
-            .subscribe(({images}) => {
+            .subscribe(({images, cloudClients}) => {
                 this._images = images;
+                this._multiCloudEnabled = cloudClients.length > 1;
             });
     }
 

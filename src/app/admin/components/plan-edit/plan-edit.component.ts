@@ -20,6 +20,7 @@ export class PlanEditComponent implements OnInit {
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<PlanInput> = new Subject<PlanInput>();
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _dialogRef: MatDialogRef<PlanEditComponent>,
                 private readonly _apollo: Apollo,
@@ -128,21 +129,36 @@ export class PlanEditComponent implements OnInit {
                             name
                         }
                     }
+                    cloudClients {
+                        id
+                        name
+                    }
                 }
             `
         }).pipe(
             map(({data}) => ({
                     images: data.images,
                     flavours: data.flavours,
+                    cloudClients: data.cloudClients,
                 })
             ),
             takeUntil(this._destroy$)
-        ).subscribe(({images, flavours}) => {
+        ).subscribe(({images, flavours, cloudClients}) => {
+            this._multiCloudEnabled = cloudClients.length > 1;
             this._images = images;
             flavours.unshift(null);
             this._flavours = flavours;
             this.onImageChange();
         });
+    }
+
+    public imageName(image: Image): string {
+        if (this._multiCloudEnabled) {
+            return image ? image.name + ' (version ' + image.version + ', ' + image.cloudClient.name + ' cloud provider)' : '';
+
+        } else {
+            return image ? image.name + ' (version ' + image.version + ')' : '';
+        }
     }
 
     public onImageChange(): void {

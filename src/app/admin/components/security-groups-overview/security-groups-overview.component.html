@@ -4,7 +4,7 @@
 <div class="admin-container">
     <div class="admin-container--main">
 
-        <clr-select-container style="margin-bottom: 16px; margin-top: 8px;">
+        <clr-select-container *ngIf="multiCloudEnabled" style="margin-bottom: 16px; margin-top: 8px;">
             <select clrSelect id="cloud" [(ngModel)]="selectedCloudClient" (change)="onCloudChange()">
                 <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud provider' : ''}}</option>
             </select>
@@ -14,12 +14,12 @@
         <div class="clr-row">
             <div class="clr-col-4">
                 <div class="filters-box">
-                    <visa-admin-security-groups [cloudClient]="selectedCloudClient" (onRefresh)="handleSecurityGroupRefresh($event)"></visa-admin-security-groups>
+                    <visa-admin-security-groups [cloudClient]="selectedCloudClient" [multiCloudEnabled]="multiCloudEnabled" (onRefresh)="handleSecurityGroupRefresh($event)"></visa-admin-security-groups>
                 </div>
             </div>
             <div class="clr-col-8">
                 <div class="filters-box">
-                    <visa-admin-security-group-filters [cloudClient]="selectedCloudClient" [refresh]="refreshSecurityGroupLimits$" ></visa-admin-security-group-filters>
+                    <visa-admin-security-group-filters [cloudClient]="selectedCloudClient" [multiCloudEnabled]="multiCloudEnabled" [refresh]="refreshSecurityGroupLimits$" ></visa-admin-security-group-filters>
                 </div>
             </div>
         </div>

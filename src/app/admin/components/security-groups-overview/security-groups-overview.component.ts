@@ -19,6 +19,7 @@ export class SecurityGroupsOverviewComponent implements OnInit, OnDestroy {
     private _refreshSecurityGroupLimits$: Subject<void> = new Subject();
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _selectedCloudClient: CloudClient;
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _apollo: Apollo) {
     }
@@ -40,6 +41,10 @@ export class SecurityGroupsOverviewComponent implements OnInit, OnDestroy {
         return this._cloudClients;
     }
 
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
+    }
+
     public ngOnInit(): void {
         this._apollo.query<any>({
             query: gql`
@@ -59,6 +64,7 @@ export class SecurityGroupsOverviewComponent implements OnInit, OnDestroy {
         ).subscribe(({cloudClients}) => {
             this._cloudClients = cloudClients;
             this._selectedCloudClient = this._cloudClients[0];
+            this._multiCloudEnabled = cloudClients.length > 1;
         });
     }
 

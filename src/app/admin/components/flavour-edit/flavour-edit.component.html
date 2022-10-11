@@ -8,7 +8,7 @@
                 <clr-control-error>Please enter a name</clr-control-error>
             </clr-input-container>
 
-            <clr-select-container>
+            <clr-select-container *ngIf="multiCloudEnabled">
                 <label for="cloud">Cloud Provider</label>
                 <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
                     <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>

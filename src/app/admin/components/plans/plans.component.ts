@@ -20,6 +20,7 @@ export class PlansComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<void> = new Subject();
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
@@ -37,6 +38,10 @@ export class PlansComponent implements OnInit, OnDestroy {
 
     public onRefresh(): void {
         this._refresh$.next();
+    }
+
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
     }
 
     public ngOnInit(): void {
@@ -75,16 +80,21 @@ export class PlansComponent implements OnInit, OnDestroy {
                                 }
                                 preset
                             }
+                            cloudClients {
+                                id
+                            }
                         }
                     `
                 })),
                 map(({data}) => ({
                     plans: data.plans,
+                    cloudClients: data.cloudClients,
                 })),
                 tap(() => this._loading = false)
             )
-            .subscribe(({plans}) => {
+            .subscribe(({plans, cloudClients}) => {
                 this._plans = plans;
+                this._multiCloudEnabled = cloudClients.length > 1;
             });
 
     }
@@ -97,7 +107,7 @@ export class PlansComponent implements OnInit, OnDestroy {
     public onCreate(plan?: Plan): void {
         const dialogRef = this._dialog.open(PlanEditComponent, {
             width: '800px',
-            data: { plan, clone: !!plan },
+            data: { plan, clone: !!plan, multiCloudEnabled: this._multiCloudEnabled },
         });
         dialogRef.componentInstance.onSave$.subscribe((input: PlanInput) => {
             const source$ = this._apollo.mutate<any>({
@@ -143,7 +153,7 @@ export class PlansComponent implements OnInit, OnDestroy {
 
     public onUpdate(plan: Plan): void {
         const dialogRef = this._dialog.open(PlanEditComponent, {
-            width: '800px', data: { plan },
+            width: '800px', data: { plan, multiCloudEnabled: this._multiCloudEnabled },
         });
 
         dialogRef.componentInstance.onSave$.subscribe((input: PlanInput) => {

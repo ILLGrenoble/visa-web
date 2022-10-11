@@ -6,7 +6,11 @@
 
         <clr-datagrid id="datagrid" [clrDgLoading]="loading">
             <clr-dg-column>Plan ID</clr-dg-column>
-            <clr-dg-column>Cloud Provider</clr-dg-column>
+            <clr-dg-column>
+                <ng-template clrDgHideableColumn [clrDgHidden]="!multiCloudEnabled">
+                    Cloud Provider
+                </ng-template>
+            </clr-dg-column>
             <clr-dg-column>Image</clr-dg-column>
             <clr-dg-column>Version</clr-dg-column>
             <clr-dg-column>Flavour</clr-dg-column>
@@ -28,6 +32,8 @@
                 </clr-dg-cell>
             </clr-dg-row>
             <clr-dg-footer>
+                <clr-dg-column-toggle [hidden]="true">
+                </clr-dg-column-toggle>
                 <button class="btn btn-sm" type="button" (click)="onCreate()">New</button>
                 <button class="btn btn-sm" type="button" (click)="onRefresh()">
                     <clr-icon shape="refresh"></clr-icon>

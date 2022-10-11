@@ -29,6 +29,8 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private _loading = true;
 
+    private _multiCloudEnabled = false;
+
     public get destroy$(): Subject<boolean> {
         return this._destroy$;
     }
@@ -77,6 +79,10 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     public set loading(value: boolean) {
         this._loading = value;
+    }
+
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
     }
 
     constructor(private apollo: Apollo, private accountService: AccountService, private notifierService: NotifierService) {
@@ -154,10 +160,15 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                         id
                         name
                     }
+                    cloudClients {
+                        id
+                        name
+                    }
                 }
             `,
         }).pipe(takeUntil(this.destroy$)).subscribe((result) => {
             this.data = result.data;
+            this._multiCloudEnabled = result.data.cloudClients.length > 1;
             this.loading = result.loading;
             if (result.errors) {
                 this.notifierService.notify('error', 'There was an error loading the filters');

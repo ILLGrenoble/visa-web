@@ -22,6 +22,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     private _flavours: Flavour[] = [];
     private _instruments: Instrument[];
     private _loading: boolean;
+    private _multiCloudEnabled = false;
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
@@ -39,6 +40,10 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     public onRefresh(): void {
         this._refresh$.next();
+    }
+
+    get multiCloudEnabled(): boolean {
+        return this._multiCloudEnabled;
     }
 
     public ngOnInit(): void {
@@ -73,18 +78,23 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 id
                                 name
                             }
+                            cloudClients {
+                                id
+                            }
                         }
                     `
                 })),
                 map(({data}) => ({
                     flavours: data.flavours,
-                    instruments: data.instruments
+                    instruments: data.instruments,
+                    cloudClients: data.cloudClients,
                 })),
                 tap(() => this._loading = false)
             )
-            .subscribe(({flavours, instruments}) => {
+            .subscribe(({flavours, instruments, cloudClients}) => {
                 this._flavours = flavours;
                 this._instruments = instruments;
+                this._multiCloudEnabled = cloudClients.length > 1;
             });
     }
 

@@ -6,7 +6,7 @@
         <button class="filters-box-clear" type="button" (click)="onResetColumns()">Reset to default</button>
     </div>
     <div class="filters-box-body">
-        <clr-checkbox-wrapper>
+        <clr-checkbox-wrapper *ngIf="multiCloudEnabled">
             <input type="checkbox" clrCheckbox (change)="onColumn('cloudClient')" [checked]="state.columns.cloudClient"/>
             <label>Cloud Provider</label>
         </clr-checkbox-wrapper>
