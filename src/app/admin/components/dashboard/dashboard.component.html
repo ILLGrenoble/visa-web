@@ -30,6 +30,9 @@
                     <div class="clr-col clr-col-pr0">
                         <visa-admin-flavour-distribution-box [refresh]="refreshEvent$"></visa-admin-flavour-distribution-box>
                     </div>
+                    <div class="clr-col clr-col-pr0" *ngIf="multiCloudEnabled">
+                        <visa-admin-cloud-client-distribution-box [refresh]="refreshEvent$"></visa-admin-cloud-client-distribution-box>
+                    </div>
                 </div>
 
             </div>

@@ -1,0 +1,20 @@
+<div class="admin-box admin-box-primary">
+    <div class="admin-box-header">
+        <h3 class="admin-box-title">
+            Cloud provider distribution
+        </h3>
+    </div>
+    <div class="admin-box-body">
+        <highcharts-chart [options]="options"
+                          [Highcharts]="highcharts"
+                          class="admin-box-chart"
+                          *ngIf="!loading">
+
+        </highcharts-chart>
+        <div class="admin-box-blankslate" *ngIf="loading">
+            <div class="title">
+                <h3>Loading cloud provider distribution....</h3>
+            </div>
+        </div>
+    </div>
+</div>

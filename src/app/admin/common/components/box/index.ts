@@ -5,4 +5,5 @@ export * from './latest-sessions';
 export * from './latest-jupyter-sessions';
 export * from './image-distribution';
 export * from './flavour-distribution';
+export * from './cloud-client-distribution';
 export * from './latest-active-users';

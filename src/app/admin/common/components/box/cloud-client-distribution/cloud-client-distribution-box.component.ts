@@ -8,10 +8,10 @@ import {Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
-    selector: 'visa-admin-flavour-distribution-box',
-    templateUrl: './flavour-distribution-box.component.html',
+    selector: 'visa-admin-cloud-client-distribution-box',
+    templateUrl: './cloud-client-distribution-box.component.html',
 })
-export class FlavourDistributionBoxComponent implements OnInit, OnDestroy {
+export class CloudClientDistributionBoxComponent implements OnInit, OnDestroy {
 
     private _highcharts: typeof Highcharts = Highcharts;
 
@@ -107,13 +107,13 @@ export class FlavourDistributionBoxComponent implements OnInit, OnDestroy {
             )
             .subscribe(({data, loading, errors}) => {
                 if (errors) {
-                    this.notifierService.notify('error', `There was an error fetching the flavour distribution statistics`);
+                    this.notifierService.notify('error', `There was an error fetching the image distribution statistics`);
                 }
                 const series = [{
                     name: 'Instances',
                     colorByPoint: true,
-                    data: data.countInstancesByFlavours.map((flavour) => {
-                        return {name: flavour.name, y: flavour.total};
+                    data: data.countInstancesByCloudClients.map((cloudClient) => {
+                        return {name: cloudClient.name, y: cloudClient.total};
                     }),
                 }];
                 this.options = {
@@ -161,7 +161,7 @@ export class FlavourDistributionBoxComponent implements OnInit, OnDestroy {
         return this.apollo.query<any>({
                 query: gql`
                 {
-                    countInstancesByFlavours {
+                    countInstancesByCloudClients {
                         id
                         name
                         total

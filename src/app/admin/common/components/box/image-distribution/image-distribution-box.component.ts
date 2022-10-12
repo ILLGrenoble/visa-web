@@ -141,7 +141,7 @@ export class ImageDistributionBoxComponent implements OnInit, OnDestroy {
                 text: '',
             },
             tooltip: {
-                pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>',
+                pointFormat: '{point.name}: <b>{point.y} instances ({point.percentage:.1f}%)</b>',
             },
             plotOptions: {
                 pie: {
