@@ -305,6 +305,9 @@ export class CardComponent implements OnInit, OnDestroy {
             if (this._instance.membership.role === 'OWNER') {
                 this.canConnect = true;
 
+            } else if (this._instance.canConnectWhileOwnerAway) {
+                this.canConnect = true;
+
             } else {
                 this.accountService.getSessionMembersForInstance(this._instance).subscribe((sessionMembers) => {
                     this.canConnect = sessionMembers.length > 0;
