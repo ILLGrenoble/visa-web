@@ -1,0 +1,20 @@
+.full-access-warning {
+    //border: 1px solid #888;
+    padding: 0 20px 6px 10px;
+    margin: 12px 0;
+    background-color: #f0ad4e;
+    display: flex;
+    align-items: center;
+    color: white;
+
+    p {
+        font-size: 0.7rem;
+        margin-top: 0.3rem;
+        color: white;
+    }
+}
+
+.full-access-warning-label {
+    color: #f5550d;
+    font-size: 0.7rem;
+}

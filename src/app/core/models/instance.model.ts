@@ -69,6 +69,9 @@ export class Instance {
     @JsonProperty('canConnectWhileOwnerAway', Boolean, true)
     private _canConnectWhileOwnerAway: boolean = undefined;
 
+    @JsonProperty('unrestrictedAccess', Boolean, true)
+    private _unrestrictedAccess: boolean = undefined;
+
     @JsonProperty('keyboardLayout', String)
     private _keyboardLayout: string = undefined;
 
@@ -210,6 +213,14 @@ export class Instance {
 
     set canConnectWhileOwnerAway(value: boolean) {
         this._canConnectWhileOwnerAway = value;
+    }
+
+    get unrestrictedAccess(): boolean {
+        return this._unrestrictedAccess;
+    }
+
+    set unrestrictedAccess(value: boolean) {
+        this._unrestrictedAccess = value;
     }
 
     public addExperiment(experiment: Experiment): void {

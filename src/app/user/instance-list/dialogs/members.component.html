@@ -10,8 +10,16 @@
                 <clr-icon class="alert-icon" shape="exclamation-triangle" class="is-solid" style="width: 64px; height: 64px;"></clr-icon>
             </div>
             <div>
-                <p>Giving someone "Full control" gives them access to your Unix account while they are connected to your instance. <b>This means that they have access to your private and scientific data.</b></p>
-                <p>"Full control" is only active for other members while you are also connected but you must take responsibility of your desktop instance and be present at all times while you have an active session.</p>
+                <div>
+                    <p>Giving someone "Full control" gives them access to your Unix account while they are connected to your instance. <b>This means that they have access to your private and scientific data.</b></p>
+                    <p>By default, "Full control" is only active for other members while you are also connected. The button below allows you to enable unrestricted access to your instance, even when you aren't connected.</p>
+                </div>
+                <div class="full-access-unrestricted">
+                    <clr-toggle-wrapper>
+                        <input type="checkbox" clrToggle [(ngModel)]="instance.unrestrictedAccess" name="unrestrictedAccess" (change)="onUnrestrictedAccessChanged()"/>
+                        <label>Allow unrestricted access to other members</label>
+                    </clr-toggle-wrapper>
+                </div>
             </div>
         </div>
         <div class="search-member-toolbar" *ngIf="($users | async)?.length > 0">

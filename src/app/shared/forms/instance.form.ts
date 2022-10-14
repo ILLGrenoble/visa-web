@@ -12,6 +12,7 @@ export class InstanceForm extends FormGroup {
         this.addControl('comments', this.createCommentsControl());
         this.addControl('screenResolution', this.createScreenResolutionControl());
         this.addControl('keyboardLayout', this.createKeyboardLayoutControl());
+        this.addControl('unrestrictedAccess', this.createUnrestrictedAccessControl());
     }
 
     private createScreenResolutionControl(): FormControl {
@@ -37,5 +38,9 @@ export class InstanceForm extends FormGroup {
 
     private createKeyboardLayoutControl(): FormControl {
         return new FormControl(null, Validators.required);
+    }
+
+    private createUnrestrictedAccessControl(): FormControl {
+        return new FormControl(false, Validators.required);
     }
 }

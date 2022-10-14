@@ -6,6 +6,7 @@ import {InstanceForm} from '@shared';
 @Component({
     selector: 'visa-instance-list-details-dialog',
     templateUrl: 'details.component.html',
+    styleUrls: ['./details.component.scss']
 })
 // tslint:disable-next-line:component-class-suffix
 export class DetailsDialog implements OnInit {
@@ -23,6 +24,8 @@ export class DetailsDialog implements OnInit {
     private _comments: string;
 
     private _keyboardLayout: string;
+
+    private _unrestrictedAccess: boolean;
 
     get form(): InstanceForm {
         return this._form;
@@ -73,6 +76,14 @@ export class DetailsDialog implements OnInit {
         this._comments = value;
     }
 
+    get unrestrictedAccess(): boolean {
+        return this._unrestrictedAccess;
+    }
+
+    set unrestrictedAccess(value: boolean) {
+        this._unrestrictedAccess = value;
+    }
+
     constructor(
         public dialogRef: MatDialogRef<DetailsDialog>,
         private accountService: AccountService,
@@ -87,6 +98,7 @@ export class DetailsDialog implements OnInit {
         this.keyboardLayout = instance.keyboardLayout;
         this.name = instance.name;
         this.comments = instance.comments;
+        this.unrestrictedAccess = instance.unrestrictedAccess;
     }
 
     public isValidData(): boolean {
@@ -104,7 +116,8 @@ export class DetailsDialog implements OnInit {
             comments: data.comments,
             screenWidth: data.screenResolution.width,
             screenHeight: data.screenResolution.height,
-            keyboardLayout: data.keyboardLayout
+            keyboardLayout: data.keyboardLayout,
+            unrestrictedAccess: data.unrestrictedAccess,
         }).subscribe((instance) => this.dialogRef.close(instance));
     }
 
@@ -118,6 +131,7 @@ export class DetailsDialog implements OnInit {
         this.form.get('comments').setValue(this.comments);
         this.form.get('screenResolution').setValue(this.screenResolution);
         this.form.get('keyboardLayout').setValue(this.keyboardLayout);
+        this.form.get('unrestrictedAccess').setValue(this.unrestrictedAccess);
         // Disable the form if the user is not the owner
         if (this.instance.membership.role !== 'OWNER') {
             this.form.disable();

@@ -177,4 +177,19 @@ export class MembersDialog implements OnInit {
         };
     }
 
+    public onUnrestrictedAccessChanged(): void {
+        this.accountService.updateInstance(this.instance, {
+            name: this.instance.name,
+            comments: this.instance.comments,
+            screenWidth: this.instance.screenWidth,
+            screenHeight: this.instance.screenHeight,
+            keyboardLayout: this.instance.keyboardLayout,
+            unrestrictedAccess: this.instance.unrestrictedAccess,
+        }).subscribe((instance) => {
+            this.instance = instance;
+            this.showNotification('Member access has been updated');
+        });
+
+    }
+
 }
