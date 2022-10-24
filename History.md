@@ -1,6 +1,14 @@
+2.4.0 25/10/2022
+================
+ * Allows users to specify that an instance can be accessed by other members when they are not connected
+ * Update dashboard for multiple cloud providers
+ * Allow cloning of cloud images, flavours, providers and plans
+ * Update admin UIs to allow configuration of multiple cloud providers
+ * Manager multiple cloud providers
+
 2.3.1 08/09/2022
 ================
-* Fix admin sessions URL
+ * Fix admin sessions URL
 
 2.3.0 01/09/2022
 ================
