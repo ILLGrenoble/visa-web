@@ -12,7 +12,7 @@ import {
     User
 } from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
-import {ScaleMode, VirtualDesktopManager} from '@vdi';
+import {ScaleMode, VirtualDesktopManager, GuacamoleVirtualDesktopManager} from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as md5 from 'blueimp-md5';
@@ -77,7 +77,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _timeElapsed$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private _totalDataReceived$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private _dataReceivedRate$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    private tunnelInstructionMessages$: Subscription;
+    private dataReceivedMessages$: Subscription;
     private clipboard$: Subscription;
 
     get timeElapsed$(): BehaviorSubject<number> {
@@ -231,7 +231,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Generate a screenshot of the remote desktop and download to the client
      */
     private createScreenshot(): void {
-        this.manager.createScreenshot((blob) => {
+        this.manager.createScreenshot().then((blob) => {
             if (blob) {
                 FileSaver.saveAs(blob, `screenshot.png`);
             }
@@ -252,8 +252,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.manager) {
             return;
         }
-        const tunnel = this.accountService.createRemoteDesktopTunnel();
-        this.manager = new VirtualDesktopManager(tunnel);
+        const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel();
+        this.manager = new GuacamoleVirtualDesktopManager(tunnel);
     }
 
     /**
@@ -265,20 +265,23 @@ export class InstanceComponent implements OnInit, OnDestroy {
             return;
         }
         this.authenticationTicket$ = this.accountService.createInstanceAuthenticationTicket(this.instance)
-            .pipe(filter((ticket) => ticket !== null))
-            .subscribe((ticket) => {
-                if (this.manager == null) {
-                    this.createManager();
-                }
+            .pipe(filter((ticket: string) => ticket !== null))
+            .subscribe({
+                next: (ticket: string) => {
+                    if (this.manager == null) {
+                        this.createManager();
+                    }
 
-                this.manager.connect({token: ticket});
-                this.bindManagerHandlers();
-            }, (error) => {
-                if (error.status === 401) {
-                    this.error = 'Failed to connect: the instance owner has not connected';
+                    this.manager.connect({token: ticket});
+                    this.bindManagerHandlers();
+                },
+                error: (error) => {
+                    if (error.status === 401) {
+                        this.error = 'Failed to connect: the instance owner has not connected';
 
-                } else {
-                    this.error = 'Failed to connect to the instance';
+                    } else {
+                        this.error = 'Failed to connect to the instance';
+                    }
                 }
             });
     }
@@ -408,8 +411,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.statsInterval$) {
             this.statsInterval$.unsubscribe();
         }
-        if (this.tunnelInstructionMessages$) {
-            this.tunnelInstructionMessages$.unsubscribe();
+        if (this.dataReceivedMessages$) {
+            this.dataReceivedMessages$.unsubscribe();
         }
         if (this.state$) {
             this.state$.unsubscribe();
@@ -437,13 +440,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private handleTunnelInstructionMessages(): void {
         let messages: {size: number, time: number}[] = [];
 
-        this.tunnelInstructionMessages$ = combineLatest([
-            this.manager.onTunnelInstruction
+        this.dataReceivedMessages$ = combineLatest([
+            this.manager.onDataReceived
                 .pipe(
                     share(),
-                    filter(instruction => {
-                        return instruction && instruction.opcode === 'blob';
-                    }), map(instruction => atob(instruction.parameters[1]).length),
+                    filter(data => data != null),
+                    map(data => data.length),
                     scan((ms, total) => {
                         if (this.manager.isConnected()) {
                             messages.push({size: total, time: Date.now()});
@@ -481,7 +483,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Handle any socket messages received
      */
     private handleSocketMessages(): void {
-        const tunnel = this.manager.getTunnel() as SocketIOTunnel;
+        const tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
         const socket = tunnel.getSocket();
         socket.on('disconnect', () => {
             this.closeAllDialogs();
@@ -557,7 +559,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 if (this.manager.isConnected()) {
                     const {screenHeight, screenWidth} = this.instance;
                     const thumbnailWidth = 320;
-                    this.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth).then((blob) => {
+                    this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth).then((blob) => {
                         this.createChecksumForThumbnail(blob).then((checksum) => {
                             if (checksum !== this.thumbnailChecksum) {
                                 socket.emit('thumbnail', blob);
@@ -783,32 +785,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private closeAllDialogs(): void {
         this.dialog.closeAll();
-    }
-
-    private createThumbnail(width: number, height: number): Promise<Blob> {
-        return new Promise<Blob>((resolve, reject) => {
-            const display = this.manager.getClient().getDisplay();
-            if (display && display.getWidth() > 0 && display.getHeight() > 0) {
-                // Get screenshot
-                const canvas = display.flatten();
-                const scale = Math.min(width / canvas.width, height / canvas.height, 1);
-
-                // Create thumbnail canvas
-                const thumbnail = document.createElement('canvas');
-                thumbnail.width = canvas.width * scale;
-                thumbnail.height = canvas.height * scale;
-
-                // Scale screenshot to thumbnail
-                const context = thumbnail.getContext('2d');
-                context.drawImage(canvas,
-                    0, 0, canvas.width, canvas.height,
-                    0, 0, thumbnail.width, thumbnail.height,
-                );
-                return thumbnail.toBlob(resolve, 'image/jpeg', 0.80);
-            } else {
-                reject();
-            }
-        });
     }
 
 }

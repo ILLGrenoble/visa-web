@@ -12,9 +12,16 @@ import {
     Renderer2,
     ViewChild,
 } from '@angular/core';
-import {Client, Display, Keyboard, Mouse} from '@illgrenoble/visa-guacamole-common-js';
 import {BehaviorSubject, Subscription} from 'rxjs';
-import {ScaleMode, VirtualDesktopManager} from '../services';
+import {
+    ClientAdapter,
+    DisplayAdapter,
+    KeyboardAdapter,
+    MouseAdapter,
+    MouseState,
+    ScaleMode,
+    VirtualDesktopManager
+} from '../services';
 import {Touchscreen} from '../inputs';
 
 @Component({
@@ -57,12 +64,12 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
     /**
      * Remote desktop keyboard
      */
-    private keyboard: Keyboard;
+    private keyboard: KeyboardAdapter;
 
     /**
      * Remote desktop mouse
      */
-    private mouse: Mouse;
+    private mouse: MouseAdapter;
 
     /**
      * Subscriptions
@@ -177,21 +184,21 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
     /**
      * Get the remote desktop display
      */
-    private getDisplay(): Display {
+    private getDisplay(): DisplayAdapter {
         return this.manager.getClient().getDisplay();
     }
 
     /**
      * Get the remote desktop client
      */
-    private getClient(): Client {
+    private getClient(): ClientAdapter {
         return this.manager.getClient();
     }
 
     /**
      * Calculate the scale for the display
      */
-    private calculateDisplayScale(display: Display): number {
+    private calculateDisplayScale(display: DisplayAdapter): number {
         const viewportElement = this.viewport.nativeElement;
         return Math.min(
             viewportElement.clientWidth / display.getWidth(),
@@ -202,7 +209,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
     /**
      * Calculate the optimal scale for the display os that there are no black borders
      */
-    private calculateOptimalDisplayScale(display: Display): number {
+    private calculateOptimalDisplayScale(display: DisplayAdapter): number {
         const viewportElement = this.viewport.nativeElement;
 
         const viewportAspectRatio = viewportElement.clientWidth / viewportElement.clientHeight;
@@ -350,8 +357,8 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      */
     private createDisplayInputs(): void {
         const display = this.display.nativeElement.children[0];
-        this.mouse = new Mouse(display);
-        this.keyboard = new Keyboard(window.document);
+        this.mouse = this.getDisplay().createMouse(display);
+        this.keyboard = this.getDisplay().createKeyboard(window.document);
         this.touchscreen = new Touchscreen(display);
     }
 
@@ -366,7 +373,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
 
         const display = this.getDisplay();
         const scale = display.getScale();
-        const scaledState = new Mouse.State(
+        const scaledState = new MouseState(
             (mouseState.x + scrollLeft) / scale,
             (mouseState.y + scrollTop) / scale,
             mouseState.left,

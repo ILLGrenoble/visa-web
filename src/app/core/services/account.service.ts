@@ -7,6 +7,7 @@ import {map} from 'rxjs/operators';
 import {Experiment, Instance, InstanceSessionMember, Instrument, Member, Paginated, Quota, User} from '../models';
 import {InstancesFilterState, toParams} from './filter/instances-filter-state.model';
 import {ObjectMapperService} from './object-mapper.service';
+import {WebXSocketIOTunnel} from 'webx-web';
 
 @Injectable()
 export class AccountService {
@@ -309,7 +310,7 @@ export class AccountService {
         }));
     }
 
-    public createRemoteDesktopTunnel(): SocketIOTunnel {
+    public createGuacamoleRemoteDesktopTunnel(): SocketIOTunnel {
         const path = environment.paths.vdi;
         const connectionOptions = {
             'force new connection': true,
@@ -319,6 +320,18 @@ export class AccountService {
             transports: ['websocket'],
         };
         return new SocketIOTunnel(window.location.origin, connectionOptions, 'display');
+    }
+
+    public createWebXRemoteDesktopTunnel(): WebXSocketIOTunnel {
+        const path = environment.paths.vdi;
+        const connectionOptions = {
+            'force new connection': true,
+            forceNew: true,
+            path,
+            reconnection: false,
+            transports: ['websocket'],
+        };
+        return new WebXSocketIOTunnel(window.location.origin, connectionOptions, 'display_webx');
     }
 
     public getQuotas(): Observable<Quota> {

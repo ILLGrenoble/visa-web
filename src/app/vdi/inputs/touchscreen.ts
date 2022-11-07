@@ -1,17 +1,17 @@
-import {Mouse} from '@illgrenoble/visa-guacamole-common-js';
+import {MouseState} from '../services/virtual-desktop-adapters';
 
 export class Touchscreen {
 
-    private readonly _currentState: Mouse.State;
+    private readonly _currentState: MouseState;
     private readonly _element: HTMLElement;
 
-    public onmousedown: (state: Mouse.State) => void = null;
-    public onmouseup: (state: Mouse.State) => void = null;
-    public onmousemove: (state: Mouse.State) => void = null;
+    public onmousedown: (state: MouseState) => void = null;
+    public onmouseup: (state: MouseState) => void = null;
+    public onmousemove: (state: MouseState) => void = null;
 
     constructor(element: HTMLElement) {
         this._element = element;
-        this._currentState =  new Mouse.State(
+        this._currentState =  new MouseState(
             0, 0,
             false, false, false, false, false
         );

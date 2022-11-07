@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, User} from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
-import {VirtualDesktopManager} from '@vdi';
+import {GuacamoleVirtualDesktopManager, VirtualDesktopManager} from '@vdi';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
@@ -81,7 +81,7 @@ export class MembersConnectedComponent implements OnInit {
     public dropUser(event, user: User): void {
         event.preventDefault();
 
-        const tunnel = this._manager.getTunnel() as SocketIOTunnel;
+        const tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
         const socket = tunnel.getSocket();
 
         socket.emit('access:revoked', {userId: user.id});
