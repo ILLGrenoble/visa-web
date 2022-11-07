@@ -7,30 +7,6 @@ export class MouseState {
                 public up: boolean,
                 public down: boolean) {
     }
-
-    fromClientPosition(element: HTMLElement, clientX: number, clientY: number): void {
-
-        this.x = clientX - element.offsetLeft;
-        this.y = clientY - element.offsetTop;
-
-        // This is all JUST so we can get the mouse position within the element
-        let parent = element.offsetParent as HTMLElement;
-        while (parent && !(parent === document.body)) {
-            this.x -= parent.offsetLeft - parent.scrollLeft;
-            this.y -= parent.offsetTop  - parent.scrollTop;
-
-            parent = parent.offsetParent as HTMLElement;
-        }
-
-        // Element ultimately depends on positioning within document body, take document scroll into account.
-        if (parent) {
-            const documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
-            const documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-            this.x -= parent.offsetLeft - documentScrollLeft;
-            this.y -= parent.offsetTop  - documentScrollTop;
-        }
-    }
 }
 
 export abstract class KeyboardAdapter {
@@ -46,8 +22,8 @@ export abstract class MouseAdapter {
 }
 
 export abstract class DisplayAdapter {
-    abstract createMouse(element: Element): MouseAdapter;
-    abstract createKeyboard(element: Element | Document): KeyboardAdapter;
+    abstract createMouse(element: HTMLElement): MouseAdapter;
+    abstract createKeyboard(element: HTMLElement | Document): KeyboardAdapter;
 
     abstract showCursor(isShown: boolean): void;
     abstract getScale(): number;
@@ -67,6 +43,6 @@ export abstract class ClientAdapter {
     }
 
     abstract sendMouseState(mouseState: MouseState): void;
-    abstract sendKeyEvent(pressed: number, keysym: number): void;
+    abstract sendKeyEvent(pressed: boolean, keysym: number): void;
 
 }

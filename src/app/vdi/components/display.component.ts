@@ -400,7 +400,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      * @param key the keyboard key
      */
     private handleKeyDown(key: any): void {
-        this.getClient().sendKeyEvent(1, key);
+        this.getClient().sendKeyEvent(true, key);
     }
 
     /**
@@ -408,7 +408,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      * @param key the keyboard key
      */
     private handleKeyUp(key: any): void {
-        this.getClient().sendKeyEvent(0, key);
+        this.getClient().sendKeyEvent(false, key);
     }
 
     ngAfterViewInit(): void {

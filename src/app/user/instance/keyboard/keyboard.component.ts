@@ -60,11 +60,11 @@ export class KeyboardComponent implements AfterViewInit {
     }
 
     private handleKeyDown(key: number): void {
-        this.manager.getClient().sendKeyEvent(1, key);
+        this.manager.getClient().sendKeyEvent(true, key);
     }
 
     private handleKeyUp(key: number): void {
-        this.manager.getClient().sendKeyEvent(0, key);
+        this.manager.getClient().sendKeyEvent(false, key);
     }
 
     private removeKeyboardDisplay(): void {

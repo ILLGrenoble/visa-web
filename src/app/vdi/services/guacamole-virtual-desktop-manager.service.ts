@@ -1,9 +1,4 @@
-import {
-    Client,
-    StringReader,
-    StringWriter,
-    Tunnel
-} from '@illgrenoble/visa-guacamole-common-js';
+import { Client, StringReader, StringWriter, Tunnel } from '@illgrenoble/visa-guacamole-common-js';
 import {BehaviorSubject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import { VirtualDesktopManager } from './virtual-desktop-manager.service';
@@ -17,7 +12,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * When an instruction is received from the tunnel
      */
-    public onTunnelInstruction = new BehaviorSubject<{ opcode: string, parameters: any }>(null);
+    private onTunnelInstruction = new BehaviorSubject<{ opcode: string, parameters: any }>(null);
 
     /**
      * The actual underlying remote desktop client
@@ -51,6 +46,23 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
      */
     public getTunnel(): Tunnel {
         return this.tunnel;
+    }
+
+
+    /**
+     * Connect to the remote desktop
+     */
+    public connect(parameters = {}): void {
+        const configuration = this.buildParameters(parameters);
+        this.client.connect(configuration);
+        this.bindEventHandlers();
+    }
+
+    /**
+     * Disconnect from the remote desktop
+     */
+    public disconnect(): void {
+        this.client.disconnect();
     }
 
     /**
@@ -109,22 +121,6 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
             this.onRemoteClipboardData.next({content: text, event: 'sent'});
         }
 
-    }
-
-    /**
-     * Disconnect from the remote desktop
-     */
-    public disconnect(): void {
-        this.client.disconnect();
-    }
-
-    /**
-     * Connect to the remote desktop
-     */
-    public connect(parameters = {}): void {
-        const configuration = this.buildParameters(parameters);
-        this.client.connect(configuration);
-        this.bindEventHandlers();
     }
 
     /**

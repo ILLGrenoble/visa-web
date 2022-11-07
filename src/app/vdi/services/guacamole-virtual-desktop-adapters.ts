@@ -72,7 +72,7 @@ class GuacamoleDisplayAdapter extends DisplayAdapter {
         return new GuacamoleMouseAdapter(new Mouse(element));
     }
 
-    createKeyboard(element: Element | Document): KeyboardAdapter {
+    createKeyboard(element: HTMLElement | Document): KeyboardAdapter {
         return new GuacamoleKeyboardAdapter(new Keyboard(element));
     }
 }
@@ -86,8 +86,8 @@ export class GuacamoleClientAdapter extends ClientAdapter {
         this._client = client;
     }
 
-    sendKeyEvent(pressed: number, keysym: number): void {
-        this._client.sendKeyEvent(pressed, keysym);
+    sendKeyEvent(pressed: boolean, keysym: number): void {
+        this._client.sendKeyEvent(pressed ? 1 : 0, keysym);
     }
 
     sendMouseState(mouseState: MouseState): void {

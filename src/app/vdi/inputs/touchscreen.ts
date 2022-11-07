@@ -26,7 +26,7 @@ export class Touchscreen {
     }
 
     private move(x, y): void {
-        this._currentState.fromClientPosition(this._element, x, y);
+        this.setFromClientPosition(x, y);
         if (this.onmousemove) {
             this.onmousemove(this._currentState);
         }
@@ -77,6 +77,31 @@ export class Touchscreen {
             this.move(x, y);
             this.click('right');
         }
+    }
+
+    private setFromClientPosition(clientX: number, clientY: number): void {
+
+        this._currentState.x = clientX - this._element.offsetLeft;
+        this._currentState.y = clientY - this._element.offsetTop;
+
+        // This is all JUST so we can get the mouse position within the element
+        let parent = this._element.offsetParent as HTMLElement;
+        while (parent && !(parent === document.body)) {
+            this._currentState.x -= parent.offsetLeft - parent.scrollLeft;
+            this._currentState.y -= parent.offsetTop  - parent.scrollTop;
+
+            parent = parent.offsetParent as HTMLElement;
+        }
+
+        // Element ultimately depends on positioning within document body, take document scroll into account.
+        if (parent) {
+            const documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+            const documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+            this._currentState.x -= parent.offsetLeft - documentScrollLeft;
+            this._currentState.y -= parent.offsetTop  - documentScrollTop;
+        }
+
     }
 
 }
