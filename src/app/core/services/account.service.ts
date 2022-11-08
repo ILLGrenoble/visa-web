@@ -7,7 +7,7 @@ import {map} from 'rxjs/operators';
 import {Experiment, Instance, InstanceSessionMember, Instrument, Member, Paginated, Quota, User} from '../models';
 import {InstancesFilterState, toParams} from './filter/instances-filter-state.model';
 import {ObjectMapperService} from './object-mapper.service';
-import {WebXSocketIOTunnel} from 'webx-web';
+import {WebXSocketIOTunnel} from "../../../../../../webx/webx-web/webx-web/src";
 
 @Injectable()
 export class AccountService {
@@ -331,7 +331,7 @@ export class AccountService {
             reconnection: false,
             transports: ['websocket'],
         };
-        return new WebXSocketIOTunnel(window.location.origin, connectionOptions, 'display_webx');
+        return new WebXSocketIOTunnel(window.location.origin, connectionOptions, 'webxdisplay');
     }
 
     public getQuotas(): Observable<Quota> {

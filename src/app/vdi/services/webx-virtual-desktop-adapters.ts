@@ -5,7 +5,7 @@ import {
     WebXKeyboard,
     WebXMouse,
     WebXMouseState
-} from "../../../../../../webx/webx-web/webx-web/src";
+} from '../../../../../../webx/webx-web/webx-web/src';
 
 class WebXKeyboardAdapter extends KeyboardAdapter {
     constructor(private _keyboard: WebXKeyboard) {
@@ -49,25 +49,29 @@ export class WebXDisplayAdapter extends DisplayAdapter {
     // Create a parent container for the webx display (webx requires a parent when connecting, guacamole doesn't)
     private _element: HTMLElement;
 
-    constructor(private _display: WebXDisplay) {
+    private get display(): WebXDisplay {
+        return this._client.display;
+    }
+
+    constructor(private _client: WebXClient) {
         super();
         this._createElement();
     }
 
     getHeight(): number {
-        return this._display.screenHeight;
+        return this.display.screenHeight;
     }
 
     getWidth(): number {
-        return this._display.screenWidth;
+        return this.display.screenWidth;
     }
 
     getScale(): number {
-        return this._display.scale;
+        return this.display.scale;
     }
 
     scale(scale: number): void {
-        this._display.setScale(scale);
+        this.display.resize(scale);
     }
 
     showCursor(isShown: boolean): void {
@@ -100,7 +104,7 @@ export class WebXClientAdapter extends ClientAdapter {
     private _client: WebXClient;
 
     constructor(client: WebXClient) {
-        super(new WebXDisplayAdapter(client.display));
+        super(new WebXDisplayAdapter(client));
         this._client = client;
     }
 
@@ -109,7 +113,8 @@ export class WebXClientAdapter extends ClientAdapter {
     }
 
     sendMouseState(mouseState: MouseState): void {
-        this._client.sendMouse(mouseState as WebXMouseState);
+
+        this._client.sendMouse(new WebXMouseState(mouseState));
     }
 
 }

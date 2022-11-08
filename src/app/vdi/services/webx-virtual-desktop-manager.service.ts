@@ -1,8 +1,8 @@
 import {VirtualDesktopManager} from './virtual-desktop-manager.service';
-import {WebXClientAdapter, WebXDisplayAdapter} from './webx-virtual-desktop-adapters';
-import {WebXClient, WebXTunnel, WebXDisplay, WebXStatsHandler} from '../../../../../../webx/webx-web/webx-web/src';
+import {WebXClientAdapter } from './webx-virtual-desktop-adapters';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
+import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel} from '../../../../../../webx/webx-web/webx-web/src';
 
 class StatsHandler extends WebXStatsHandler {
 
@@ -59,7 +59,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
     connect(parameters: any): void {
         this.setState(VirtualDesktopManager.STATE.CONNECTING);
 
-        this._client.connect(this._disconnectedHandler)
+        this._client.connect(this._disconnectedHandler, parameters)
             .then(this._connectHandler)
             .catch(error => {
                 console.error(error.message);
@@ -72,18 +72,16 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         this._client.disconnect();
     }
 
-    createScreenshot(): Promise<Blob> {
+    async createScreenshot(): Promise<Blob> {
         // todo
-        return new Promise((resolve, reject) => {
-            reject(new Error('createScreenshot not implemented for WebX Virtual Desktop Manager'));
-        });
+        console.log('createScreenshot not implemented for WebX Virtual Desktop Manager');
+        return null;
     }
 
-    createThumbnail(width: number, height: number): Promise<Blob> {
+    async createThumbnail(width: number, height: number): Promise<Blob> {
         // todo
-        return new Promise((resolve, reject) => {
-            reject(new Error('createThumbnail not implemented for WebX Virtual Desktop Manager'));
-        });
+        console.log('createThumbnail not implemented for WebX Virtual Desktop Manager');
+        return null;
     }
 
     sendRemoteClipboardData(text: string): void {
@@ -103,6 +101,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
                 // Start animating the display once everything has been initialised
                 display.animate();
 
+                display.resize();
                 this._bindListeners();
 
                 this.setState(VirtualDesktopManager.STATE.CONNECTED);
@@ -134,7 +133,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         window.addEventListener('resize', this._resizeHandler);
         window.addEventListener('blur', this._blurHandler);
         document.addEventListener('visibilitychange', this._visibilityChangeHandler);
-    };
+    }
 
     private _unbindListeners(): void {
         this._statsInterrupt$.next(true);
@@ -142,7 +141,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         window.removeEventListener('resize', this._resizeHandler);
         window.removeEventListener('blur', this._blurHandler);
         document.removeEventListener('visibilitychange', this._visibilityChangeHandler);
-    };
+    }
 
     private _handleResize(): void {
         this._client.resizeDisplay();

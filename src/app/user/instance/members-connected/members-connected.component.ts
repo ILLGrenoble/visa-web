@@ -2,9 +2,8 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, User} from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
-import {GuacamoleVirtualDesktopManager, VirtualDesktopManager} from '@vdi';
-import {Observable} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {GuacamoleVirtualDesktopManager, VirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
+import {WebXSocketIOTunnel} from "../../../../../../../webx/webx-web/webx-web/src";
 
 @Component({
     selector: 'visa-instance-members-connected-dialog',
@@ -17,6 +16,7 @@ export class MembersConnectedComponent implements OnInit {
     private _user: User;
     private _instance: Instance;
     private _manager: VirtualDesktopManager;
+    private readonly _useWebX: boolean;
 
     get manager(): VirtualDesktopManager {
         return this._manager;
@@ -53,6 +53,7 @@ export class MembersConnectedComponent implements OnInit {
         this._instance = data.instance;
         this._manager = data.manager;
         this._user = data.user;
+        this._useWebX = data.useWebX;
         data.users$.subscribe((users) => {
             this.users = users;
         });
@@ -81,7 +82,13 @@ export class MembersConnectedComponent implements OnInit {
     public dropUser(event, user: User): void {
         event.preventDefault();
 
-        const tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
+        let tunnel;
+        if (this._useWebX) {
+            tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
+
+        } else {
+            tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
+        }
         const socket = tunnel.getSocket();
 
         socket.emit('access:revoked', {userId: user.id});

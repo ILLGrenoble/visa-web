@@ -12,7 +12,7 @@ import {
     User
 } from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
-import {ScaleMode, VirtualDesktopManager, GuacamoleVirtualDesktopManager} from '@vdi';
+import {ScaleMode, VirtualDesktopManager, GuacamoleVirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as md5 from 'blueimp-md5';
@@ -26,6 +26,7 @@ import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
+import {WebXSocketIOTunnel} from "../../../../../../webx/webx-web/webx-web/src";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -79,6 +80,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _dataReceivedRate$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private dataReceivedMessages$: Subscription;
     private clipboard$: Subscription;
+
+    private _useWebX = true;
 
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
@@ -252,8 +255,14 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.manager) {
             return;
         }
-        const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel();
-        this.manager = new GuacamoleVirtualDesktopManager(tunnel);
+        if (this._useWebX) {
+            const tunnel = this.accountService.createWebXRemoteDesktopTunnel();
+            this.manager = new WebXVirtualDesktopManager(tunnel);
+
+        } else {
+            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel();
+            this.manager = new GuacamoleVirtualDesktopManager(tunnel);
+        }
     }
 
     /**
@@ -272,7 +281,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                         this.createManager();
                     }
 
-                    this.manager.connect({token: ticket});
+                    this.manager.connect({token: ticket, protocol: this._useWebX ? 'webx' : 'guacamole'});
                     this.bindManagerHandlers();
                 },
                 error: (error) => {
@@ -483,7 +492,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Handle any socket messages received
      */
     private handleSocketMessages(): void {
-        const tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
+        let tunnel;
+        if (this._useWebX) {
+            tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
+
+        } else {
+            tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
+        }
         const socket = tunnel.getSocket();
         socket.on('disconnect', () => {
             this.closeAllDialogs();
@@ -559,14 +574,17 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 if (this.manager.isConnected()) {
                     const {screenHeight, screenWidth} = this.instance;
                     const thumbnailWidth = 320;
-                    this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth).then((blob) => {
-                        this.createChecksumForThumbnail(blob).then((checksum) => {
-                            if (checksum !== this.thumbnailChecksum) {
-                                socket.emit('thumbnail', blob);
-                                this.thumbnailChecksum = checksum;
+                    this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
+                        .then((blob) => {
+                            if (blob) {
+                                this.createChecksumForThumbnail(blob).then((checksum) => {
+                                    if (checksum !== this.thumbnailChecksum) {
+                                        socket.emit('thumbnail', blob);
+                                        this.thumbnailChecksum = checksum;
+                                    }
+                                });
                             }
                         });
-                    });
                 }
             });
         }
@@ -717,7 +735,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 instance: this.instance,
                 manager: this.manager,
                 users$: this.users$,
-                user: this.user
+                user: this.user,
+                useWebX: this._useWebX
             },
         });
     }
