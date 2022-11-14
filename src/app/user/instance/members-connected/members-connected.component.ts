@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, User} from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {GuacamoleVirtualDesktopManager, VirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
-import {WebXSocketIOTunnel} from "../../../../../../../webx/webx-web/webx-web/src";
+import {WebXSocketIOTunnel} from '../../../../../../../webx/webx-web/webx-web/src';
 
 @Component({
     selector: 'visa-instance-members-connected-dialog',

@@ -26,7 +26,7 @@ import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
-import {WebXSocketIOTunnel} from "../../../../../../webx/webx-web/webx-web/src";
+import {WebXSocketIOTunnel} from '../../../../../../webx/webx-web/webx-web/src';
 
 @Component({
     encapsulation: ViewEncapsulation.None,

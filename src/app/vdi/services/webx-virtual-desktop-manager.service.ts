@@ -130,13 +130,17 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
             map(data => ({length: data})))
             .subscribe(this.onDataReceived);
 
+        this._client.registerTracer('stats', this._statsHandler);
+
         window.addEventListener('resize', this._resizeHandler);
         window.addEventListener('blur', this._blurHandler);
         document.addEventListener('visibilitychange', this._visibilityChangeHandler);
     }
 
     private _unbindListeners(): void {
+
         this._statsInterrupt$.next(true);
+        this._client.unregisterTracer('stats');
 
         window.removeEventListener('resize', this._resizeHandler);
         window.removeEventListener('blur', this._blurHandler);
