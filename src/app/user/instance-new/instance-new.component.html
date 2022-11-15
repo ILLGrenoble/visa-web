@@ -79,12 +79,12 @@
                                     </clr-toggle-container>
                                 </div>
                             </div>
-                            <div *ngIf="!experimentFree">
+                            <div *ngIf="!experimentFree" class="experiments-list">
                                 <button class="btn" (click)="openExperimentSearch()">
                                     Search for experiments
                                 </button>
 
-                                <clr-datagrid [clrDgRowSelection]="true">
+                                <clr-datagrid>
                                     <clr-dg-column [style.width.px]="150">Proposal</clr-dg-column>
                                     <clr-dg-column>Title</clr-dg-column>
                                     <clr-dg-column [style.width.px]="150">Instrument</clr-dg-column>
@@ -94,8 +94,14 @@
                                     <clr-dg-placeholder>No experiments selected
                                     </clr-dg-placeholder>
                                     <clr-dg-row *ngFor="let experiment of experiments">
-                                        <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
-                                        <clr-dg-cell>{{ experiment.title || experiment.proposal.title }}</clr-dg-cell>
+                                        <clr-dg-cell>
+                                            <a *ngIf="experiment.url || experiment.proposal.url" (click)="navigateToExperimentURL(experiment)">{{ experiment.proposal.identifier }}</a>
+                                            <div *ngIf="!experiment.url && !experiment.proposal.url">{{ experiment.proposal.identifier }}</div>
+                                        </clr-dg-cell>
+                                        <clr-dg-cell>
+                                            <a *ngIf="experiment.url || experiment.proposal.url" (click)="navigateToExperimentURL(experiment)">{{ experiment.title || experiment.proposal.title }}</a>
+                                            <div *ngIf="!experiment.url && !experiment.proposal.url">{{ experiment.title || experiment.proposal.title }}</div>
+                                        </clr-dg-cell>
                                         <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
                                         <clr-dg-cell>{{ experiment.startDate | date:'dd MMM yyyy' }}</clr-dg-cell>
                                         <clr-dg-cell>{{ experiment.endDate | date:'dd MMM yyyy' }}</clr-dg-cell>

@@ -26,7 +26,7 @@ export class AccountService {
 
     public getExperiments(pageSize: number = 5,
                           pageNumber = 1,
-                          filter: {instrumentId?: number, proposals?: string[], fromYear?: number, toYear?: number},
+                          filter: {instrumentId?: number, proposals?: string[], fromYear?: number, toYear?: number, dois?: string[]},
                           orderBy: { value: string, descending: boolean }): Observable<Paginated<Experiment[]>> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments`;
@@ -48,6 +48,9 @@ export class AccountService {
         }
         if (filter && filter.proposals) {
             params = params.append('proposals', filter.proposals.join(','));
+        }
+        if (filter && filter.dois) {
+            params = params.append('dois', filter.dois.join(','));
         }
         if (orderBy) {
             params = params.append('orderBy', orderBy.value);
@@ -365,5 +368,4 @@ export class AccountService {
         }));
 
     }
-
 }

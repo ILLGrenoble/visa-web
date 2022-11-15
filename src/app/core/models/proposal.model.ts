@@ -10,4 +10,10 @@ export class Proposal {
 
     @JsonProperty('title', String)
     public title: string = undefined;
+
+    @JsonProperty('url', String, 'isOptional')
+    public url: string = undefined;
+
+    @JsonProperty('doi', String, 'isOptional')
+    public doi: string = undefined;
 }

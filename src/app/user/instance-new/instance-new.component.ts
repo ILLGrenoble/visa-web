@@ -165,8 +165,13 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
             map((params) => new QueryParameterBag(params)),
         ).subscribe((params: QueryParameterBag) => {
             const proposals = params.getList('proposals', null);
-            if (proposals) {
-                this._accountService.getExperiments(100, 1, { proposals }, {value: 'proposal', descending: false})
+            const dois = params.getList('dois', null);
+            if (proposals || dois) {
+                const filters = {
+                    ...(proposals && { proposals }),
+                    ...(dois && { dois }),
+                };
+                this._accountService.getExperiments(100, 1, filters, {value: 'proposal', descending: false})
                     .subscribe((data) => {
                         this._experimentsObservable.next(data.items);
                         this._errors = data.errors;
@@ -286,4 +291,10 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         }
     }
 
+    public navigateToExperimentURL(experiment: Experiment): void {
+        const url = experiment.url || experiment.proposal.url;
+        if (url) {
+            window.open(url, '_blank');
+        }
+    }
 }

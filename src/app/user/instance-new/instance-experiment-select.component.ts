@@ -184,5 +184,10 @@ export class InstanceExperimentSelectComponent implements OnInit {
         this.dialogRef.close();
     }
 
-
+    public navigateToExperimentURL(experiment: Experiment): void {
+        const url = experiment.url || experiment.proposal.url;
+        if (url) {
+            window.open(url, '_blank');
+        }
+    }
 }
