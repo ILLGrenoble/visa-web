@@ -1,3 +1,8 @@
+2.4.1 15/11/2022
+================
+ * If experiment or proposal has a URL then make it clickable when searching for experiments and on instance creation page
+ *  Examine instances/new request params for "dois": auto select associated proposals or experiments
+
 2.4.0 25/10/2022
 ================
  * Allows users to specify that an instance can be accessed by other members when they are not connected
