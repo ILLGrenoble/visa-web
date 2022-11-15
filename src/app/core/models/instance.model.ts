@@ -75,6 +75,9 @@ export class Instance {
     @JsonProperty('keyboardLayout', String)
     private _keyboardLayout: string = undefined;
 
+    @JsonProperty('activeProtocols', [String])
+    private _activeProtocols: string[] = undefined;
+
     constructor() {
 
     }
@@ -268,5 +271,17 @@ export class Instance {
 
     set keyboardLayout(value: string) {
         this._keyboardLayout = value;
+    }
+
+    get activeProtocols(): string[] {
+        return this._activeProtocols;
+    }
+
+    set activeProtocols(value: string[]) {
+        this._activeProtocols = value;
+    }
+
+    public hasProtocolWithName(protocolName: string): boolean {
+        return this._activeProtocols.includes(protocolName);
     }
 }

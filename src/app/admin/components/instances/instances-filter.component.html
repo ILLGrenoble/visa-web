@@ -68,7 +68,7 @@
                     <select formControlName="state" class="filter-input">
                         <option [ngValue]="null">All states</option>
                         <option *ngFor="let state of data.instanceStates.enumValues" [ngValue]="state.name">
-                            {{ state.name | titlecase }}
+                            {{ state.name.replace('_', ' ') | titlecase }}
                         </option>
                     </select>
                 </div>
