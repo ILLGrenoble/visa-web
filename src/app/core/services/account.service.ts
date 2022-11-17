@@ -26,8 +26,8 @@ export class AccountService {
 
     public getExperiments(pageSize: number = 5,
                           pageNumber = 1,
-                          filter: {instrumentId?: number, proposals?: string[], fromYear?: number, toYear?: number, dois?: string[]},
-                          orderBy: { value: string, descending: boolean }): Observable<Paginated<Experiment[]>> {
+                          filter: {instrumentId?: number, proposals?: string[], fromYear?: number, toYear?: number, includeOpenData?: boolean, dois?: string[]},
+                          orderBy?: { value: string, descending: boolean }): Observable<Paginated<Experiment[]>> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments`;
         let params = new HttpParams();
@@ -45,6 +45,9 @@ export class AccountService {
         }
         if (filter && filter.toYear) {
             params = params.append('endDate', `${filter.toYear}-12-31`);
+        }
+        if (filter && filter.includeOpenData) {
+            params = params.append('includeOpenData', 'true');
         }
         if (filter && filter.proposals) {
             params = params.append('proposals', filter.proposals.join(','));

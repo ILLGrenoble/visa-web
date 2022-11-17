@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit, Output} from '@angular/core';
-import {AccountService, Experiment, Instrument, Paginated} from '@core';
+import {AccountService, ConfigService, Experiment, Instrument, Paginated} from '@core';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ClrDatagridStateInterface} from '@clr/angular';
@@ -21,6 +21,7 @@ export class InstanceExperimentSelectComponent implements OnInit {
     private static USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY = 'user.instance.experiments.instrumentId';
     private static USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY = 'user.instance.experiments.fromYear';
     private static USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY = 'user.instance.experiments.toYear';
+    private static USER_INSTANCE_EXPERIMENTS_INCLUDE_OPEN_DATA_KEY = 'user.instance.experiments.includeOpenData';
     private static USER_INSTANCE_EXPERIMENTS_SORT_ID_KEY = 'user.instance.experiments.sortId';
     private static USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY = 'user.instance.experiments.pageSize';
 
@@ -30,7 +31,9 @@ export class InstanceExperimentSelectComponent implements OnInit {
     public instruments: Instrument[] = [];
     private _instrument: Instrument = null;
     private _instrumentId: number;
+    private _includeOpenData = false;
     public loading = false;
+    public openDataAvailable = false;
 
     public fromYears: number[];
     public toYears: number[];
@@ -84,6 +87,15 @@ export class InstanceExperimentSelectComponent implements OnInit {
         localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY, `${this._toYear}`);
     }
 
+    get includeOpenData(): boolean {
+        return this._includeOpenData;
+    }
+
+    set includeOpenData(value: boolean) {
+        this._includeOpenData = value;
+        localStorage.setItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INCLUDE_OPEN_DATA_KEY, `${this._includeOpenData}`);
+    }
+
     get orderBy(): OrderBy {
         return this._orderBy;
     }
@@ -95,11 +107,13 @@ export class InstanceExperimentSelectComponent implements OnInit {
 
     constructor(public dialogRef: MatDialogRef<InstanceExperimentSelectComponent>,
                 private accountService: AccountService,
+                private configurationService: ConfigService,
                 @Inject(MAT_DIALOG_DATA) public data) {
 
         const localInstrumentId = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY);
         const localFromYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY);
         const localToYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY);
+        const localIncludingOpenData = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INCLUDE_OPEN_DATA_KEY);
         const localSortId = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_SORT_ID_KEY);
         const localPageSize = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_PAGE_SIZE_KEY);
 
@@ -111,6 +125,9 @@ export class InstanceExperimentSelectComponent implements OnInit {
         }
         if (localToYear) {
             this._toYear = +localToYear;
+        }
+        if (localIncludingOpenData) {
+            this._includeOpenData = localIncludingOpenData === 'true';
         }
         if (localSortId) {
             this.orderBy = this.orderings.find(ordering => ordering.id === +localSortId);
@@ -126,6 +143,13 @@ export class InstanceExperimentSelectComponent implements OnInit {
 
     public ngOnInit(): void {
         this.fetchExperiments(1);
+
+        this.configurationService.load().then(config => {
+            this.openDataAvailable = config.experiments.openDataIncluded;
+            if (!this.openDataAvailable) {
+                this.includeOpenData = false;
+            }
+        });
 
         this.accountService.getInstruments().subscribe(instruments => {
             this.instruments = instruments;
@@ -169,7 +193,8 @@ export class InstanceExperimentSelectComponent implements OnInit {
         this.accountService.getExperiments(this.experiments.limit, page, {
             instrumentId: this._instrumentId,
             fromYear: this.fromYear,
-            toYear: this.toYear
+            toYear: this.toYear,
+            includeOpenData: this.includeOpenData
         }, this.orderBy)
             .subscribe((data) => {
                 this.loading = false;

@@ -5,7 +5,7 @@ import {
     AccountService,
     AnalyticsService,
     ApplicationState,
-    CatalogueService,
+    CatalogueService, ConfigService,
     Experiment,
     HelperService,
     ImagePlans,
@@ -146,6 +146,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
                 private titleService: Title,
                 private store: Store<ApplicationState>,
                 private cdr: ChangeDetectorRef,
+                private configurationService: ConfigService,
                 private dialog: MatDialog) {
         this._user$ = store.select(selectLoggedInUser);
     }
@@ -161,22 +162,26 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
             this._user = user;
         });
 
-        this.route.queryParams.pipe(
-            map((params) => new QueryParameterBag(params)),
-        ).subscribe((params: QueryParameterBag) => {
-            const proposals = params.getList('proposals', null);
-            const dois = params.getList('dois', null);
-            if (proposals || dois) {
-                const filters = {
-                    ...(proposals && { proposals }),
-                    ...(dois && { dois }),
-                };
-                this._accountService.getExperiments(100, 1, filters, {value: 'proposal', descending: false})
-                    .subscribe((data) => {
-                        this._experimentsObservable.next(data.items);
-                        this._errors = data.errors;
-                    });
-            }
+        this.configurationService.load().then(config => {
+
+            this.route.queryParams.pipe(
+                map((params) => new QueryParameterBag(params)),
+            ).subscribe((params: QueryParameterBag) => {
+                const proposals = params.getList('proposals', null);
+                const dois = params.getList('dois', null);
+                if (proposals || dois) {
+                    const filters = {
+                        ...(proposals && { proposals }),
+                        ...(dois && { dois }),
+                        includeOpenData: config.experiments.openDataIncluded,
+                    };
+                    this._accountService.getExperiments(100, 1, filters)
+                        .subscribe((data) => {
+                            this._experimentsObservable.next(data.items);
+                            this._errors = data.errors;
+                        });
+                }
+            });
         });
 
         // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
