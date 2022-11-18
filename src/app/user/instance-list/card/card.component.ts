@@ -129,11 +129,11 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     public canShutdownInstance(): boolean {
-        return (this.instance.state === 'ACTIVE' || this.instance.state === 'PARTIALLY_ACTIVE') && this.instance.membership.isRole('OWNER');
+        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
     }
 
     public canRebootInstance(): boolean {
-        return (this.instance.state === 'ACTIVE' || this.instance.state === 'PARTIALLY_ACTIVE') && this.instance.membership.isRole('OWNER');
+        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
     }
 
     public canAccessJupyter(): boolean {
