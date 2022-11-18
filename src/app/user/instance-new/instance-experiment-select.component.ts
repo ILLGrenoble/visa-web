@@ -113,7 +113,7 @@ export class InstanceExperimentSelectComponent implements OnInit {
         this.openDataAvailable = data.openDataIncluded;
         if (!this.openDataAvailable) {
             this.includeOpenData = false;
-        } else if (data.totalUserExperiments == 0) {
+        } else if (data.totalUserExperiments === 0) {
             this.includeOpenData = true;
         }
 
