@@ -1,7 +1,14 @@
+2.4.2 18/11/2022
+================
+ * Ensure dates in experiment search dialog are always valid
+ * Allow reboot and shutdown when instance in starting state
+ * Add option to search for open data (during instance creation)
+ * Handle partially_active state in client (remote desktop available but jupyter not yet available)
+
 2.4.1 15/11/2022
 ================
  * If experiment or proposal has a URL then make it clickable when searching for experiments and on instance creation page
- *  Examine instances/new request params for "dois": auto select associated proposals or experiments
+ * Examine instances/new request params for "dois": auto select associated proposals or experiments
 
 2.4.0 25/10/2022
 ================
