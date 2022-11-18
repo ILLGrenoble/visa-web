@@ -164,8 +164,22 @@ export class InstanceExperimentSelectComponent implements OnInit {
             const allYears = Array.from({length: maxYear - minYear + 1}, (v, k) => minYear + k).reverse();
             this._allYears.next(allYears);
 
-            this.fromYear = !this._fromYear ? minYear : this._fromYear;
-            this.toYear = !this._toYear ? maxYear : this._toYear;
+            const fromYear = !this._fromYear ? minYear : this._fromYear;
+            const toYear = !this._toYear ? maxYear : this._toYear;
+
+            if (allYears.includes(fromYear)) {
+                this.fromYear = fromYear;
+            } else {
+                this.fromYear = allYears[allYears.length - 1];
+            }
+
+            if (allYears.includes(toYear)) {
+                this.toYear = toYear;
+            } else {
+                this.toYear = allYears[0];
+            }
+
+            this.reload(1);
         });
 
         this.dialogRef.keydownEvents().subscribe(event => {
