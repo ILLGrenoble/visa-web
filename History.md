@@ -1,3 +1,7 @@
+2.4.3 18/11/2022
+================
+ * Fix bug that stopped someone without experiments from seeing open data
+
 2.4.2 18/11/2022
 ================
  * Ensure dates in experiment search dialog are always valid
