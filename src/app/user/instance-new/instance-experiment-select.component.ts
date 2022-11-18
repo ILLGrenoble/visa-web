@@ -110,6 +110,13 @@ export class InstanceExperimentSelectComponent implements OnInit {
                 private configurationService: ConfigService,
                 @Inject(MAT_DIALOG_DATA) public data) {
 
+        this.openDataAvailable = data.openDataIncluded;
+        if (!this.openDataAvailable) {
+            this.includeOpenData = false;
+        } else if (data.totalUserExperiments == 0) {
+            this.includeOpenData = true;
+        }
+
         const localInstrumentId = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY);
         const localFromYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY);
         const localToYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY);
@@ -143,13 +150,6 @@ export class InstanceExperimentSelectComponent implements OnInit {
 
     public ngOnInit(): void {
         this.fetchExperiments(1);
-
-        this.configurationService.load().then(config => {
-            this.openDataAvailable = config.experiments.openDataIncluded;
-            if (!this.openDataAvailable) {
-                this.includeOpenData = false;
-            }
-        });
 
         this.accountService.getInstruments().subscribe(instruments => {
             this.instruments = instruments;

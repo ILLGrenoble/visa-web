@@ -45,6 +45,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
     private _experimentFree = false;
     private _quotas: Quota;
     private _totalExperiments: number;
+    private _openDataIncluded: boolean;
     private _customiseInstance = false;
 
     private _errors: string[];
@@ -120,20 +121,16 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this._quotas = value;
     }
 
-    get totalExperiments(): number {
-        return this._totalExperiments;
-    }
-
-    set totalExperiments(value: number) {
-        this._totalExperiments = value;
-    }
-
     get selectedPlan(): Plan {
         return this._selectedPlan;
     }
 
     get errors(): string[] {
         return this._errors;
+    }
+
+    get hasExperiments(): boolean {
+        return this._totalExperiments > 0 || this._openDataIncluded;
     }
 
     constructor(private _accountService: AccountService,
@@ -157,12 +154,13 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this.analyticsService.trackPageView(title);
         const {quotas, totalExperiments} = this.route.snapshot.data;
         this.quotas = quotas;
-        this.totalExperiments = totalExperiments;
+        this._totalExperiments = totalExperiments;
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
         });
 
         this.configurationService.load().then(config => {
+            this._openDataIncluded = config.experiments.openDataIncluded;
 
             this.route.queryParams.pipe(
                 map((params) => new QueryParameterBag(params)),
@@ -182,12 +180,13 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
                         });
                 }
             });
-        });
 
-        // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
-        if (this.totalExperiments === 0 && this.canBeExperimentFree) {
-            this.experimentFree = true;
-        }
+            // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
+            if (this._totalExperiments === 0 && this.canBeExperimentFree && !config.experiments.openDataIncluded) {
+                this.experimentFree = true;
+            }
+
+        });
 
         this._experimentsObservable.subscribe(experiments => {
             const experimentIds = experiments.map((experiment) => experiment.id);
@@ -283,7 +282,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
 
     public openExperimentSearch(): void {
         const dialogRef = this.dialog.open(InstanceExperimentSelectComponent, {
-            width: 'max(1000px, 70%)', data: {},
+            width: 'max(1000px, 70%)', data: { totalUserExperiments: this._totalExperiments, openDataIncluded: this._openDataIncluded },
         });
         dialogRef.componentInstance.selected.subscribe((experiment: Experiment) => {
             this.addExperiment(experiment);

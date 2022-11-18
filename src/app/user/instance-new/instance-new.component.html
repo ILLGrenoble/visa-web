@@ -32,7 +32,7 @@
                 </div>
 
             </div>
-            <div class="blankslate" *ngIf="totalExperiments == 0 && !canBeExperimentFree">
+            <div class="blankslate" *ngIf="!hasExperiments && !canBeExperimentFree">
                 <div class="title">
                     <img src="/assets/images/experiments.png" alt="experiments"/>
                     <h3>You do not have any experiments</h3>
@@ -58,11 +58,11 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (totalExperiments > 0 || canBeExperimentFree)">
+            <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (hasExperiments || canBeExperimentFree)">
                 <div class="clr-col-12">
                     <div class="sections">
 
-                        <div class="section" *ngIf="totalExperiments > 0">
+                        <div class="section" *ngIf="hasExperiments">
                             <div class="title">
                                 <h2>Experiments</h2>
                                 <div *ngIf="!canBeExperimentFree" class="title-not-experiment-free">
