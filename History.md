@@ -1,3 +1,7 @@
+2.4.4 23/11/2022
+================
+ * Change message when an account has a quota of 0 (waiting approval)
+
 2.4.3 18/11/2022
 ================
  * Fix bug that stopped someone without experiments from seeing open data
