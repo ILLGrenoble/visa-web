@@ -47,6 +47,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
     private _totalExperiments: number;
     private _openDataIncluded: boolean;
     private _customiseInstance = false;
+    private _contactEmail: string;
 
     private _errors: string[];
 
@@ -133,6 +134,10 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         return this._totalExperiments > 0 || this._openDataIncluded;
     }
 
+    get contactEmail(): string {
+        return this._contactEmail;
+    }
+
     constructor(private _accountService: AccountService,
                 private _router: Router,
                 private _helperService: HelperService,
@@ -154,6 +159,8 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this.analyticsService.trackPageView(title);
         const {quotas, totalExperiments} = this.route.snapshot.data;
         this.quotas = quotas;
+        this.quotas.availableInstances = 0;
+        this.quotas.maxInstances = 0;
         this._totalExperiments = totalExperiments;
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
@@ -161,6 +168,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
 
         this.configurationService.load().then(config => {
             this._openDataIncluded = config.experiments.openDataIncluded;
+            this._contactEmail = config.contactEmail;
 
             this.route.queryParams.pipe(
                 map((params) => new QueryParameterBag(params)),

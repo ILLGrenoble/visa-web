@@ -32,7 +32,7 @@
                 </div>
 
             </div>
-            <div class="blankslate" *ngIf="!hasExperiments && !canBeExperimentFree">
+            <div class="blankslate" *ngIf="quotas.availableInstances > 0 && !hasExperiments && !canBeExperimentFree">
                 <div class="title">
                     <img src="/assets/images/experiments.png" alt="experiments"/>
                     <h3>You do not have any experiments</h3>
@@ -44,7 +44,20 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="blankslate" *ngIf="quotas.availableInstances == 0">
+            <div class="blankslate" *ngIf="quotas.maxInstances == 0">
+                <div class="title">
+                    <img src="/assets/images/warning.png" alt="warning"/>
+                    <h3>Account pending approval</h3>
+                </div>
+                <div class="description">
+                    <p>Your account needs to be approved before you can create instances.</p>
+                    <p *ngIf="contactEmail">If you need more information please contact the VISA administrators at <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
+                </div>
+            </div>
+            <div class="blankslate" *ngIf="quotas.availableInstances == 0 && quotas.maxInstances > 0">
                 <div class="title">
                     <img src="/assets/images/warning.png" alt="warning"/>
                     <h3>Instance quota reached</h3>
