@@ -159,8 +159,6 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this.analyticsService.trackPageView(title);
         const {quotas, totalExperiments} = this.route.snapshot.data;
         this.quotas = quotas;
-        this.quotas.availableInstances = 0;
-        this.quotas.maxInstances = 0;
         this._totalExperiments = totalExperiments;
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
