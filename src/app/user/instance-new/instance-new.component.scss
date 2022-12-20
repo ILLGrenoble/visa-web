@@ -286,3 +286,15 @@
         cursor: pointer;
     }
 }
+
+.experiments-list {
+    a {
+        color: #0072a3;
+        font-weight: 400;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}

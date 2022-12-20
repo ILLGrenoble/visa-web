@@ -56,6 +56,7 @@ export class CardComponent implements OnInit, OnDestroy {
     private _timerSubscription: Subscription = null;
     public expirationCountdown = '';
     public canConnect = false;
+    public allProtocolsActive = true;
 
     constructor(private ref: ElementRef,
                 private notifierService: NotifierService,
@@ -128,15 +129,15 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     public canShutdownInstance(): boolean {
-        return this.instance.state === 'ACTIVE' && this.instance.membership.isRole('OWNER');
+        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
     }
 
     public canRebootInstance(): boolean {
-        return this.instance.state === 'ACTIVE' && this.instance.membership.isRole('OWNER');
+        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
     }
 
     public canAccessJupyter(): boolean {
-        const hasJupyterProtocol = this.instance.plan.image.hasProtocolWithName('JUPYTER');
+        const hasJupyterProtocol = this.instance.hasProtocolWithName('JUPYTER');
 
         return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
     }
@@ -263,45 +264,48 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this.updateCanConnect();
 
-        this.accountService.getInstanceState(this._instance).subscribe((instanceState) => {
-            if ((instanceState.state === 'STOPPED' || instanceState.state === 'STOPPING'
-                || instanceState.state === 'ACTIVE') && instanceState.deleteRequested) {
-                this._instance.state = 'DELETING';
-            } else {
-                this._instance.state = instanceState.state;
-            }
-            this._instance.expirationDate = new Date(instanceState.expirationDate);
-            this._instance.terminationDate = new Date(instanceState.terminationDate);
+        this.accountService.getInstanceState(this._instance).subscribe({
+            next: (instanceState) => {
+                if ((instanceState.state === 'STOPPED' || instanceState.state === 'STOPPING'
+                    || instanceState.state === 'ACTIVE' || instanceState.state === 'PARTIALLY_ACTIVE') && instanceState.deleteRequested) {
+                    this._instance.state = 'DELETING';
+                } else {
+                    this._instance.state = instanceState.state;
+                }
+                this._instance.expirationDate = new Date(instanceState.expirationDate);
+                this._instance.terminationDate = new Date(instanceState.terminationDate);
+                this._instance.activeProtocols = instanceState.activeProtocols;
 
-            this.updateExpirationCountdown();
+                this.updateExpirationCountdown();
 
-            if (instanceState.state === 'DELETED') {
+                if (instanceState.state === 'DELETED') {
+                    this.doUpdateParent.next(null);
+                }
+
+                if (['UNKNOWN', 'STARTING', 'PARTIALLY_ACTIVE', 'REBOOTING', 'BUILDING', 'STOPPING', 'DELETING'].includes(this._instance.state)) {
+                    this.restartUpdateTimers(CardComponent.ACTIVE_UPDATE_PERIOD);
+
+                } else {
+                    this.restartUpdateTimers(CardComponent.BACKGROUND_UPDATE_PERIOD);
+
+                }
+
+                if (this.willExpireWarning() && !this.willExpireFromInactivity()) {
+                    this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
+                        this._requestExtensionEnabled = (instanceLifetimeExtension == null);
+                    });
+                }
+            },
+            error: () => {
+                this.stopUpdateTimers();
+
                 this.doUpdateParent.next(null);
             }
-
-            if (['UNKNOWN', 'STARTING', 'REBOOTING', 'BUILDING', 'STOPPING', 'DELETING'].includes(this._instance.state)) {
-                this.restartUpdateTimers(CardComponent.ACTIVE_UPDATE_PERIOD);
-
-            } else {
-                this.restartUpdateTimers(CardComponent.BACKGROUND_UPDATE_PERIOD);
-
-            }
-
-            if (this.willExpireWarning() && !this.willExpireFromInactivity()) {
-                this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
-                    this._requestExtensionEnabled = (instanceLifetimeExtension == null);
-                });
-            }
-
-        }, (error) => {
-            this.stopUpdateTimers();
-
-            this.doUpdateParent.next(null);
         });
     }
 
     private updateCanConnect(): void {
-        if (this._instance != null && this._instance.state === 'ACTIVE') {
+        if (this._instance != null && (this._instance.state === 'ACTIVE' || this._instance.state === 'PARTIALLY_ACTIVE')) {
             if (this._instance.membership.role === 'OWNER') {
                 this.canConnect = true;
 

@@ -65,7 +65,7 @@
                                     <b>State</b>
                                 </dt>
                                 <dd>
-                                    {{ instance.state | titlecase }}
+                                    {{ instance.state.replace('_', ' ') | titlecase }}
                                 </dd>
                             </div>
                             <div class="admin-details-list-item">

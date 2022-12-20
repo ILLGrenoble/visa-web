@@ -1,3 +1,27 @@
+2.5.0 20/12/2022
+================
+ * Only show the members select is the server returns a list with at least one member.
+
+2.4.4 23/11/2022
+================
+ * Change message when an account has a quota of 0 (waiting approval)
+
+2.4.3 18/11/2022
+================
+ * Fix bug that stopped someone without experiments from seeing open data
+
+2.4.2 18/11/2022
+================
+ * Ensure dates in experiment search dialog are always valid
+ * Allow reboot and shutdown when instance in starting state
+ * Add option to search for open data (during instance creation)
+ * Handle partially_active state in client (remote desktop available but jupyter not yet available)
+
+2.4.1 15/11/2022
+================
+ * If experiment or proposal has a URL then make it clickable when searching for experiments and on instance creation page
+ * Examine instances/new request params for "dois": auto select associated proposals or experiments
+
 2.4.0 25/10/2022
 ================
  * Allows users to specify that an instance can be accessed by other members when they are not connected

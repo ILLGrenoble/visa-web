@@ -16,6 +16,12 @@ export class Experiment {
     @JsonProperty('title', String, 'isOptional')
     public title: string = undefined;
 
+    @JsonProperty('url', String, 'isOptional')
+    public url: string = undefined;
+
+    @JsonProperty('doi', String, 'isOptional')
+    public doi: string = undefined;
+
     @JsonProperty('startDate', String)
     public startDate: string = undefined;
 

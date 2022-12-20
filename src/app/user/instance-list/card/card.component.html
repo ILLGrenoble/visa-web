@@ -21,12 +21,18 @@
                 {{instance.state | lowercase}}
             </span>
         </div>
+        <div class="instance-state" *ngIf="['PARTIALLY_ACTIVE'].includes(instance.state)">
+            <img src="/assets/images/spinner.svg" class="instance-state--icon"/>
+            <span>
+                active
+            </span>
+        </div>
         <div class="instance-state" *ngIf="['ACTIVE'].includes(instance.state)">
             <span class="instance-state--icon">
                 <span class="instance-state-indicator instance-state-indicator--success"></span>
             </span>
             <span>
-                {{instance.state | lowercase}}
+                active
             </span>
         </div>
         <div class="instance-state" *ngIf="['STARTING', 'REBOOTING', 'BUILDING', 'STOPPING', 'DELETING'].includes(instance.state)">

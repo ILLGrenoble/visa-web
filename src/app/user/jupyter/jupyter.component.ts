@@ -69,8 +69,11 @@ export class JupyterComponent implements OnInit {
 
     public resizeJupyter(retry?: number): void {
         retry = retry || 0;
-        const jupyterMain = this.jupyterIframe.nativeElement.contentWindow.document.getElementById('main');
-        if (jupyterMain == null) {
+        let jupyterMain;
+        if (this.jupyterIframe) {
+            jupyterMain = this.jupyterIframe.nativeElement.contentWindow.document.getElementById('main');
+        }
+        if (this.jupyterIframe == null || jupyterMain == null) {
             if (retry < 50) {
                 setTimeout(() => {
                     this.resizeJupyter.call(this, ++retry);

@@ -75,7 +75,7 @@
                                 <clr-dg-cell class="support-cell">{{ instance.createdAt | date:'dd MMM'}}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">{{ instance.name }}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">{{ instance.owner.fullName }}</clr-dg-cell>
-                                <clr-dg-cell class="support-cell">{{ instance.state | titlecase }}</clr-dg-cell>
+                                <clr-dg-cell class="support-cell">{{ instance.state.replace('_', ' ') | titlecase }}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">
                                     <span *ngIf="getInstanceSessionMembers(instance).length == 0">
                                         {{ instance.lastSeenAt | timeDuration: 'date' }}

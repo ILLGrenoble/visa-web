@@ -18,6 +18,9 @@ export class Configuration {
         keyboardLayouts: { layout: string, name: string, selected: boolean }[];
     };
 
+    public experiments: {
+        openDataIncluded: boolean,
+    };
 
     public metadata: { [key: string]: string };
 

@@ -32,7 +32,7 @@
                 </div>
 
             </div>
-            <div class="blankslate" *ngIf="totalExperiments == 0 && !canBeExperimentFree">
+            <div class="blankslate" *ngIf="quotas.availableInstances > 0 && !hasExperiments && !canBeExperimentFree">
                 <div class="title">
                     <img src="/assets/images/experiments.png" alt="experiments"/>
                     <h3>You do not have any experiments</h3>
@@ -44,7 +44,20 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="blankslate" *ngIf="quotas.availableInstances == 0">
+            <div class="blankslate" *ngIf="quotas.maxInstances == 0">
+                <div class="title">
+                    <img src="/assets/images/warning.png" alt="warning"/>
+                    <h3>Account pending approval</h3>
+                </div>
+                <div class="description">
+                    <p>Your account needs to be approved before you can create instances.</p>
+                    <p *ngIf="contactEmail">If you need more information please contact the VISA administrators at <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
+                </div>
+            </div>
+            <div class="blankslate" *ngIf="quotas.availableInstances == 0 && quotas.maxInstances > 0">
                 <div class="title">
                     <img src="/assets/images/warning.png" alt="warning"/>
                     <h3>Instance quota reached</h3>
@@ -58,11 +71,11 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (totalExperiments > 0 || canBeExperimentFree)">
+            <div class="clr-row" *ngIf="quotas.availableInstances > 0 && (hasExperiments || canBeExperimentFree)">
                 <div class="clr-col-12">
                     <div class="sections">
 
-                        <div class="section" *ngIf="totalExperiments > 0">
+                        <div class="section" *ngIf="hasExperiments">
                             <div class="title">
                                 <h2>Experiments</h2>
                                 <div *ngIf="!canBeExperimentFree" class="title-not-experiment-free">
@@ -79,12 +92,12 @@
                                     </clr-toggle-container>
                                 </div>
                             </div>
-                            <div *ngIf="!experimentFree">
+                            <div *ngIf="!experimentFree" class="experiments-list">
                                 <button class="btn" (click)="openExperimentSearch()">
                                     Search for experiments
                                 </button>
 
-                                <clr-datagrid [clrDgRowSelection]="true">
+                                <clr-datagrid>
                                     <clr-dg-column [style.width.px]="150">Proposal</clr-dg-column>
                                     <clr-dg-column>Title</clr-dg-column>
                                     <clr-dg-column [style.width.px]="150">Instrument</clr-dg-column>
@@ -94,8 +107,14 @@
                                     <clr-dg-placeholder>No experiments selected
                                     </clr-dg-placeholder>
                                     <clr-dg-row *ngFor="let experiment of experiments">
-                                        <clr-dg-cell>{{ experiment.proposal.identifier }}</clr-dg-cell>
-                                        <clr-dg-cell>{{ experiment.title || experiment.proposal.title }}</clr-dg-cell>
+                                        <clr-dg-cell>
+                                            <a *ngIf="experiment.url || experiment.proposal.url" (click)="navigateToExperimentURL(experiment)">{{ experiment.proposal.identifier }}</a>
+                                            <div *ngIf="!experiment.url && !experiment.proposal.url">{{ experiment.proposal.identifier }}</div>
+                                        </clr-dg-cell>
+                                        <clr-dg-cell>
+                                            <a *ngIf="experiment.url || experiment.proposal.url" (click)="navigateToExperimentURL(experiment)">{{ experiment.title || experiment.proposal.title }}</a>
+                                            <div *ngIf="!experiment.url && !experiment.proposal.url">{{ experiment.title || experiment.proposal.title }}</div>
+                                        </clr-dg-cell>
                                         <clr-dg-cell>{{ experiment.instrument.name }}</clr-dg-cell>
                                         <clr-dg-cell>{{ experiment.startDate | date:'dd MMM yyyy' }}</clr-dg-cell>
                                         <clr-dg-cell>{{ experiment.endDate | date:'dd MMM yyyy' }}</clr-dg-cell>

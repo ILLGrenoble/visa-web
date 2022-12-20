@@ -26,7 +26,7 @@
                 <td>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation'}}</td>
                 <td *ngIf="multiCloudEnabled">{{ instance.cloudClient.name}}</td>
                 <td>{{ instance.cloudInstance?.address || 'No IP address'}}</td>
-                <td [ngClass]="{'text-danger': instance.state ==='ERROR'}">{{ instance.state | titlecase  }}</td>
+                <td [ngClass]="{'text-danger': instance.state ==='ERROR'}">{{ instance.state.replace('_', ' ') | titlecase  }}</td>
                 <td>
                     <clr-tooltip>
                         <span clrTooltipTrigger>{{ instance.createdAt | timeDuration:'date' }}</span>

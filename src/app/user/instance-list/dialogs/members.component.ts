@@ -147,7 +147,9 @@ export class MembersDialog implements OnInit {
 
     private loadUsers(): void {
         this.$users = this.accountService.getExperimentalTeamForInstance(this.instance).pipe(map((data) => {
-            return data.data.map(this.toOption);
+            if (data.data.length > 0) {
+                return data.data.map(this.toOption);
+            }
         }));
     }
 

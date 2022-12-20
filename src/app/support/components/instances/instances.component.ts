@@ -229,7 +229,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
     }
 
     public canConnect(instance: Instance): boolean {
-        if (instance.state !== 'ACTIVE') {
+        if (instance.state !== 'ACTIVE' && instance.state !== 'PARTIALLY_ACTIVE') {
             return false;
         }
         if (this._user != null && (this._user.id === instance.owner.id)) {

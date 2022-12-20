@@ -5,7 +5,7 @@ import {
     AccountService,
     AnalyticsService,
     ApplicationState,
-    CatalogueService,
+    CatalogueService, ConfigService,
     Experiment,
     HelperService,
     ImagePlans,
@@ -45,7 +45,9 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
     private _experimentFree = false;
     private _quotas: Quota;
     private _totalExperiments: number;
+    private _openDataIncluded: boolean;
     private _customiseInstance = false;
+    private _contactEmail: string;
 
     private _errors: string[];
 
@@ -120,20 +122,20 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this._quotas = value;
     }
 
-    get totalExperiments(): number {
-        return this._totalExperiments;
-    }
-
-    set totalExperiments(value: number) {
-        this._totalExperiments = value;
-    }
-
     get selectedPlan(): Plan {
         return this._selectedPlan;
     }
 
     get errors(): string[] {
         return this._errors;
+    }
+
+    get hasExperiments(): boolean {
+        return this._totalExperiments > 0 || this._openDataIncluded;
+    }
+
+    get contactEmail(): string {
+        return this._contactEmail;
     }
 
     constructor(private _accountService: AccountService,
@@ -146,6 +148,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
                 private titleService: Title,
                 private store: Store<ApplicationState>,
                 private cdr: ChangeDetectorRef,
+                private configurationService: ConfigService,
                 private dialog: MatDialog) {
         this._user$ = store.select(selectLoggedInUser);
     }
@@ -156,28 +159,40 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         this.analyticsService.trackPageView(title);
         const {quotas, totalExperiments} = this.route.snapshot.data;
         this.quotas = quotas;
-        this.totalExperiments = totalExperiments;
+        this._totalExperiments = totalExperiments;
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
         });
 
-        this.route.queryParams.pipe(
-            map((params) => new QueryParameterBag(params)),
-        ).subscribe((params: QueryParameterBag) => {
-            const proposals = params.getList('proposals', null);
-            if (proposals) {
-                this._accountService.getExperiments(100, 1, { proposals }, {value: 'proposal', descending: false})
-                    .subscribe((data) => {
-                        this._experimentsObservable.next(data.items);
-                        this._errors = data.errors;
-                    });
-            }
-        });
+        this.configurationService.load().then(config => {
+            this._openDataIncluded = config.experiments.openDataIncluded;
+            this._contactEmail = config.contactEmail;
 
-        // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
-        if (this.totalExperiments === 0 && this.canBeExperimentFree) {
-            this.experimentFree = true;
-        }
+            this.route.queryParams.pipe(
+                map((params) => new QueryParameterBag(params)),
+            ).subscribe((params: QueryParameterBag) => {
+                const proposals = params.getList('proposals', null);
+                const dois = params.getList('dois', null);
+                if (proposals || dois) {
+                    const filters = {
+                        ...(proposals && { proposals }),
+                        ...(dois && { dois }),
+                        includeOpenData: config.experiments.openDataIncluded,
+                    };
+                    this._accountService.getExperiments(100, 1, filters)
+                        .subscribe((data) => {
+                            this._experimentsObservable.next(data.items);
+                            this._errors = data.errors;
+                        });
+                }
+            });
+
+            // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
+            if (this._totalExperiments === 0 && this.canBeExperimentFree && !config.experiments.openDataIncluded) {
+                this.experimentFree = true;
+            }
+
+        });
 
         this._experimentsObservable.subscribe(experiments => {
             const experimentIds = experiments.map((experiment) => experiment.id);
@@ -273,7 +288,7 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
 
     public openExperimentSearch(): void {
         const dialogRef = this.dialog.open(InstanceExperimentSelectComponent, {
-            width: 'max(1000px, 70%)', data: {},
+            width: 'max(1000px, 70%)', data: { totalUserExperiments: this._totalExperiments, openDataIncluded: this._openDataIncluded },
         });
         dialogRef.componentInstance.selected.subscribe((experiment: Experiment) => {
             this.addExperiment(experiment);
@@ -286,4 +301,10 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         }
     }
 
+    public navigateToExperimentURL(experiment: Experiment): void {
+        const url = experiment.url || experiment.proposal.url;
+        if (url) {
+            window.open(url, '_blank');
+        }
+    }
 }
