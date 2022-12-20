@@ -1,3 +1,7 @@
+2.5.0 20/12/2022
+================
+ * Only show the members select is the server returns a list with at least one member.
+
 2.4.4 23/11/2022
 ================
  * Change message when an account has a quota of 0 (waiting approval)
