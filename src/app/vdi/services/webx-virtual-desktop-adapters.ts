@@ -1,11 +1,5 @@
 import {ClientAdapter, DisplayAdapter, KeyboardAdapter, MouseAdapter, MouseState} from './virtual-desktop-adapters';
-import {
-    WebXClient,
-    WebXDisplay,
-    WebXKeyboard,
-    WebXMouse,
-    WebXMouseState
-} from '../../../../../../webx/webx-web/webx-web/src';
+import {WebXClient, WebXDisplay, WebXKeyboard, WebXMouse, WebXMouseState} from '@illgrenoble/webx-client';
 
 class WebXKeyboardAdapter extends KeyboardAdapter {
     constructor(private _keyboard: WebXKeyboard) {

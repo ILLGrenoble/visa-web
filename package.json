@@ -34,6 +34,7 @@
         "@ctrl/ngx-codemirror": "^4.1.1",
         "@hackages/ngxerrors": "^8.0.0",
         "@illgrenoble/visa-guacamole-common-js": "^0.0.2",
+        "@illgrenoble/webx-client": "^0.1.1",
         "@ng-select/ng-select": "^7.4.0",
         "@ngrx/effects": "^12.5.1",
         "@ngrx/router-store": "^12.5.1",
@@ -64,7 +65,6 @@
         "rxjs": "^7.4.0",
         "screenfull": "^6.0.0",
         "tslib": "^2.3.1",
-        "webx-web": "file:../../webx/webx-web/webx-web",
         "zone.js": "^0.11.4"
     },
     "devDependencies": {

@@ -2,7 +2,7 @@ import {VirtualDesktopManager} from './virtual-desktop-manager.service';
 import {WebXClientAdapter } from './webx-virtual-desktop-adapters';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
-import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel} from '../../../../../../webx/webx-web/webx-web/src';
+import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel} from '@illgrenoble/webx-client';
 
 class StatsHandler extends WebXStatsHandler {
 
