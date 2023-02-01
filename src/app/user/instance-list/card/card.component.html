@@ -160,13 +160,13 @@
                     </div>
                 </div>
 
-                <div *ngIf="!canAccessJupyter()" class="instance-access">
+                <div *ngIf="!multiEnvAvailable()" class="instance-access">
                     <button class="instance-access-btn" [routerLink]="['/instances', instance.uid]"
                             [disabled]="!canConnect"><clr-icon shape="display" class="is-solid"></clr-icon> Connect
                     </button>
                 </div>
 
-                <div *ngIf="canAccessJupyter()" class="instance-access">
+                <div *ngIf="multiEnvAvailable()" class="instance-access">
                     <button class="instance-access-btn instance-access-btn-left" [routerLink]="['/instances', instance.uid]"
                             [disabled]="!canConnect"><clr-icon shape="display" class="is-solid" style="margin-right: 4px"></clr-icon> Connect
                     </button>
@@ -175,7 +175,13 @@
                         <visa-dropdown-menu-item [routerLink]="['/instances', instance.uid]">
                             <clr-icon shape="display" class="is-solid" style="margin-right: 8px"></clr-icon>Remote Desktop
                         </visa-dropdown-menu-item>
-                        <visa-dropdown-menu-item [routerLink]="['/instances', instance.uid, 'jupyter']">
+                        <visa-dropdown-menu-item *ngIf="canAccessWebXDesktop()" [routerLink]="['/instances', instance.uid, 'beta']">
+                            <div style="margin-right: 8px">
+                                <img width="16px" src="/assets/images/X11.png">
+                            </div>
+                            Remote Desktop (beta)
+                        </visa-dropdown-menu-item>
+                        <visa-dropdown-menu-item *ngIf="canAccessJupyter()" [routerLink]="['/instances', instance.uid, 'jupyter']">
                             <div style="margin-right: 8px">
                                 <img width="16px" src="/assets/images/jupyter_logo.svg">
                             </div>

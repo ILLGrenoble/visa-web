@@ -40,6 +40,12 @@ export const ROUTES: Routes = [
                 canActivate: [AuthenticationGuard],
             },
             {
+                path: 'instances/:id/beta',
+                component: InstanceComponent,
+                canActivate: [AuthenticationGuard],
+                data: {useWebX: true}
+            },
+            {
                 path: 'instances/:id/jupyter',
                 component: JupyterComponent,
                 canActivate: [AuthenticationGuard],

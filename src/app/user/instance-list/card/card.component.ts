@@ -142,6 +142,16 @@ export class CardComponent implements OnInit, OnDestroy {
         return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
     }
 
+    public canAccessWebXDesktop(): boolean {
+        const hasWebXProtocol = this.instance.hasProtocolWithName('WEBX');
+
+        return (this.canConnect &&  hasWebXProtocol);
+    }
+
+    public multiEnvAvailable(): boolean {
+        return this.canAccessJupyter() || this.canAccessWebXDesktop();
+    }
+
     public isOwner(): boolean {
         return this.instance.membership.isRole('OWNER');
     }

@@ -110,6 +110,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.createAndBindHotkeys();
         const instanceId = this.route.snapshot.paramMap.get('id');
+
+        this._useWebX = this.route.snapshot.data.useWebX != null ? this.route.snapshot.data.useWebX : false;
+
         this.accountService.getInstance(instanceId)
             .then((instance) => {
                 this.setInstance(instance);
