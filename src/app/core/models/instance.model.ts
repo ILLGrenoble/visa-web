@@ -27,6 +27,9 @@ export class Instance {
     @JsonProperty('name', String)
     private _name: string = undefined;
 
+    @JsonProperty('ipAddress', String)
+    private _ipAddress: string = undefined;
+
     @JsonProperty('comments', String)
     private _comments: string = undefined;
 
@@ -104,6 +107,14 @@ export class Instance {
 
     public set name(value: string) {
         this._name = value;
+    }
+
+    get ipAddress(): string {
+        return this._ipAddress;
+    }
+
+    set ipAddress(value: string) {
+        this._ipAddress = value;
     }
 
     public get comments(): string {

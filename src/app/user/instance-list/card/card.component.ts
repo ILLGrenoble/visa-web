@@ -1,10 +1,12 @@
 import {Component, ElementRef, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {AccountService, ConfigService, Configuration, Instance} from '@core';
-import {Subject, Subscription, timer} from 'rxjs';
+import {AccountService, Configuration, Instance, User, ApplicationState, selectLoggedInUser} from '@core';
+import {Observable, Subject, Subscription, timer} from 'rxjs';
 import {DetailsDialog, ExperimentsDialog, MembersDialog, RequestExtensionDialog} from '../dialogs';
 import {MatDialog} from '@angular/material/dialog';
 import {NotifierService} from 'angular-notifier';
 import * as moment from 'moment';
+import {Store} from '@ngrx/store';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-instance-list-card',
@@ -20,6 +22,9 @@ export class CardComponent implements OnInit, OnDestroy {
 
     private static ACTIVE_UPDATE_PERIOD = 1000;
     private static BACKGROUND_UPDATE_PERIOD = 30000;
+
+    private _user$: Observable<User>;
+    private _user: User;
 
     private _instance: Instance;
     private _configuration: Configuration;
@@ -50,23 +55,30 @@ export class CardComponent implements OnInit, OnDestroy {
         return this._requestExtensionEnabled;
     }
 
+    get user(): User {
+        return this._user;
+    }
+
     public isSettingsOpen = false;
 
     private _currentUpdatePeriod = 0;
     private _timerSubscription: Subscription = null;
     public expirationCountdown = '';
     public canConnect = false;
-    public allProtocolsActive = true;
 
     constructor(private ref: ElementRef,
                 private notifierService: NotifierService,
                 private dialog: MatDialog,
+                private store: Store<ApplicationState>,
                 private accountService: AccountService) {
-
+        this._user$ = store.select(selectLoggedInUser);
     }
 
     public ngOnInit(): void {
         this.updateInstanceState();
+        this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
+            this._user = user;
+        });
     }
 
     public ngOnDestroy(): void {
