@@ -8,7 +8,6 @@ import {delay, map, retryWhen, share, switchMap, take, takeUntil} from 'rxjs/ope
 import {environment} from '../../../../environments/environment';
 import * as moment from 'moment';
 import {NotifierService} from 'angular-notifier';
-import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'visa-admin-instance',
@@ -74,6 +73,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this._minDate;
     }
 
+    get isImmortal(): boolean {
+        return this._instance.terminationDate == null
+    }
+
     constructor(private apollo: Apollo,
                 private route: ActivatedRoute,
                 private router: Router,
@@ -94,10 +97,16 @@ export class InstanceComponent implements OnInit, OnDestroy {
             share(),
             takeUntil(this.destroy$),
         ).subscribe((data) => {
-            this.instance = data;
-            if (this._terminationDate == null) {
-                this._terminationDate = new Date(this.instance.terminationDate);
-                this._minDate = `${this._terminationDate.getFullYear()}-${this._terminationDate.getMonth() + 1}-${this._terminationDate.getDate()}`;
+            if (!this._settingDate) {
+                this.instance = data;
+                const now = new Date();
+                this._minDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+                if (this.instance.terminationDate) {
+                    this._terminationDate = new Date(this.instance.terminationDate);
+                    // this._minDate = `${this._terminationDate.getFullYear()}-${this._terminationDate.getMonth() + 1}-${this._terminationDate.getDate()}`;
+                } else {
+                    this._terminationDate = null;
+                }
             }
         });
     }
@@ -185,10 +194,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     public handleUpdateTerminationDate(): void {
         this._settingDate = false;
-        const dateString = moment(this._terminationDate).format('YYYY-MM-DD HH:mm');
+        const dateString = this._terminationDate ? moment(this._terminationDate).format('YYYY-MM-DD HH:mm') : null;
         this.apollo.mutate({
             mutation: gql`
-                  mutation updateInstanceTerminationDate($id: Int!, $date: String!) {
+                  mutation updateInstanceTerminationDate($id: Int!, $date: String) {
                     updateInstanceTerminationDate(id: $id, date: $date) {
                       message
                     }
@@ -199,7 +208,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 date: dateString
             },
         }).toPromise().then(() => {
-            this.instance.terminationDate = this._terminationDate.toString();
+            this.instance.terminationDate = this._terminationDate ? this._terminationDate.toString() : null;
             this.notifierService.notify('success', 'Updated instance termination date');
         });
     }
@@ -232,6 +241,11 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             email
                             affiliation {
                                 name
+                            }
+                            userRoles {
+                                role {
+                                    name
+                                }
                             }
                         }
                         username
@@ -276,6 +290,20 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     public formatImageName(image): void {
         return image.version ? `${image.name} (${image.version})` : image.name;
+    }
+
+    public toggleImmortal(): void {
+        if (this._terminationDate) {
+            this._terminationDate = null;
+            this.handleUpdateTerminationDate();
+
+        } else {
+            const isStaff = this._instance.owner.userRoles.find(userRole => userRole.role.name === 'STAFF') != null;
+            const day = 1000 * 60 * 60 * 24;
+            const termination = isStaff ? day * 60 : day * 14;
+            this._terminationDate = new Date(Date.now() + termination);
+            this.handleUpdateTerminationDate();
+        }
     }
 
 }

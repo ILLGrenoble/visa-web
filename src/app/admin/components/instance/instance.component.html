@@ -106,16 +106,26 @@
                                     <b>Termination date</b>
                                 </dt>
                                 <dd>
-                                    <div *ngIf="!settingDate">
-                                        {{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}
-                                        <button class="btn btn-sm" type="button" (click)="settingDate = true" style="margin-left: 16px">Extend lifetime</button>
+                                    <div style="margin-top:-6px;">
+                                        <label>Instance is immortal</label>
+                                        <span style="display: inline-block">
+                                            <clr-toggle-wrapper style="margin-left: 16px; padding-top: 7px">
+                                                <input type="checkbox" clrToggle (ngModel)="isImmortal"  (change)="toggleImmortal()" />
+                                            </clr-toggle-wrapper>
+                                        </span>
                                     </div>
-                                    <div *ngIf="settingDate">
-                                        <clr-date-container style="margin-top: 2px">
-                                            <input type="date" [(clrDate)]="terminationDate" [min]="minDate">
-                                        </clr-date-container>
-                                        <button class="btn btn-sm" type="button" (click)="resetTerminationDate()">Cancel</button>
-                                        <button class="btn btn-success-outline btn-sm" type="button" (click)="handleUpdateTerminationDate()" [disabled]="!terminationDateHasChanged()" >Update</button>
+                                    <div *ngIf="!isImmortal" style="margin-top:6px;">
+                                        <div *ngIf="!settingDate">
+                                            {{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}
+                                            <button class="btn btn-sm" type="button" (click)="settingDate = true" style="margin-left: 16px">Modify lifetime</button>
+                                        </div>
+                                        <div *ngIf="settingDate">
+                                            <clr-date-container style="margin-top: 2px">
+                                                <input type="date" [(clrDate)]="terminationDate" [min]="minDate">
+                                            </clr-date-container>
+                                            <button class="btn btn-sm" type="button" (click)="resetTerminationDate()">Cancel</button>
+                                            <button class="btn btn-success-outline btn-sm" type="button" (click)="handleUpdateTerminationDate()" [disabled]="!terminationDateHasChanged()" >Update</button>
+                                        </div>
                                     </div>
                                 </dd>
                             </div>
