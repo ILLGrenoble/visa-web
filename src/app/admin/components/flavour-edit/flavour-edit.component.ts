@@ -1,6 +1,13 @@
 import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudFlavour, Flavour, Instrument, FlavourInput, CloudClient, CloudImage, ImageInput, Image} from '../../../core/graphql';
+import {
+    CloudFlavour,
+    Flavour,
+    Instrument,
+    FlavourInput,
+    CloudClient,
+    Role
+} from '../../../core/graphql';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
@@ -17,6 +24,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
     private _cloudClients: CloudClient[];
     private _cloudFlavours: CloudFlavour[];
     private readonly _instruments: Instrument[];
+    private readonly _roles: Role[];
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<FlavourInput> = new Subject<FlavourInput>();
@@ -24,9 +32,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
     constructor(private readonly _dialogRef: MatDialogRef<FlavourEditComponent>,
                 private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {flavour, instruments, clone}) {
+                @Inject(MAT_DIALOG_DATA) {flavour, instruments, roles, clone}) {
 
         this._instruments = instruments;
+        this._roles = roles;
 
         this._dialogRef.keydownEvents().subscribe(event => {
             if (event.key === 'Escape') {
@@ -43,6 +52,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             cloudClient: new FormControl(null, Validators.required),
             cloudFlavour: new FormControl(null, Validators.required),
             instruments: new FormControl(null),
+            roles: new FormControl(null),
         });
 
         if (flavour) {
@@ -75,6 +85,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
     get instruments(): Instrument[] {
         return this._instruments;
+    }
+
+    get roles(): Role[] {
+        return this._roles;
     }
 
     get memory(): number {
@@ -152,8 +166,15 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
                 .filter(limit => limit.objectType === 'INSTRUMENT')
                 .map(limit => limit.objectId);
 
+            const flavourRoleIds = flavourLimits
+                .filter(limit => limit.flavour.id === flavour.id)
+                .filter(limit => limit.objectType === 'ROLE')
+                .map(limit => limit.objectId);
+
             const selectedInstruments = this._instruments.filter(instrument => (flavourInstrumentIds.includes(instrument.id)));
+            const selectedRoles = this._roles.filter(role => (flavourRoleIds.includes(role.id)));
             this.form.controls.instruments.reset(selectedInstruments);
+            this.form.controls.roles.reset(selectedRoles);
         });
     }
 
@@ -235,12 +256,13 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, cloudClient, cloudFlavour, instruments} = this.form.value;
+        const {name, cloudClient, cloudFlavour, instruments, roles} = this.form.value;
         const input = {
             name,
             cloudId: cloudClient.id,
             computeId: cloudFlavour.id,
             instrumentIds: instruments ? instruments.map(instrument => instrument.id) : [],
+            roleIds: roles ? roles.map(role => role.id) : [],
             memory: cloudFlavour.ram,
             cpu: cloudFlavour.cpus,
         } as FlavourInput;

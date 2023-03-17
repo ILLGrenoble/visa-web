@@ -556,6 +556,7 @@ export type FlavourInput = {
     cloudId?: Maybe<Scalars['Int']>;
     computeId: Scalars['String'];
     instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
+    roleIds: Maybe<Array<Maybe<Scalars['Int']>>>
 };
 
 export type ImageInput = {

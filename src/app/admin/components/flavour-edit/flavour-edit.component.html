@@ -36,7 +36,7 @@
 
             <clr-combobox-container>
                 <label for="instruments">Instruments</label>
-                <clr-combobox clrMulti="true" id="protocols" formControlName="instruments">
+                <clr-combobox clrMulti="true" id="instruments" formControlName="instruments">
                     <ng-container *clrOptionSelected="let selected">
                         {{selected?.name}}
                     </ng-container>
@@ -46,7 +46,22 @@
                         </clr-option>
                     </clr-options>
                 </clr-combobox>
-                <clr-control-helper>Use of this flavour will be restricted to instruments selected here</clr-control-helper>
+                <clr-control-helper>Use of this flavour will be restricted to instruments selected here (and roles below)</clr-control-helper>
+            </clr-combobox-container>
+
+            <clr-combobox-container>
+                <label for="roles">Roles</label>
+                <clr-combobox clrMulti="true" id="roles" formControlName="roles">
+                    <ng-container *clrOptionSelected="let selected">
+                        {{selected?.name}}
+                    </ng-container>
+                    <clr-options>
+                        <clr-option *clrOptionItems="let role of roles;" [clrValue]="role">
+                            {{role.name}}
+                        </clr-option>
+                    </clr-options>
+                </clr-combobox>
+                <clr-control-helper>Use of this flavour will be restricted to roles selected here (and the instruments above)</clr-control-helper>
             </clr-combobox-container>
 
         </form>

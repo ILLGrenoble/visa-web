@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Flavour, FlavourInput, Instrument} from '../../../core/graphql';
+import {Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -21,6 +21,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     private _refresh$: Subject<void> = new Subject();
     private _flavours: Flavour[] = [];
     private _instruments: Instrument[];
+    private _roles: Role[];
     private _loading: boolean;
     private _multiCloudEnabled = false;
 
@@ -78,6 +79,10 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 id
                                 name
                             }
+                            roles {
+                                id
+                                name
+                            }
                             cloudClients {
                                 id
                             }
@@ -87,13 +92,15 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 map(({data}) => ({
                     flavours: data.flavours,
                     instruments: data.instruments,
+                    roles: data.roles,
                     cloudClients: data.cloudClients,
                 })),
                 tap(() => this._loading = false)
             )
-            .subscribe(({flavours, instruments, cloudClients}) => {
+            .subscribe(({flavours, instruments, roles, cloudClients}) => {
                 this._flavours = flavours;
                 this._instruments = instruments;
+                this._roles = roles;
                 this._multiCloudEnabled = cloudClients.length > 1;
             });
     }
@@ -106,7 +113,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     public onCreate(flavour?: Flavour): void {
         const dialogRef = this._dialog.open(FlavourEditComponent, {
             width: '800px',
-            data: { flavour, instruments: this._instruments, clone: !!flavour },
+            data: { flavour, instruments: this._instruments, roles: this._roles, clone: !!flavour },
         });
         dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
             const source$ = this._apollo.mutate<any>({
@@ -164,7 +171,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     public onUpdate(flavour: Flavour): void {
         const dialogRef = this._dialog.open(FlavourEditComponent, {
-            width: '800px', data: { flavour, instruments: this._instruments },
+            width: '800px', data: { flavour, instruments: this._instruments, roles: this._roles },
         });
 
         dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
