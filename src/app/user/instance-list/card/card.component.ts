@@ -294,8 +294,8 @@ export class CardComponent implements OnInit, OnDestroy {
                 } else {
                     this._instance.state = instanceState.state;
                 }
-                this._instance.expirationDate = new Date(instanceState.expirationDate);
-                this._instance.terminationDate = new Date(instanceState.terminationDate);
+                this._instance.expirationDate = instanceState.expirationDate == null ? null : new Date(instanceState.expirationDate);
+                this._instance.terminationDate = instanceState.terminationDate == null ? null : new Date(instanceState.terminationDate);
                 this._instance.activeProtocols = instanceState.activeProtocols;
 
                 this.updateExpirationCountdown();
@@ -346,19 +346,24 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     private updateExpirationCountdown(): void {
-        const second = 1000;
-        const minute = second * 60;
-        const hour = minute * 60;
+        if (this.instance.expirationDate) {
+            const second = 1000;
+            const minute = second * 60;
+            const hour = minute * 60;
 
-        const durationMs = (this.instance.expirationDate.getTime() - new Date().getTime());
-        const hours = Math.floor(durationMs / hour);
-        const minutes = Math.floor((durationMs % hour) / minute);
+            const durationMs = (this.instance.expirationDate.getTime() - new Date().getTime());
+            const hours = Math.floor(durationMs / hour);
+            const minutes = Math.floor((durationMs % hour) / minute);
 
-        if (durationMs > hour) {
-            this.expirationCountdown = ` in ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            if (durationMs > hour) {
+                this.expirationCountdown = ` in ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes > 1 ? 's' : ''}`;
 
-        } else if (durationMs > 0) {
-            this.expirationCountdown = ` in ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            } else if (durationMs > 0) {
+                this.expirationCountdown = ` in ${minutes} minute${minutes > 1 ? 's' : ''}`;
+
+            } else {
+                this.expirationCountdown = '';
+            }
 
         } else {
             this.expirationCountdown = '';

@@ -7,11 +7,11 @@ import {User} from './user.model';
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
     public serialize(date: Date): any {
-        return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        return  date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
     }
 
     public deserialize(date: any): Date {
-        return new Date(date);
+        return date == null ? null : new Date(date);
     }
 }
 
