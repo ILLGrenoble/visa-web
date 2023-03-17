@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, Output} from '@angular/core';
+import {Component, Input, Output} from '@angular/core';
 import {CatalogueService, ImagePlans, Plan} from '@core';
 import {BehaviorSubject} from 'rxjs';
 
@@ -17,6 +17,9 @@ export class InstanceFlavourSelectComponent {
         let selectedPlan = null;
         if (imagePlans) {
             selectedPlan = imagePlans.plans.find(plan => plan.preset);
+            if (!selectedPlan && imagePlans.plans.length === 1) {
+                selectedPlan = imagePlans.plans[0];
+            }
         }
 
         this.selectedPlan.next(selectedPlan);
