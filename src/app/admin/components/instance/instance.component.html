@@ -110,7 +110,7 @@
                                         <label>Instance is immortal</label>
                                         <span style="display: inline-block">
                                             <clr-toggle-wrapper style="margin-left: 16px; padding-top: 7px">
-                                                <input type="checkbox" clrToggle (ngModel)="isImmortal"  (change)="toggleImmortal()" />
+                                                <input type="checkbox" clrToggle [checked]="isImmortal"  (change)="toggleImmortal()" />
                                             </clr-toggle-wrapper>
                                         </span>
                                     </div>

@@ -74,7 +74,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     get isImmortal(): boolean {
-        return this._instance.terminationDate == null
+        return this._instance.terminationDate == null;
     }
 
     constructor(private apollo: Apollo,
