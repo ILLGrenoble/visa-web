@@ -1,3 +1,12 @@
+2.6.0 21/03/2023
+================
+ * Modify admin interface to allow instances to be immortal
+ * Modify admin interfaces to associate roles to flavours
+ * Show IP address of instances in the homepage for admin users
+ * Make WebX available to users when the image has been associated to the WEBX protocol (and it is running)
+ * Add WebX remote desktop client
+ * Abstraction of remote desktop mechanism: all guacamole access through subclasses and adapters
+
 2.5.0 20/12/2022
 ================
  * Only show the members select is the server returns a list with at least one member.
