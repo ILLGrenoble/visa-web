@@ -3,7 +3,7 @@
     <div class="admin-container--left">
         <visa-admin-users-filter (onState)="onFilter($event)" [state]="currentState">
         </visa-admin-users-filter>
-        <visa-admin-user-groups></visa-admin-user-groups>
+        <visa-admin-user-groups (onChange)="onGroupsChanged()"></visa-admin-user-groups>
     </div>
     <div class="admin-container--main">
         <div class="clr-row">

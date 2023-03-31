@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ClrDatagridSortOrder, ClrDatagridStateInterface} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
@@ -13,6 +13,7 @@ import {Store} from '@ngrx/store';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
 import {User} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
+import {UsersFilterComponent} from "./users-filter.component";
 
 @Component({
     selector: 'visa-admin-users',
@@ -20,6 +21,8 @@ import {NotifierService} from 'angular-notifier';
     templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit, OnDestroy {
+
+    @ViewChild(UsersFilterComponent) filter: UsersFilterComponent;
 
     private _user$: Observable<CoreUser>;
 
@@ -189,6 +192,11 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     public onFilter(state: UsersFilterState): void {
         this.state$.next(state);
+    }
+
+    public onGroupsChanged(): void {
+        this.reload();
+        this.filter.reload();
     }
 
     /**

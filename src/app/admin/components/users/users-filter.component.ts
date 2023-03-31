@@ -102,24 +102,7 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.form.patchValue(this.state.filters);
 
-        this.apollo.query<any>({
-            errorPolicy: 'all',
-            query: gql`
-                {
-                    rolesAndGroups {
-                        name
-                    }
-                }
-            `,
-        }).pipe(takeUntil(this.destroy$)).subscribe((result) => {
-            this.loading = result.loading;
-            if (result.errors) {
-                this.notifierService.notify('error', 'There was an error loading the filters');
-
-            } else {
-                this._roles = result.data.rolesAndGroups || [];
-            }
-        });
+        this.reload();
 
         if (this.state.filters.userId != null) {
             this.apollo.query<any>({
@@ -146,6 +129,27 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
                 }
             });
         }
+    }
+
+    public reload(): void {
+        this.apollo.query<any>({
+            errorPolicy: 'all',
+            query: gql`
+                {
+                    rolesAndGroups {
+                        name
+                    }
+                }
+            `,
+        }).pipe(takeUntil(this.destroy$)).subscribe((result) => {
+            this.loading = result.loading;
+            if (result.errors) {
+                this.notifierService.notify('error', 'There was an error loading the filters');
+
+            } else {
+                this._roles = result.data.rolesAndGroups || [];
+            }
+        });
     }
 
     public ngOnDestroy(): void {

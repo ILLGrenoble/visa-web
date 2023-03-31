@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -8,6 +8,7 @@ import { Role } from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 import {UserGroupEditComponent} from "../user-group-edit";
 import {UserGroupDeleteComponent} from "../user-group-delete";
+import {UsersFilterState} from "../users/users-filter-state";
 
 @Component({
     selector: 'visa-admin-user-groups',
@@ -20,9 +21,15 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<void> = new Subject();
+    private _onChange: EventEmitter<void> = new EventEmitter();
 
     private _loading: boolean;
     private _userGroups: Role[] = [];
+
+    @Output('onChange')
+    public get onChange(): EventEmitter<void> {
+        return this._onChange;
+    }
 
     get userGroups(): Role[] {
         return this._userGroups;
@@ -105,6 +112,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
                 }).subscribe(_ => {
                     this._notifierService.notify('success', 'Successfully deleted user group');
                     this._refresh$.next();
+                    this._onChange.emit();
                 });
             }
         });
@@ -117,6 +125,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this._refresh$.next();
+                this._onChange.emit();
             }
         });
 
