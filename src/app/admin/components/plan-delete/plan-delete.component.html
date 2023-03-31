@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>Delete plan </h1>
+<div mat-dialog-content>
+    <div class="alert alert-danger" role="alert">
+        <div class="alert-items">
+            <div class="alert-item static">
+                <div class="alert-icon-wrapper">
+                    <clr-icon class="alert-icon" shape="info-alert"></clr-icon>
+                </div>
+                <span class="alert-text">
+                    Are you sure you want to delete this plan?
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onDelete()">Delete</button>
+</div>
+

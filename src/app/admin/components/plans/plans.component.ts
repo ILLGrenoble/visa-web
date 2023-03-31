@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {FlavourInput, Plan, PlanInput} from '../../../core/graphql';
+import {FlavourInput, Image, Plan, PlanInput} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
@@ -8,6 +8,8 @@ import {lastValueFrom, Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {PlanEditComponent} from '../plan-edit';
+import {ImageDeleteComponent} from "../image-delete";
+import {PlanDeleteComponent} from "../plan-delete";
 
 @Component({
     selector: 'visa-admin-plans',
@@ -195,6 +197,34 @@ export class PlansComponent implements OnInit, OnDestroy {
             }).catch((error) => {
                 this._notifierService.notify('error', error);
             });
+        });
+    }
+
+    public onDelete(plan: Plan): void {
+
+        const dialogRef = this._dialog.open(PlanDeleteComponent, {
+            width: '400px'
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                const source$ = this._apollo.mutate({
+                    mutation: gql`
+                        mutation DeletePlan($id: Int!){
+                            deletePlan(id:$id) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {id: plan.id},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                );
+                lastValueFrom(source$).then(_ => {
+                    this._notifierService.notify('success', 'Successfully deleted plan');
+                    this._refresh$.next();
+                });
+            }
         });
     }
 }

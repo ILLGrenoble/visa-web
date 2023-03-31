@@ -6,6 +6,7 @@ export * from './cloud-client-edit';
 export * from './cloud-client-delete';
 export * from './plans';
 export * from './plan-edit';
+export * from './plan-delete';
 export * from './flavours';
 export * from './flavour-delete';
 export * from './flavour-edit';
