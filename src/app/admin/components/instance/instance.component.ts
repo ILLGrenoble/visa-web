@@ -242,7 +242,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             affiliation {
                                 name
                             }
-                            userRoles {
+                            activeUserRoles {
                                 role {
                                     name
                                 }
@@ -298,7 +298,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.handleUpdateTerminationDate();
 
         } else {
-            const isStaff = this._instance.owner.userRoles.find(userRole => userRole.role.name === 'STAFF') != null;
+            const isStaff = this._instance.owner.activeUserRoles.find(userRole => userRole.role.name === 'STAFF') != null;
             const day = 1000 * 60 * 60 * 24;
             const termination = isStaff ? day * 60 : day * 14;
             this._terminationDate = new Date(Date.now() + termination);

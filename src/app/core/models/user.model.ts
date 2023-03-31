@@ -26,8 +26,8 @@ export class User {
     @JsonProperty('email', String, true)
     public email: string = undefined;
 
-    @JsonProperty('userRoles', [Role], true)
-    private userRoles: Role[] = undefined;
+    @JsonProperty('activeUserRoles', [Role], true)
+    private activeUserRoles: Role[] = undefined;
 
     get admin(): boolean {
         return this.hasRole('ADMIN');
@@ -39,7 +39,7 @@ export class User {
 
     get roles(): string[] {
         const now = Date.now();
-        return this.userRoles.filter(role => role.expiresAt == null || role.expiresAt.getTime() > now).map(role => role.name);
+        return this.activeUserRoles.filter(role => role.expiresAt == null || role.expiresAt.getTime() > now).map(role => role.name);
     }
 
     get humanReadableSupportRole(): string {
@@ -80,6 +80,6 @@ export class User {
     }
 
     public getUserRole(roleName: string): Role {
-        return this.userRoles.find(role => role.name === roleName);
+        return this.activeUserRoles.find(role => role.name === roleName);
     }
 }

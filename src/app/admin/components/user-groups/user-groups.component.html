@@ -1,0 +1,31 @@
+<div class="groups-box">
+
+    <div class="groups-box-header">
+        <h3 class="groups-box-title">User Groups</h3>
+        <button type="button" class="groups-box-action-btn" (click)="onCreate()">
+            Create user group
+        </button>
+    </div>
+    <div class="groups-box-body">
+        <clr-datagrid [clrDgLoading]="loading">
+            <clr-dg-column>User Group</clr-dg-column>
+            <clr-dg-column>Actions</clr-dg-column>
+            <clr-dg-row *clrDgItems="let userGroup of userGroups">
+                <clr-dg-cell style="line-height: 2.5em;">{{userGroup.name}}</clr-dg-cell>
+                <clr-dg-cell>
+                    <button (click)="onEdit(userGroup)"
+                            class="btn btn-sm">
+                        <clr-icon shape="trash"></clr-icon>
+                        Edit
+                    </button>
+                    <button (click)="onDelete(userGroup)"
+                            class="btn btn-danger-outline btn-sm">
+                        <clr-icon shape="trash"></clr-icon>
+                        Delete
+                    </button>
+                </clr-dg-cell>
+            </clr-dg-row>
+            <clr-dg-placeholder>No user groups</clr-dg-placeholder>
+        </clr-datagrid>
+    </div>
+</div>

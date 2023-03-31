@@ -28,12 +28,12 @@
             </div>
             <div class="filter-box">
                 <div class="filter-title">
-                    Role
+                    Role / Group
                 </div>
-                <div class="filter-body" *ngIf="data">
+                <div class="filter-body" *ngIf="roles">
                     <select formControlName="role" class="filter-input">
                         <option [ngValue]="null"></option>
-                        <option *ngFor="let role of data.roles" [ngValue]="role.name">
+                        <option *ngFor="let role of roles" [ngValue]="role.name">
                             {{ role.name }}
                         </option>
                     </select>

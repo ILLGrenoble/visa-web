@@ -79,7 +79,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 id
                                 name
                             }
-                            roles {
+                            rolesAndGroups {
                                 id
                                 name
                             }
@@ -92,7 +92,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 map(({data}) => ({
                     flavours: data.flavours,
                     instruments: data.instruments,
-                    roles: data.roles,
+                    roles: data.rolesAndGroups,
                     cloudClients: data.cloudClients,
                 })),
                 tap(() => this._loading = false)

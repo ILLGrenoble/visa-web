@@ -6,6 +6,7 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {UsersFilterState} from './users-filter-state';
 import {NotifierService} from 'angular-notifier';
+import {Role} from "../../../core/graphql";
 
 @Component({
     selector: 'visa-admin-users-filter',
@@ -21,7 +22,7 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup;
 
-    private _data: any[];
+    private _roles: Role[];
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -61,12 +62,8 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
         this._form = value;
     }
 
-    public get data(): any[] {
-        return this._data;
-    }
-
-    public set data(value: any[]) {
-        this._data = value;
+    public get roles(): Role[] {
+        return this._roles;
     }
 
     public get loading(): boolean {
@@ -109,16 +106,18 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
             errorPolicy: 'all',
             query: gql`
                 {
-                    roles {
+                    rolesAndGroups {
                         name
                     }
                 }
             `,
         }).pipe(takeUntil(this.destroy$)).subscribe((result) => {
-            this.data = result.data;
             this.loading = result.loading;
             if (result.errors) {
                 this.notifierService.notify('error', 'There was an error loading the filters');
+
+            } else {
+                this._roles = result.data.rolesAndGroups || [];
             }
         });
 

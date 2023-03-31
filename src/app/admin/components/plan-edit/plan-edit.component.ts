@@ -32,7 +32,7 @@ export class PlanEditComponent implements OnInit {
             }
         });
 
-        this._dialogRef.backdropClick().subscribe(this._dialogRef.close);
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
 
         this._form = new FormGroup({
             image: new FormControl(null, Validators.required),

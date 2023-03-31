@@ -89,7 +89,7 @@ export type DetailedCloudLimit = {
     error?: Scalars['String'];
 };
 
-export type CreateRoleInput = {
+export type RoleInput = {
     name: Scalars['String'];
     description?: Maybe<Scalars['String']>;
 };
@@ -540,6 +540,7 @@ export type Role = {
     __typename?: 'Role';
     id: Scalars['Int'];
     name: Scalars['String'];
+    description: Scalars['String'];
     expiresAt: Scalars['String'];
 };
 
@@ -577,6 +578,7 @@ export type UserInput = {
     admin: Scalars['Boolean'];
     guest: Scalars['Boolean'];
     guestExpiresAt: Scalars['String'];
+    groupIds: Maybe<Array<Maybe<Scalars['Int']>>>
 };
 
 export type PlanInput = {
@@ -639,7 +641,8 @@ export type User = {
     affiliation?: Maybe<Employer>;
     instances?: Maybe<Array<Maybe<Instance>>>;
     experiments?: Maybe<Array<Maybe<Experiment>>>;
-    userRoles?: Maybe<Array<Maybe<UserRole>>>;
+    activeUserRoles?: Maybe<Array<Maybe<UserRole>>>;
+    groups?: Maybe<Array<Maybe<Role>>>;
     lastSeenAt?: Maybe<Scalars['String']>;
     activatedAt?: Maybe<Scalars['String']>;
 };

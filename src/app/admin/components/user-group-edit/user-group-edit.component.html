@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+            <clr-input-container>
+                <label for="name">Name</label>
+                <input clrInput id="name" formControlName="name" class="form-control"/>
+                <clr-control-error>Please enter a user group name</clr-control-error>
+            </clr-input-container>
+            <clr-textarea-container>
+                <label for="description">Description</label>
+                <textarea clrTextarea id="description" formControlName="description" rows="2" cols="80"></textarea>
+            </clr-textarea-container>
+        </form>
+    </div>
+    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="submit()" [disabled]="form.invalid">Save</button>
+    </div>
+</ng-container>
+

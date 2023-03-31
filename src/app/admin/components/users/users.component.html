@@ -3,6 +3,7 @@
     <div class="admin-container--left">
         <visa-admin-users-filter (onState)="onFilter($event)" [state]="currentState">
         </visa-admin-users-filter>
+        <visa-admin-user-groups></visa-admin-user-groups>
     </div>
     <div class="admin-container--main">
         <div class="clr-row">
@@ -34,6 +35,11 @@
                             <clr-dg-column [clrDgSortBy]="'lastSeenAt'" [clrDgSortOrder]="isColumnSorted('lastSeenAt')">
                                 <ng-container>
                                     Last seen at
+                                </ng-container>
+                            </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    Groups
                                 </ng-container>
                             </clr-dg-column>
                             <clr-dg-column>
@@ -79,6 +85,13 @@
                                         </clr-tooltip-content>
                                     </clr-tooltip>
                                 </clr-dg-cell>
+
+                                <clr-dg-cell>
+                                    <span class="label" *ngFor="let group of user.groups">
+                                        {{group.name}}
+                                    </span>
+                                </clr-dg-cell>
+
                                 <clr-dg-cell>
                                     <clr-toggle-wrapper>
                                         <input type="checkbox" clrToggle [(ngModel)]="user.isAdmin" [disabled]="(user$ | async)?.id === user.id" (change)="toggleRole(user, 'ADMIN')" />

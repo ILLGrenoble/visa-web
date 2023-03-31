@@ -21,6 +21,19 @@
         <clr-date-container *ngIf="showGuestExpiryDate">
             <input type="date" clrDate formControlName="guestExpiresAt" [min]="minDate">
         </clr-date-container>
+        <clr-combobox-container>
+            <label for="userGroups">User groups</label>
+            <clr-combobox clrMulti="true" id="userGroups" formControlName="userGroups">
+                <ng-container *clrOptionSelected="let userGroup">
+                    {{userGroup?.name}}
+                </ng-container>
+                <clr-options>
+                    <clr-option *clrOptionItems="let userGroup of userGroups;" [clrValue]="userGroup">
+                        {{userGroup.name}}
+                    </clr-option>
+                </clr-options>
+            </clr-combobox>
+        </clr-combobox-container>
     </form>
 </div>
 <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">

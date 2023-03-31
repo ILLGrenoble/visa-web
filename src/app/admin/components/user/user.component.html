@@ -82,9 +82,19 @@
                                     <b>Roles</b>
                                 </dt>
                                 <dd>
-                                    <span *ngIf="user.userRoles.length == 0">User has no roles</span>
-                                    <span *ngFor="let userRole of user?.userRoles"
+                                    <span *ngIf="user.activeUserRoles.length == 0">User has no roles</span>
+                                    <span *ngFor="let userRole of user?.activeUserRoles"
                                           class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>User groups</b>
+                                </dt>
+                                <dd>
+                                    <span *ngIf="user.groups.length == 0">User does not belong to any user groups</span>
+                                    <span *ngFor="let group of user?.groups"
+                                          class="admin-details-list-item-tag">{{ group.name }}</span>
                                 </dd>
                             </div>
                             <div class="admin-details-list-item">

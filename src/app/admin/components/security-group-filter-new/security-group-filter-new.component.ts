@@ -69,7 +69,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
             }
         });
 
-        this._dialogRef.backdropClick().subscribe(this._dialogRef.close);
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 
     submit(): void {
@@ -168,7 +168,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                                 name
                             }
                           }
-                          roles {
+                          rolesAndGroups {
                             id
                             name
                           }
@@ -179,7 +179,7 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                       }
                     `
         }).pipe(
-            map(({data}) => ({securityGroups: data.securityGroups, roles: data.roles, instruments: data.instruments})),
+            map(({data}) => ({securityGroups: data.securityGroups, roles: data.rolesAndGroups, instruments: data.instruments})),
             takeUntil(this._destroy$)
         ).subscribe(({securityGroups, roles, instruments}) => {
             this._securityGroups = securityGroups.filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient.id);

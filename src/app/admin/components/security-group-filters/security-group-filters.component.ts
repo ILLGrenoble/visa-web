@@ -4,7 +4,7 @@ import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {CloudClient, SecurityGroup, SecurityGroupFilter} from '../../../core/graphql';
+import {CloudClient, SecurityGroupFilter} from '../../../core/graphql';
 import {SecurityGroupFilterNewComponent} from '../security-group-filter-new';
 import {SecurityGroupFilterDeleteComponent} from '../security-group-filter-delete';
 import {NotifierService} from 'angular-notifier';

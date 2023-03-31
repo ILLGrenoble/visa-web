@@ -1,21 +1,26 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {User, UserInput} from '../../../core/graphql';
+import {Role, User, UserInput} from '../../../core/graphql';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Subject} from 'rxjs';
-import * as moment from 'moment';
+import gql from 'graphql-tag';
+import {map, takeUntil} from 'rxjs/operators';
+import {Apollo} from 'apollo-angular';
 
 @Component({
     selector: 'visa-admin-user-edit',
     templateUrl: './user-edit.component.html',
 })
-export class UserEditComponent implements OnInit {
+export class UserEditComponent implements OnInit, OnDestroy {
 
     private _onSubmit$: Subject<UserInput> = new Subject<UserInput>();
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     private _form: FormGroup;
 
-    private _minDate: string;
+    private readonly _minDate: string;
+    private _userGroups: Role[];
+
 
     get user(): User {
         return this._user;
@@ -41,7 +46,12 @@ export class UserEditComponent implements OnInit {
         return this._minDate;
     }
 
+    get userGroups(): Role[] {
+        return this._userGroups;
+    }
+
     constructor(private _dialogRef: MatDialogRef<UserEditComponent>,
+                private _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) private _user) {
 
         const now = new Date();
@@ -49,9 +59,9 @@ export class UserEditComponent implements OnInit {
     }
 
     private _createForm(): FormGroup {
-        const {instanceQuota, userRoles} = this._user;
-        const admin = userRoles.find(userRole => userRole.role.name === 'ADMIN') != null;
-        const guestRole = userRoles.find(userRole => userRole.role.name === 'GUEST');
+        const {instanceQuota, activeUserRoles, groups} = this._user;
+        const admin = activeUserRoles.find(userRole => userRole.role.name === 'ADMIN') != null;
+        const guestRole = activeUserRoles.find(userRole => userRole.role.name === 'GUEST');
         const guest = guestRole != null;
         const guestRoleExpiresAtDate = guestRole != null && guestRole.expiresAt != null ? new Date(guestRole.expiresAt) : null;
 
@@ -62,12 +72,32 @@ export class UserEditComponent implements OnInit {
             admin: new FormControl(admin),
             guest: new FormControl(guest),
             guestExpiresAt:  new FormControl(guestRoleExpiresAt),
+            userGroups: new FormControl(groups),
         });
     }
 
     public ngOnInit(): void {
         this._form = this._createForm();
+        this._apollo.query<any>({
+            query: gql`
+               query groups {
+                     groups {
+                        id
+                        name
+                    }
+                }
+            `
+        }).pipe(
+            map(({data}) => ({userGroups: data.groups})),
+            takeUntil(this._destroy$),
+        ).subscribe(({userGroups}) => {
+            this._userGroups = userGroups || [];
+        });
+    }
 
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     public onCancel(): void {
@@ -76,7 +106,7 @@ export class UserEditComponent implements OnInit {
 
     public submit(): void {
 
-        const {instanceQuota, admin, guest, guestExpiresAt} = this._form.value;
+        const {instanceQuota, admin, guest, guestExpiresAt, userGroups} = this._form.value;
 
         let guestExpiresAtDate = null;
         if (guest && guestExpiresAt != null && guestExpiresAt !== '') {
@@ -87,7 +117,8 @@ export class UserEditComponent implements OnInit {
             instanceQuota,
             admin,
             guest,
-            guestExpiresAt: guestExpiresAtDate
+            guestExpiresAt: guestExpiresAtDate,
+            groupIds: userGroups ? userGroups.map(role => role.id) : [],
         } as UserInput;
         this._onSubmit$.next(input);
         this._dialogRef.close();

@@ -3,8 +3,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Apollo} from 'apollo-angular';
 import {User} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
-import {Observable, Subject, timer} from 'rxjs';
-import {delay, map, retryWhen, share, switchMap, take, takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {MatDialog} from '@angular/material/dialog';
 import {UserEditComponent} from '../user-edit';
@@ -99,11 +99,16 @@ export class UserComponent implements OnInit, OnDestroy {
                         instanceQuota
                         lastSeenAt
                         activatedAt
-                        userRoles {
+                        activeUserRoles {
                             role {
+                                id
                                 name
                             }
                             expiresAt
+                        }
+                        groups {
+                            id
+                            name
                         }
                         instances {
                             id

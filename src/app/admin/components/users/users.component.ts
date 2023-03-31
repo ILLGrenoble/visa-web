@@ -132,11 +132,14 @@ export class UsersComponent implements OnInit, OnDestroy {
                                     town
                                     countryCode
                                 }
-                                userRoles {
+                                activeUserRoles {
                                     role {
                                         name
                                     }
                                     expiresAt
+                                }
+                                groups {
+                                    name
                                 }
                                 lastSeenAt
                                 activatedAt
@@ -205,12 +208,12 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
 
     public userHasRole(user: User, roleName: string): boolean {
-        return user.userRoles.find(userRole => userRole.role.name === roleName) != null;
+        return user.activeUserRoles.find(userRole => userRole.role.name === roleName) != null;
     }
 
     public userIsSupport(user: User): boolean {
         return ['IT_SUPPORT', 'INSTRUMENT_CONTROL', 'INSTRUMENT_SCIENTIST'].some(supportRole => {
-            return user.userRoles.map(userRole => userRole.role.name).includes(supportRole);
+            return user.activeUserRoles.map(userRole => userRole.role.name).includes(supportRole);
         });
     }
 
@@ -230,7 +233,7 @@ export class UsersComponent implements OnInit, OnDestroy {
                         town
                         countryCode
                     }
-                    userRoles {
+                    activeUserRoles {
                         role {
                             name
                         }
@@ -248,7 +251,7 @@ export class UsersComponent implements OnInit, OnDestroy {
             },
         }).toPromise().then((result: any) => {
             const returnedUser = result.data.updateUserRole;
-            user.userRoles = returnedUser.userRoles;
+            user.activeUserRoles = returnedUser.activeUserRoles;
             user.isAdmin = this.userHasRole(user, 'ADMIN');
             user.isGuest = this.userHasRole(user, 'GUEST');
             this.notifierService.notify('success', 'Updated user roles successfully');
