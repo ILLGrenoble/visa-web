@@ -79,6 +79,10 @@ export class HomeComponent implements OnInit {
         return this._configuration;
     }
 
+    get user(): User {
+        return this._user;
+    }
+
     constructor(private accountService: AccountService,
                 private titleService: Title,
                 private route: ActivatedRoute,
