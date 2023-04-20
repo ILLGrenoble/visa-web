@@ -1,7 +1,8 @@
 2.7.0 20/04/2023
 ================
-* Soft deletion of plans
-* User groups: allow groups of users to be created by admin. Groups work the same as roles and can be used in the management of flavours and security groups.
+ * Soft deletion of plans
+ * User groups: allow groups of users to be created by admin. Groups work the same as roles and can be used in the management of flavours and security groups.
+ * Bug fix: Admin flavours page failed when flavour deleted from OpenStack
 
 2.6.0 21/03/2023
 ================
