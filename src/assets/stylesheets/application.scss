@@ -1,5 +1,5 @@
 $clr-forms-field-font-size: 0.75rem;
-@import "~@clr/ui/src/utils/components.clarity";
+@import "@clr/ui/src/utils/components.clarity";
 
 * {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important;
@@ -18,13 +18,12 @@ $clr-forms-field-font-size: 0.75rem;
     --clr-p1-color: #000;
 }
 
-@import "~angular-notifier/styles.scss";
-@import "~@ng-select/ng-select/themes/default.theme.css";
-@import "~@clr/icons/clr-icons.css";
-@import "~angular-notifier/styles.scss";
-@import "~codemirror/lib/codemirror.css";
-@import "~codemirror/theme/material.css";
-@import "~@angular/material/theming"; // Plus imports for other components in your app.
+@import "angular-notifier/styles.scss";
+@import "@ng-select/ng-select/themes/default.theme.css";
+@import "@clr/icons/clr-icons.css";
+@import "codemirror/lib/codemirror.css";
+@import "codemirror/theme/material.css";
+@import "@angular/material/theming"; // Plus imports for other components in your app.
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
