@@ -8,7 +8,7 @@ import {
     CloudClient,
     Role
 } from '../../../core/graphql';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -20,7 +20,7 @@ import {map, takeUntil} from 'rxjs/operators';
 })
 export class FlavourEditComponent implements OnInit, OnDestroy {
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
     private _cloudClients: CloudClient[];
     private _cloudFlavours: CloudFlavour[];
     private readonly _instruments: Instrument[];
@@ -47,12 +47,12 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             this._dialogRef.close();
         });
 
-        this._form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            cloudClient: new FormControl(null, Validators.required),
-            cloudFlavour: new FormControl(null, Validators.required),
-            instruments: new FormControl(null),
-            roles: new FormControl(null),
+        this._form = new UntypedFormGroup({
+            name: new UntypedFormControl(null, Validators.required),
+            cloudClient: new UntypedFormControl(null, Validators.required),
+            cloudFlavour: new UntypedFormControl(null, Validators.required),
+            instruments: new UntypedFormControl(null),
+            roles: new UntypedFormControl(null),
         });
 
         if (flavour) {
@@ -67,11 +67,11 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    get form(): FormGroup {
+    get form(): UntypedFormGroup {
         return this._form;
     }
 
-    set form(value: FormGroup) {
+    set form(value: UntypedFormGroup) {
         this._form = value;
     }
 

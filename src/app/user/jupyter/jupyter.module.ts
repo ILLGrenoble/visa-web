@@ -10,8 +10,7 @@ import {JupyterComponent} from './jupyter.component';
     ],
     declarations: [
         JupyterComponent,
-    ],
-    entryComponents: [],
+    ]
 })
 export class JupyterModule {
 

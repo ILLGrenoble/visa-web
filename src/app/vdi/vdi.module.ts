@@ -47,12 +47,11 @@ export class HammerConfig extends HammerGestureConfig {
         StatusBarComponent,
         StatusBarItemComponent
     ],
-    entryComponents: [],
     bootstrap: [RemoteDesktopComponent],
-    providers: [{provide: LocationStrategy, useClass: PathLocationStrategy}, {
-        provide: HAMMER_GESTURE_CONFIG,
-        useClass: HammerConfig
-    }],
+    providers: [{ provide: LocationStrategy, useClass: PathLocationStrategy }, {
+            provide: HAMMER_GESTURE_CONFIG,
+            useClass: HammerConfig
+        }]
 })
 export class VirtualDesktopModule {
 }

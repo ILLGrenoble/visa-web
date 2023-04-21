@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {AccountService, InstancesFilterState, Instrument, InstrumentService} from '@core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -15,7 +15,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private _onState: EventEmitter<InstancesFilterState> = new EventEmitter();
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
 
     private _instruments: Instrument[];
 
@@ -53,11 +53,11 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this._state = value;
     }
 
-    public get form(): FormGroup {
+    public get form(): UntypedFormGroup {
         return this._form;
     }
 
-    public set form(value: FormGroup) {
+    public set form(value: UntypedFormGroup) {
         this._form = value;
     }
 
@@ -112,12 +112,12 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this.onState.emit(this.processForm());
     }
 
-    private createForm(): FormGroup {
-        return new FormGroup({
-            id: new FormControl(null),
-            name: new FormControl(null),
-            owner: new FormControl(null),
-            instrument: new FormControl(null)
+    private createForm(): UntypedFormGroup {
+        return new UntypedFormGroup({
+            id: new UntypedFormControl(null),
+            name: new UntypedFormControl(null),
+            owner: new UntypedFormControl(null),
+            instrument: new UntypedFormControl(null)
         });
     }
 

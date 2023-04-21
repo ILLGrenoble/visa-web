@@ -159,26 +159,7 @@ import {
     ],
     exports: [
         DashboardComponent,
-    ],
-    entryComponents: [
-        ImageEditComponent,
-        ImageDeleteComponent,
-        FlavourEditComponent,
-        PlanEditComponent,
-        SecurityGroupImportComponent,
-        SecurityGroupFilterNewComponent,
-        SecurityGroupFilterDeleteComponent,
-        SecurityGroupDeleteComponent,
-        CloudClientEditComponent,
-        CloudClientDeleteComponent,
-        NotificationUpdateComponent,
-        NotificationDeleteComponent,
-        ApplicationCredentialNewComponent,
-        ApplicationCredentialDeleteComponent,
-        ApplicationCredentialUpdateComponent,
-        UserEditComponent,
-        ExtensionRequestHandlerComponent,
-    ],
+    ]
 })
 export class AdminModule {
 

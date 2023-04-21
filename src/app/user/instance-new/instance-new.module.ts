@@ -26,8 +26,7 @@ import {
     ],
     exports: [
         InstanceNewComponent,
-    ],
-    entryComponents: [],
+    ]
 })
 export class InstanceNewModule {
 

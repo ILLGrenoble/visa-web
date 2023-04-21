@@ -1,6 +1,6 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormControl, FormGroup} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -15,18 +15,18 @@ import {NotifierService} from 'angular-notifier';
 })
 export class SecurityGroupImportComponent implements OnInit, OnDestroy {
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _securityGroups: CloudSecurityGroup[];
     private _currentSecurityGroups: SecurityGroup[];
     private readonly _cloudClient: CloudClient;
     private readonly _multiCloudEnabled: boolean;
 
-    get form(): FormGroup {
+    get form(): UntypedFormGroup {
         return this._form;
     }
 
-    set form(value: FormGroup) {
+    set form(value: UntypedFormGroup) {
         this._form = value;
     }
 
@@ -152,8 +152,8 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
             this._securityGroups = (cloudSecurityGroups || [])
                 .filter(cloudSecurityGroup => this._currentSecurityGroups
                     .find(securityGroup => securityGroup.name === cloudSecurityGroup.name) == null);
-            this.form = new FormGroup({
-                securityGroup: new FormControl()
+            this.form = new UntypedFormGroup({
+                securityGroup: new UntypedFormControl()
             });
         });
     }

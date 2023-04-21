@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
@@ -20,7 +20,7 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
 
     private _onState: EventEmitter<UsersFilterState> = new EventEmitter();
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
 
     private _roles: Role[];
 
@@ -54,11 +54,11 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
         this._onState = value;
     }
 
-    public get form(): FormGroup {
+    public get form(): UntypedFormGroup {
         return this._form;
     }
 
-    public set form(value: FormGroup) {
+    public set form(value: UntypedFormGroup) {
         this._form = value;
     }
 
@@ -157,11 +157,11 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
         this.destroy$.unsubscribe();
     }
 
-    private createForm(): FormGroup {
-        return new FormGroup({
-            user: new FormControl(null),
-            activated: new FormControl(null),
-            role: new FormControl(null),
+    private createForm(): UntypedFormGroup {
+        return new UntypedFormGroup({
+            user: new UntypedFormControl(null),
+            activated: new UntypedFormControl(null),
+            role: new UntypedFormControl(null),
         });
     }
 

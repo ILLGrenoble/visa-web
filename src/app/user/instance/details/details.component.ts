@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Instance} from '@core';
 import {Subject} from 'rxjs';
 
@@ -13,7 +13,7 @@ export class DetailsComponent implements OnInit {
     @Input()
     public instance: Instance;
 
-    public form: FormGroup;
+    public form: UntypedFormGroup;
 
     // tslint:disable-next-line:no-output-native
     @Output()
@@ -35,12 +35,12 @@ export class DetailsComponent implements OnInit {
     }
 
     private createForm(): void {
-        this.form = new FormGroup({
-            name: new FormControl(this.instance.name, Validators.compose([
+        this.form = new UntypedFormGroup({
+            name: new UntypedFormControl(this.instance.name, Validators.compose([
                 Validators.required,
                 Validators.minLength(3),
                 Validators.maxLength(100)])),
-            comments: new FormControl(this.instance.comments, Validators.maxLength(4000)),
+            comments: new UntypedFormControl(this.instance.comments, Validators.maxLength(4000)),
         });
     }
 

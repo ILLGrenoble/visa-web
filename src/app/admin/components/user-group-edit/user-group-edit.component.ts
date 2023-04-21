@@ -1,6 +1,6 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -18,16 +18,16 @@ import {NotifierService} from 'angular-notifier';
 })
 export class UserGroupEditComponent implements OnDestroy {
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly _title: string;
     private readonly _role: Role;
 
-    get form(): FormGroup {
+    get form(): UntypedFormGroup {
         return this._form;
     }
 
-    set form(value: FormGroup) {
+    set form(value: UntypedFormGroup) {
         this._form = value;
     }
 
@@ -47,9 +47,9 @@ export class UserGroupEditComponent implements OnDestroy {
         });
         this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
 
-        this._form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            description: new FormControl(null),
+        this._form = new UntypedFormGroup({
+            name: new UntypedFormControl(null, Validators.required),
+            description: new UntypedFormControl(null),
         });
 
         if (role) {

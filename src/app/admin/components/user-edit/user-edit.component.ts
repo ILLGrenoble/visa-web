@@ -1,7 +1,7 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Role, User, UserInput} from '../../../core/graphql';
-import {FormControl, FormGroup} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
@@ -16,7 +16,7 @@ export class UserEditComponent implements OnInit, OnDestroy {
     private _onSubmit$: Subject<UserInput> = new Subject<UserInput>();
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
 
     private readonly _minDate: string;
     private _userGroups: Role[];
@@ -26,11 +26,11 @@ export class UserEditComponent implements OnInit, OnDestroy {
         return this._user;
     }
 
-    public get form(): FormGroup {
+    public get form(): UntypedFormGroup {
         return this._form;
     }
 
-    public set form(value: FormGroup) {
+    public set form(value: UntypedFormGroup) {
         this._form = value;
     }
 
@@ -58,7 +58,7 @@ export class UserEditComponent implements OnInit, OnDestroy {
         this._minDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
     }
 
-    private _createForm(): FormGroup {
+    private _createForm(): UntypedFormGroup {
         const {instanceQuota, activeUserRoles, groups} = this._user;
         const admin = activeUserRoles.find(userRole => userRole.role.name === 'ADMIN') != null;
         const guestRole = activeUserRoles.find(userRole => userRole.role.name === 'GUEST');
@@ -67,12 +67,12 @@ export class UserEditComponent implements OnInit, OnDestroy {
 
         const guestRoleExpiresAt = guestRoleExpiresAtDate == null ? null : `${guestRoleExpiresAtDate.getDate()}/${guestRoleExpiresAtDate.getMonth() + 1}/${guestRoleExpiresAtDate.getFullYear()}`;
 
-        return new FormGroup({
-            instanceQuota: new FormControl(instanceQuota),
-            admin: new FormControl(admin),
-            guest: new FormControl(guest),
-            guestExpiresAt:  new FormControl(guestRoleExpiresAt),
-            userGroups: new FormControl(groups),
+        return new UntypedFormGroup({
+            instanceQuota: new UntypedFormControl(instanceQuota),
+            admin: new UntypedFormControl(admin),
+            guest: new UntypedFormControl(guest),
+            guestExpiresAt:  new UntypedFormControl(guestRoleExpiresAt),
+            userGroups: new UntypedFormControl(groups),
         });
     }
 

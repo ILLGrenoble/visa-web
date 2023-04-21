@@ -188,11 +188,7 @@ export function markedOptionsFactory(): MarkedOptions {
         InvalidAccountDialogComponent,
         SanitizerPipe,
         NotificationBadgeComponent,
-    ],
-    entryComponents: [
-        AccountComponent,
-        InvalidAccountDialogComponent,
-    ],
+    ]
 })
 export class SharedModule {
     public static forRoot(): { ngModule: SharedModule; providers: NotifierModule[] } {

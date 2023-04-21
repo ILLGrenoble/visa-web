@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {concat, Observable, of, Subject} from 'rxjs';
@@ -11,7 +11,7 @@ import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/oper
 })
 export class UserSearchComponent implements OnInit {
 
-    private _form: FormGroup;
+    private _form: UntypedFormGroup;
 
     private _loading = false;
 
@@ -29,12 +29,12 @@ export class UserSearchComponent implements OnInit {
         this._users$ = value;
     }
 
-    get form(): FormGroup {
+    get form(): UntypedFormGroup {
         return this._form;
     }
 
     @Input()
-    set form(value: FormGroup) {
+    set form(value: UntypedFormGroup) {
         this._form = value;
     }
 

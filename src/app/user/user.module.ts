@@ -18,8 +18,7 @@ import {JupyterModule} from './jupyter';
         ROUTING,
     ],
     declarations: [],
-    providers: [],
-    entryComponents: [],
+    providers: []
 })
 export class UserModule {
 

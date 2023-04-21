@@ -132,7 +132,6 @@
             }
         }
     },
-    "defaultProject": "visa",
     "schematics": {
         "@schematics/angular:component": {
             "prefix": "visa"

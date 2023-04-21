@@ -32,16 +32,7 @@ import {UrlComponent} from './url';
         SettingsComponent,
         StatsComponent,
         UrlComponent
-    ],
-    entryComponents: [
-        ClipboardComponent,
-        DeactivateComponent,
-        KeyboardComponent,
-        SettingsComponent,
-        MembersConnectedComponent,
-        AccessRequestComponent,
-        UrlComponent
-    ],
+    ]
 })
 export class InstanceModule {
 

@@ -21,14 +21,7 @@ import {ListComponent} from './list';
     exports: [
         CardComponent,
         ListComponent,
-
-    ],
-    entryComponents: [
-        DetailsDialog,
-        MembersDialog,
-        ExperimentsDialog,
-        RequestExtensionDialog,
-    ],
+    ]
 })
 export class InstanceListModule {
 
