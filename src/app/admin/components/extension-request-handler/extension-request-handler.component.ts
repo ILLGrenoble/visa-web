@@ -82,6 +82,9 @@ export class ExtensionRequestHandlerComponent implements OnInit {
     public ngOnInit(): void {
         this.createForm();
         this.bindDialogHandlers();
+
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
     }
 
     public isAcceptedValue(value: boolean): boolean {

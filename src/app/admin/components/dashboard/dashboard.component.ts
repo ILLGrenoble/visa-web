@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {Apollo} from "apollo-angular";
 import gql from "graphql-tag";
-import {map, takeUntil} from "rxjs/operators";
+import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-dashboard',

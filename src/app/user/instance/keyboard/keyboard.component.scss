@@ -147,13 +147,15 @@
 .modal-header {
     cursor: pointer;
     position: relative;
-    .keyboard-layouts {
-        position: absolute;
-        right: 0;
-        top: 5px;
-    }
+
     .title {
         cursor: pointer;
         position: relative;
     }
+}
+
+.keyboard-layouts {
+    position: absolute;
+    right: 24px;
+    top: 19px;
 }

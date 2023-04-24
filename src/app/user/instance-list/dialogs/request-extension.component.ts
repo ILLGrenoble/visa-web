@@ -2,6 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Configuration, Instance} from '@core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-instance-request-extension-dialog',
@@ -49,15 +50,8 @@ export class RequestExtensionDialog implements OnInit {
     }
 
     private bindDialogHandlers(): void {
-        this.dialogRef.backdropClick().subscribe(() => {
-            this.handleClose();
-        });
-
-        this.dialogRef.keydownEvents().subscribe((event) => {
-            if (event.key === 'Escape') {
-                this.handleClose();
-            }
-        });
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
     }
 
     private createForm(): void {

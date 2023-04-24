@@ -4,7 +4,7 @@ import {CloudClient, CloudFlavour, Flavour, FlavourInput, Image, Instrument, Pla
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 
 @Component({
@@ -26,12 +26,7 @@ export class PlanEditComponent implements OnInit {
                 private readonly _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) {plan, clone}) {
 
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
-
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({

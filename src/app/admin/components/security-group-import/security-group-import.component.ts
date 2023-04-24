@@ -1,7 +1,7 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {lastValueFrom, Subject} from 'rxjs';
@@ -54,12 +54,7 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         this._currentSecurityGroups = currentSecurityGroups;
         this._multiCloudEnabled = multiCloudEnabled;
 
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
-
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 

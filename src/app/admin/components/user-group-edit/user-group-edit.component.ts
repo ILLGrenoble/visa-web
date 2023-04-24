@@ -40,11 +40,7 @@ export class UserGroupEditComponent implements OnDestroy {
                 @Inject(MAT_DIALOG_DATA) {role},
                 private readonly _notifierService: NotifierService) {
 
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({

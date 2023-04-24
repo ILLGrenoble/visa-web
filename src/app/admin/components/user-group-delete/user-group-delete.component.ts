@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Subject} from "rxjs";
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-user-group-delete',
@@ -12,11 +12,7 @@ export class UserGroupDeleteComponent implements OnInit {
 
     constructor(readonly dialogRef: MatDialogRef<UserGroupDeleteComponent>, @Inject(MAT_DIALOG_DATA) readonly _data) {
         this._dialogRef = dialogRef;
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 

@@ -4,7 +4,7 @@ import {Role, User, UserInput} from '../../../core/graphql';
 import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 
 @Component({
@@ -93,6 +93,9 @@ export class UserEditComponent implements OnInit, OnDestroy {
         ).subscribe(({userGroups}) => {
             this._userGroups = userGroups || [];
         });
+
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 
     ngOnDestroy(): void {

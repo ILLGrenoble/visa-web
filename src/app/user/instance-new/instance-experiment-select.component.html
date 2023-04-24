@@ -1,9 +1,10 @@
 <div class="experiments-main">
     <div class="experiments-title">
         <h1 mat-dialog-title>Search for experiments</h1>
-        Search for your experiments using the filters below
     </div>
+
     <div mat-dialog-content class="experiments-outer">
+        Search for your experiments using the filters below
         <div class="experiments-filters">
             <span>
                 <label for="instruments" class="first-label">Instrument</label>
@@ -100,9 +101,8 @@
                 </clr-dg-footer>
             </clr-datagrid>
         </div>
-    </div>
-
-    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end; margin-top: auto">
-        <button mat-button (click)="onClose()">Close</button>
+        <div class="modal-footer">
+            <button (click)="onClose()" class="btn btn-outline">Close</button>
+        </div>
     </div>
 </div>

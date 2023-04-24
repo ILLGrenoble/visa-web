@@ -2,6 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Instance} from '@core';
 import {InstanceForm} from '@shared';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-instance-list-details-dialog',
@@ -136,6 +137,9 @@ export class DetailsDialog implements OnInit {
         if (this.instance.membership.role !== 'OWNER') {
             this.form.disable();
         }
+
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
     }
 
 }

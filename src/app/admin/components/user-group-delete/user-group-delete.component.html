@@ -12,9 +12,9 @@
             </div>
         </div>
     </div>
-</div>
-<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-    <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-button (click)="onDelete()">Delete</button>
+    <div class="modal-footer">
+        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        <button (click)="onDelete()" class="btn btn-warning-outline">Delete</button>
+    </div>
 </div>
 

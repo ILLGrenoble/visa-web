@@ -1,5 +1,43 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+
 $clr-forms-field-font-size: 0.75rem;
 @import "@clr/ui/src/utils/components.clarity";
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$visa-primary: mat.define-palette(mat.$blue-palette);
+$visa-accent: mat.define-palette(mat.$orange-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$visa-warn: mat.define-palette(mat.$red-palette);
+
+$visa-typography: mat.define-typography-config(
+    $font-family:  Metropolis
+);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$visa-theme: mat.define-light-theme((
+    color: (
+        primary: $visa-primary,
+        accent: $visa-accent,
+        warn: $visa-warn,
+    ),
+    typography: $visa-typography,
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($visa-theme);
 
 * {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important;
@@ -19,28 +57,30 @@ $clr-forms-field-font-size: 0.75rem;
     --clr-global-app-background: white;
 }
 
+.mat-mdc-dialog-container {
+    --mdc-dialog-subhead-size: 1.3rem;
+    --mdc-dialog-subhead-weight: 100;
+    --mdc-dialog-supporting-text-size: 0.7rem;
+    --mdc-dialog-supporting-text-tracking: normal;
+}
+
+.mdc-dialog__actions {
+    padding: 12px !important;
+
+}
+
+.mat-mdc-dialog-container {
+    padding: 24px !important;
+}
+
+.modal-footer-spaced {
+    justify-content: space-between;
+}
+
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import "@clr/icons/clr-icons.css";
 @import "codemirror/lib/codemirror.css";
 @import "codemirror/theme/material.css";
-@import "@angular/material/theming"; // Plus imports for other components in your app.
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat-core(); // Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://www.google.com/design/spec/style/color.html
-$candy-app-primary: mat-palette($mat-blue);
-$candy-app-accent: mat-palette($mat-orange, A200, A100, A400); // The warn palette is optional (defaults to red).
-$candy-app-warn: mat-palette($mat-red); // Create the theme object (a Sass map containing all of the palettes).
-$candy-app-theme: mat-light-theme(
-        $candy-app-primary,
-        $candy-app-accent,
-        $candy-app-warn
-); // Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include angular-material-theme($candy-app-theme);
 
 @each $space in (5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 75, 100) {
     @each $side in (top, bottom, left, right) {

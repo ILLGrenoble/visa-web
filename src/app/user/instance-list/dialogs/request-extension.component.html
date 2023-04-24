@@ -19,8 +19,8 @@
             </div>
         </div>
     </form>
-</div>
-<div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-    <button mat-button (click)="handleClose()">Cancel</button>
-    <button mat-button (click)="submit()" [disabled]="!canSubmit()">Submit</button>
+    <div class="modal-footer">
+        <button (click)="handleClose()" class="btn btn-outline">Cancel</button>
+        <button (click)="submit()" [disabled]="!canSubmit()" class="btn btn-primary">Submit</button>
+    </div>
 </div>

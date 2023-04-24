@@ -33,9 +33,9 @@
                             "src/maintenance"
                         ],
                         "styles": [
-                            "node_modules/@clr/ui/clr-ui.min.css",
-                            "node_modules/angular-notifier/styles.scss",
-                            "src/assets/stylesheets/application.scss"
+                          "node_modules/@clr/ui/clr-ui.min.css",
+                          "node_modules/angular-notifier/styles.scss",
+                          "src/assets/stylesheets/application.scss"
                         ],
                         "scripts": [
                             "node_modules/@clr/icons/clr-icons.min.js"
@@ -110,9 +110,9 @@
                             "node_modules/web-animations-js/web-animations.min.js"
                         ],
                         "styles": [
-                            "node_modules/@clr/ui/clr-ui.min.css",
-                            "node_modules/angular-notifier/styles.scss",
-                            "src/assets/stylesheets/application.scss"
+                          "node_modules/@clr/ui/clr-ui.min.css",
+                          "node_modules/angular-notifier/styles.scss",
+                          "src/assets/stylesheets/application.scss"
                         ],
                         "assets": [
                             "src/assets",

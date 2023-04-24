@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-image-delete',
@@ -12,11 +13,7 @@ export class ImageDeleteComponent {
 
     constructor(readonly dialogRef: MatDialogRef<ImageDeleteComponent>) {
         this._dialogRef = dialogRef;
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 

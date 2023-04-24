@@ -9,6 +9,7 @@ import {
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-cloud-client-edit',
@@ -29,16 +30,8 @@ export class CloudClientEditComponent implements OnInit, OnDestroy {
                 private readonly _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) {cloudClient, clone, readonly}) {
         this._readonly = readonly;
-
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
-
-        this._dialogRef.backdropClick().subscribe(event => {
-            this._dialogRef.close();
-        });
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
 
         this._clientForm = new UntypedFormGroup({
             type: new UntypedFormControl(null, Validators.required),

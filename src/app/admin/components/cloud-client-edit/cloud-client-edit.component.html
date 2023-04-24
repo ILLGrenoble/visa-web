@@ -108,13 +108,13 @@
             </clr-input-container>
 
         </form>
-    </div>
-    <div *ngIf="!readonly" mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-        <button mat-button (click)="onCancel()">Cancel</button>
-        <button mat-button (click)="submit()" [disabled]="clientForm.invalid || !providerFormValid">Save</button>
-    </div>
-    <div *ngIf="readonly" mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-        <button mat-button (click)="onCancel()">Close</button>
+        <div *ngIf="!readonly" class="modal-footer">
+            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+            <button (click)="submit()" [disabled]="clientForm.invalid || !providerFormValid" class="btn btn-success-outline">Save</button>
+        </div>
+        <div *ngIf="readonly" class="modal-footer">
+            <button (click)="onCancel()" class="btn btn-outline">Close</button>
+        </div>
     </div>
 </ng-container>
 

@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Inject,  OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Image, SystemNotification} from '../../../core/graphql';
+import {filter} from 'rxjs/operators';
 
 interface SystemNotificationHolder {
     id: number,
@@ -25,6 +26,8 @@ export class NotificationDeleteComponent implements OnInit {
 
     constructor(private _dialogRef: MatDialogRef<NotificationDeleteComponent>,
                 @Inject(MAT_DIALOG_DATA) private _data) {
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 
     public ngOnInit(): void {

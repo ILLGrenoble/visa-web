@@ -4,7 +4,7 @@ import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {CloudClient, CloudImage, Image, ImageInput, ImageProtocol} from '../../../core/graphql';
 import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 
 @Component({
@@ -27,15 +27,8 @@ export class ImageEditComponent implements OnInit, OnDestroy {
                 private readonly _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) {image, clone}) {
 
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
-
-        this._dialogRef.backdropClick().subscribe(event => {
-            this._dialogRef.close();
-        });
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({
             name: new UntypedFormControl(null, Validators.required),

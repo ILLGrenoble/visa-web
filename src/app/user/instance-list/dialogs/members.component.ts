@@ -2,7 +2,7 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Instance, Member, User} from '@core';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 
 @Component({
@@ -54,6 +54,9 @@ export class MembersDialog implements OnInit {
         this.loadUsers();
         this.loadScientificSupportUsers();
         this.loadMembers();
+
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
     }
 
     /**

@@ -3,6 +3,7 @@ import {AccountService, ConfigService, Experiment, Instrument, Paginated} from '
 import {BehaviorSubject, Subject} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ClrDatagridStateInterface} from '@clr/angular';
+import {filter} from 'rxjs/operators';
 
 export interface OrderBy {
     id: number;
@@ -182,15 +183,8 @@ export class InstanceExperimentSelectComponent implements OnInit {
             this.reload(1);
         });
 
-        this.dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this.onClose();
-            }
-        });
-
-        this.dialogRef.backdropClick().subscribe(event => {
-            this.onClose();
-        });
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
     }
 
     public reload($event: any): void {

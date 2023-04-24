@@ -1,6 +1,7 @@
-import {Component, EventEmitter } from '@angular/core';
+import {Component, EventEmitter, OnInit} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ApplicationCredentialInput} from '../../../core/graphql';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-application-credential-new',
@@ -24,6 +25,8 @@ export class ApplicationCredentialNewComponent {
     }
 
     constructor(private _dialogRef: MatDialogRef<ApplicationCredentialNewComponent>) {
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
     }
 
     public onCancel(): void {

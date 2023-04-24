@@ -26,9 +26,9 @@
             </clr-input-container>
 
         </form>
-    </div>
-    <div mat-dialog-actions style="display: flex;flex-direction: row; justify-content: flex-end;">
-        <button mat-button (click)="onCancel()">Cancel</button>
-        <button mat-button (click)="submit()" [disabled]="form.invalid">Save</button>
+        <div class="modal-footer">
+            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+            <button (click)="submit()" class="btn btn-success-outline">Save</button>
+        </div>
     </div>
 </ng-container>

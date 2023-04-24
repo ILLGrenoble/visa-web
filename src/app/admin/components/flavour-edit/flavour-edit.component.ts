@@ -12,7 +12,7 @@ import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-admin-flavour-edit',
@@ -37,12 +37,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         this._instruments = instruments;
         this._roles = roles;
 
-        this._dialogRef.keydownEvents().subscribe(event => {
-            if (event.key === 'Escape') {
-                this._dialogRef.close();
-            }
-        });
-
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(event => {
             this._dialogRef.close();
         });
