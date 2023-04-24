@@ -16,6 +16,7 @@ $clr-forms-field-font-size: 0.75rem;
     --clr-btn-default-outline-border-color: #00327d;
     --clr-btn-default-outline-color: #0052cc;
     --clr-p1-color: #000;
+    --clr-global-app-background: white;
 }
 
 @import "angular-notifier/styles.scss";
@@ -81,6 +82,10 @@ $candy-app-theme: mat-light-theme(
 
     .main-container {
         height: auto !important;
+
+        a {
+            text-decoration: none;
+        }
     }
 
     .md-wrapper {
@@ -145,9 +150,6 @@ $candy-app-theme: mat-light-theme(
         flex: 1;
     }
 
-    .main-container {
-        background: white;
-    }
 
     $navigation-sidebar-background-color: #003a92;
     $navigation-sidebar-border-color: #002538;
