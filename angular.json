@@ -34,6 +34,7 @@
                         ],
                         "styles": [
                             "node_modules/@clr/ui/clr-ui.min.css",
+                            "node_modules/angular-notifier/styles.scss",
                             "src/assets/stylesheets/application.scss"
                         ],
                         "scripts": [
@@ -110,6 +111,7 @@
                         ],
                         "styles": [
                             "node_modules/@clr/ui/clr-ui.min.css",
+                            "node_modules/angular-notifier/styles.scss",
                             "src/assets/stylesheets/application.scss"
                         ],
                         "assets": [
