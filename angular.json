@@ -1,156 +1,153 @@
 {
-    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-    "cli": {
-      "analytics": false
-    },
-    "version": 1,
-    "newProjectRoot": "projects",
-    "projects": {
-        "visa": {
-            "root": "",
-            "sourceRoot": "src",
-            "projectType": "application",
-            "schematics": {
-                "@schematics/angular:component": {
-                    "style": "scss"
-                },
-                "@schematics/angular:application": {
-                    "strict": true
-                }
-            },
-            "architect": {
-                "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
-                    "options": {
-                        "outputPath": "dist",
-                        "index": "src/index.html",
-                        "main": "src/main.ts",
-                        "tsConfig": "tsconfig.app.json",
-                        "polyfills": "src/polyfills.ts",
-                        "assets": [
-                            "src/assets",
-                            "src/favicon.ico",
-                            "src/maintenance"
-                        ],
-                        "styles": [
-                          "node_modules/@clr/ui/clr-ui.min.css",
-                          "node_modules/angular-notifier/styles.scss",
-                          "src/assets/stylesheets/application.scss"
-                        ],
-                        "scripts": [
-                            "node_modules/@clr/icons/clr-icons.min.js"
-                        ],
-                        "allowedCommonJsDependencies": [
-                            "front-matter",
-                            "json2typescript",
-                            "codemirror",
-                            "jsrsasign",
-                            "highcharts",
-                            "moment",
-                            "moment-duration-format",
-                            "blueimp-md5",
-                            "file-saver",
-                            "@illgrenoble/visa-guacamole-common-js",
-                            "@illgrenoble/webx-client",
-                            "@ctrl/ngx-codemirror"
-                        ]
-                    },
-                    "configurations": {
-                        "production": {
-                            "budgets": [
-                                {
-                                    "type": "initial",
-                                    "maximumWarning": "5mb",
-                                    "maximumError": "10mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "10kb",
-                                    "maximumError": "50kb"
-                                }
-                            ],
-                            "fileReplacements": [
-                                {
-                                    "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.prod.ts"
-                                }
-                            ],
-                            "outputHashing": "all"
-                        },
-                        "development": {
-                            "buildOptimizer": false,
-                            "optimization": false,
-                            "vendorChunk": true,
-                            "extractLicenses": false,
-                            "sourceMap": true,
-                            "namedChunks": true
-                        }
-                    },
-                    "defaultConfiguration": "production"
-                },
-                "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
-                    "configurations": {
-                        "production": {
-                            "browserTarget": "visa:build:production"
-                        },
-                        "development": {
-                            "browserTarget": "visa:build:development"
-                        }
-                    },
-                    "defaultConfiguration": "development"
-                },
-                "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
-                    "options": {
-                        "browserTarget": "visa:build"
-                    }
-                },
-                "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "main": "src/test.ts",
-                        "karmaConfig": "./karma.conf.js",
-                        "scripts": [
-                            "node_modules/core-js/client/shim.min.js",
-                            "node_modules/mutationobserver-shim/dist/mutationobserver.min.js",
-                            "node_modules/@webcomponents/custom-elements/custom-elements.min.js",
-                            "node_modules/@clr/icons/clr-icons.min.js",
-                            "node_modules/web-animations-js/web-animations.min.js"
-                        ],
-                        "styles": [
-                          "node_modules/@clr/ui/clr-ui.min.css",
-                          "node_modules/angular-notifier/styles.scss",
-                          "src/assets/stylesheets/application.scss"
-                        ],
-                        "assets": [
-                            "src/assets",
-                            "src/favicon.ico",
-                            "src/maintenance"
-                        ]
-                    }
-                },
-                "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
-                    "options": {
-                        "tsConfig": [
-                            "tsconfig.app.json",
-                            "tsconfig.spec.json"
-                        ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
-                    }
-                }
-            }
-        }
-    },
-    "schematics": {
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": false
+  },
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "visa": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "schematics": {
         "@schematics/angular:component": {
-            "prefix": "visa"
+          "style": "scss"
         },
-        "@schematics/angular:directive": {
-            "prefix": "visa"
+        "@schematics/angular:application": {
+          "strict": true
         }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "tsConfig": "tsconfig.json",
+            "polyfills": "src/polyfills.ts",
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/maintenance"
+            ],
+            "styles": [
+              "node_modules/@clr/ui/clr-ui.min.css",
+              "node_modules/angular-notifier/styles.scss",
+              "src/assets/stylesheets/application.scss"
+            ],
+            "scripts": [
+              "node_modules/@clr/icons/clr-icons.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "front-matter",
+              "json2typescript",
+              "codemirror",
+              "jsrsasign",
+              "highcharts",
+              "moment",
+              "moment-duration-format",
+              "blueimp-md5",
+              "file-saver",
+              "@illgrenoble/visa-guacamole-common-js",
+              "@illgrenoble/webx-client",
+              "@ctrl/ngx-codemirror"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10kb",
+                  "maximumError": "50kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "visa:build:production"
+            },
+            "development": {
+              "browserTarget": "visa:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "visa:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "karmaConfig": "./karma.conf.js",
+            "scripts": [
+              "node_modules/core-js/client/shim.min.js",
+              "node_modules/mutationobserver-shim/dist/mutationobserver.min.js",
+              "node_modules/@webcomponents/custom-elements/custom-elements.min.js",
+              "node_modules/@clr/icons/clr-icons.min.js",
+              "node_modules/web-animations-js/web-animations.min.js"
+            ],
+            "styles": [
+              "node_modules/@clr/ui/clr-ui.min.css",
+              "node_modules/angular-notifier/styles.scss",
+              "src/assets/stylesheets/application.scss"
+            ],
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/maintenance"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        }
+      }
     }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "prefix": "visa"
+    },
+    "@schematics/angular:directive": {
+      "prefix": "visa"
+    }
+  }
 }
