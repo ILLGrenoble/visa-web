@@ -15,7 +15,6 @@ import {
     selectLoggedInUser,
     User
 } from '@core';
-import * as _ from 'lodash';
 import {Title} from '@angular/platform-browser';
 import {Store} from '@ngrx/store';
 
@@ -112,15 +111,16 @@ export class InstancesComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
+        const title = `Support | VISA`;
+        this.titleService.setTitle(title);
+        this.analyticsService.trackPageView(title);
         this.user$ = this.store.select(selectLoggedInUser);
-        this.state$.pipe(takeUntil(this.destroy$)).subscribe(state => {
-            const title = `Support | VISA`;
-            this.titleService.setTitle(title);
-            this.analyticsService.trackPageView(title);
-            if (!_.isEqual(state, this.currentState)) {
-                this.currentState = state;
-                this.reload();
-            }
+
+        this.state$.pipe(
+            takeUntil(this.destroy$),
+        ).subscribe((state) => {
+            this.currentState = state;
+            this.reload();
         });
 
         this.route.queryParams.pipe(

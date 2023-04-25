@@ -43,7 +43,16 @@
                         "allowedCommonJsDependencies": [
                             "front-matter",
                             "json2typescript",
-                            "codemirror"
+                            "codemirror",
+                            "jsrsasign",
+                            "highcharts",
+                            "moment",
+                            "moment-duration-format",
+                            "blueimp-md5",
+                            "file-saver",
+                            "@illgrenoble/visa-guacamole-common-js",
+                            "@illgrenoble/webx-client",
+                            "@ctrl/ngx-codemirror"
                         ]
                     },
                     "configurations": {

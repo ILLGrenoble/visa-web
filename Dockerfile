@@ -1,5 +1,5 @@
 # stage1 as builder
-FROM node:14-alpine as builder
+FROM node:20-alpine as builder
 
 COPY package.json package-lock.json ./
 
@@ -7,7 +7,7 @@ RUN apk update
 RUN apk add --no-cache git
 
 # build
-RUN npm install && mkdir /visa-web && mv ./node_modules ./visa-web
+RUN npm install --legacy-peer-deps && mkdir /visa-web && mv ./node_modules ./visa-web
 
 WORKDIR /visa-web
 
