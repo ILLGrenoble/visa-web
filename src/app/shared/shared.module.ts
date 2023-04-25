@@ -13,7 +13,6 @@ import { HttpClient } from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {NgxErrorsModule} from '@hackages/ngxerrors';
 import {NotifierModule} from 'angular-notifier';
 import {MarkdownModule, MarkedOptions, MarkedRenderer} from 'ngx-markdown';
 import {
@@ -108,7 +107,6 @@ export function markedOptionsFactory(): MarkedOptions {
             },
         }),
         NgPipesModule,
-        NgxErrorsModule,
         NotifierModule.withConfig({
             position: {
                 horizontal: {
@@ -156,7 +154,6 @@ export function markedOptionsFactory(): MarkedOptions {
         MatButtonModule,
         NgPipesModule,
         RouterModule,
-        NgxErrorsModule,
         SanitizerPipe,
         InstanceFilterPipe,
         NotificationBadgeComponent,

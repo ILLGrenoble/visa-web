@@ -12,14 +12,14 @@
 
                 <input formControlName="name" type="text" class="clr-input" name="name" style="width: 100%"
                        placeholder="Enter a instance name..." autofocus>
-                <div ngxErrors="name" class="text-danger">
-                    <div ngxError="required">
+                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="text-danger">
+                    <div *ngIf="name.errors?.['required']">
                         Name is required.
                     </div>
-                    <div ngxError="maxlength">
+                    <div *ngIf="name.errors?.['maxlength']">
                         Name cannot exceed 100 characters.
                     </div>
-                    <div ngxError="minlength">
+                    <div *ngIf="name.errors?.['minlength']">
                         Name must be a minimum of 10 characters.
                     </div>
                 </div>
@@ -32,8 +32,8 @@
             </div>
             <div class="clr-col-12">
                 <textarea id="comments" rows="3" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments"></textarea>
-                <div ngxErrors="comments" class="text-danger">
-                    <div ngxError="maxlength">
+                <div *ngIf="comments.invalid && (comments.dirty || comments.touched)" class="text-danger">
+                    <div *ngIf="comments.errors?.['maxlength']">
                         Comments cannot exceed 2500 characters.
                     </div>
                 </div>

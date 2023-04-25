@@ -4,8 +4,6 @@ import {SharedModule} from '@shared';
 import {VirtualDesktopModule} from '@vdi';
 import {AccessRequestComponent} from './access-request';
 import {ClipboardComponent} from './clipboard';
-import {DeactivateComponent} from './deactivate';
-import {DetailsComponent} from './details';
 import {InstanceComponent} from './instance.component';
 import {KeyboardComponent} from './keyboard';
 import {KeyboardShortcutsComponent} from './keyboard-shortcuts';
@@ -22,8 +20,6 @@ import {UrlComponent} from './url';
     ],
     declarations: [
         ClipboardComponent,
-        DeactivateComponent,
-        DetailsComponent,
         KeyboardComponent,
         KeyboardShortcutsComponent,
         InstanceComponent,

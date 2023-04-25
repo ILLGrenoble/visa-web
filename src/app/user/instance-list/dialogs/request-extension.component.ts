@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Configuration, Instance} from '@core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {filter} from 'rxjs/operators';
 
 @Component({
@@ -31,6 +31,10 @@ export class RequestExtensionDialog implements OnInit {
 
     set form(value: UntypedFormGroup) {
         this._form = value;
+    }
+
+    get comments(): AbstractControl {
+        return this._form.get('comments');
     }
 
     constructor(public dialogRef: MatDialogRef<RequestExtensionDialog>,

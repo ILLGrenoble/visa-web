@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, InstanceExtensionRequest, InstanceExtensionResponseInput} from '../../../core/graphql';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import * as moment from 'moment';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
 import {filter, take} from 'rxjs/operators';
@@ -41,6 +41,14 @@ export class ExtensionRequestHandlerComponent implements OnInit {
 
     get form(): UntypedFormGroup {
         return this._form;
+    }
+
+    get handlerCommentsRefused(): AbstractControl {
+        return this._form.get('handlerCommentsRefused');
+    }
+
+    get handlerCommentsAccepted(): AbstractControl {
+        return this._form.get('handlerCommentsAccepted');
     }
 
     get accepted(): boolean {

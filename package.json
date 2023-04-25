@@ -34,7 +34,6 @@
     "@clr/icons": "^13.0.2",
     "@clr/ui": "^13.16.0",
     "@ctrl/ngx-codemirror": "^4.1.1",
-    "@hackages/ngxerrors": "^8.0.0",
     "@illgrenoble/visa-guacamole-common-js": "^0.0.2",
     "@illgrenoble/webx-client": "^0.1.1",
     "@ng-select/ng-select": "^10.0.4",

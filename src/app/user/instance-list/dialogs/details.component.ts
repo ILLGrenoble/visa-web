@@ -3,6 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Instance} from '@core';
 import {InstanceForm} from '@shared';
 import {filter} from 'rxjs/operators';
+import {AbstractControl, FormControl} from "@angular/forms";
 
 @Component({
     selector: 'visa-instance-list-details-dialog',
@@ -18,13 +19,9 @@ export class DetailsDialog implements OnInit {
 
     private _canSubmit = true;
 
-    private _screenResolution: { label: string, width: number, height: number };
-
     private _name: string;
 
     private _comments: string;
-
-    private _keyboardLayout: string;
 
     private _unrestrictedAccess: boolean;
 
@@ -44,37 +41,12 @@ export class DetailsDialog implements OnInit {
         this._instance = value;
     }
 
-    get screenResolution(): { label: string, width: number, height: number } {
-        return this._screenResolution;
+    get name(): AbstractControl {
+        return this._form.get('name');
     }
 
-    set screenResolution(value: { label: string, width: number, height: number }) {
-        this._screenResolution = value;
-    }
-
-
-    get keyboardLayout(): string {
-        return this._keyboardLayout;
-    }
-
-    set keyboardLayout(value: string) {
-        this._keyboardLayout = value;
-    }
-
-    get name(): string {
-        return this._name;
-    }
-
-    set name(value: string) {
-        this._name = value;
-    }
-
-    get comments(): string {
-        return this._comments;
-    }
-
-    set comments(value: string) {
-        this._comments = value;
+    get comments(): AbstractControl {
+        return this._form.get('comments');
     }
 
     get unrestrictedAccess(): boolean {
@@ -91,14 +63,8 @@ export class DetailsDialog implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: { instance: Instance }) {
         this.instance = data.instance;
         const instance = data.instance;
-        this.screenResolution = {
-            label: `${instance.screenWidth} x ${instance.screenHeight}`,
-            width: instance.screenWidth,
-            height: instance.screenHeight,
-        };
-        this.keyboardLayout = instance.keyboardLayout;
-        this.name = instance.name;
-        this.comments = instance.comments;
+        this._name = instance.name;
+        this._comments = instance.comments;
         this.unrestrictedAccess = instance.unrestrictedAccess;
     }
 
@@ -115,9 +81,6 @@ export class DetailsDialog implements OnInit {
         this.accountService.updateInstance(this.instance, {
             name: data.name,
             comments: data.comments,
-            screenWidth: data.screenResolution.width,
-            screenHeight: data.screenResolution.height,
-            keyboardLayout: data.keyboardLayout,
             unrestrictedAccess: data.unrestrictedAccess,
         }).subscribe((instance) => this.dialogRef.close(instance));
     }
@@ -128,10 +91,8 @@ export class DetailsDialog implements OnInit {
 
     public ngOnInit(): void {
         this.form.removeControl('acceptedTerms');
-        this.form.get('name').setValue(this.name);
-        this.form.get('comments').setValue(this.comments);
-        this.form.get('screenResolution').setValue(this.screenResolution);
-        this.form.get('keyboardLayout').setValue(this.keyboardLayout);
+        this.form.get('name').setValue(this._name);
+        this.form.get('comments').setValue(this._comments);
         this.form.get('unrestrictedAccess').setValue(this.unrestrictedAccess);
         // Disable the form if the user is not the owner
         if (this.instance.membership.role !== 'OWNER') {

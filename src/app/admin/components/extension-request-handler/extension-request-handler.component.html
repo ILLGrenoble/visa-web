@@ -130,8 +130,8 @@
             </div>
             <div class="clr-col-12">
                 <textarea id="refusedComments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="handlerCommentsRefused"></textarea>
-                <div ngxErrors="handlerCommentsRefused" class="text-danger">
-                    <div ngxError="maxlength">
+                <div *ngIf="handlerCommentsRefused.invalid && (handlerCommentsRefused.dirty || handlerCommentsRefused.touched)" class="text-danger">
+                    <div *ngIf="handlerCommentsRefused.errors?.['maxlength']">
                         Comments cannot exceed 4000 characters.
                     </div>
                 </div>
@@ -143,8 +143,8 @@
             </div>
             <div class="clr-col-12">
                 <textarea id="acceptedComments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="handlerCommentsAccepted"></textarea>
-                <div ngxErrors="handlerCommentsAccepted" class="text-danger">
-                    <div ngxError="maxlength">
+                <div *ngIf="handlerCommentsAccepted.invalid && (handlerCommentsAccepted.dirty || handlerCommentsAccepted.touched)" class="text-danger">
+                    <div *ngIf="handlerCommentsAccepted.errors?.['maxlength']">
                         Comments cannot exceed 4000 characters.
                     </div>
                 </div>

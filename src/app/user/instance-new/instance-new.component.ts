@@ -23,6 +23,7 @@ import {InstanceExperimentSelectComponent} from './instance-experiment-select.co
 import {MatDialog} from '@angular/material/dialog';
 import {QueryParameterBag} from '../../admin/http';
 import {NotifierService} from 'angular-notifier';
+import {AbstractControl} from "@angular/forms";
 
 @Component({
     selector: 'visa-instance-new',
@@ -70,6 +71,14 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
 
     set form(value: InstanceForm) {
         this._form = value;
+    }
+
+    get name(): AbstractControl {
+        return this._form.get('name');
+    }
+
+    get comments(): AbstractControl {
+        return this._form.get('comments');
     }
 
     get selectedImagePlans(): ImagePlans {
