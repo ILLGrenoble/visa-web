@@ -110,7 +110,7 @@
         </form>
         <div *ngIf="!readonly" class="modal-footer">
             <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-            <button (click)="submit()" [disabled]="clientForm.invalid || !providerFormValid" class="btn btn-success-outline">Save</button>
+            <button (click)="submit()" [disabled]="clientForm.invalid || !providerFormValid" class="btn btn-primary">Save</button>
         </div>
         <div *ngIf="readonly" class="modal-footer">
             <button (click)="onCancel()" class="btn btn-outline">Close</button>

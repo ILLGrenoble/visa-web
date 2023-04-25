@@ -50,7 +50,6 @@ export class MembersDialog implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.bindDialogHandlers();
         this.loadUsers();
         this.loadScientificSupportUsers();
         this.loadMembers();
@@ -126,18 +125,6 @@ export class MembersDialog implements OnInit {
             (error) => {
                 this.loadMembers();
             });
-    }
-
-    private bindDialogHandlers(): void {
-        this.dialogRef.backdropClick().subscribe(() => {
-            this.handleClose();
-        });
-
-        this.dialogRef.keydownEvents().subscribe((event) => {
-            if (event.key === 'Escape') {
-                this.handleClose();
-            }
-        });
     }
 
     private isMember(user: User): Member {
