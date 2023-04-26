@@ -3,11 +3,17 @@ import {ConfigService} from './config.service';
 import {CookieService} from 'ngx-cookie-service';
 import {OAuthEvent, OAuthService, OAuthSuccessEvent} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
-import {filter} from 'rxjs/operators';
+import {filter, ignoreElements, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {ApplicationState} from '../state';
 import {AccountActions} from '../actions';
+import {from, Observable} from "rxjs";
+
+
+export function authenticationServiceInitializerFactory(authenticationService: AuthenticationService): () => Observable<void> {
+    return () => authenticationService.init();
+}
 
 @Injectable({
     providedIn: 'root',
@@ -68,40 +74,30 @@ export class AuthenticationService {
         }
     }
 
-    public init(): () => Promise<any> {
-        return (): Promise<any> => {
-            return new Promise((resolve) => {
-                this._removeCookie();
-                this._configService.load().subscribe(config => {
-                    const {issuer, clientId, scope, showDebugInformation, sessionChecksEnabled} = config.login;
-                    const redirectUri = `${window.location.origin}/home`;
-                    const postLogoutRedirectUri = `${window.location.origin}/login`;
-                    const authConfig = {
-                        issuer,
-                        clientId,
-                        scope,
-                        showDebugInformation,
-                        redirectUri,
-                        postLogoutRedirectUri,
-                        sessionChecksEnabled,
-                        responseType: 'code',
-                        requireHttps: issuer.startsWith('https')
-                    };
+    public init(): Observable<void> {
+        this._removeCookie();
 
-                    this._oauthService.configure(authConfig);
-                    this._oauthService.setStorage(localStorage);
-                    this._oauthService.tokenValidationHandler = new JwksValidationHandler();
-
-                    this._oauthService.loadDiscoveryDocumentAndTryLogin().then(isLoggedIn => {
-                        if (isLoggedIn) {
-                            this._updateCookie();
-                            this._oauthService.setupAutomaticSilentRefresh();
-                            resolve(null);
-                        }
-                    });
-                });
-            });
-        };
+        return this._configService.load().pipe(
+            map(config => ({
+                ...config.login,
+                redirectUri: `${window.location.origin}/home`,
+                postLogoutRedirectUri: `${window.location.origin}/login`,
+                responseType: 'code'
+            })),
+            tap(authConfig => {
+                this._oauthService.configure(authConfig);
+                this._oauthService.setStorage(localStorage);
+                this._oauthService.tokenValidationHandler = new JwksValidationHandler();
+            }),
+            switchMap(() => from(this._oauthService.loadDiscoveryDocumentAndTryLogin())),
+            filter(isLoggedIn => isLoggedIn),
+            tap(() => {
+                this._updateCookie();
+                this._oauthService.setupAutomaticSilentRefresh();
+            }),
+            ignoreElements(),
+            startWith(null)
+        );
     }
 
     public login(url): Promise<void> {

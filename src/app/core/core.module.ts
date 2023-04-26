@@ -11,7 +11,7 @@ import {accountReducer, notificationsReducer} from './reducers';
 import {
     AccountService,
     AnalyticsService, analyticsServiceInitializerFactory,
-    AuthenticationService,
+    AuthenticationService, authenticationServiceInitializerFactory,
     CatalogueService,
     ConfigService,
     configServiceInitializerFactory,
@@ -66,9 +66,7 @@ import {InMemoryCache} from '@apollo/client/core';
         },
         {
             provide: APP_INITIALIZER,
-            useFactory: function initializer(authenticationService: AuthenticationService): () => Promise<any> {
-                return authenticationService.init();
-            },
+            useFactory: authenticationServiceInitializerFactory,
             multi: true,
             deps: [AuthenticationService],
         },
