@@ -252,7 +252,7 @@ export class RemoteDesktopComponent implements OnInit, OnDestroy {
         // @ts-ignore
         (screenfull as Screenfull).request(containerElement);
         // @ts-ignore
-        (screenfull as Screenfull).on('change', (change: any) => {
+        (screenfull as Screenfull).on('change', () => {
             // @ts-ignore
             if (!(screenfull as Screenfull).isFullscreen) {
                 this.manager.setFullScreen(false);

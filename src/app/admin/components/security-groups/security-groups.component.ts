@@ -142,7 +142,7 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
                     variables: {
                         id: securityGroup.id
                     },
-                }).toPromise().then(_ => {
+                }).subscribe(() => {
                     this._notifierService.notify('success', 'Successfully deleted security group');
                     this._refresh$.next();
                 });

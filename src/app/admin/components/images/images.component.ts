@@ -163,7 +163,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
                 }).pipe(
                     takeUntil(this._destroy$)
                 );
-                lastValueFrom(source$).then(_ => {
+                lastValueFrom(source$).then(() => {
                     this._notifierService.notify('success', 'Successfully deleted image');
                     this._refresh$.next();
                 });

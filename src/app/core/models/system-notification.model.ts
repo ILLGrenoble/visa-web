@@ -59,8 +59,4 @@ export class SystemNotification {
     set createdAt(value: string) {
         this._createdAt = value;
     }
-
-    constructor() {
-    }
-
 }

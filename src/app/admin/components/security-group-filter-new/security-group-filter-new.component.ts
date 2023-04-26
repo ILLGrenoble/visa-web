@@ -5,7 +5,7 @@ import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {lastValueFrom, Subject} from 'rxjs';
-import {CloudClient, SecurityGroup, SecurityGroupFilter, SecurityGroupFilterInput} from '../../../core/graphql';
+import {CloudClient, SecurityGroup, SecurityGroupFilterInput} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 
 
@@ -63,8 +63,8 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         this._cloudClient = cloudClient;
         this._multiCloudEnabled = multiCloudEnabled;
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
     }
 
     submit(): void {

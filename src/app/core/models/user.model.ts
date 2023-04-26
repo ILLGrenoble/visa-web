@@ -58,10 +58,6 @@ export class User {
         return null;
     }
 
-    constructor() {
-
-    }
-
     public hasRole(role: string): boolean {
         return this.roles.includes(role);
     }

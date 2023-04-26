@@ -18,10 +18,6 @@ export class CloudFlavour {
     @JsonProperty('ram', Number)
     private _ram: number = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: CloudFlavour): CloudFlavour {
         this.id = data.id;
         this.name = data.name;

@@ -1,6 +1,4 @@
 import {Component, Input} from '@angular/core';
-import {fromEvent, merge} from 'rxjs';
-import {sample} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-dropdown-menu-item',

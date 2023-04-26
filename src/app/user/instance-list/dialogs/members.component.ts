@@ -10,7 +10,6 @@ import {NotifierService} from 'angular-notifier';
     templateUrl: 'members.component.html',
     styleUrls: ['./members.component.scss'],
 })
-// tslint:disable-next-line:component-class-suffix
 export class MembersDialog implements OnInit {
 
     @Input()
@@ -54,19 +53,19 @@ export class MembersDialog implements OnInit {
         this.loadScientificSupportUsers();
         this.loadMembers();
 
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     /**
      * Add a new member to the instance
      */
-    public handleAdd($event): void {
+    public handleAdd(): void {
         const member = Member.create(this.selectedUser, this.selectedRole.id);
         if (this.isMember(this.selectedUser)) {
             this.showNotification('User selected is already a member of this instance');
         } else {
-            this.accountService.createMemberForInstance(this.instance, member).subscribe((_) => {
+            this.accountService.createMemberForInstance(this.instance, member).subscribe(() => {
                 this.loadMembers();
                 this.showNotification('Successfully added member');
                 this.selectedUser = null;
@@ -77,12 +76,12 @@ export class MembersDialog implements OnInit {
     /**
      * Add a new member to the instance
      */
-    public handleAddSupport($event): void {
+    public handleAddSupport(): void {
         const member = Member.create(this.selectedSupportUser, this.selectedSupportRole.id);
         if (this.isMember(this.selectedSupportUser)) {
             this.showNotification('User selected is already a member of this instance');
         } else {
-            this.accountService.createMemberForInstance(this.instance, member).subscribe((_) => {
+            this.accountService.createMemberForInstance(this.instance, member).subscribe(() => {
                 this.loadMembers();
                 this.showNotification('Successfully added member');
                 this.selectedSupportUser = null;
@@ -107,7 +106,7 @@ export class MembersDialog implements OnInit {
     public handleRemove($event, member): void {
         const confirmation = window.confirm('Are you sure you want to remove this member from your instance?');
         if (confirmation) {
-            this.accountService.deleteMemberFromInstance(this.instance, member).subscribe((_) => {
+            this.accountService.deleteMemberFromInstance(this.instance, member).subscribe(() => {
                 this.loadMembers();
                 this.showNotification('Deleted member');
             });
@@ -118,13 +117,15 @@ export class MembersDialog implements OnInit {
      * Update the members role
      */
     public handleRoleChange($event, member): void {
-        this.accountService.updateMemberForInstance(this.instance, member).subscribe((result) => {
+        this.accountService.updateMemberForInstance(this.instance, member).subscribe({
+            next: () => {
                 this.showNotification('Successfully updated members role');
                 this.loadMembers();
             },
-            (error) => {
+            error: () => {
                 this.loadMembers();
-            });
+            }
+        });
     }
 
     private isMember(user: User): Member {

@@ -11,7 +11,7 @@
                 <p>{{error}}</p>
             </div>
             <div class="actions">
-                <button class="btn btn-outline" *ngIf="instance != null" (click)="handleConnect()">Connect to the instance</button>
+                <button class="btn btn-outline" *ngIf="instance" (click)="handleConnect()">Connect to the instance</button>
             </div>
         </div>
     </div>

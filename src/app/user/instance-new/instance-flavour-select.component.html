@@ -1,11 +1,11 @@
-<div *ngIf="imagePlans != null && imagePlans.plans.length > 0">
+<div *ngIf="imagePlans && imagePlans.plans.length > 0">
     <div class="flavour-title">
         <h3>Choose hardware requirements</h3>
     </div>
     <div class="flavours">
         <ul>
             <li *ngFor="let plan of imagePlans.plans" (click)="selectedPlan.next(plan)">
-                <div class="flavour-box flavour-box--selected" [ngClass]="{'flavour-box--selected': plan == selectedPlan.getValue()}">
+                <div class="flavour-box flavour-box--selected" [ngClass]="{'flavour-box--selected': plan === selectedPlan.getValue()}">
                     <button class="flavour-button">
                         <div class="flavour-button__detail">
                             {{getCpuView(plan.flavour)}}

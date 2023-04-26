@@ -31,7 +31,7 @@ export class DocumentationPageComponent implements OnInit {
 
     refresh(): void {
         this.router.navigated = false;
-        this.router.navigate([this.router.url]).then(_ => {
+        this.router.navigate([this.router.url]).then(() => {
             this.page = this.route.snapshot.data.page;
         });
     }

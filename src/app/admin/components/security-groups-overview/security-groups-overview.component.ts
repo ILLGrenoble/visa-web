@@ -1,10 +1,9 @@
 import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import gql from 'graphql-tag';
 import {CloudClient} from '../../../core/graphql';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
     selector: 'visa-admin-security-groups-overview',
@@ -73,11 +72,7 @@ export class SecurityGroupsOverviewComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
-    handleSecurityGroupRefresh($event): void {
+    handleSecurityGroupRefresh(): void {
         this._refreshSecurityGroupLimits$.next();
-    }
-
-    onCloudChange(): void {
-
     }
 }

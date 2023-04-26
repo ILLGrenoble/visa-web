@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {filter, map, takeUntil} from 'rxjs/operators';
@@ -6,7 +6,6 @@ import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {lastValueFrom, Subject} from 'rxjs';
 import {
-    Flavour,
     Role, RoleInput,
 } from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
@@ -40,8 +39,8 @@ export class UserGroupEditComponent implements OnDestroy {
                 @Inject(MAT_DIALOG_DATA) {role},
                 private readonly _notifierService: NotifierService) {
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({
             name: new UntypedFormControl(null, Validators.required),

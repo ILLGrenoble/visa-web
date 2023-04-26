@@ -9,10 +9,6 @@ export class Protocol {
     @JsonProperty('name', String)
     private _name: string = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: Protocol): Protocol {
         this.id = data.id;
         this.name = data.name;

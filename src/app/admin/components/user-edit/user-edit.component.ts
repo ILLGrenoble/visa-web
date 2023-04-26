@@ -94,8 +94,8 @@ export class UserEditComponent implements OnInit, OnDestroy {
             this._userGroups = userGroups || [];
         });
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
     }
 
     ngOnDestroy(): void {

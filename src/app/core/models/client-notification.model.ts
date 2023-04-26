@@ -25,7 +25,4 @@ export class ClientNotification {
         this._count = value;
     }
 
-    constructor() {
-    }
-
 }

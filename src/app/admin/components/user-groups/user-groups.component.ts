@@ -8,7 +8,6 @@ import { Role } from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 import {UserGroupEditComponent} from "../user-group-edit";
 import {UserGroupDeleteComponent} from "../user-group-delete";
-import {UsersFilterState} from "../users/users-filter-state";
 
 @Component({
     selector: 'visa-admin-user-groups',
@@ -109,7 +108,7 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
                     variables: {
                         id: userGroup.id
                     },
-                }).subscribe(_ => {
+                }).subscribe(() => {
                     this._notifierService.notify('success', 'Successfully deleted user group');
                     this._refresh$.next();
                     this._onChange.emit();

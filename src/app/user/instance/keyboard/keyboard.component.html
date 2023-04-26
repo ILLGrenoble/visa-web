@@ -3,7 +3,7 @@
 </div>
 <div mat-dialog-content>
     <div class="select keyboard-layouts">
-        <select [(ngModel)]="selectedLayout" (ngModelChange)="handleLayoutChange($event)">
+        <select [(ngModel)]="selectedLayout" (ngModelChange)="handleLayoutChange()">
             <option [ngValue]="layout" *ngFor="let layout of layouts">{{layout.value}}</option>
         </select>
     </div>

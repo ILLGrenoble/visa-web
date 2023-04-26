@@ -130,7 +130,7 @@ export class CardComponent implements OnInit, OnDestroy {
     public onExperimentsClicked(event): void {
         event.preventDefault();
         this.toggleSettings();
-        const dialogRef = this.dialog.open(ExperimentsDialog, {
+        this.dialog.open(ExperimentsDialog, {
             width: 'max(1000px, 70%)',
             data: {experiments: this.instance.experiments},
         });
@@ -379,7 +379,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this._currentUpdatePeriod = period;
         const observable = timer(0, period);
-        this._timerSubscription = observable.subscribe((t) => this.updateInstanceState());
+        this._timerSubscription = observable.subscribe(() => this.updateInstanceState());
     }
 
     private stopUpdateTimers(): void {

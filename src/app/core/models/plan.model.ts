@@ -17,10 +17,6 @@ export class Plan {
     @JsonProperty('preset', Boolean)
     private _preset: boolean = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: Plan): Plan {
         this.id = data.id;
         this.image = data.image;

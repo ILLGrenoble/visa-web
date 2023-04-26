@@ -161,7 +161,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 }).pipe(
                     takeUntil(this._destroy$)
                 );
-                lastValueFrom(source$).then(_ => {
+                lastValueFrom(source$).then(() => {
                     this._notifierService.notify('success', 'Successfully deleted flavour');
                     this._refresh$.next();
                 });

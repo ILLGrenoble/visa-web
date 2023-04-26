@@ -18,10 +18,6 @@ export class Flavour {
     @JsonProperty('cpu', Number)
     private _cpu: number = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: Flavour): Flavour {
         this.id = data.id;
         this.name = data.name;

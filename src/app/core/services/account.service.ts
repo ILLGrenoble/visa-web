@@ -184,7 +184,7 @@ export class AccountService {
         };
         return this.http.post<any>(url, body).pipe(map((response) => {
             const data = response.data;
-            return this.objectMapper.deserialize(member, Member);
+            return this.objectMapper.deserialize(data, Member);
         }));
     }
 
@@ -203,7 +203,7 @@ export class AccountService {
     public deleteMemberFromInstance(instance: Instance, member: Member): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/members/${member.id}`;
-        return this.http.delete<any>(url).pipe(map((res) => {
+        return this.http.delete<any>(url).pipe(map(() => {
             return null;
         }));
     }
@@ -353,14 +353,6 @@ export class AccountService {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments/_count`;
         return this.http.get<any>(url).pipe(map((response) => response.data));
-    }
-
-    public createThumbnailForInstance(instance: Instance, thumbnail: Blob): Promise<any> {
-        const baseUrl = environment.paths.api;
-        const formData = new FormData();
-        formData.append('file', thumbnail);
-        const url = `${baseUrl}/account/instances/${instance.uid}/thumbnail`;
-        return this.http.post<FormData>(url, formData).pipe(map((res) => true)).toPromise();
     }
 
     public getThumbnailUrlForInstance(instance: Instance): string {

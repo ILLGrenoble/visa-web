@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CloudClient, CloudFlavour, Flavour, FlavourInput, Image, Instrument, Plan, PlanInput} from '../../../core/graphql';
+import {Flavour, Image, Plan, PlanInput} from '../../../core/graphql';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
@@ -26,8 +26,8 @@ export class PlanEditComponent implements OnInit {
                 private readonly _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) {plan, clone}) {
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({
             image: new UntypedFormControl(null, Validators.required),

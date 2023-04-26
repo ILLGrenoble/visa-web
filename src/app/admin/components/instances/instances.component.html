@@ -1,4 +1,4 @@
-<visa-admin-header (refresh)="handleRefresh($event)"></visa-admin-header>
+<visa-admin-header (refresh)="handleRefresh()"></visa-admin-header>
 <visa-compute-admin-header></visa-compute-admin-header>
 <div class="admin-container">
     <div class="admin-container--left">
@@ -76,7 +76,7 @@
                                 <clr-dg-cell>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation' }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.state }}</clr-dg-cell>
                                 <clr-dg-cell>
-                                    <span *ngIf="instance.activeSessions.length == 0">
+                                    <span *ngIf="instance.activeSessions.length === 0">
                                         {{ instance.lastSeenAt | timeDuration: 'date'  }}
                                     </span>
                                     <clr-tooltip *ngIf="instance.activeSessions.length > 0">

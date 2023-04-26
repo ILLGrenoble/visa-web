@@ -1,17 +1,9 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
+import {inject} from '@angular/core';
+import {ResolveFn} from '@angular/router';
 import {DocumentationSection, DocumentationService} from '@core';
 import {Observable} from 'rxjs';
 
-@Injectable()
-export class DocumentationResolver implements Resolve<Observable<DocumentationSection[]>> {
-
-    constructor(private documentationService: DocumentationService) {
-
-    }
-
-    public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<DocumentationSection[]> {
-        return this.documentationService.getSections();
-    }
-
+export const documentationResolver: ResolveFn<Observable<DocumentationSection[]>> = () => {
+    const documentationService = inject(DocumentationService);
+    return documentationService.getSections();
 }

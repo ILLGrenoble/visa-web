@@ -23,8 +23,4 @@ export class Configuration {
     };
 
     public metadata: { [key: string]: string };
-
-    constructor() {
-    }
-
 }

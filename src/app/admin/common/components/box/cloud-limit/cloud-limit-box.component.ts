@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
 import {ApolloQueryResult} from '@apollo/client';
-import {DetailedCloudLimit, CloudLimit} from 'app/core/graphql/types';
+import {DetailedCloudLimit} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';

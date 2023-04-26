@@ -27,8 +27,8 @@ export class ImageEditComponent implements OnInit, OnDestroy {
                 private readonly _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) {image, clone}) {
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({
             name: new UntypedFormControl(null, Validators.required),

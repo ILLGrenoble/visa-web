@@ -14,7 +14,4 @@ import {Component} from '@angular/core';
 })
 export class NotfoundComponent {
 
-    constructor() {
-    }
-
 }

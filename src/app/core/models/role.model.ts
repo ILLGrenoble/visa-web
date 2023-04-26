@@ -23,9 +23,6 @@ export class Role {
     @JsonProperty('expiresAt', DateConverter)
     private _expiresAt: Date = undefined;
 
-    constructor() {
-    }
-
     get name(): string {
         return this._name;
     }

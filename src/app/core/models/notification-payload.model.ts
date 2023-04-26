@@ -1,8 +1,4 @@
-import {JsonConverter, JsonCustomConvert, JsonObject, JsonProperty} from 'json2typescript';
-import {Experiment} from './experiment.model';
-import {Member} from './member.model';
-import {Plan} from './plan.model';
-import {User} from './user.model';
+import {JsonObject, JsonProperty} from 'json2typescript';
 import {SystemNotification} from './system-notification.model';
 import {ClientNotification} from './client-notification.model';
 
@@ -15,10 +11,6 @@ export class NotificationPayload {
     @JsonProperty('adminNotifications', [ClientNotification])
     private _adminNotifications: ClientNotification[] = [];
 
-
-    constructor() {
-
-    }
 
     get systemNotifications(): SystemNotification[] {
         return this._systemNotifications;

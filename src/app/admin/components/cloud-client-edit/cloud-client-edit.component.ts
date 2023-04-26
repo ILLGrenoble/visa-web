@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
     CloudClient,
@@ -15,7 +15,7 @@ import {filter} from 'rxjs/operators';
     selector: 'visa-admin-cloud-client-edit',
     templateUrl: './cloud-client-edit.component.html',
 })
-export class CloudClientEditComponent implements OnInit, OnDestroy {
+export class CloudClientEditComponent implements OnDestroy {
 
     private readonly _clientForm: UntypedFormGroup;
     private readonly _openStackForm: UntypedFormGroup;
@@ -30,8 +30,8 @@ export class CloudClientEditComponent implements OnInit, OnDestroy {
                 private readonly _apollo: Apollo,
                 @Inject(MAT_DIALOG_DATA) {cloudClient, clone, readonly}) {
         this._readonly = readonly;
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
         this._clientForm = new UntypedFormGroup({
             type: new UntypedFormControl(null, Validators.required),
@@ -158,9 +158,6 @@ export class CloudClientEditComponent implements OnInit, OnDestroy {
                 authToken,
             });
         }
-    }
-
-    public ngOnInit(): void {
     }
 
     ngOnDestroy(): void {

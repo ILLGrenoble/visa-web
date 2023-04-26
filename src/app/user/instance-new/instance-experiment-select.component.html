@@ -10,7 +10,7 @@
                 <label for="instruments" class="first-label">Instrument</label>
                 <div class="clr-select-wrapper">
                     <select name="instruments" id="instruments" [(ngModel)]="instrument"
-                            (ngModelChange)="reload($event)">
+                            (ngModelChange)="reload()">
                         <option [ngValue]="null">All instruments</option>
                         <option *ngFor="let instrument of instruments" [ngValue]="instrument">
                             {{ instrument.name }}
@@ -23,7 +23,7 @@
                 <label for="fromYears" class="second-label">between</label>
                 <div class="clr-select-wrapper">
                     <select name="fromYears" id="fromYears" [(ngModel)]="fromYear"
-                            (ngModelChange)="reload($event)">
+                            (ngModelChange)="reload()">
                         <option *ngFor="let year of fromYears" [ngValue]="year">
                             {{ year }}
                         </option>
@@ -34,7 +34,7 @@
                 <label for="toYears" class="joining-label">and</label>
                 <div class="clr-select-wrapper">
                     <select name="toYears" id="toYears" [(ngModel)]="toYear"
-                            (ngModelChange)="reload($event)">
+                            (ngModelChange)="reload()">
                         <option *ngFor="let year of toYears" [ngValue]="year">
                             {{ year }}
                         </option>
@@ -44,7 +44,7 @@
             <span *ngIf="openDataAvailable">
                 <label for="openData" class="joining-label">with open data</label>
                 <div class="clr-select-wrapper">
-                    <select name="openData" id="openData" [(ngModel)]="includeOpenData" (ngModelChange)="reload($event)">
+                    <select name="openData" id="openData" [(ngModel)]="includeOpenData" (ngModelChange)="reload()">
                         <option [ngValue]="false">not included</option>
                         <option [ngValue]="true">included</option>
                     </select>
@@ -54,7 +54,7 @@
                 <label for="orderBy" class="second-label">sort by</label>
                 <div class="clr-select-wrapper">
                     <select name="orderBy" id="orderBy" [(ngModel)]="orderBy"
-                            (ngModelChange)="reload($event)">
+                            (ngModelChange)="reload()">
                         <option *ngFor="let ordering of orderings" [ngValue]="ordering">
                             {{ ordering.label }}
                         </option>

@@ -1,5 +1,5 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
-import {CatalogueService, Experiment, ImagePlans, Plan} from '@core';
+import {Component, Input, Output} from '@angular/core';
+import {CatalogueService, ImagePlans, Plan} from '@core';
 import {BehaviorSubject} from 'rxjs';
 
 @Component({
@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs';
     templateUrl: './instance-image-select.component.html',
     styleUrls: ['./instance-image-select.component.scss'],
 })
-export class InstanceImageSelectComponent implements OnInit {
+export class InstanceImageSelectComponent {
 
     @Output()
     public selected: BehaviorSubject<ImagePlans> = new BehaviorSubject<ImagePlans>(null);
@@ -26,9 +26,6 @@ export class InstanceImageSelectComponent implements OnInit {
     }
 
     constructor(private _catalogueService: CatalogueService) {
-    }
-
-    public ngOnInit(): void {
     }
 
     private updateImages(plans: Plan[]): void {

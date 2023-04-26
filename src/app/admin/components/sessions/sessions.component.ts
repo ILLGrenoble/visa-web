@@ -67,7 +67,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
                 private titleService: Title) {
     }
 
-    public handleRefresh($event: void): void {
+    public handleRefresh(): void {
         this.refreshEvent$.next();
     }
 

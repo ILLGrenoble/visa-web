@@ -3,7 +3,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
-import {AuthenticationGuard, CoreModule} from '@core';
+import {authenticationGuard, CoreModule} from '@core';
 import {NotfoundComponent} from '@shared';
 import {UserModule} from '@user';
 import {AppComponent} from './app.component';
@@ -28,18 +28,18 @@ registerLocaleData(localeGB);
         RouterModule.forRoot([
             {
                 path: 'admin',
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
                 data: {roles: ['ADMIN']},
                 loadChildren: () => import(`./admin/admin.module`).then((m) => m.AdminModule),
             },
             {
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
                 data: {roles: ['IT_SUPPORT', 'INSTRUMENT_CONTROL', 'INSTRUMENT_SCIENTIST']},
                 path: 'support',
                 loadChildren: () => import(`./support/support.module`).then((m) => m.SupportModule),
             },
             {
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
                 path: 'help',
                 loadChildren: () => import(`./documentation/documentation.module`).then((m) => m.DocumentationModule),
             },

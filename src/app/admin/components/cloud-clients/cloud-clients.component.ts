@@ -150,7 +150,7 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                 }).pipe(
                     takeUntil(this._destroy$)
                 );
-                lastValueFrom(source$).then(_ => {
+                lastValueFrom(source$).then(() => {
                     this._notifierService.notify('success', 'Successfully deleted cloud provider');
                     this._refresh$.next();
                 }).catch((error) => {
@@ -190,7 +190,7 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
     }
 
     public onView(cloudClient: CloudClient): void {
-        const dialogRef = this._dialog.open(CloudClientEditComponent, {
+        this._dialog.open(CloudClientEditComponent, {
             width: '900px',
             data: {cloudClient, clone: false, readonly: true}
         });

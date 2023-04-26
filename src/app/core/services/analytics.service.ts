@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ConfigService} from './config.service';
 
-declare var window: {
+declare let window: {
     [key: string]: any;
     prototype: Window;
     new(): Window;
@@ -63,7 +63,7 @@ export class AnalyticsService {
         if (this.enabled) {
             try {
                 const args: any[] = [];
-                if (!!customTitle) {
+                if (customTitle) {
                     args.push(customTitle);
                 }
                 // @ts-ignore
@@ -90,7 +90,7 @@ export class AnalyticsService {
         if (this.enabled) {
             try {
                 const args: any[] = [category, action];
-                if (!!name) {
+                if (name) {
                     args.push(name);
                 }
                 if (typeof value === 'number') {

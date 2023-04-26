@@ -3,14 +3,13 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Instance} from '@core';
 import {InstanceForm} from '@shared';
 import {filter} from 'rxjs/operators';
-import {AbstractControl, FormControl} from "@angular/forms";
+import {AbstractControl} from "@angular/forms";
 
 @Component({
     selector: 'visa-instance-list-details-dialog',
     templateUrl: 'details.component.html',
     styleUrls: ['./details.component.scss']
 })
-// tslint:disable-next-line:component-class-suffix
 export class DetailsDialog implements OnInit {
 
     public _instance: Instance;
@@ -99,8 +98,8 @@ export class DetailsDialog implements OnInit {
             this.form.disable();
         }
 
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
 }

@@ -8,7 +8,7 @@ import {InstanceExtensionRequest} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
 import {ExtensionRequestHandlerComponent} from '../extension-request-handler';
-import {AccountActions, NotificationsActions, NotificationService} from '../../../core';
+import {NotificationService} from '../../../core';
 
 @Component({
     selector: 'visa-admin-extension-requests',

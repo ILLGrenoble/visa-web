@@ -9,6 +9,4 @@ export class TabContentComponent {
   @ViewChild(TemplateRef)
   public content: TemplateRef<any>;
 
-  constructor() { }
-
 }

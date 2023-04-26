@@ -17,7 +17,7 @@ import {TabComponent} from './tab.component';
     template: `
         <div class="visa-tabs">
             <ul class="visa-tabs-body">
-                <li *ngFor="let tab of tabs" (click)="selectTab(tab)" class="visa-tab" [class.visa-tab--selected]="tab == activeTab">
+                <li *ngFor="let tab of tabs" (click)="selectTab(tab)" class="visa-tab" [class.visa-tab--selected]="tab === activeTab">
                     <span class="visa-tab-title-icon" *ngIf="tab.icon">
                         <ng-container class="visa-tab-title-icon" *ngTemplateOutlet="tab.icon.content">
                         </ng-container>

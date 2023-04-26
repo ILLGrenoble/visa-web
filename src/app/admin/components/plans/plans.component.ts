@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {FlavourInput, Image, Plan, PlanInput} from '../../../core/graphql';
+import {Plan, PlanInput} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
@@ -8,7 +8,6 @@ import {lastValueFrom, Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {PlanEditComponent} from '../plan-edit';
-import {ImageDeleteComponent} from "../image-delete";
 import {PlanDeleteComponent} from "../plan-delete";
 
 @Component({
@@ -220,7 +219,7 @@ export class PlansComponent implements OnInit, OnDestroy {
                 }).pipe(
                     takeUntil(this._destroy$)
                 );
-                lastValueFrom(source$).then(_ => {
+                lastValueFrom(source$).then(() => {
                     this._notifierService.notify('success', 'Successfully deleted plan');
                     this._refresh$.next();
                 });

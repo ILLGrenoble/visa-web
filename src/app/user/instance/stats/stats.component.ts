@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, Output} from '@angular/core';
 import {Subject} from 'rxjs';
 
 @Component({
@@ -6,7 +6,7 @@ import {Subject} from 'rxjs';
     styleUrls: ['./stats.component.scss'],
     templateUrl: './stats.component.html',
 })
-export class StatsComponent implements OnInit {
+export class StatsComponent {
 
     @Input()
     public totalDataReceived: number;
@@ -20,8 +20,5 @@ export class StatsComponent implements OnInit {
     // tslint:disable-next-line:no-output-native
     @Output()
     public close: Subject<null> = new Subject();
-
-    public ngOnInit(): void {
-    }
 
 }

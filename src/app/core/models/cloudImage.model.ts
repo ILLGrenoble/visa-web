@@ -9,10 +9,6 @@ export class CloudImage {
     @JsonProperty('name', String)
     private _name: string = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: CloudImage): CloudImage {
         this.id = data.id;
         this.name = data.name;

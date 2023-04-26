@@ -13,7 +13,7 @@
         </visa-support-instances-filter>
     </div>
     <div class="admin-container--main">
-        <div class="blankslate" *ngIf="instances?.items.length == 0">
+        <div class="blankslate" *ngIf="instances?.items.length === 0">
             <div class="title">
                 <img src="/assets/images/cloud.png" alt="cloud" />
                 <h3>There are currently no instances for which you can provide support</h3>
@@ -77,7 +77,7 @@
                                 <clr-dg-cell class="support-cell">{{ instance.owner.fullName }}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">{{ instance.state.replace('_', ' ') | titlecase }}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">
-                                    <span *ngIf="getInstanceSessionMembers(instance).length == 0">
+                                    <span *ngIf="getInstanceSessionMembers(instance).length === 0">
                                         {{ instance.lastSeenAt | timeDuration: 'date' }}
                                     </span>
                                     <clr-tooltip *ngIf="getInstanceSessionMembers(instance).length > 0">

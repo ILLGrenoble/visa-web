@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
     CloudFlavour,
@@ -37,10 +37,8 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         this._instruments = instruments;
         this._roles = roles;
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(event => {
-            this._dialogRef.close();
-        });
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
         this._form = new UntypedFormGroup({
             name: new UntypedFormControl(null, Validators.required),
@@ -177,14 +175,6 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         this._apollo.query<any>({
             query: gql`
                 query {
-                    flavourLimits  {
-                        id
-                        objectId
-                        objectType
-                        flavour {
-                          id
-                        }
-                    }
                     cloudClients {
                         id
                         name
@@ -193,12 +183,11 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             `
         }).pipe(
             map(({data}) => ({
-                    flavourLimits: data.flavourLimits,
                     cloudClients: data.cloudClients,
                 })
             ),
             takeUntil(this._destroy$)
-        ).subscribe(({flavourLimits, cloudClients}) => {
+        ).subscribe(({cloudClients}) => {
             this._cloudClients = cloudClients;
             this._multiCloudEnabled = cloudClients.length > 1;
 

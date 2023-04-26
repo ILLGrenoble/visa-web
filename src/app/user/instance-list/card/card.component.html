@@ -84,7 +84,7 @@
                     <div class="instance-text">Instance <b>{{instance.id}}</b>
                         <span *ngIf="user?.admin"> (<b>{{instance.ipAddress}}</b>)</span> created on
                         <b>{{instance.createdAt | date}}</b>
-                        <span *ngIf="instance.expirationDate != null"> and due to expire on <b>{{instance.expirationDate.toString() | date}}</b></span>
+                        <span *ngIf="instance.expirationDate"> and due to expire on <b>{{instance.expirationDate.toString() | date}}</b></span>
                     </div>
                     <div *ngIf="instance.experiments.length > 0" class="instance-card-experiments">
                         <span class="instance-card-experiments__label" *ngFor="let experiment of instance.experiments">

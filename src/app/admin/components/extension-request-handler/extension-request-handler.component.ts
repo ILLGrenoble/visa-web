@@ -1,11 +1,10 @@
-import {Component, EventEmitter, Inject, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, InstanceExtensionRequest, InstanceExtensionResponseInput} from '../../../core/graphql';
 import {AbstractControl, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import * as moment from 'moment';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
 import {filter, take} from 'rxjs/operators';
-import {Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 
 @Component({
@@ -89,8 +88,8 @@ export class ExtensionRequestHandlerComponent implements OnInit {
 
     public ngOnInit(): void {
         this.createForm();
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     public isAcceptedValue(value: boolean): boolean {

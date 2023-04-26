@@ -5,7 +5,6 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {filter, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {Store} from '@ngrx/store';
-import {WebSocketLink} from '@apollo/client/link/ws';
 
 @Component({
     styleUrls: ['./home.component.scss'],

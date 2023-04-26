@@ -14,10 +14,6 @@ export class SystemNotificationComponent {
     @Input()
     public notification: SystemNotification;
 
-
-    constructor() {
-    }
-
     onDismiss(): void{
         this.dismissNotification.emit(this.notification);
     }

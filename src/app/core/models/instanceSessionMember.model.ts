@@ -26,10 +26,6 @@ export class InstanceSessionMember {
     @JsonProperty('active', Boolean)
     private _active: boolean = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: InstanceSessionMember): InstanceSessionMember {
         this.id = data.id;
         this.createdAt = data.createdAt;

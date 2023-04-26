@@ -1,5 +1,4 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {Instance} from './instance.model';
 
 @JsonObject('InstanceExtensionRequest')
 export class InstanceExtensionRequest {
@@ -12,9 +11,6 @@ export class InstanceExtensionRequest {
 
     @JsonProperty('createdAt', String)
     private _createdAt: string = undefined;
-
-    constructor() {
-    }
 
     public get id(): number {
         return this._id;

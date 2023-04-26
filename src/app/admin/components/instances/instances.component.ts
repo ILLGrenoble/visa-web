@@ -111,7 +111,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
         });
     }
 
-    public handleRefresh($event: void): void {
+    public handleRefresh(): void {
         this.reload();
     }
 

@@ -86,12 +86,6 @@ export abstract class VirtualDesktopManager {
     public onReconnect = new Subject<boolean>();
 
 
-    /**
-     * Set up the manager
-     */
-    protected constructor() {
-    }
-
     protected setClientAdapter(clientAdapter: ClientAdapter): void {
         this._clientAdapter = clientAdapter;
     }

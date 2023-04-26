@@ -40,7 +40,7 @@ export class KeyboardComponent implements AfterViewInit {
         this.dialogRef.close();
     }
 
-    public handleLayoutChange($event: any): void {
+    public handleLayoutChange(): void {
         this.removeKeyboardDisplay();
         this.createKeyboardDisplay(this.selectedLayout.layout);
     }

@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, User} from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
@@ -10,7 +10,7 @@ import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
     styleUrls: ['./members-connected.component.scss'],
     templateUrl: './members-connected.component.html',
 })
-export class MembersConnectedComponent implements OnInit {
+export class MembersConnectedComponent {
 
     private _users = [];
     private _user: User;
@@ -57,9 +57,6 @@ export class MembersConnectedComponent implements OnInit {
         data.users$.subscribe((users) => {
             this.users = users;
         });
-    }
-
-    public ngOnInit(): void {
     }
 
     public onNoClick(): void {

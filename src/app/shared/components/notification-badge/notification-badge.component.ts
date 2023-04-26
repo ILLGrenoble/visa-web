@@ -1,6 +1,6 @@
-import {Component, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {find, Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Subject} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {ApplicationState, ClientNotification, selectAdminNotifications} from '../../../core';
 

@@ -80,11 +80,14 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
             this.instruments = instruments;
         });
         if (this.state.filters.owner != null) {
-            this.accountService.getUserById(this.state.filters.owner).pipe(takeUntil(this.destroy$)).subscribe(user => {
-                this.form.get('owner').patchValue(user);
-            }, error => {
-                this.form.get('owner').patchValue(null);
-                this.onState.emit(this.processForm());
+            this.accountService.getUserById(this.state.filters.owner).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (user) => {
+                    this.form.get('owner').patchValue(user);
+                },
+                error: () => {
+                    this.form.get('owner').patchValue(null);
+                    this.onState.emit(this.processForm());
+                }
             });
         }
     }

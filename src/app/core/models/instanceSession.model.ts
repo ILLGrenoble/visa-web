@@ -16,10 +16,6 @@ export class InstanceSession {
     @JsonProperty('current', Boolean)
     private _current: boolean = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: InstanceSession): InstanceSession {
         this.id = data.id;
         this.connectionId = data.connectionId;

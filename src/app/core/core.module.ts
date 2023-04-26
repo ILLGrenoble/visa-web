@@ -7,14 +7,7 @@ import {APOLLO_OPTIONS, ApolloModule} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {environment} from 'environments/environment';
 import {AccountEffects} from './effects';
-import {AuthenticationGuard} from './guards';
 import {accountReducer, notificationsReducer} from './reducers';
-import {
-    AccountExperimentCountResolver,
-    AccountInstanceCountResolver,
-    AccountInstanceExperimentsResolver,
-    AccountQuotaResolver
-} from './resolvers';
 import {
     AccountService,
     AnalyticsService,
@@ -64,12 +57,7 @@ import {InMemoryCache} from '@apollo/client/core';
         ObjectMapperService,
         ConfigService,
         NotificationService,
-        AccountQuotaResolver,
-        AccountExperimentCountResolver,
-        AccountInstanceCountResolver,
-        AccountInstanceExperimentsResolver,
         DocumentationService,
-        AuthenticationGuard,
         {
             provide: APP_INITIALIZER,
             useFactory: configServiceInitializerFactory,

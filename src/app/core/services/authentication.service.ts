@@ -22,7 +22,7 @@ export class AuthenticationService {
 
         this._oauthService.events
             .pipe(filter(event => event.type === 'logout'))
-            .subscribe(async (event: OAuthEvent) => {
+            .subscribe(async () => {
                 const currentUrl = this._router.url;
                 const redirectUrl = `/login?returnUrl=${currentUrl}`;
                 this._router.navigateByUrl(redirectUrl).then(() => {
@@ -61,7 +61,7 @@ export class AuthenticationService {
         if (state) {
             const redirectUrl = decodeURIComponent(state);
             if (redirectUrl) {
-                this._router.navigateByUrl(redirectUrl).then(r => {
+                this._router.navigateByUrl(redirectUrl).then(() => {
                     this._oauthService.state = null;
                 });
             }
@@ -70,7 +70,7 @@ export class AuthenticationService {
 
     public init(): () => Promise<any> {
         return (): Promise<any> => {
-            return new Promise(async (resolve, reject) => {
+            return new Promise(async (resolve) => {
                 this._removeCookie();
                 const config = await this._configService.load();
                 const {issuer, clientId, scope, showDebugInformation, sessionChecksEnabled} = config.login;
@@ -105,7 +105,7 @@ export class AuthenticationService {
 
     public login(url): Promise<void> {
         return this._oauthService.loadDiscoveryDocument().then(() => {
-            this._oauthService.tryLogin().then(_ => {
+            this._oauthService.tryLogin().then(() => {
                 this._oauthService.initCodeFlow(url);
             });
         });

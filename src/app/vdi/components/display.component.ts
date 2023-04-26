@@ -99,7 +99,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      * Bind all subscriptions
      */
     private bindSubscriptions(): void {
-        this.subscriptions.push(this.manager.onKeyboardReset.subscribe(_ => this.resetKeyboard()));
+        this.subscriptions.push(this.manager.onKeyboardReset.subscribe(() => this.resetKeyboard()));
         this.subscriptions.push(this.manager.onFocused.subscribe(this.handleFocused.bind(this)));
         this.subscriptions.push(this.manager.scaleMode.subscribe(this.handleScaleMode.bind(this)));
     }

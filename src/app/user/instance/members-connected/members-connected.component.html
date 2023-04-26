@@ -8,10 +8,10 @@
         <tr *ngFor="let user of users">
             <td class="left"><div class="members-connected-user">{{ user.fullName }}</div></td>
             <td class="left" style="float: right">
-                <span class="label label-success members-connected-role" *ngIf="user.role == 'OWNER'">Full control</span>
-                <span class="label label-success members-connected-role" *ngIf="user.role == 'GUEST'">View only</span>
-                <span class="label label-success members-connected-role" *ngIf="user.role == 'USER'">Full control</span>
-                <span class="label label-success members-connected-role" *ngIf="user.role == 'SUPPORT'">Support</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role === 'OWNER'">Full control</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role === 'GUEST'">View only</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role === 'USER'">Full control</span>
+                <span class="label label-success members-connected-role" *ngIf="user.role === 'SUPPORT'">Support</span>
             </td>
             <td>
                 <div class="button" *ngIf="canDelete(user)">

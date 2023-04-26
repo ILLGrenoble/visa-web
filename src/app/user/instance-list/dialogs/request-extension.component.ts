@@ -8,7 +8,6 @@ import {filter} from 'rxjs/operators';
     selector: 'visa-instance-request-extension-dialog',
     templateUrl: 'request-extension.component.html',
 })
-// tslint:disable-next-line:component-class-suffix
 export class RequestExtensionDialog implements OnInit {
 
     public _instance: Instance;
@@ -54,8 +53,8 @@ export class RequestExtensionDialog implements OnInit {
     }
 
     private bindDialogHandlers(): void {
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     private createForm(): void {

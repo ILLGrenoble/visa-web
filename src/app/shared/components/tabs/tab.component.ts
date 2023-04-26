@@ -1,4 +1,4 @@
-import {AfterContentInit, ChangeDetectorRef, Component, ContentChild, Input, OnChanges, OnDestroy} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, Component, ContentChild, Input, OnChanges} from '@angular/core';
 import {TabActionsComponent} from './tab-actions.component';
 import {TabContentComponent} from './tab-content.component';
 import {TabTitleIconComponent} from './tab-title-icon.component';

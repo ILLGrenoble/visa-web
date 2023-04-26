@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this._refreshEvent$ = value;
     }
 
-    public handleRefresh($event: void): void {
+    public handleRefresh(): void {
         this._refreshEvent$.next();
     }
 

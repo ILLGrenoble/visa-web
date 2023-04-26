@@ -5,7 +5,7 @@
         </div>
     </div>
 </div>
-<div *ngIf="user != null" class="content-container">
+<div *ngIf="user" class="content-container">
     <div class="content-area">
         <div class="content-small-container">
             <div class="clr-row">
@@ -44,7 +44,7 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="blankslate" *ngIf="quotas.maxInstances == 0">
+            <div class="blankslate" *ngIf="quotas.maxInstances === 0">
                 <div class="title">
                     <img src="/assets/images/warning.png" alt="warning"/>
                     <h3>Account pending approval</h3>
@@ -57,7 +57,7 @@
                     <button class="btn btn-sm btn-primary" [routerLink]="['/']">Go back to the homepage</button>
                 </div>
             </div>
-            <div class="blankslate" *ngIf="quotas.availableInstances == 0 && quotas.maxInstances > 0">
+            <div class="blankslate" *ngIf="quotas.availableInstances === 0 && quotas.maxInstances > 0">
                 <div class="title">
                     <img src="/assets/images/warning.png" alt="warning"/>
                     <h3>Instance quota reached</h3>
@@ -129,7 +129,7 @@
                             </div>
                         </div>
 
-                        <div class="section" *ngIf="selectedPlan != null && canSkipCustomisation && !customiseInstance">
+                        <div class="section" *ngIf="selectedPlan && canSkipCustomisation && !customiseInstance">
                             <div class="title">
                                 <h2>
                                     Instance settings

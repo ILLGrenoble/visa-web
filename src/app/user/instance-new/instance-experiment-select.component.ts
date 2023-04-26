@@ -180,14 +180,14 @@ export class InstanceExperimentSelectComponent implements OnInit {
                 this.toYear = allYears[0];
             }
 
-            this.reload(1);
+            this.reload();
         });
 
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(_ => this.dialogRef.close());
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
-    public reload($event: any): void {
+    public reload(): void {
         this.fetchExperiments(1);
     }
 

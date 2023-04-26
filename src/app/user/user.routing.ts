@@ -1,17 +1,11 @@
 import {RouterModule, Routes} from '@angular/router';
-import {
-    AccountExperimentCountResolver,
-    AccountInstanceCountResolver,
-    AccountInstanceExperimentsResolver,
-    AccountQuotaResolver,
-    AuthenticationGuard
-} from '@core';
 import {AuthenticatedContainerComponent, LoginComponent} from '@shared';
 import {HomeComponent} from './home/home.component';
 
 import {InstanceNewComponent} from './instance-new';
 import {InstanceComponent} from './instance/instance.component';
 import {JupyterComponent} from './jupyter/jupyter.component';
+import {accountExperimentCountResolver, accountQuotaResolver, authenticationGuard} from "../core";
 
 export const ROUTES: Routes = [
     {
@@ -26,29 +20,29 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'home', component: HomeComponent,
-                canActivate: [AuthenticationGuard]
+                canActivate: [authenticationGuard]
             },
             {
                 path: 'instances/new',
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
                 component: InstanceNewComponent,
-                resolve: {quotas: AccountQuotaResolver, totalExperiments: AccountExperimentCountResolver},
+                resolve: {quotas: accountQuotaResolver, totalExperiments: accountExperimentCountResolver},
             },
             {
                 path: 'instances/:id',
                 component: InstanceComponent,
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
             },
             {
                 path: 'instances/:id/beta',
                 component: InstanceComponent,
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
                 data: {useWebX: true}
             },
             {
                 path: 'instances/:id/jupyter',
                 component: JupyterComponent,
-                canActivate: [AuthenticationGuard],
+                canActivate: [authenticationGuard],
             },
         ],
     },

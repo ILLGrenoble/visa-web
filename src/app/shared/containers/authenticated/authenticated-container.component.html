@@ -60,7 +60,7 @@
         </ul>
     </nav>
     <div style="margin-left: 75px">
-        <div *ngIf="systemNotifications != null">
+        <div *ngIf="systemNotifications">
             <visa-system-notification *ngFor="let notification of systemNotifications" [notification]="notification" (dismissNotification)="dismissSystemNotification($event)"></visa-system-notification>
         </div>
         <router-outlet></router-outlet>

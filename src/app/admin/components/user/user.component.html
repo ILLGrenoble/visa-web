@@ -82,7 +82,7 @@
                                     <b>Roles</b>
                                 </dt>
                                 <dd>
-                                    <span *ngIf="user.activeUserRoles.length == 0">User has no roles</span>
+                                    <span *ngIf="user.activeUserRoles.length === 0">User has no roles</span>
                                     <span *ngFor="let userRole of user?.activeUserRoles"
                                           class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
                                 </dd>
@@ -92,7 +92,7 @@
                                     <b>User groups</b>
                                 </dt>
                                 <dd>
-                                    <span *ngIf="user.groups.length == 0">User does not belong to any user groups</span>
+                                    <span *ngIf="user.groups.length === 0">User does not belong to any user groups</span>
                                     <span *ngFor="let group of user?.groups"
                                           class="admin-details-list-item-tag">{{ group.name }}</span>
                                 </dd>
@@ -131,8 +131,8 @@
                                         <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                         <clr-dg-cell>{{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                                         <clr-dg-cell>{{ instance.username }}</clr-dg-cell>
-                                        <clr-dg-cell *ngIf=" instance.owner.id == user.id">Owner</clr-dg-cell>
-                                        <clr-dg-cell *ngIf=" instance.owner.id != user.id">Member</clr-dg-cell>
+                                        <clr-dg-cell *ngIf=" instance.owner.id === user.id">Owner</clr-dg-cell>
+                                        <clr-dg-cell *ngIf=" instance.owner.id !== user.id">Member</clr-dg-cell>
                                     </clr-dg-row>
                                 </clr-datagrid>
                             </visa-tab-content>

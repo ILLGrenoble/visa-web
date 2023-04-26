@@ -81,10 +81,6 @@ export class Instance {
     @JsonProperty('activeProtocols', [String])
     private _activeProtocols: string[] = undefined;
 
-    constructor() {
-
-    }
-
     public get id(): number {
         return this._id;
     }

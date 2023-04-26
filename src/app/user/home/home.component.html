@@ -70,7 +70,7 @@
                         </button>
                     </visa-tab-actions>
                     <visa-tab-content>
-                        <div class="col" [hidden]="instances.length == 0">
+                        <div class="col" [hidden]="instances.length === 0">
                             <visa-instance-list [instances]="(instances | instanceFilterPipe: ['OWNER']: selectedExperiment)" [configuration]="configuration"
                                 (doUpdateParent)="handleUpdate()">
                             </visa-instance-list>
@@ -98,7 +98,7 @@
                     </visa-tab-actions>
                     <visa-tab-content>
                         <div class="row">
-                            <div class="col" [hidden]="(instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment).length == 0">
+                            <div class="col" [hidden]="(instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment).length === 0">
                                 <visa-instance-list [instances]="(instances | instanceFilterPipe: ['USER', 'GUEST', 'SUPPORT']: selectedExperiment)"
                                                     (doUpdateParent)="handleUpdate()">
                                 </visa-instance-list>

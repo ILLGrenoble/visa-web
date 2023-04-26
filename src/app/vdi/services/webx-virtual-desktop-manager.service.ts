@@ -23,6 +23,7 @@ class StatsHandler extends WebXStatsHandler {
     }
 
     destroy(): void {
+        // todo
     }
 }
 

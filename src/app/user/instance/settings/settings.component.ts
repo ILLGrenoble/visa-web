@@ -46,7 +46,7 @@ export class SettingsComponent {
     }
 
 
-    public handleClose($event): void {
+    public handleClose(): void {
         this.dialogRef.close();
     }
 

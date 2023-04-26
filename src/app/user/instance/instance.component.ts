@@ -389,7 +389,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         });
     }
 
-    private sendAsyncClipboard(data: string): void {
+    private sendAsyncClipboard(): void {
         // const options = {name: 'clipboard-write', allowWithoutGesture: false};
         // // @ts-ignore
         // navigator.permissions.query(options).then(result => {
@@ -543,7 +543,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         socket.on('access:denied', () => {
             this.error = 'You have not been given access to this instance';
         });
-        socket.on('access:pending', (data) => {
+        socket.on('access:pending', () => {
             this.accessPending = true;
         });
         socket.on('access:request', (data) => {
@@ -567,7 +567,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
             this.accessPending = true;
         });
-        socket.on('access:revoked', (data) => {
+        socket.on('access:revoked', () => {
             this.accessRevoked = true;
         });
 
@@ -598,7 +598,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     private createChecksumForThumbnail(blob: Blob): Promise<string> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsBinaryString(blob);
             reader.onloadend = () => {
@@ -644,7 +644,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Associate a keyboard hot key to open and close the keyboard dialog
      */
     private createKeyboardHotkey(): void {
-        this.hotkeys.push(new Hotkey('ctrl+shift+alt+k', (event: KeyboardEvent): boolean => {
+        this.hotkeys.push(new Hotkey('ctrl+shift+alt+k', (): boolean => {
             const id = 'keyboard-dialog';
             if (this.isDialogOpen(id)) {
                 this.removeDialog(id);
@@ -671,7 +671,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Associate a hot key to open and close the clipboard dialog
      */
     private createClipboardHotKey(): void {
-        this.hotkeys.push(new Hotkey('ctrl+shift+alt+c', (event: KeyboardEvent): boolean => {
+        this.hotkeys.push(new Hotkey('ctrl+shift+alt+c', (): boolean => {
             const id = 'clipboard-dialog';
             if (this.isDialogOpen(id)) {
                 this.removeDialog(id);
@@ -686,7 +686,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Associate a hot key to enter into full screen
      */
     private createFullScreenHotkey(): void {
-        this.hotkeys.push(new Hotkey('ctrl+shift+alt+f', (event: KeyboardEvent): boolean => {
+        this.hotkeys.push(new Hotkey('ctrl+shift+alt+f', (): boolean => {
             this.handleEnterFullScreen();
             return false; // Prevent bubbling
         }));
@@ -696,7 +696,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Associate a hot key to open and close the settings dialog
      */
     private createSettingsHotkey(): void {
-        this.hotkeys.push(new Hotkey('ctrl+shift+alt+s', (event: KeyboardEvent): boolean => {
+        this.hotkeys.push(new Hotkey('ctrl+shift+alt+s', (): boolean => {
             const id = 'settings-dialog';
             if (this.isDialogOpen(id)) {
                 this.removeDialog(id);
@@ -707,7 +707,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }));
     }
 
-    private createDialog(component, id: string): MatDialogRef<any, {}> {
+    private createDialog(component, id: string): MatDialogRef<any> {
         return this.dialog.open(component, {
             height: 'auto',
             id,
@@ -785,7 +785,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 dataReceivedRate$: this.dataReceivedRate$
             },
         });
-        dialog.afterClosed().subscribe((_) => this.manager.setFocused(true));
+        dialog.afterClosed().subscribe(() => this.manager.setFocused(true));
     }
 
     private createAccessRequestDialog(dialogId: string, userFullName: string, callback: (response: string) => void): void {

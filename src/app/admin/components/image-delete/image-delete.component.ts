@@ -13,8 +13,8 @@ export class ImageDeleteComponent {
 
     constructor(readonly dialogRef: MatDialogRef<ImageDeleteComponent>) {
         this._dialogRef = dialogRef;
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(_ => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(_ => this._dialogRef.close());
+        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
+        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
     }
 
 

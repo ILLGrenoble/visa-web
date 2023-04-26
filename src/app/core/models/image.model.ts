@@ -37,10 +37,6 @@ export class Image {
     @JsonProperty('deleted', Boolean, true)
     private _deleted: boolean = undefined;
 
-    constructor() {
-
-    }
-
     public copy(data: Image): Image {
         this.id = data.id;
         this.name = data.name;

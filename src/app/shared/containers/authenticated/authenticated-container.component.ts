@@ -1,8 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {
-    AccountActions,
     ApplicationState,
-    AuthenticationService, NotificationPayload, NotificationsActions,
+    AuthenticationService, NotificationPayload,
     NotificationService,
     selectLoggedInUser,
     SystemNotification,
@@ -38,7 +37,7 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
 
-        this.user$.pipe(filter(user => user.id === '0')).subscribe(user => {
+        this.user$.pipe(filter(user => user.id === '0')).subscribe(() => {
             this.dialog.open(InvalidAccountDialogComponent, {
                 width: '550px',
             });

@@ -38,7 +38,6 @@ import {
     ImageDeleteComponent,
     ImageEditComponent,
     ImagesComponent,
-    InstanceActivate,
     InstanceAttributesComponent,
     InstanceCloudDetailsComponent,
     InstanceComponent,
@@ -64,7 +63,6 @@ import {
     SecurityGroupsComponent,
     SecurityGroupsOverviewComponent,
     SessionsComponent,
-    UserActivate,
     UserComponent,
     UserExperimentsComponent,
     UsersComponent,
@@ -83,10 +81,6 @@ import {
         SharedModule,
         HighchartsChartModule,
         RouterModule.forChild(ROUTES),
-    ],
-    providers: [
-        InstanceActivate,
-        UserActivate,
     ],
     declarations: [
         DashboardComponent,

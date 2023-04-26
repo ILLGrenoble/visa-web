@@ -34,9 +34,6 @@ export class ListComponent {
         this._configuration = value;
     }
 
-    constructor() {
-    }
-
     public updateList(): void {
         this.doUpdateParent.next(null);
     }

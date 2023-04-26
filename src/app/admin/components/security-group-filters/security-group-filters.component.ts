@@ -161,7 +161,7 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
                     variables: {
                         id: securityGroupFilter.id
                     },
-                }).toPromise().then(_ => {
+                }).subscribe(() => {
                     this._notifierService.notify('success', 'Successfully delete security group filter rule');
                     this._refresh$.next();
                 });

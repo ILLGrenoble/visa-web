@@ -5,7 +5,6 @@ import {
     FlavoursComponent,
     ImagesComponent,
     CloudClientsComponent,
-    InstanceActivate,
     InstanceComponent,
     InstancesComponent,
     NotificationsComponent,
@@ -15,8 +14,9 @@ import {
     ApplicationCredentialsComponent,
     SessionsComponent,
     UserComponent,
-    UserActivate,
     ExtensionRequestsComponent,
+    instanceActivate,
+    userActivate,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -42,7 +42,7 @@ export const ROUTES: Routes = [
                 path: 'compute/extension_requests', component: ExtensionRequestsComponent,
             },
             {
-                path: 'compute/instances/:id', component: InstanceComponent, canActivate: [InstanceActivate],
+                path: 'compute/instances/:id', component: InstanceComponent, canActivate: [instanceActivate],
             },
             {
                 path: 'cloud/providers', component: CloudClientsComponent,
@@ -63,7 +63,7 @@ export const ROUTES: Routes = [
                 path: 'users', component: UsersComponent,
             },
             {
-                path: 'users/:id', component: UserComponent, canActivate: [UserActivate],
+                path: 'users/:id', component: UserComponent, canActivate: [userActivate],
             },
             {
                 path: 'settings/notifications', component: NotificationsComponent,

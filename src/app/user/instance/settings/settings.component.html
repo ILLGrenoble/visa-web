@@ -6,7 +6,7 @@
         <clr-tab>
             <button clrTabLink>Keyboard shortcuts</button>
             <clr-tab-content id="keyboard-shortcuts">
-                <visa-instance-keyboard-shortcuts (close)="handleClose($event)"></visa-instance-keyboard-shortcuts>
+                <visa-instance-keyboard-shortcuts (close)="handleClose()"></visa-instance-keyboard-shortcuts>
             </clr-tab-content>
         </clr-tab>
         <clr-tab>
@@ -15,7 +15,7 @@
                 <visa-instance-stats [totalDataReceived]="totalDataReceived$ | async"
                                      [dataReceivedRate]="dataReceivedRate$ | async"
                                      [timeElapsed]="timeElapsed$ | async"
-                                     (close)="handleClose($event)"></visa-instance-stats>
+                                     (close)="handleClose()"></visa-instance-stats>
             </clr-tab-content>
         </clr-tab>
     </clr-tabs>
