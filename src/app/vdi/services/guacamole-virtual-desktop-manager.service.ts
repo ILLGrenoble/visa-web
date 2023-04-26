@@ -1,7 +1,7 @@
 import { Client, StringReader, StringWriter, Tunnel } from '@illgrenoble/visa-guacamole-common-js';
 import {BehaviorSubject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import { VirtualDesktopManager } from './virtual-desktop-manager.service';
+import {ConnectionParameters, VirtualDesktopManager} from './virtual-desktop-manager.service';
 import {GuacamoleClientAdapter} from './guacamole-virtual-desktop-adapters';
 
 /**
@@ -52,7 +52,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Connect to the remote desktop
      */
-    public connect(parameters = {}): void {
+    public connect(parameters: ConnectionParameters = {}): void {
         const configuration = this.buildParameters(parameters);
         this.client.connect(configuration);
         this.bindEventHandlers();
@@ -145,12 +145,10 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Build the URL query parameters to send to the tunnel connection
      */
-    private buildParameters(parameters = {}): string {
+    private buildParameters(parameters: ConnectionParameters = {}): string {
         const params = new URLSearchParams();
         for (const key in parameters) {
-            if (parameters.hasOwnProperty(key)) {
-                params.set(key, parameters[key]);
-            }
+            params.set(key, parameters[key]);
         }
         return params.toString();
     }
@@ -178,7 +176,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Handle any client errors by disconnecting and updating the connection state
      */
-    private handleClientError(status: any): void {
+    private handleClientError(): void {
         // Disconnect if connected
         this.disconnect();
         this.setState(VirtualDesktopManager.STATE.CLIENT_ERROR);
@@ -214,7 +212,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Handle any tunnel errors by disconnecting and updating the connection state
      */
-    private handleTunnelError(status: any): void {
+    private handleTunnelError(): void {
         this.disconnect();
         this.setState(VirtualDesktopManager.STATE.TUNNEL_ERROR);
     }

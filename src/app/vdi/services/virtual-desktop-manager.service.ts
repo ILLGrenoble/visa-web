@@ -7,6 +7,10 @@ export enum ScaleMode {
     Optimal
 }
 
+export interface ConnectionParameters {
+    token?: string,
+    protocol?: string,
+}
 /**
  * Manages the connection to the remote desktop
  */
@@ -175,7 +179,7 @@ export abstract class VirtualDesktopManager {
     /**
      * Connect to the remote desktop
      */
-    public abstract connect(parameters: any): void;
+    public abstract connect(parameters: ConnectionParameters): void;
 
     /**
      * Generate a thumbnail

@@ -1,4 +1,4 @@
-import {VirtualDesktopManager} from './virtual-desktop-manager.service';
+import {ConnectionParameters, VirtualDesktopManager} from './virtual-desktop-manager.service';
 import {WebXClientAdapter } from './webx-virtual-desktop-adapters';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
@@ -57,7 +57,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         return this._client.tunnel;
     }
 
-    connect(parameters: any): void {
+    connect(parameters: ConnectionParameters): void {
         this.setState(VirtualDesktopManager.STATE.CONNECTING);
 
         this._client.connect(this._disconnectedHandler, parameters)
