@@ -1,12 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthenticationService, ConfigService} from '@core';
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 @Component({
     selector: 'visa-invalid-account-dialog',
     templateUrl: 'dialog.component.html',
 })
-export class InvalidAccountDialogComponent implements OnInit {
+export class InvalidAccountDialogComponent implements OnInit, OnDestroy {
     private _contactEmail: string;
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     get contactEmail(): string {
         return this._contactEmail;
@@ -21,9 +24,16 @@ export class InvalidAccountDialogComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this._configService.load().then(config => {
-            this._contactEmail = config.contactEmail;
-        });
+        this._configService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((config) => {
+                this._contactEmail = config.contactEmail;
+            });
+    }
+
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     public handleLogout(): void {

@@ -17,8 +17,8 @@ import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as md5 from 'blueimp-md5';
 import * as FileSaver from 'file-saver';
-import {BehaviorSubject, combineLatest, interval, Subscription, timer} from 'rxjs';
-import {filter, finalize, map, scan, share, startWith, timeInterval} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, interval, Subject, Subscription, timer} from 'rxjs';
+import {filter, finalize, map, scan, share, startWith, takeUntil, timeInterval} from 'rxjs/operators';
 import {AccessRequestComponent} from './access-request';
 import {ClipboardComponent} from './clipboard';
 import {KeyboardComponent} from './keyboard';
@@ -43,6 +43,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public user: User;
 
     public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
+
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     public stats$;
 
@@ -143,6 +145,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.manager != null) {
             this.manager.disconnect();
         }
+
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     /**
@@ -341,52 +346,52 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private handleClipboardData(): void {
         this.readAsyncClipboard();
-        this.configurationService.load().then(configuration => {
+        this.configurationService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((configuration) => {
+                const isValidUri = (url) => {
+                    const pattern = new RegExp('^((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,})' + // domain name
+                        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+                    return !!pattern.test(url);
+                };
 
-            const isValidUri = (url) => {
-                const pattern = new RegExp('^((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,})' + // domain name
-                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-                    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-                return !!pattern.test(url);
-            };
-
-            const getHostForUri = (url: string) => {
-                const allowedHosts = configuration.desktop.allowedClipboardUrlHosts;
-                for (const host of allowedHosts) {
-                    if (url.startsWith(host.host)) {
-                        return host;
-                    }
-                }
-                return null;
-            };
-
-            const getClipboardUrl = (data) => {
-                if (data.startsWith('visa://')) {
-                    const url = data.substring(7);
-                    if (isValidUri(url)) {
-                        const host = getHostForUri(url);
-                        if (host) {
-                            return `${host.https ? 'https' : 'http'}://${url}`;
+                const getHostForUri = (url: string) => {
+                    const allowedHosts = configuration.desktop.allowedClipboardUrlHosts;
+                    for (const host of allowedHosts) {
+                        if (url.startsWith(host.host)) {
+                            return host;
                         }
                     }
-                }
-                return null;
-            };
+                    return null;
+                };
 
-            this.clipboard$ = this.manager.onRemoteClipboardData.pipe(
-                filter(data => data.event === 'received'),
-                map(data => data.content)
-            ).subscribe(data => {
-                const url = getClipboardUrl(data);
-                if (url == null) {
-                    // this.sendAsyncClipboard(data);
-                } else {
-                    this.createUrlDialog(url);
-                }
+                const getClipboardUrl = (data) => {
+                    if (data.startsWith('visa://')) {
+                        const url = data.substring(7);
+                        if (isValidUri(url)) {
+                            const host = getHostForUri(url);
+                            if (host) {
+                                return `${host.https ? 'https' : 'http'}://${url}`;
+                            }
+                        }
+                    }
+                    return null;
+                };
+
+                this.clipboard$ = this.manager.onRemoteClipboardData.pipe(
+                    filter(data => data.event === 'received'),
+                    map(data => data.content)
+                ).subscribe(data => {
+                    const url = getClipboardUrl(data);
+                    if (url == null) {
+                        // this.sendAsyncClipboard(data);
+                    } else {
+                        this.createUrlDialog(url);
+                    }
+                });
             });
-
-        });
     }
 
     private sendAsyncClipboard(): void {

@@ -1,15 +1,18 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {Component, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {ConfigService} from '@core';
+import {takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'visa-keyboard-layout-select',
     templateUrl: './instance-keyboard-layout-select.component.html',
     styleUrls: ['./instance-keyboard-layout-select.component.scss'],
 })
-export class InstanceKeyboardLayoutSelectComponent implements OnInit {
+export class InstanceKeyboardLayoutSelectComponent implements OnInit, OnDestroy {
 
     private static USER_INSTANCE_KEYBOARD_LAYOUT_KEY = 'user.instance.keyboard.layout';
+
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     private _configurationService: ConfigService;
 
@@ -57,20 +60,25 @@ export class InstanceKeyboardLayoutSelectComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this._configurationService.load().then(config => {
-            this._layouts = config.desktop.keyboardLayouts;
-            const localKeyboardLayout = localStorage.getItem(InstanceKeyboardLayoutSelectComponent.USER_INSTANCE_KEYBOARD_LAYOUT_KEY);
-            if (localKeyboardLayout != null) {
-                const keyboardLayout = this._layouts.find(layout => layout.layout === localKeyboardLayout);
-                if (keyboardLayout) {
-                    this.handleSelectedLayout(keyboardLayout);
+        this._configurationService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((config) => {
+                this._layouts = config.desktop.keyboardLayouts;
+                const localKeyboardLayout = localStorage.getItem(InstanceKeyboardLayoutSelectComponent.USER_INSTANCE_KEYBOARD_LAYOUT_KEY);
+                if (localKeyboardLayout != null) {
+                    const keyboardLayout = this._layouts.find(layout => layout.layout === localKeyboardLayout);
+                    if (keyboardLayout) {
+                        this.handleSelectedLayout(keyboardLayout);
+                    }
+                } else {
+                    this.handleSelectedLayout(this._layouts.find(layout => layout.selected));
                 }
-            } else {
-                this.handleSelectedLayout(this._layouts.find(layout => layout.selected));
-            }
-        });
-
+            });
     }
 
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
+    }
 
 }

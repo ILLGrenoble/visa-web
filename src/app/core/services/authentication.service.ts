@@ -70,34 +70,35 @@ export class AuthenticationService {
 
     public init(): () => Promise<any> {
         return (): Promise<any> => {
-            return new Promise(async (resolve) => {
+            return new Promise((resolve) => {
                 this._removeCookie();
-                const config = await this._configService.load();
-                const {issuer, clientId, scope, showDebugInformation, sessionChecksEnabled} = config.login;
-                const redirectUri = `${window.location.origin}/home`;
-                const postLogoutRedirectUri = `${window.location.origin}/login`;
-                const authConfig = {
-                    issuer,
-                    clientId,
-                    scope,
-                    showDebugInformation,
-                    redirectUri,
-                    postLogoutRedirectUri,
-                    sessionChecksEnabled,
-                    responseType: 'code',
-                    requireHttps: issuer.startsWith('https')
-                };
+                this._configService.load().subscribe(config => {
+                    const {issuer, clientId, scope, showDebugInformation, sessionChecksEnabled} = config.login;
+                    const redirectUri = `${window.location.origin}/home`;
+                    const postLogoutRedirectUri = `${window.location.origin}/login`;
+                    const authConfig = {
+                        issuer,
+                        clientId,
+                        scope,
+                        showDebugInformation,
+                        redirectUri,
+                        postLogoutRedirectUri,
+                        sessionChecksEnabled,
+                        responseType: 'code',
+                        requireHttps: issuer.startsWith('https')
+                    };
 
-                this._oauthService.configure(authConfig);
-                this._oauthService.setStorage(localStorage);
-                this._oauthService.tokenValidationHandler = new JwksValidationHandler();
+                    this._oauthService.configure(authConfig);
+                    this._oauthService.setStorage(localStorage);
+                    this._oauthService.tokenValidationHandler = new JwksValidationHandler();
 
-                this._oauthService.loadDiscoveryDocumentAndTryLogin().then(isLoggedIn => {
-                    if (isLoggedIn) {
-                        this._updateCookie();
-                        this._oauthService.setupAutomaticSilentRefresh();
-                        resolve(null);
-                    }
+                    this._oauthService.loadDiscoveryDocumentAndTryLogin().then(isLoggedIn => {
+                        if (isLoggedIn) {
+                            this._updateCookie();
+                            this._oauthService.setupAutomaticSilentRefresh();
+                            resolve(null);
+                        }
+                    });
                 });
             });
         };

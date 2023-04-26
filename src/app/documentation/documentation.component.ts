@@ -1,22 +1,25 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AnalyticsService, ApplicationState, ConfigService, DocumentationSection, selectLoggedInUser, User} from '@core';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 import {Store} from '@ngrx/store';
+import {takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'visa-documentation',
     styleUrls: ['./documentation.component.scss'],
     templateUrl: './documentation.component.html'
 })
-export class DocumentationComponent implements OnInit {
+export class DocumentationComponent implements OnInit, OnDestroy {
 
     private _contactEmail;
 
     private _user$: Observable<User>;
 
     private _sections: Observable<DocumentationSection[]>;
+
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     public get sections(): Observable<DocumentationSection[]> {
         return this._sections;
@@ -55,9 +58,11 @@ export class DocumentationComponent implements OnInit {
         this.titleService.setTitle(title);
         this.analyticsService.trackPageView(title);
 
-        this.configService.load().then(config => {
-            this._contactEmail = config.contactEmail;
-        });
+        this.configService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((config) => {
+                this._contactEmail = config.contactEmail;
+            });
 
         this._user$.subscribe(user => {
             // Remove any items that are not valid for the roles of the user
@@ -68,7 +73,10 @@ export class DocumentationComponent implements OnInit {
                 return section;
             });
         });
-
     }
 
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
+    }
 }

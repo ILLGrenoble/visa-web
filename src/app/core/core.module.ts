@@ -10,7 +10,7 @@ import {AccountEffects} from './effects';
 import {accountReducer, notificationsReducer} from './reducers';
 import {
     AccountService,
-    AnalyticsService,
+    AnalyticsService, analyticsServiceInitializerFactory,
     AuthenticationService,
     CatalogueService,
     ConfigService,
@@ -74,9 +74,7 @@ import {InMemoryCache} from '@apollo/client/core';
         },
         {
             provide: APP_INITIALIZER,
-            useFactory: function initializer(analyticsService: AnalyticsService): () => Promise<any> {
-                return analyticsService.init();
-            },
+            useFactory: analyticsServiceInitializerFactory,
             deps: [AnalyticsService],
             multi: true,
         },

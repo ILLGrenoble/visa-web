@@ -32,9 +32,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this._configService.load().then(config => {
-            this.config = config;
-        });
+        this._configService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((config) => {
+                this.config = config;
+            });
         this._route.queryParams
             .pipe(takeUntil(this._destroy$))
             .subscribe((params) => {

@@ -1,11 +1,17 @@
 import {Injectable} from '@angular/core';
 import {ConfigService} from './config.service';
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
 
 declare let window: {
     [key: string]: any;
     prototype: Window;
     new(): Window;
 };
+
+export function analyticsServiceInitializerFactory(analyticsService: AnalyticsService): () => Observable<void> {
+    return () => analyticsService.init();
+}
 
 @Injectable({
     providedIn: 'root',
@@ -18,40 +24,33 @@ export class AnalyticsService {
         window._paq = window._paq || [];
     }
 
-    public init(): () => Promise<void> {
-        return (): Promise<void> => {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const config = await this.configService.load();
-                    const analytics = config.analytics;
-                    const {enabled, url, siteId} = analytics;
-                    if (enabled) {
-                        this.enabled = true;
-                        window._paq.push(['trackPageView']);
-                        window._paq.push(['enableLinkTracking']);
-                        (() => {
-                            window._paq.push(['setTrackerUrl', `${url}/piwik.php`]);
-                            window._paq.push(['setSiteId', siteId.toString()]);
-                            const d = document;
-                            const g = d.createElement('script');
-                            const s = d.getElementsByTagName('script')[0];
-                            g.type = 'text/javascript';
-                            g.async = true;
-                            g.defer = true;
-                            g.src = `${url}/piwik.js`;
-                            s.parentNode.insertBefore(g, s);
-                            resolve();
-                        })();
+    public init(): Observable<void> {
+        return this.configService.load().pipe(
+            map(config => {
+                const analytics = config.analytics;
+                const {enabled, url, siteId} = analytics;
+                if (enabled) {
+                    this.enabled = true;
+                    window._paq.push(['trackPageView']);
+                    window._paq.push(['enableLinkTracking']);
+                    (() => {
+                        window._paq.push(['setTrackerUrl', `${url}/piwik.php`]);
+                        window._paq.push(['setSiteId', siteId.toString()]);
+                        const d = document;
+                        const g = d.createElement('script');
+                        const s = d.getElementsByTagName('script')[0];
+                        g.type = 'text/javascript';
+                        g.async = true;
+                        g.defer = true;
+                        g.src = `${url}/piwik.js`;
+                        s.parentNode.insertBefore(g, s);
+                    })();
 
-                    } else {
-                        resolve();
-                        console.warn('Analytics is not enabled');
-                    }
-                } catch (error) {
-                    reject(error);
+                } else {
+                    console.warn('Analytics is not enabled');
                 }
-            });
-        };
+            })
+        );
     }
 
     /**

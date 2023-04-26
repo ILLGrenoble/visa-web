@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
@@ -17,8 +17,8 @@ import {
 } from '@core';
 import {Store} from '@ngrx/store';
 import {InstanceForm} from '@shared';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, map } from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {InstanceExperimentSelectComponent} from './instance-experiment-select.component';
 import {MatDialog} from '@angular/material/dialog';
 import {QueryParameterBag} from '../../admin/http';
@@ -30,10 +30,12 @@ import {AbstractControl} from "@angular/forms";
     templateUrl: './instance-new.component.html',
     styleUrls: ['./instance-new.component.scss'],
 })
-export class InstanceNewComponent implements OnInit, AfterViewChecked {
+export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     private _user$: Observable<User>;
     private _user: User;
+
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     private _experimentsObservable: BehaviorSubject<Experiment[]> = new BehaviorSubject<Experiment[]>([]);
     private _plans: Plan[] = null;
@@ -173,35 +175,36 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
             this._user = user;
         });
 
-        this.configurationService.load().then(config => {
-            this._openDataIncluded = config.experiments.openDataIncluded;
-            this._contactEmail = config.contactEmail;
+        this.configurationService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((config) => {
+                this._openDataIncluded = config.experiments.openDataIncluded;
+                this._contactEmail = config.contactEmail;
 
-            this.route.queryParams.pipe(
-                map((params) => new QueryParameterBag(params)),
-            ).subscribe((params: QueryParameterBag) => {
-                const proposals = params.getList('proposals', null);
-                const dois = params.getList('dois', null);
-                if (proposals || dois) {
-                    const filters = {
-                        ...(proposals && { proposals }),
-                        ...(dois && { dois }),
-                        includeOpenData: config.experiments.openDataIncluded,
-                    };
-                    this._accountService.getExperiments(100, 1, filters)
-                        .subscribe((data) => {
-                            this._experimentsObservable.next(data.items);
-                            this._errors = data.errors;
-                        });
+                this.route.queryParams.pipe(
+                    map((params) => new QueryParameterBag(params)),
+                ).subscribe((params: QueryParameterBag) => {
+                    const proposals = params.getList('proposals', null);
+                    const dois = params.getList('dois', null);
+                    if (proposals || dois) {
+                        const filters = {
+                            ...(proposals && { proposals }),
+                            ...(dois && { dois }),
+                            includeOpenData: config.experiments.openDataIncluded,
+                        };
+                        this._accountService.getExperiments(100, 1, filters)
+                            .subscribe((data) => {
+                                this._experimentsObservable.next(data.items);
+                                this._errors = data.errors;
+                            });
+                    }
+                });
+
+                // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
+                if (this._totalExperiments === 0 && this.canBeExperimentFree && !config.experiments.openDataIncluded) {
+                    this.experimentFree = true;
                 }
             });
-
-            // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
-            if (this._totalExperiments === 0 && this.canBeExperimentFree && !config.experiments.openDataIncluded) {
-                this.experimentFree = true;
-            }
-
-        });
 
         this._experimentsObservable.subscribe(experiments => {
             const experimentIds = experiments.map((experiment) => experiment.id);
@@ -211,6 +214,11 @@ export class InstanceNewComponent implements OnInit, AfterViewChecked {
         });
 
         this.handleGenerateRandomName();
+    }
+
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     public ngAfterViewChecked(): void {

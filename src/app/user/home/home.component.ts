@@ -111,7 +111,11 @@ export class HomeComponent implements OnInit {
             this._user = user;
         });
 
-        this.configService.load().then(configuration => this._configuration = configuration);
+        this.configService.load()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((configuration) => {
+                this._configuration = configuration;
+            });
     }
 
     public refresh(): void {
