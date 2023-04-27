@@ -37,7 +37,7 @@ export class NotificationsComponent implements OnInit {
 
     public ngOnInit(): void {
         this.titleService.setTitle(`Notifications | Settings | Admin | VISA`);
-        this.fetch().then((notifications) => {
+        this.fetch().subscribe((notifications) => {
                 this.notifications = notifications;
             },
         );
@@ -156,22 +156,22 @@ export class NotificationsComponent implements OnInit {
         this.notifierService.notify('error', message);
     }
 
-    public fetch(): Promise<SystemNotificationHolder[]> {
-        return this.apollo.watchQuery<any>({
-            query: gql`{
-            systemNotifications {
-                id
-                level
-                message
-                activatedAt
-            }
-        }`,
-        }).result()
-            .then(({data}) => {
-                return data.systemNotifications.map(({id, message, level, activatedAt}) => ({
-                    id, message, level, activatedAt, originalText: message, activated: activatedAt !== null
+    public fetch(): Observable<SystemNotificationHolder[]> {
+        return this.apollo.query<any>({
+                query: gql`{
+                systemNotifications {
+                    id
+                    level
+                    message
+                    activatedAt
+                }
+            }`,
+            }).pipe(
+                map(({data}) => {
+                    return data.systemNotifications.map(({id, message, level, activatedAt}) => ({
+                        id, message, level, activatedAt, originalText: message, activated: activatedAt !== null
+                    }));
                 }));
-            });
     }
 
     private create(input: SystemNotificationInput): Observable<SystemNotification> {

@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {lastValueFrom, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
-import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {Image, ImageInput} from '../../../core/graphql';
@@ -115,9 +115,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
             data: {image, clone: !!image}
         });
 
-        dialogRef.componentInstance.onSave$.subscribe((input: ImageInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: ImageInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
                         mutation CreateImage($input: ImageInput!){
                             createImage(input:$input) {
                               id
@@ -129,18 +130,20 @@ export class ImagesComponent implements OnInit, OnDestroy {
                             }
                         }
                     `,
-                variables: {input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Image created');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
+                    variables: {input},
+                }).pipe(
+                    takeUntil(this._destroy$),
+                );
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Image created');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
             });
-        });
     }
 
     public onDelete(image: Image): void {
@@ -149,26 +152,30 @@ export class ImagesComponent implements OnInit, OnDestroy {
             width: '400px'
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                const source$ = this._apollo.mutate({
+        dialogRef.afterClosed().pipe(
+            filter(result => result),
+            switchMap(() => {
+                return this._apollo.mutate({
                     mutation: gql`
-                        mutation DeleteImage($id: Int!){
-                            deleteImage(id:$id) {
+                        mutation DeleteImage($id: Int!) {
+                            deleteImage(id: $id) {
                                 id
                             }
                         }
                     `,
                     variables: {id: image.id},
                 }).pipe(
-                    takeUntil(this._destroy$)
+                    takeUntil(this._destroy$),
                 );
-                lastValueFrom(source$).then(() => {
+            })).subscribe({
+                next: () => {
                     this._notifierService.notify('success', 'Successfully deleted image');
                     this._refresh$.next();
-                });
-            }
-        });
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            });
     }
 
     public onUpdate(image: Image): void {
@@ -177,27 +184,30 @@ export class ImagesComponent implements OnInit, OnDestroy {
             data: {image}
         });
 
-        dialogRef.componentInstance.onSave$.subscribe((input: ImageInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                    mutation UpdateImage($id: Int!,$input: ImageInput!){
-                        updateImage(id:$id,input:$input) {
-                            id
-                        }
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: ImageInput) =>
+                this._apollo.mutate({
+                    mutation: gql`
+                    mutation UpdateImage($id: Int!, $input: ImageInput!) {
+                      updateImage(id: $id, input: $input) {
+                        id
+                      }
                     }
-                    `,
-                variables: {id: image.id, input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Image saved');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
+                  `,
+                    variables: { id: image.id, input },
+                }).pipe(
+                    takeUntil(this._destroy$),
+                )
+            )).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Image saved');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
             });
-        });
     }
 
 }

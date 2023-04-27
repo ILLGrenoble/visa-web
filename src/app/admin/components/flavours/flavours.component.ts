@@ -4,8 +4,8 @@ import {Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {lastValueFrom, Subject} from 'rxjs';
+import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {FlavourEditComponent} from '../flavour-edit';
@@ -115,31 +115,34 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             width: '800px',
             data: { flavour, instruments: this._instruments, roles: this._roles, clone: !!flavour },
         });
-        dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                        mutation CreateFlavour($input: FlavourInput!){
-                            createFlavour(input: $input) {
-                                id
-                                name
-                                memory
-                                cpu
-                                computeId
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: FlavourInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                            mutation CreateFlavour($input: FlavourInput!){
+                                createFlavour(input: $input) {
+                                    id
+                                    name
+                                    memory
+                                    cpu
+                                    computeId
+                                }
                             }
-                        }
-                    `,
-                variables: {input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Flavour created');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
+                        `,
+                    variables: {input},
+                }).pipe(
+                    takeUntil(this._destroy$),
+                );
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Flavour created');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
             });
-        });
     }
 
     public onDelete(flavour: Flavour): void {
@@ -147,9 +150,10 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             width: '400px'
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                const source$ = this._apollo.mutate({
+        dialogRef.afterClosed().pipe(
+            filter(result => result),
+            switchMap(() => {
+                return this._apollo.mutate({
                     mutation: gql`
                         mutation DeleteFlavour($id: Int!){
                             deleteFlavour(id:$id) {
@@ -159,14 +163,17 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                     `,
                     variables: {id: flavour.id},
                 }).pipe(
-                    takeUntil(this._destroy$)
-                );
-                lastValueFrom(source$).then(() => {
+                    takeUntil(this._destroy$),
+                )
+            })).subscribe({
+                next: () => {
                     this._notifierService.notify('success', 'Successfully deleted flavour');
                     this._refresh$.next();
-                });
-            }
-        });
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            });
     }
 
     public onUpdate(flavour: Flavour): void {
@@ -174,26 +181,29 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             width: '800px', data: { flavour, instruments: this._instruments, roles: this._roles },
         });
 
-        dialogRef.componentInstance.onSave$.subscribe((input: FlavourInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                    mutation UpdateFlavour($id: Int!, $input: FlavourInput!){
-                        updateFlavour(id: $id, input: $input) {
-                            id
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: FlavourInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                        mutation UpdateFlavour($id: Int!, $input: FlavourInput!){
+                            updateFlavour(id: $id, input: $input) {
+                                id
+                            }
                         }
-                    }
-                    `,
-                variables: {id: flavour.id, input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Flavour saved');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
+                        `,
+                    variables: {id: flavour.id, input},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                )
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Flavour saved');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
             });
-        });
     }
 }

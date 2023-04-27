@@ -4,10 +4,8 @@ import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {lastValueFrom, Subject} from 'rxjs';
-import {
-    Role, RoleInput,
-} from '../../../core/graphql';
+import {Subject} from 'rxjs';
+import {Role, RoleInput} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 
 
@@ -103,7 +101,7 @@ export class UserGroupEditComponent implements OnDestroy {
             description,
         } as RoleInput;
 
-        const source$ = this._apollo.mutate({
+         this._apollo.mutate({
             mutation: gql`
                 mutation CreateRole($input: RoleInput!){
                   createRole(input: $input) {
@@ -116,13 +114,15 @@ export class UserGroupEditComponent implements OnDestroy {
             variables: { input },
         }).pipe(
             takeUntil(this._destroy$)
-        );
-        lastValueFrom(source$).then(() => {
-            this._notifierService.notify('success', 'Successfully created new user group');
-            this._dialogRef.close(true);
-        }).catch((error) => {
-            this._notifierService.notify('error', error);
-        });
+        ).subscribe({
+             next: () => {
+                 this._notifierService.notify('success', 'Successfully created new user group');
+                 this._dialogRef.close(true);
+             },
+             error: (error) => {
+                 this._notifierService.notify('error', error);
+             }
+         });
     }
 
     private updateRole(id: number, name: string, description: string): void {
@@ -131,7 +131,7 @@ export class UserGroupEditComponent implements OnDestroy {
             description,
         } as RoleInput;
 
-        const source$ = this._apollo.mutate({
+        this._apollo.mutate({
             mutation: gql`
                 mutation UpdateRole($id: Int!, $input: RoleInput!){
                   updateRole(id: $id, input: $input) {
@@ -144,12 +144,14 @@ export class UserGroupEditComponent implements OnDestroy {
             variables: {id,  input },
         }).pipe(
             takeUntil(this._destroy$)
-        );
-        lastValueFrom(source$).then(() => {
-            this._notifierService.notify('success', 'Successfully updated user group');
-            this._dialogRef.close(true);
-        }).catch((error) => {
-            this._notifierService.notify('error', error);
+        ).subscribe({
+            next: () => {
+                this._notifierService.notify('success', 'Successfully updated user group');
+                this._dialogRef.close(true);
+            },
+            error: (error) => {
+                this._notifierService.notify('error', error);
+            }
         });
     }
 

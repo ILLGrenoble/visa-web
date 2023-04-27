@@ -4,7 +4,7 @@ import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
-import {lastValueFrom, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {CloudClient, CloudSecurityGroup, SecurityGroup, SecurityGroupInput} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 
@@ -100,7 +100,7 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
             cloudId: this._cloudClient.id,
         } as SecurityGroupInput;
 
-        const source$ = this._apollo.mutate({
+        this._apollo.mutate({
             mutation: gql`
                 mutation CreateSecurityGroup($input: SecurityGroupInput!){
                   createSecurityGroup(input: $input) {
@@ -116,12 +116,14 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
             variables: { input },
         }).pipe(
             takeUntil(this._destroy$)
-        );
-        lastValueFrom(source$).then(() => {
-            this._notifierService.notify('success', 'Successfully imported security group from the cloud');
-            this._dialogRef.close(true);
-        }).catch((error) => {
-            this._notifierService.notify('error', error);
+        ).subscribe({
+            next: () => {
+                this._notifierService.notify('success', 'Successfully imported security group from the cloud');
+                this._dialogRef.close(true);
+            },
+            error: (error) => {
+                this._notifierService.notify('error', error);
+            }
         });
     }
 

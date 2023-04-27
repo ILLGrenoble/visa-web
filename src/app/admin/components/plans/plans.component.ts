@@ -2,9 +2,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Plan, PlanInput} from '../../../core/graphql';
 import gql from 'graphql-tag';
-import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
-import {lastValueFrom, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {PlanEditComponent} from '../plan-edit';
@@ -108,60 +108,15 @@ export class PlansComponent implements OnInit, OnDestroy {
     public onCreate(plan?: Plan): void {
         const dialogRef = this._dialog.open(PlanEditComponent, {
             width: '800px',
-            data: { plan, clone: !!plan, multiCloudEnabled: this._multiCloudEnabled },
-        });
-        dialogRef.componentInstance.onSave$.subscribe((input: PlanInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                    mutation CreatePlan($input: PlanInput!){
-                        createPlan(input: $input) {
-                            id
-                            image {
-                                id
-                                name
-                                description
-                                icon
-                                computeId
-                                visible
-                                cloudClient {
-                                    id
-                                    name
-                                }
-                            }
-                            flavour {
-                                id
-                                name
-                                memory
-                                cpu
-                                computeId
-                            }
-                        }
-                    }
-                `,
-                variables: {input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Plan created');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
-            });
-        });
-    }
-
-    public onUpdate(plan: Plan): void {
-        const dialogRef = this._dialog.open(PlanEditComponent, {
-            width: '800px', data: { plan, multiCloudEnabled: this._multiCloudEnabled },
+            data: {plan, clone: !!plan, multiCloudEnabled: this._multiCloudEnabled},
         });
 
-        dialogRef.componentInstance.onSave$.subscribe((input: PlanInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                        mutation UpdatePlan($id: Int!,$input: PlanInput!){
-                            updatePlan(id:$id,input:$input) {
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: PlanInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                        mutation CreatePlan($input: PlanInput!){
+                            createPlan(input: $input) {
                                 id
                                 image {
                                     id
@@ -185,18 +140,70 @@ export class PlansComponent implements OnInit, OnDestroy {
                             }
                         }
                     `,
-                variables: {id: plan.id, input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Plan saved');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
-            });
+                    variables: {input},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                )
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Plan created');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            })
+    }
+
+    public onUpdate(plan: Plan): void {
+        const dialogRef = this._dialog.open(PlanEditComponent, {
+            width: '800px', data: {plan, multiCloudEnabled: this._multiCloudEnabled},
         });
+
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: PlanInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                            mutation UpdatePlan($id: Int!,$input: PlanInput!){
+                                updatePlan(id:$id,input:$input) {
+                                    id
+                                    image {
+                                        id
+                                        name
+                                        description
+                                        icon
+                                        computeId
+                                        visible
+                                        cloudClient {
+                                            id
+                                            name
+                                        }
+                                    }
+                                    flavour {
+                                        id
+                                        name
+                                        memory
+                                        cpu
+                                        computeId
+                                    }
+                                }
+                            }
+                        `,
+                    variables: {id: plan.id, input},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                )
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Plan saved');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            })
     }
 
     public onDelete(plan: Plan): void {
@@ -205,9 +212,10 @@ export class PlansComponent implements OnInit, OnDestroy {
             width: '400px'
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                const source$ = this._apollo.mutate({
+        dialogRef.afterClosed().pipe(
+            filter((result) => result),
+            switchMap(() => {
+                return this._apollo.mutate({
                     mutation: gql`
                         mutation DeletePlan($id: Int!){
                             deletePlan(id:$id) {
@@ -218,12 +226,15 @@ export class PlansComponent implements OnInit, OnDestroy {
                     variables: {id: plan.id},
                 }).pipe(
                     takeUntil(this._destroy$)
-                );
-                lastValueFrom(source$).then(() => {
+                )
+            })).subscribe({
+                next: () => {
                     this._notifierService.notify('success', 'Successfully deleted plan');
                     this._refresh$.next();
-                });
-            }
-        });
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+          });
     }
 }

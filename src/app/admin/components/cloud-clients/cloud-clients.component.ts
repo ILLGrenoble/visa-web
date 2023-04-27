@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {lastValueFrom, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
-import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {CloudClient, CloudClientInput, NumberInstancesByCloudClient} from '../../../core/graphql';
@@ -108,28 +108,31 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
             data: {cloudClient, clone: !!cloudClient}
         });
 
-        dialogRef.componentInstance.onSave$.subscribe((input: CloudClientInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                        mutation CreateCloudClient($input: CloudClientInput!){
-                            createCloudClient(input: $input) {
-                              id
-                              name
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: CloudClientInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                            mutation CreateCloudClient($input: CloudClientInput!){
+                                createCloudClient(input: $input) {
+                                  id
+                                  name
+                                }
                             }
-                        }
-                    `,
-                variables: {input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Cloud provider created');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
-            });
-        });
+                        `,
+                    variables: {input},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                )
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Cloud provider created');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            })
     }
 
     public onDelete(cloudClient: CloudClient): void {
@@ -138,9 +141,10 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
             width: '400px'
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                const source$ = this._apollo.mutate({
+        dialogRef.afterClosed().pipe(
+            filter((result) => result),
+            switchMap(() => {
+                return this._apollo.mutate({
                     mutation: gql`
                         mutation DeleteCloudClient($id: Int!){
                             deleteCloudClient(id: $id)
@@ -149,15 +153,16 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                     variables: {id: cloudClient.id},
                 }).pipe(
                     takeUntil(this._destroy$)
-                );
-                lastValueFrom(source$).then(() => {
+                )
+            })).subscribe({
+                next: () => {
                     this._notifierService.notify('success', 'Successfully deleted cloud provider');
                     this._refresh$.next();
-                }).catch((error) => {
+                },
+                error: (error) => {
                     this._notifierService.notify('error', error);
-                });
-            }
-        });
+                }
+            })
     }
 
     public onUpdate(cloudClient: CloudClient): void {
@@ -166,27 +171,30 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
             data: {cloudClient}
         });
 
-        dialogRef.componentInstance.onSave$.subscribe((input: CloudClientInput) => {
-            const source$ = this._apollo.mutate<any>({
-                mutation: gql`
-                    mutation UpdateCloudClient($id: Int!,$input: CloudClientInput!){
-                        updateCloudClient(id: $id, input: $input) {
-                            id
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: CloudClientInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                        mutation UpdateCloudClient($id: Int!,$input: CloudClientInput!){
+                            updateCloudClient(id: $id, input: $input) {
+                                id
+                            }
                         }
-                    }
-                    `,
-                variables: {id: cloudClient.id, input},
-            }).pipe(
-                takeUntil(this._destroy$)
-            );
-            lastValueFrom(source$).then(() => {
-                this._notifierService.notify('success', 'Cloud provider saved');
-                this._refresh$.next();
-                dialogRef.close();
-            }).catch((error) => {
-                this._notifierService.notify('error', error);
-            });
-        });
+                        `,
+                    variables: {id: cloudClient.id, input},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                )
+            })).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Cloud provider saved');
+                    this._refresh$.next();
+                    dialogRef.close();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            })
     }
 
     public onView(cloudClient: CloudClient): void {
