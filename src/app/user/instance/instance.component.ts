@@ -114,22 +114,21 @@ export class InstanceComponent implements OnInit, OnDestroy {
         const instanceId = this.route.snapshot.paramMap.get('id');
 
         this._useWebX = this.route.snapshot.data.useWebX != null ? this.route.snapshot.data.useWebX : false;
-
-        this.accountService.getInstance(instanceId)
-            .then((instance) => {
+        this.accountService.getInstance(instanceId).subscribe({
+            next: (instance) => {
                 this.setInstance(instance);
                 this.createAuthenticationTicket();
-            })
-            .catch((error) => {
+            },
+            error: (error) => {
                 if (error.status === 404) {
                     this.error = 'The requested instance does not exist';
 
                 } else {
                     this.error = 'Failed to connect to the instance';
                 }
-            });
-        this.store
-            .select(selectLoggedInUser).subscribe((user: User) => this.user = user);
+            }
+        });
+        this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
     }
 
     /**

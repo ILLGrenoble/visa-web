@@ -120,15 +120,14 @@ export class HomeComponent implements OnInit {
 
     public refresh(): void {
         this.loading = true;
-        this.accountService.getInstances()
-            .then((instances) => {
-                this.instances = instances;
-                this.experiments = [].concat(...instances.map(instance => instance.experiments))
-                    .filter((v, i, a) => {
-                        return a.findIndex(t => (t.id === v.id)) === i;
-                    });
-                this.loading = false;
-            });
+        this.accountService.getInstances().subscribe((instances) => {
+            this.instances = instances;
+            this.experiments = [].concat(...instances.map(instance => instance.experiments))
+                .filter((v, i, a) => {
+                    return a.findIndex(t => (t.id === v.id)) === i;
+                });
+            this.loading = false;
+        });
     }
 
     public handleExperimentFilter(experiment: Experiment): void {

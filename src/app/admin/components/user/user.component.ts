@@ -75,7 +75,7 @@ export class UserComponent implements OnInit, OnDestroy {
                         id,
                         input
                     },
-                }).toPromise().then(() => {
+                }).subscribe(() => {
                     this.refresh();
                     this.notifierService.notify('success', 'Updated user successfully');
                 });

@@ -70,7 +70,7 @@ export class AccountService {
             }));
     }
 
-    public getFilteredInstances(roles: string[], experiments?: string[]): Promise<Instance[]> {
+    public getFilteredInstances(roles: string[], experiments?: string[]): Observable<Instance[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances`;
 
@@ -79,36 +79,39 @@ export class AccountService {
         if (experiments) {
             params = params.append('experiments', experiments.join(''));
         }
-        return this.http.get<any>(url, {
-            params
-        }).pipe(map((response) => {
-            const instances = response.data;
-            return instances.map((instance) => this.objectMapper.deserialize(instance, Instance));
-        })).toPromise();
+        return this.http.get<any>(url, { params }).pipe(
+            map((response) => {
+                const instances = response.data;
+                return instances.map((instance) => this.objectMapper.deserialize(instance, Instance));
+            }));
     }
 
-    public getInstances(): Promise<Instance[]> {
+    public getInstances(): Observable<Instance[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const instances = response.data;
-            return instances.map((instance) => this.objectMapper.deserialize(instance, Instance));
-        })).toPromise();
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const instances = response.data;
+                return instances.map((instance) => this.objectMapper.deserialize(instance, Instance));
+            }));
     }
 
     public getExperimentsForInstances(): Observable<Experiment[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/experiments`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const experiments = response.data;
-            return experiments.map((experiment) => this.objectMapper.deserialize(experiment, Experiment));
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const experiments = response.data;
+                return experiments.map((experiment) => this.objectMapper.deserialize(experiment, Experiment));
+            }));
     }
 
     public getCountInstances(): Observable<number> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/_count`;
-        return this.http.get<any>(url).pipe(map((response) => response.data));
+        return this.http.get<any>(url).pipe(
+            map((response) => response.data)
+        );
     }
 
     public getInstancesForSupport(filter: InstancesFilterState): Observable<Paginated<Instance[]>> {
@@ -116,63 +119,68 @@ export class AccountService {
         const url = `${baseUrl}/account/instances/support`;
         const params = toParams(filter);
 
-        return this.http.get<any>(url, {params}).pipe(map((response) => {
-            const data = response.data;
-            const {count, page, limit} = response._metadata;
-            const instances = data.map((instance) => this.objectMapper.deserialize(instance, Instance));
-            return new Paginated<Instance[]>(count, page, limit, instances);
-        }));
+        return this.http.get<any>(url, {params}).pipe(
+            map((response) => {
+                const data = response.data;
+                const {count, page, limit} = response._metadata;
+                const instances = data.map((instance) => this.objectMapper.deserialize(instance, Instance));
+                return new Paginated<Instance[]>(count, page, limit, instances);
+            }));
     }
 
-    public getInstance(uid: string): Promise<Instance> {
-        return new Promise<Instance>((resolve, reject) => {
-            const baseUrl = environment.paths.api;
-            const url = `${baseUrl}/account/instances/${uid}`;
-            return this.http.get<any>(url).toPromise()
-                .then((response) => {
-                    const instance = response.data;
-                    resolve(this.objectMapper.deserialize(instance, Instance));
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
+    public getInstance(uid: string): Observable<Instance> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${uid}`;
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const instance = response.data;
+                return this.objectMapper.deserialize(instance, Instance);
+            })
+        );
     }
 
     public getInstruments(): Observable<Instrument[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments/instruments`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const instruments = response.data;
-            return instruments.map((instrument) => this.objectMapper.deserialize(instrument, Instrument));
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const instruments = response.data;
+                return instruments.map((instrument) => this.objectMapper.deserialize(instrument, Instrument));
+            })
+        );
     }
 
     public getExperimentYears(): Observable<number[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/experiments/years`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const years = response.data;
-            return years;
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const years = response.data;
+                return years;
+            })
+        );
     }
 
     public getMembersForInstance(instance: Instance): Observable<Member[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/members`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const data = response.data;
-            return data.map((member) => this.objectMapper.deserialize(member, Member));
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const data = response.data;
+                return data.map((member) => this.objectMapper.deserialize(member, Member));
+            })
+        );
     }
 
     public getSessionMembersForInstance(instance: Instance): Observable<InstanceSessionMember[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/sessions/active/members`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const data = response.data;
-            return data.map((member) => this.objectMapper.deserialize(member, InstanceSessionMember));
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const data = response.data;
+                return data.map((member) => this.objectMapper.deserialize(member, InstanceSessionMember));
+            })
+        );
     }
 
     public createMemberForInstance(instance: Instance, member: Member): Observable<Member> {
@@ -182,10 +190,12 @@ export class AccountService {
             role: member.role,
             userId: member.user.id,
         };
-        return this.http.post<any>(url, body).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Member);
-        }));
+        return this.http.post<any>(url, body).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Member);
+            })
+        );
     }
 
     public updateMemberForInstance(instance: Instance, member: Member): Observable<Member> {
@@ -194,45 +204,55 @@ export class AccountService {
         const body = {
             role: member.role,
         };
-        return this.http.put<any>(url, body).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Member);
-        }));
+        return this.http.put<any>(url, body).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Member);
+            })
+        );
     }
 
-    public deleteMemberFromInstance(instance: Instance, member: Member): Observable<any> {
+    public deleteMemberFromInstance(instance: Instance, member: Member): Observable<void> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/members/${member.id}`;
-        return this.http.delete<any>(url).pipe(map(() => {
-            return null;
-        }));
+        return this.http.delete<any>(url).pipe(
+            map(() => null)
+        );
     }
 
     public getUsersByLastName(lastName: string): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/users/_search?name=${lastName}`;
-        return this.http.get<any>(url).pipe(map((res) => res.data));
+        return this.http.get<any>(url).pipe(
+            map((res) => res.data)
+        );
     }
 
     public getUserById(id: number): Observable<User> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/users/${id}`;
-        return this.http.get<any>(url).pipe(map((res) => res.data));
+        return this.http.get<any>(url).pipe(
+            map((res) => res.data)
+        );
     }
 
     public getExperimentalTeamForInstance(instance: Instance): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/experiments/team`;
-        return this.http.get<any>(url).pipe(map((res) => res));
+        return this.http.get<any>(url).pipe(
+            map((res) => res)
+        );
     }
 
     public getScientificSupportUsers(): Observable<User[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/users/support`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            const users = response.data;
-            return users.map((user) => this.objectMapper.deserialize(user, User));
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                const users = response.data;
+                return users.map((user) => this.objectMapper.deserialize(user, User));
+            })
+        );
     }
 
     public createInstance(instance: Instance, acceptedTerms = false): Observable<Instance> {
@@ -248,72 +268,88 @@ export class AccountService {
             screenWidth: instance.screenWidth,
             keyboardLayout: instance.keyboardLayout
         };
-        return this.http.post<any>(url, body).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Instance);
-        }));
+        return this.http.post<any>(url, body).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
     }
 
     public updateInstance(instance: Instance, newData: any): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}`;
-        return this.http.put<any>(url, newData).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Instance);
-        }));
+        return this.http.put<any>(url, newData).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
     }
 
     public deleteInstance(instance: Instance): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}`;
-        return this.http.delete<any>(url).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Instance);
-        }));
+        return this.http.delete<any>(url).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
     }
 
     public getInstanceState(instance: Instance): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/state`;
-        return this.http.get<any>(url).pipe(map((response) => {
-            return response.data;
-        }));
+        return this.http.get<any>(url).pipe(
+            map((response) => {
+                return response.data;
+            })
+        );
     }
 
     public instanceReboot(instance: Instance): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/actions/reboot`;
-        return this.http.post<any>(url, null).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Instance);
-        }));
+        return this.http.post<any>(url, null).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
     }
 
     public instanceShutdown(instance: Instance): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/actions/shutdown`;
-        return this.http.post<any>(url, null).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Instance);
-        }));
+        return this.http.post<any>(url, null).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
     }
 
     public instanceStart(instance: Instance): Observable<any> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/actions/start`;
-        return this.http.post<any>(url, null).pipe(map((response) => {
-            const data = response.data;
-            return this.objectMapper.deserialize(data, Instance);
-        }));
+        return this.http.post<any>(url, null).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
     }
 
     public createInstanceAuthenticationTicket(instance: Instance): Observable<string> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/auth/token`;
-        return this.http.post<any>(url, null).pipe(map((response) => {
-            const data = response.data;
-            return data.token;
-        }));
+        return this.http.post<any>(url, null).pipe(
+            map((response) => {
+                const data = response.data;
+                return data.token;
+            })
+        );
     }
 
     public createGuacamoleRemoteDesktopTunnel(): SocketIOTunnel {

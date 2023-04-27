@@ -3,7 +3,7 @@ import {ConfigService} from './config.service';
 import {CookieService} from 'ngx-cookie-service';
 import {OAuthEvent, OAuthService, OAuthSuccessEvent} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
-import {filter, ignoreElements, map, startWith, switchMap, tap} from 'rxjs/operators';
+import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {ApplicationState} from '../state';
@@ -91,12 +91,10 @@ export class AuthenticationService {
             }),
             switchMap(() => from(this._oauthService.loadDiscoveryDocumentAndTryLogin())),
             filter(isLoggedIn => isLoggedIn),
-            tap(() => {
+            map(() => {
                 this._updateCookie();
                 this._oauthService.setupAutomaticSilentRefresh();
-            }),
-            ignoreElements(),
-            startWith(null)
+            })
         );
     }
 

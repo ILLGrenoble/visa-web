@@ -8,6 +8,8 @@ import {NotificationUpdateComponent} from '../notification-update';
 import * as moment from 'moment';
 import {NotificationDeleteComponent} from '../notification-delete';
 import {Title} from '@angular/platform-browser';
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
 
 interface SystemNotificationHolder {
     id: number,
@@ -70,7 +72,7 @@ export class NotificationsComponent implements OnInit {
             dialogRef.componentInstance.onUpdate$.subscribe(() => {
                 notification.activatedAt = notification.activatedAt != null ? moment(new Date()).format('YYYY-MM-DD hh:mm:ss') : null;
                 this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt})
-                    .then(() => this.onDataChange(notification));
+                    .subscribe(() => this.onDataChange(notification));
             });
 
         } else {
@@ -86,32 +88,38 @@ export class NotificationsComponent implements OnInit {
         if (notification.id) {
             notification.activatedAt = notification.activatedAt != null ? moment(new Date()).format('YYYY-MM-DD hh:mm:ss') : null;
 
-            this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).then((data) => {
-                notification.message = data.message;
-                notification.originalText = data.message;
-                notification.activatedAt = data.activatedAt;
-                notification.activated = notification.activatedAt != null;
-                notification.level = data.level;
+            this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).subscribe({
+               next: (data) => {
+                    notification.message = data.message;
+                    notification.originalText = data.message;
+                    notification.activatedAt = data.activatedAt;
+                    notification.activated = notification.activatedAt != null;
+                    notification.level = data.level;
 
-                this.showNotification('The system notification has been updated');
-            }).catch((error) => {
-                console.error(error);
-                this.showErrorNotification('Failed to update the system notification');
-
+                    this.showNotification('The system notification has been updated');
+                },
+                error: (error) => {
+                    console.error(error);
+                    this.showErrorNotification('Failed to update the system notification');
+                }
             });
-        } else {
-            this.create({level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).then((data) => {
-                notification.id = data.id;
-                notification.message = data.message;
-                notification.originalText = data.message;
-                notification.activatedAt = data.activatedAt;
-                notification.activated = notification.activatedAt != null;
-                notification.level = data.level;
 
-                this.showNotification('The system notification has been created');
-            }).catch((error) => {
-                console.error(error);
-                this.showErrorNotification('Failed to create the system notification');
+        } else {
+            this.create({level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).subscribe({
+                next: (data) => {
+                    notification.id = data.id;
+                    notification.message = data.message;
+                    notification.originalText = data.message;
+                    notification.activatedAt = data.activatedAt;
+                    notification.activated = notification.activatedAt != null;
+                    notification.level = data.level;
+
+                    this.showNotification('The system notification has been created');
+                },
+                error: (error) => {
+                    console.error(error);
+                    this.showErrorNotification('Failed to create the system notification');
+                }
             });
         }
     }
@@ -122,14 +130,17 @@ export class NotificationsComponent implements OnInit {
                 width: '400px',
             });
             dialogRef.componentInstance.onDelete$.subscribe(() => {
-                this.delete(notification.id).then(() => {
-                    this.notifications = this.notifications.filter((aNotification) => aNotification.id !== notification.id);
+                this.delete(notification.id).subscribe({
+                    next: () => {
+                        this.notifications = this.notifications.filter((aNotification) => aNotification.id !== notification.id);
 
-                    this.showNotification('The system notification has been deleted');
-                }).catch((error) => {
-                    console.error(error);
-                    this.showErrorNotification('Failed to delete the system notification');
-                });
+                        this.showNotification('The system notification has been deleted');
+                    },
+                    error: (error) => {
+                        console.error(error);
+                        this.showErrorNotification('Failed to delete the system notification');
+                    }
+                })
             });
 
         } else {
@@ -163,7 +174,7 @@ export class NotificationsComponent implements OnInit {
             });
     }
 
-    private create(input: SystemNotificationInput): Promise<SystemNotification> {
+    private create(input: SystemNotificationInput): Observable<SystemNotification> {
         return this.apollo.mutate<any>({
             mutation: gql`
                 mutation create($input: SystemNotificationInput!) {
@@ -174,13 +185,14 @@ export class NotificationsComponent implements OnInit {
                         activatedAt
                     }
                 }`, variables: {input},
-        }).toPromise()
-            .then(({data}) => {
+        }).pipe(
+            map(({data}) => {
                 return data.createSystemNotification;
-            }).catch(error => { throw error; });
+            })
+        );
     }
 
-    private update(id, input: SystemNotificationInput): Promise<SystemNotification> {
+    private update(id, input: SystemNotificationInput): Observable<SystemNotification> {
         return this.apollo.mutate<any>({
             mutation: gql`
                 mutation updateSystemNotification($id: Int!, $input: SystemNotificationInput!) {
@@ -191,13 +203,14 @@ export class NotificationsComponent implements OnInit {
                         activatedAt
                     }
                 }`, variables: {id, input},
-        }).toPromise()
-            .then(({data}) => {
+        }).pipe(
+            map(({data}) => {
                 return data.updateSystemNotification;
-            }).catch(error => { throw error; });
+            })
+        );
     }
 
-    private delete(id): Promise<SystemNotification> {
+    private delete(id): Observable<SystemNotification> {
         return this.apollo.mutate<any>({
             mutation: gql`
               mutation deleteSystemNotification($id: Int!) {
@@ -208,9 +221,10 @@ export class NotificationsComponent implements OnInit {
                     activatedAt
                 }
               }`, variables: {id},
-        }).toPromise()
-            .then(({data}) => {
+        }).pipe(
+            map(({data}) => {
                 return data.deleteSystemNotification;
-            }).catch(error => { throw error; });
+            })
+        );
     }
 }

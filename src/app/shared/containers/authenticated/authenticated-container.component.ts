@@ -51,7 +51,7 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
         }
 
         this._timerSubscription = timer(0, 10000).subscribe(
-            () => this.notificationService.getAll().then((notificationPayload: NotificationPayload) => {
+            () => this.notificationService.getAll().subscribe((notificationPayload: NotificationPayload) => {
                 const systemNotifications = notificationPayload.systemNotifications;
 
                 this.cleanDismissedSystemNotifications(systemNotifications);

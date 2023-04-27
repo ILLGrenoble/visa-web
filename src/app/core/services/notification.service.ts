@@ -6,6 +6,8 @@ import {ObjectMapperService} from './object-mapper.service';
 import {NotificationsActions} from '../actions';
 import {Store} from '@ngrx/store';
 import {ApplicationState} from '../state';
+import {Observable, throwError} from "rxjs";
+import {catchError, map} from "rxjs/operators";
 
 @Injectable()
 export class NotificationService {
@@ -15,24 +17,22 @@ export class NotificationService {
                 private store: Store<ApplicationState>) {
     }
 
-    public getAll(): Promise<NotificationPayload> {
-        return new Promise<NotificationPayload>((resolve, reject) => {
-            const notificationUrl = `${environment.paths.api}/notifications`;
-            this.http.get<any>(notificationUrl)
-                .toPromise()
-                .then((response) => {
-                    const notificationPayload = this.objectMapper.deserialize(response.data, NotificationPayload);
+    public getAll(): Observable<NotificationPayload> {
+        const notificationUrl = `${environment.paths.api}/notifications`;
+        return this.http.get<any>(notificationUrl).pipe(
+            map((response) => {
+                const notificationPayload = this.objectMapper.deserialize(response.data, NotificationPayload);
 
-                    const adminNotifications = notificationPayload.adminNotifications;
-                    this.store.dispatch(NotificationsActions.loadNotificationsSuccess({adminNotifications}));
+                const adminNotifications = notificationPayload.adminNotifications;
+                this.store.dispatch(NotificationsActions.loadNotificationsSuccess({adminNotifications}));
 
-                    resolve(notificationPayload);
-                })
-                .catch((error) => {
-                    console.error(`error loading notifications: ${JSON.stringify(error)}`);
-                    reject(error);
-                });
-        });
+                return notificationPayload;
+            }),
+            catchError((error) => {
+                console.error(`error loading notifications: ${JSON.stringify(error)}`);
+                return throwError(error);
+            })
+        );
     }
 
 }

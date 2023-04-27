@@ -257,7 +257,7 @@ export class UsersComponent implements OnInit, OnDestroy {
                 roleName,
                 isEnabled: !this.userHasRole(user, roleName)
             },
-        }).toPromise().then((result: any) => {
+        }).subscribe((result: any) => {
             const returnedUser = result.data.updateUserRole;
             user.activeUserRoles = returnedUser.activeUserRoles;
             user.isAdmin = this.userHasRole(user, 'ADMIN');

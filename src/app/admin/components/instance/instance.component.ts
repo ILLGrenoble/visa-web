@@ -125,7 +125,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 variables: {
                     id: this.instance.id,
                 },
-            }).toPromise().then(() => {
+            }).subscribe(() => {
                 this.router.navigate(['/admin/dashboard']).then(() => {
                     this.notifierService.notify('success', 'The instance will be deleted');
                 });
@@ -145,7 +145,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             variables: {
                 id: this.instance.id,
             },
-        }).toPromise().then(() => {
+        }).subscribe(() => {
             this.notifierService.notify('success', 'Shutting down instance');
         });
     }
@@ -162,7 +162,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             variables: {
                 id: this.instance.id,
             },
-        }).toPromise().then(() => {
+        }).subscribe(() => {
             this.notifierService.notify('success', 'Starting instance');
         });
     }
@@ -179,7 +179,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             variables: {
                 id: this.instance.id,
             },
-        }).toPromise().then(() => {
+        }).subscribe(() => {
             this.notifierService.notify('success', 'Rebooting instance');
         });
     }
@@ -207,7 +207,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 id: this.instance.id,
                 date: dateString
             },
-        }).toPromise().then(() => {
+        }).subscribe(() => {
             this.instance.terminationDate = this._terminationDate ? this._terminationDate.toString() : null;
             this.notifierService.notify('success', 'Updated instance termination date');
         });

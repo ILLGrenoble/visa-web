@@ -235,7 +235,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public handleGenerateRandomName(): void {
-        this._helperService.getRandomInstanceName().then((randomName) => {
+        this._helperService.getRandomInstanceName().subscribe((randomName) => {
             this.form.get('name').setValue(randomName);
         });
     }

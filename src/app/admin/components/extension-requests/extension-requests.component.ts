@@ -67,18 +67,21 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
                     }
             `,
                 variables: {requestId: request.id, response: data},
-            }).toPromise()
-                .then(() => {
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: () => {
                     dialogRef.close();
                     this.showSuccessNotification('Instance extension request has been handled successfully');
                     if (this._extensionRequests.length === 1) {
                         this.notificationService.getAll();
                     }
                     this.load();
-
-                }).catch((error) => {
+                },
+                error: (error) => {
                     this.showErrorNotification(error);
-                });
+                }
+            })
         });
     }
 

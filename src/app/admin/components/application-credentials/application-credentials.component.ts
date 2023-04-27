@@ -95,15 +95,17 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
                     }
                 `,
                 variables: {input: applicationCredentialInput},
-            }).toPromise()
-                .then((data: any) => {
+            }).subscribe({
+                next: (data: any) => {
                     dialogRef.close();
                     this.loadApplicationCredentials();
 
                     this.showSuccessNotification('Application Credentials created');
                     this._createdApplicationCredential = data.data.createApplicationCredential;
-                }).catch((error) => {
-                this.showErrorNotification(error);
+                },
+                error: (error) => {
+                    this.showErrorNotification(error);
+                }
             });
         });
     }
@@ -122,11 +124,10 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
                     }
                 `,
                 variables: {id: applicationCredential.id},
-            }).toPromise()
-                .then(() => {
-                    this.showSuccessNotification('Application Credentials deleted');
-                    this.loadApplicationCredentials();
-                });
+            }).subscribe(() => {
+                this.showSuccessNotification('Application Credentials deleted');
+                this.loadApplicationCredentials();
+            });
         });
     }
 
@@ -148,13 +149,15 @@ export class ApplicationCredentialsComponent implements OnInit, OnDestroy {
                     }
             `,
                 variables: {id: applicationCredential.id, input: data},
-            }).toPromise()
-                .then(() => {
+            }).subscribe({
+                next: () => {
                     dialogRef.close();
                     this.showSuccessNotification('Application Credentials updated');
                     this.loadApplicationCredentials();
-                }).catch((error) => {
-                this.showErrorNotification(error);
+                },
+                error: (error) => {
+                    this.showErrorNotification(error);
+                }
             });
         });
     }

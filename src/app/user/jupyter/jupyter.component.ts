@@ -53,18 +53,19 @@ export class JupyterComponent implements OnInit {
 
     public handleConnect(): void {
         const instanceId = this.route.snapshot.paramMap.get('id');
-        this.accountService.getInstance(instanceId)
-            .then((instance) => {
+        this.accountService.getInstance(instanceId).subscribe({
+            next: (instance) => {
                 this.setInstance(instance);
-            })
-            .catch((error) => {
+            },
+            error: (error) => {
                 if (error.status === 404) {
                     this._error = 'The requested instance does not exist';
 
                 } else {
                     this._error = 'Failed to connect to the instance';
                 }
-            });
+            }
+        });
     }
 
     public resizeJupyter(retry?: number): void {
