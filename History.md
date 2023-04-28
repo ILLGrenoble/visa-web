@@ -1,3 +1,9 @@
+2.8.0 28/04/2023
+================
+ * Code refactoring and linting
+ * Update to Angular 15 and all packages
+ * Update to Node 20
+
 2.7.0 20/04/2023
 ================
  * Soft deletion of plans
