@@ -16,11 +16,13 @@ export class DetailsDialog implements OnInit {
 
     private _form: InstanceForm = new InstanceForm();
 
-    private _canSubmit = true;
+    private _screenResolution: { label: string, width: number, height: number };
 
     private _name: string;
 
     private _comments: string;
+
+    private _keyboardLayout: string;
 
     private _unrestrictedAccess: boolean;
 
@@ -64,7 +66,14 @@ export class DetailsDialog implements OnInit {
         const instance = data.instance;
         this._name = instance.name;
         this._comments = instance.comments;
+        this._screenResolution = {
+            label: `${instance.screenWidth} x ${instance.screenHeight}`,
+            width: instance.screenWidth,
+            height: instance.screenHeight,
+        };
+        this._keyboardLayout = instance.keyboardLayout;
         this.unrestrictedAccess = instance.unrestrictedAccess;
+
     }
 
     public isValidData(): boolean {
@@ -72,7 +81,7 @@ export class DetailsDialog implements OnInit {
     }
 
     public canSubmit(): boolean {
-        return this.isValidData() && this._canSubmit;
+        return this.isValidData();
     }
 
     public submit(): void {
@@ -80,6 +89,9 @@ export class DetailsDialog implements OnInit {
         this.accountService.updateInstance(this.instance, {
             name: data.name,
             comments: data.comments,
+            screenWidth: data.screenResolution.width,
+            screenHeight: data.screenResolution.height,
+            keyboardLayout: data.keyboardLayout,
             unrestrictedAccess: data.unrestrictedAccess,
         }).subscribe((instance) => this.dialogRef.close(instance));
     }
@@ -92,6 +104,8 @@ export class DetailsDialog implements OnInit {
         this.form.removeControl('acceptedTerms');
         this.form.get('name').setValue(this._name);
         this.form.get('comments').setValue(this._comments);
+        this.form.get('screenResolution').setValue(this._screenResolution);
+        this.form.get('keyboardLayout').setValue(this._keyboardLayout);
         this.form.get('unrestrictedAccess').setValue(this.unrestrictedAccess);
         // Disable the form if the user is not the owner
         if (this.instance.membership.role !== 'OWNER') {
