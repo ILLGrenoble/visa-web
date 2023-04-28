@@ -4,6 +4,7 @@ import {environment} from 'environments/environment';
 import {Configuration} from '../models';
 import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
+import {Response} from "./visa-response";
 
 export function configServiceInitializerFactory(configurationService: ConfigService): () => Observable<Configuration> {
     // a lambda is required here, otherwise `this` won't work inside ConfigurationService::load
@@ -21,7 +22,7 @@ export class ConfigService {
     public load(): Observable<Configuration> {
         const configurationUrl = `${environment.paths.api}/configuration`;
 
-        return this.http.get<any>(configurationUrl)
+        return this.http.get<Response<Configuration>>(configurationUrl)
             .pipe(
                 map(({data}) => {
                     return data;

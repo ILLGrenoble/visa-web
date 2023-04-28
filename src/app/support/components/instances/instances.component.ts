@@ -29,7 +29,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     private _user: User;
 
-    private _instances: Paginated<Instance[]>;
+    private _instances: Paginated<Instance>;
 
     private _loading = true;
 
@@ -52,11 +52,11 @@ export class InstancesComponent implements OnInit, OnDestroy {
         this._destroy$ = value;
     }
 
-    get instances(): Paginated<Instance[]> {
+    get instances(): Paginated<Instance> {
         return this._instances;
     }
 
-    set instances(value: Paginated<Instance[]>) {
+    set instances(value: Paginated<Instance>) {
         this._instances = value;
     }
 

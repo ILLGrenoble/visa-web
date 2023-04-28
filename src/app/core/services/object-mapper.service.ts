@@ -13,8 +13,8 @@ export class ObjectMapperService {
         this.converter = converter;
     }
 
-    public deserialize(json: any, classReference: new() => any): any {
-        return this.converter.deserialize(json, classReference);
+    public deserialize<T extends object>(json: any, classReference: new() => T): T {
+        return this.converter.deserializeObject<T>(json, classReference);
     }
 
     public serialize(data: any): any {

@@ -3,6 +3,7 @@ import {FormGroup} from '@angular/forms';
 import {AccountService, InstrumentService} from '@core';
 import {concat, Observable, of, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators';
+import {User} from "../../../core";
 
 @Component({
     selector: 'visa-owner-search',
@@ -16,7 +17,7 @@ export class OwnerSearchComponent implements OnInit {
 
     private _input$ = new Subject<string | null>();
 
-    private _users$: Observable<any[]>;
+    private _users$: Observable<User[]>;
 
     get users$(): Observable<any[]> {
         return this._users$;

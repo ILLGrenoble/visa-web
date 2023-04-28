@@ -8,6 +8,7 @@ import {Store} from '@ngrx/store';
 import {ApplicationState} from '../state';
 import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
+import {Response} from "./visa-response";
 
 @Injectable()
 export class NotificationService {
@@ -19,7 +20,7 @@ export class NotificationService {
 
     public getAll(): Observable<NotificationPayload> {
         const notificationUrl = `${environment.paths.api}/notifications`;
-        return this.http.get<any>(notificationUrl).pipe(
+        return this.http.get<Response<NotificationPayload>>(notificationUrl).pipe(
             map((response) => {
                 const notificationPayload = this.objectMapper.deserialize(response.data, NotificationPayload);
 

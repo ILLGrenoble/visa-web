@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Instrument} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
+import {Response} from "./visa-response";
 
 @Injectable()
 export class InstrumentService {
@@ -15,7 +16,7 @@ export class InstrumentService {
     public getInstruments(): Observable<Instrument[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/instruments`;
-        return this.http.get<any>(url).pipe(map((response) => {
+        return this.http.get<Response<Instrument[]>>(url).pipe(map((response) => {
             const instruments = response.data;
             return instruments.map((instrument) => this.objectMapper.deserialize(instrument, Instrument));
         }));

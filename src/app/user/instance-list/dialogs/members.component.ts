@@ -15,7 +15,7 @@ export class MembersDialog implements OnInit {
     @Input()
     public instance: Instance;
 
-    public $users: Observable<[]>;
+    public $users: Observable<{ value: User, label: string }[]>;
     public $sciSupportUsers: Observable<{ value: User, label: string }[]>;
 
     public selectedUser: User;
@@ -138,8 +138,8 @@ export class MembersDialog implements OnInit {
 
     private loadUsers(): void {
         this.$users = this.accountService.getExperimentalTeamForInstance(this.instance).pipe(map((data) => {
-            if (data.data.length > 0) {
-                return data.data.map(this.toOption);
+            if (data.length > 0) {
+                return data.map(this.toOption);
             }
         }));
     }

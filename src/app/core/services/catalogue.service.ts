@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ImagePlans, Plan} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
+import {Response} from "./visa-response";
 
 @Injectable()
 export class CatalogueService {
@@ -21,7 +22,7 @@ export class CatalogueService {
                 params: new HttpParams().set('experiments', experiments.join(',')),
             };
             const url = `${baseUrl}/plans`;
-            return this.http.get<any>(url, params).pipe(map((response) => {
+            return this.http.get<Response<Plan[]>>(url, params).pipe(map((response) => {
                 const plans = response.data;
                 return plans.map((plan) => this.objectMapper.deserialize(plan, Plan));
             }));
@@ -31,7 +32,7 @@ export class CatalogueService {
     public getPlans(): Observable<Plan[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/plans`;
-        return this.http.get<any>(url).pipe(map((response) => {
+        return this.http.get<Response<Plan[]>>(url).pipe(map((response) => {
             const plans = response.data;
             return plans.map((plan) => this.objectMapper.deserialize(plan, Plan));
         }));

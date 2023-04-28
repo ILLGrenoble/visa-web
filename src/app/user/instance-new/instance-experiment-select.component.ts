@@ -52,7 +52,7 @@ export class InstanceExperimentSelectComponent implements OnInit {
     private _fromYear: number;
     private _toYear: number;
 
-    public experiments: Paginated<Experiment[]> = new Paginated(1, 1, this.pageSizes[0], []);
+    public experiments: Paginated<Experiment> = new Paginated(1, 1, this.pageSizes[0], []);
 
     get instrument(): Instrument {
         return this._instrument;
