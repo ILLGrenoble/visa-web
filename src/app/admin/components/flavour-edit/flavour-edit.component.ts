@@ -8,7 +8,7 @@ import {
     CloudClient,
     Role
 } from '../../../core/graphql';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -20,7 +20,7 @@ import {filter, map, takeUntil} from 'rxjs/operators';
 })
 export class FlavourEditComponent implements OnInit, OnDestroy {
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
     private _cloudClients: CloudClient[];
     private _cloudFlavours: CloudFlavour[];
     private readonly _instruments: Instrument[];
@@ -40,12 +40,12 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
-        this._form = new UntypedFormGroup({
-            name: new UntypedFormControl(null, Validators.required),
-            cloudClient: new UntypedFormControl(null, Validators.required),
-            cloudFlavour: new UntypedFormControl(null, Validators.required),
-            instruments: new UntypedFormControl(null),
-            roles: new UntypedFormControl(null),
+        this._form = new FormGroup({
+            name: new FormControl(null, Validators.required),
+            cloudClient: new FormControl(null, Validators.required),
+            cloudFlavour: new FormControl(null, Validators.required),
+            instruments: new FormControl(null),
+            roles: new FormControl(null),
         });
 
         if (flavour) {
@@ -60,11 +60,11 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    get form(): UntypedFormGroup {
+    get form(): FormGroup {
         return this._form;
     }
 
-    set form(value: UntypedFormGroup) {
+    set form(value: FormGroup) {
         this._form = value;
     }
 

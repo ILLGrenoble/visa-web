@@ -1,7 +1,7 @@
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Instance} from '@core';
 
-export class InstanceForm extends UntypedFormGroup {
+export class InstanceForm extends FormGroup {
 
     public instance: Instance;
 
@@ -15,32 +15,32 @@ export class InstanceForm extends UntypedFormGroup {
         this.addControl('unrestrictedAccess', this.createUnrestrictedAccessControl());
     }
 
-    private createScreenResolutionControl(): UntypedFormControl {
-       return new UntypedFormControl(null, Validators.required);
+    private createScreenResolutionControl(): FormControl {
+       return new FormControl(null, Validators.required);
     }
 
-    private createNameControl(): UntypedFormControl {
-        return new UntypedFormControl(null, Validators.compose([
+    private createNameControl(): FormControl {
+        return new FormControl(null, Validators.compose([
             Validators.required,
             Validators.minLength(3),
             Validators.maxLength(100)]));
     }
 
-    private createCommentsControl(): UntypedFormControl {
-        return new UntypedFormControl(null, Validators.maxLength(2500));
+    private createCommentsControl(): FormControl {
+        return new FormControl(null, Validators.maxLength(2500));
     }
 
-    private createAcceptedTermsControl(): UntypedFormControl {
-        return new UntypedFormControl(false, Validators.compose([
+    private createAcceptedTermsControl(): FormControl {
+        return new FormControl(false, Validators.compose([
             Validators.requiredTrue,
         ]));
     }
 
-    private createKeyboardLayoutControl(): UntypedFormControl {
-        return new UntypedFormControl(null, Validators.required);
+    private createKeyboardLayoutControl(): FormControl {
+        return new FormControl(null, Validators.required);
     }
 
-    private createUnrestrictedAccessControl(): UntypedFormControl {
-        return new UntypedFormControl(false, Validators.required);
+    private createUnrestrictedAccessControl(): FormControl {
+        return new FormControl(false, Validators.required);
     }
 }

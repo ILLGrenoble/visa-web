@@ -6,7 +6,7 @@ import {
     OpenStackProviderConfigurationInput,
     WebProviderConfigurationInput
 } from '../../../core/graphql';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import {filter} from 'rxjs/operators';
@@ -17,9 +17,9 @@ import {filter} from 'rxjs/operators';
 })
 export class CloudClientEditComponent implements OnDestroy {
 
-    private readonly _clientForm: UntypedFormGroup;
-    private readonly _openStackForm: UntypedFormGroup;
-    private readonly _webForm: UntypedFormGroup;
+    private readonly _clientForm: FormGroup;
+    private readonly _openStackForm: FormGroup;
+    private readonly _webForm: FormGroup;
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<CloudClientInput> = new Subject<CloudClientInput>();
@@ -33,27 +33,27 @@ export class CloudClientEditComponent implements OnDestroy {
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
-        this._clientForm = new UntypedFormGroup({
-            type: new UntypedFormControl(null, Validators.required),
-            name: new UntypedFormControl(null, Validators.required),
-            serverNamePrefix: new UntypedFormControl(null, Validators.required),
-            visible: new UntypedFormControl(false, Validators.required),
+        this._clientForm = new FormGroup({
+            type: new FormControl(null, Validators.required),
+            name: new FormControl(null, Validators.required),
+            serverNamePrefix: new FormControl(null, Validators.required),
+            visible: new FormControl(false, Validators.required),
         });
 
-        this._openStackForm = new UntypedFormGroup({
-            applicationId: new UntypedFormControl(null, Validators.required),
-            applicationSecret: new UntypedFormControl(null, Validators.required),
-            computeEndpoint: new UntypedFormControl(null, Validators.required),
-            imageEndpoint: new UntypedFormControl(null, Validators.required),
-            networkEndpoint: new UntypedFormControl(null, Validators.required),
-            identityEndpoint: new UntypedFormControl(null, Validators.required),
-            addressProvider: new UntypedFormControl(null, Validators.required),
-            addressProviderUUID: new UntypedFormControl(null, Validators.required),
+        this._openStackForm = new FormGroup({
+            applicationId: new FormControl(null, Validators.required),
+            applicationSecret: new FormControl(null, Validators.required),
+            computeEndpoint: new FormControl(null, Validators.required),
+            imageEndpoint: new FormControl(null, Validators.required),
+            networkEndpoint: new FormControl(null, Validators.required),
+            identityEndpoint: new FormControl(null, Validators.required),
+            addressProvider: new FormControl(null, Validators.required),
+            addressProviderUUID: new FormControl(null, Validators.required),
         });
 
-        this._webForm = new UntypedFormGroup({
-            url: new UntypedFormControl(null, Validators.required),
-            authToken: new UntypedFormControl(null, Validators.required),
+        this._webForm = new FormGroup({
+            url: new FormControl(null, Validators.required),
+            authToken: new FormControl(null, Validators.required),
         });
 
         if (cloudClient) {
@@ -70,15 +70,15 @@ export class CloudClientEditComponent implements OnDestroy {
         }
     }
 
-    get clientForm(): UntypedFormGroup {
+    get clientForm(): FormGroup {
         return this._clientForm;
     }
 
-    get openStackForm(): UntypedFormGroup {
+    get openStackForm(): FormGroup {
         return this._openStackForm;
     }
 
-    get webForm(): UntypedFormGroup {
+    get webForm(): FormGroup {
         return this._webForm;
     }
 

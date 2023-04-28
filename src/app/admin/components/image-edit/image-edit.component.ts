@@ -1,6 +1,6 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {CloudClient, CloudImage, Image, ImageInput, ImageProtocol} from '../../../core/graphql';
 import gql from 'graphql-tag';
@@ -13,7 +13,7 @@ import {Apollo} from 'apollo-angular';
 })
 export class ImageEditComponent implements OnInit, OnDestroy {
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
     private _icons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
     private _cloudClients: CloudClient[];
     private _cloudImages: CloudImage[] = [];
@@ -30,17 +30,17 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
-        this._form = new UntypedFormGroup({
-            name: new UntypedFormControl(null, Validators.required),
-            version: new UntypedFormControl(null, Validators.required),
-            icon: new UntypedFormControl('data-analysis-1.jpg', Validators.required),
-            visible: new UntypedFormControl(false, Validators.required),
-            cloudClient: new UntypedFormControl(null, Validators.required),
-            cloudImage: new UntypedFormControl(null, Validators.required),
-            description: new UntypedFormControl(null),
-            protocols: new UntypedFormControl(null),
-            autologin: new UntypedFormControl(null),
-            bootCommand: new UntypedFormControl(null),
+        this._form = new FormGroup({
+            name: new FormControl(null, Validators.required),
+            version: new FormControl(null, Validators.required),
+            icon: new FormControl('data-analysis-1.jpg', Validators.required),
+            visible: new FormControl(false, Validators.required),
+            cloudClient: new FormControl(null, Validators.required),
+            cloudImage: new FormControl(null, Validators.required),
+            description: new FormControl(null),
+            protocols: new FormControl(null),
+            autologin: new FormControl(null),
+            bootCommand: new FormControl(null),
         });
 
         if (image) {
@@ -55,11 +55,11 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    get form(): UntypedFormGroup {
+    get form(): FormGroup {
         return this._form;
     }
 
-    set form(value: UntypedFormGroup) {
+    set form(value: FormGroup) {
         this._form = value;
     }
 

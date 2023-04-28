@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AccountService, Configuration, Instance} from '@core';
-import {AbstractControl, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {filter} from 'rxjs/operators';
 
 @Component({
@@ -14,7 +14,7 @@ export class RequestExtensionDialog implements OnInit {
 
     private readonly _configuration: Configuration;
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
 
     get instance(): Instance {
         return this._instance;
@@ -24,11 +24,11 @@ export class RequestExtensionDialog implements OnInit {
         return this._configuration;
     }
 
-    get form(): UntypedFormGroup {
+    get form(): FormGroup {
         return this._form;
     }
 
-    set form(value: UntypedFormGroup) {
+    set form(value: FormGroup) {
         this._form = value;
     }
 
@@ -58,8 +58,8 @@ export class RequestExtensionDialog implements OnInit {
     }
 
     private createForm(): void {
-        this.form = new UntypedFormGroup({
-            comments: new UntypedFormControl('', Validators.compose([Validators.maxLength(4000), Validators.required])),
+        this.form = new FormGroup({
+            comments: new FormControl('', Validators.compose([Validators.maxLength(4000), Validators.required])),
         });
     }
 

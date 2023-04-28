@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UntypedFormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {AccountService, InstrumentService} from '@core';
 import {concat, Observable, of, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators';
@@ -10,7 +10,7 @@ import {debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators
 })
 export class OwnerSearchComponent implements OnInit {
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
 
     private _loading = false;
 
@@ -26,12 +26,12 @@ export class OwnerSearchComponent implements OnInit {
         this._users$ = value;
     }
 
-    get form(): UntypedFormGroup {
+    get form(): FormGroup {
         return this._form;
     }
 
     @Input()
-    set form(value: UntypedFormGroup) {
+    set form(value: FormGroup) {
         this._form = value;
     }
 

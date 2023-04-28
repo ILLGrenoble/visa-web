@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {AccountService} from '@core';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -21,7 +21,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private _onState: EventEmitter<InstancesFilterState> = new EventEmitter();
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
 
     private _data: any[];
 
@@ -57,11 +57,11 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this._onState = value;
     }
 
-    public get form(): UntypedFormGroup {
+    public get form(): FormGroup {
         return this._form;
     }
 
-    public set form(value: UntypedFormGroup) {
+    public set form(value: FormGroup) {
         this._form = value;
     }
 
@@ -206,15 +206,15 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this.destroy$.unsubscribe();
     }
 
-    private createForm(): UntypedFormGroup {
-        return new UntypedFormGroup({
-            id: new UntypedFormControl(null),
-            name: new UntypedFormControl(null),
-            flavour: new UntypedFormControl(null),
-            image: new UntypedFormControl(null),
-            instrument: new UntypedFormControl(null),
-            state: new UntypedFormControl(null),
-            user: new UntypedFormControl(null),
+    private createForm(): FormGroup {
+        return new FormGroup({
+            id: new FormControl(null),
+            name: new FormControl(null),
+            flavour: new FormControl(null),
+            image: new FormControl(null),
+            instrument: new FormControl(null),
+            state: new FormControl(null),
+            user: new FormControl(null),
         });
     }
 

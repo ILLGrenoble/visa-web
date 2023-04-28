@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, InstanceExtensionRequest, InstanceExtensionResponseInput} from '../../../core/graphql';
-import {AbstractControl, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import * as moment from 'moment';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
 import {filter, take} from 'rxjs/operators';
@@ -21,7 +21,7 @@ export class ExtensionRequestHandlerComponent implements OnInit {
     private readonly _extensionRequest: InstanceExtensionRequest;
     private readonly _instance: Instance;
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
     private _accepted: boolean = null;
     private _terminationDate: Date;
     private _minDate: string;
@@ -38,7 +38,7 @@ export class ExtensionRequestHandlerComponent implements OnInit {
         return this._instance;
     }
 
-    get form(): UntypedFormGroup {
+    get form(): FormGroup {
         return this._form;
     }
 
@@ -101,9 +101,9 @@ export class ExtensionRequestHandlerComponent implements OnInit {
     }
 
     private createForm(): void {
-        this._form = new UntypedFormGroup({
-            handlerCommentsRefused: new UntypedFormControl('', Validators.compose([Validators.maxLength(4000), Validators.required])),
-            handlerCommentsAccepted: new UntypedFormControl('', Validators.maxLength(4000)),
+        this._form = new FormGroup({
+            handlerCommentsRefused: new FormControl('', Validators.compose([Validators.maxLength(4000), Validators.required])),
+            handlerCommentsAccepted: new FormControl('', Validators.maxLength(4000)),
         });
     }
 

@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Flavour, Image, Plan, PlanInput} from '../../../core/graphql';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {filter, map, takeUntil} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import {Apollo} from 'apollo-angular';
 })
 export class PlanEditComponent implements OnInit {
 
-    private _form: UntypedFormGroup;
+    private _form: FormGroup;
     private _flavours: Flavour[];
     private _compatibleFlavours: Flavour[];
     private _images: Image[];
@@ -29,10 +29,10 @@ export class PlanEditComponent implements OnInit {
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
-        this._form = new UntypedFormGroup({
-            image: new UntypedFormControl(null, Validators.required),
-            flavour: new UntypedFormControl(null, Validators.required),
-            preset: new UntypedFormControl(null),
+        this._form = new FormGroup({
+            image: new FormControl(null, Validators.required),
+            flavour: new FormControl(null, Validators.required),
+            preset: new FormControl(null),
         });
 
         if (plan) {
@@ -47,11 +47,11 @@ export class PlanEditComponent implements OnInit {
         }
     }
 
-    get form(): UntypedFormGroup {
+    get form(): FormGroup {
         return this._form;
     }
 
-    set form(value: UntypedFormGroup) {
+    set form(value: FormGroup) {
         this._form = value;
     }
 
