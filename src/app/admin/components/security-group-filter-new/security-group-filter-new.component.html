@@ -35,12 +35,14 @@
             <clr-select-container>
                 <label for="objectIdentifier" *ngIf="objectType === 'ROLE'">User role / group</label>
                 <label for="objectIdentifier" *ngIf="objectType === 'INSTRUMENT'">Instrument</label>
+                <label for="objectIdentifier" *ngIf="objectType === 'FLAVOUR'">Flavour</label>
                 <select clrSelect id="objectIdentifier" formControlName="objectIdentifier" required>
                     <option *ngFor="let objectIdentifier of objectIdentifiers"
                             [ngValue]="objectIdentifier">{{objectIdentifier.name}}</option>
                 </select>
                 <clr-control-helper *ngIf="objectType === 'ROLE'">Please select a user role or group</clr-control-helper>
                 <clr-control-helper *ngIf="objectType === 'INSTRUMENT'">Please select an instrument</clr-control-helper>
+                <clr-control-helper *ngIf="objectType === 'FLAVOUR'">Please select a flavour</clr-control-helper>
             </clr-select-container>
         </form>
         <div class="modal-footer">

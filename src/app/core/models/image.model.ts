@@ -37,6 +37,14 @@ export class Image {
     @JsonProperty('deleted', Boolean, true)
     private _deleted: boolean = undefined;
 
+    get nameAndVersion(): string {
+        let value = this._name;
+        if (!!this._version) {
+            value += ` (${this._version})`;
+        }
+        return value;
+    }
+
     public copy(data: Image): Image {
         this.id = data.id;
         this.name = data.name;

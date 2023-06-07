@@ -173,17 +173,27 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                             id
                             name
                           }
+                          flavours {
+                            id
+                            name
+                          }
                       }
                     `
         }).pipe(
-            map(({data}) => ({securityGroups: data.securityGroups, roles: data.rolesAndGroups, instruments: data.instruments})),
+            map(({data}) => ({securityGroups: data.securityGroups, roles: data.rolesAndGroups, instruments: data.instruments, flavours: data.flavours})),
             takeUntil(this._destroy$)
-        ).subscribe(({securityGroups, roles, instruments}) => {
+        ).subscribe(({securityGroups, roles, instruments, flavours}) => {
             this._securityGroups = securityGroups.filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient.id);
             if (this._objectType === 'ROLE') {
                 this._objectIdentifiers = roles.map(role => {
                     return {id: role.id, name: role.name};
                 });
+
+            } else if (this._objectType === 'FLAVOUR') {
+                this._objectIdentifiers = flavours.map(flavour => {
+                    return {id: flavour.id, name: flavour.name};
+                });
+
             } else if (this._objectType === 'INSTRUMENT') {
                 this._objectIdentifiers = instruments.map(instrument => {
                     return {id: instrument.id, name: instrument.name};

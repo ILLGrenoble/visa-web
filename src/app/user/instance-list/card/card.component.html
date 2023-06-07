@@ -79,7 +79,7 @@
             <div class="instance-block">
 
                 <div class="instance-body">
-                    <div class="instance-text instance-text--larger">{{instance.plan.image.name}} ({{ instance.plan.image.version }})</div>
+                    <div class="instance-text instance-text--larger">{{instance.plan.image.nameAndVersion}}</div>
                     <div class="instance-text">{{getRamView()}}<span class="dot"> </span> {{getCpuView()}}</div>
                     <div class="instance-text">Instance <b>{{instance.id}}</b>
                         <span *ngIf="user?.admin"> (<b>{{instance.ipAddress}}</b>)</span> created on
