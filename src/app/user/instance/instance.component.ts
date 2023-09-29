@@ -27,6 +27,7 @@ import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
+import {FileManagerComponent} from "./file-manager";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -129,6 +130,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         });
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
+
+        this.handleFileManager();
     }
 
     /**
@@ -195,6 +198,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
      */
     public handleMembersConnected(): void {
         this.createMembersConnectedDialog();
+    }
+
+    /**
+     * Open the file manager dialog
+     */
+    public handleFileManager(): void {
+        this.createFileManagerDialog();
     }
 
     /**
@@ -508,7 +518,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
         const socket = tunnel.getSocket();
         socket.on('disconnect', () => {
-            this.closeAllDialogs();
+            // this.closeAllDialogs();
         });
         socket.on('users:connected', (data) => {
             this.users$.next(data);
@@ -802,6 +812,20 @@ export class InstanceComponent implements OnInit, OnDestroy {
             },
             hasBackdrop: true,
         });
+    }
+
+
+    private createFileManagerDialog(): void {
+        const dialog = this.dialog.open(FileManagerComponent, {
+            id: 'file-manager-dialog',
+            height: 'auto',
+            width: '850px',
+            panelClass: 'mat-dialog-container-semi-transparent',
+            hasBackdrop: true,
+            data: {
+            },
+        });
+        dialog.afterClosed().subscribe(() => this.manager.setFocused(true));
     }
 
     private isDialogOpen(id: string): boolean {

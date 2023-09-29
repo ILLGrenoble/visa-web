@@ -26,6 +26,15 @@
         "changeOrigin": true,
         "ws": true
     },
+    "/visafs/*": {
+        "target": "http://localhost:8090",
+        "secure": false,
+        "logLevel": "debug",
+        "pathRewrite": {
+            "^/visafs/": "/"
+        },
+        "changeOrigin": true
+    },
     "/ws/vdi/": {
         "target": "http://localhost:8087",
         "secure": false,

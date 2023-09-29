@@ -11,12 +11,18 @@ import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {StatsComponent} from './stats';
 import {UrlComponent} from './url';
+import {FileManagerComponent} from './file-manager';
+import {VisaFileSysModule} from "visa-fs-client";
+import {environment} from 'environments/environment';
 
 @NgModule({
     imports: [
         CommonModule,
         SharedModule,
-        VirtualDesktopModule
+        VirtualDesktopModule,
+        VisaFileSysModule.forRoot({
+            basePath: environment.paths.visafs
+        }),
     ],
     declarations: [
         ClipboardComponent,
@@ -27,7 +33,8 @@ import {UrlComponent} from './url';
         AccessRequestComponent,
         SettingsComponent,
         StatsComponent,
-        UrlComponent
+        UrlComponent,
+        FileManagerComponent,
     ]
 })
 export class InstanceModule {
