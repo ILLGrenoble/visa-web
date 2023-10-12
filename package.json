@@ -62,6 +62,7 @@
     "moment": "^2.29.4",
     "moment-duration-format": "^2.3.2",
     "ngx-cookie-service": "^15.0.0",
+    "ngx-drag-drop": "^16.1.0",
     "ngx-markdown": "^15.1.2",
     "ngx-moment": "^5.0.0",
     "ngx-pipes": "^2.7.6",

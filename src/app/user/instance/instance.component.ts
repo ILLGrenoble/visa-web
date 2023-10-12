@@ -820,7 +820,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
             id: 'file-manager-dialog',
             height: 'auto',
             width: '850px',
-            panelClass: 'mat-dialog-container-semi-transparent',
             hasBackdrop: true,
             data: {
             },
