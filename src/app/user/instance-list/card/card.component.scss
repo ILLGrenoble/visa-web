@@ -204,7 +204,20 @@
 
 .instance-card-container-header-title {
     font-size: 0.8rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 8px;
+}
+
+.instance-card-container-header-title-name {
     font-weight: 400;
+}
+
+.instance-card-container-header-title-shared-by {
+    font-weight: 100;
+    color: #555;
 }
 
 .instance-delete {
