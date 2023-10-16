@@ -2,7 +2,12 @@
 
     <div class="instance-card-container-header">
         <div class="instance-card-container-header-title">
-            {{ instance.name }}
+            <div class="instance-card-container-header-title-name">
+                {{ instance.name }}
+            </div>
+            <div *ngIf="!instance.membership.isRole('OWNER')" class="instance-card-container-header-title-shared-by">
+                (shared by {{ instance.owner.fullName }})
+            </div>
         </div>
 
         <div class="instance-state" *ngIf="['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)">

@@ -1,3 +1,8 @@
+2.9.0 16/10/2023
+================
+ * Allow security groups to be filtered by flavour
+ * Add version to image name when creating an instance
+
 2.8.0 28/04/2023
 ================
  * Code refactoring and linting
