@@ -814,8 +814,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         });
     }
 
-
     private createFileManagerDialog(): void {
+        this.manager?.setFocused(false);
         const dialog = this.dialog.open(FileManagerComponent, {
             id: 'file-manager-dialog',
             height: 'auto',

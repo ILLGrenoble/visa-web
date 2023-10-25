@@ -36,6 +36,7 @@
     "@clr/icons": "^13.0.2",
     "@clr/ui": "^13.16.0",
     "@ctrl/ngx-codemirror": "^4.1.1",
+    "@illgrenoble/ngx-fs-client": "^0.9.2",
     "@illgrenoble/visa-guacamole-common-js": "^0.0.2",
     "@illgrenoble/webx-client": "^0.1.1",
     "@ng-select/ng-select": "^10.0.4",
@@ -69,7 +70,6 @@
     "rxjs": "^7.8.0",
     "screenfull": "^6.0.0",
     "tslib": "^2.3.1",
-    "visa-fs-client": "file:../visa-fs-client/dist/lib",
     "zone.js": "^0.11.4"
   },
   "devDependencies": {

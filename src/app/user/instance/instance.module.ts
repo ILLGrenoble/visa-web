@@ -12,7 +12,7 @@ import {SettingsComponent} from './settings';
 import {StatsComponent} from './stats';
 import {UrlComponent} from './url';
 import {FileManagerComponent} from './file-manager';
-import {VisaFileSysModule} from "visa-fs-client";
+import {NgxFileSysModule} from "@illgrenoble/ngx-fs-client";
 import {environment} from 'environments/environment';
 
 @NgModule({
@@ -20,8 +20,10 @@ import {environment} from 'environments/environment';
         CommonModule,
         SharedModule,
         VirtualDesktopModule,
-        VisaFileSysModule.forRoot({
-            basePath: environment.paths.visafs
+        NgxFileSysModule.forRoot({
+            basePath: environment.paths.visafs,
+            showParentFolder: true,
+            accessToken: 'KJS4RZ50A1LF72PKAOOYSY8O3OKGKE29',
         }),
     ],
     declarations: [

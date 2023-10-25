@@ -42,6 +42,14 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST')"
+            (click)="handleFileManager()"
+            align="left">
+            <clr-icon shape="folder"></clr-icon>
+            Files
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected()"
             (click)="handleSettings()"
             align="right">
