@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Subject} from 'rxjs';
+import {NgxFileSysContext} from "@illgrenoble/ngx-fs-client";
 
 @Component({
     selector: 'visa-file-manager-dialog',
@@ -9,6 +10,7 @@ import { Subject} from 'rxjs';
 export class FileManagerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+    private _context: NgxFileSysContext;
 
     get destroy$(): Subject<boolean> {
         return this._destroy$;
@@ -18,8 +20,13 @@ export class FileManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         this._destroy$ = value;
     }
 
+    get context(): NgxFileSysContext {
+        return this._context;
+    }
+
     constructor(private dialogRef: MatDialogRef<FileManagerComponent>,
-                @Inject(MAT_DIALOG_DATA) private data: {  }) {
+                @Inject(MAT_DIALOG_DATA) data: { context: NgxFileSysContext }) {
+        this._context = data.context;
     }
 
     public ngOnDestroy(): void {

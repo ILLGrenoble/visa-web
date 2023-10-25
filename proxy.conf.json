@@ -31,7 +31,7 @@
         "secure": false,
         "logLevel": "debug",
         "pathRewrite": {
-            "^/visafs/": "/"
+            "^\/visafs\/[0-9]+\/": "\/"
         },
         "changeOrigin": true
     },

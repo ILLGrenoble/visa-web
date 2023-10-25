@@ -13,18 +13,13 @@ import {StatsComponent} from './stats';
 import {UrlComponent} from './url';
 import {FileManagerComponent} from './file-manager';
 import {NgxFileSysModule} from "@illgrenoble/ngx-fs-client";
-import {environment} from 'environments/environment';
 
 @NgModule({
     imports: [
         CommonModule,
         SharedModule,
         VirtualDesktopModule,
-        NgxFileSysModule.forRoot({
-            basePath: environment.paths.visafs,
-            showParentFolder: true,
-            accessToken: 'KJS4RZ50A1LF72PKAOOYSY8O3OKGKE29',
-        }),
+        NgxFileSysModule,
     ],
     declarations: [
         ClipboardComponent,

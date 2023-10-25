@@ -28,6 +28,8 @@ import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
+import {environment} from "../../../environments/environment";
+import {NgxFileSysContext} from "@illgrenoble/ngx-fs-client";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -46,6 +48,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+
+    private _fileSysContext: NgxFileSysContext;
 
     public stats$;
 
@@ -98,6 +102,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this._dataReceivedRate$;
     }
 
+    get fileSysContext(): NgxFileSysContext {
+        return this._fileSysContext;
+    }
+
     constructor(private route: ActivatedRoute,
                 private router: Router,
                 private accountService: AccountService,
@@ -119,6 +127,15 @@ export class InstanceComponent implements OnInit, OnDestroy {
             next: (instance) => {
                 this.setInstance(instance);
                 this.createAuthenticationTicket();
+
+                this._fileSysContext = new NgxFileSysContext({
+                    basePath: `${environment.paths.visafs}/${instance.id}`,
+                    // basePath: `${environment.paths.visafs}`,
+                    accessToken: 'KJS4RZ50A1LF72PKAOOYSY8O3OKGKE29'
+                });
+
+                this.handleFileManager();
+
             },
             error: (error) => {
                 if (error.status === 404) {
@@ -130,8 +147,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         });
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
-
-        this.handleFileManager();
     }
 
     /**
@@ -822,6 +837,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             width: '850px',
             hasBackdrop: true,
             data: {
+                context: this._fileSysContext
             },
         });
         dialog.afterClosed().subscribe(() => this.manager.setFocused(true));
