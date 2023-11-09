@@ -823,7 +823,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             data: {
                 context: {
                     basePath: `${environment.paths.visafs}/${this.instance.id}`,
-                    accessToken: this.instance.uid
+                    accessToken: this.instance.computeId,
                 }
             },
         });

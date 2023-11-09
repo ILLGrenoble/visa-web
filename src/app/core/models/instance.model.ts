@@ -24,6 +24,9 @@ export class Instance {
     @JsonProperty('uid', String)
     private _uid: string = undefined;
 
+    @JsonProperty('computeId', String)
+    private _computeId: string = undefined;
+
     @JsonProperty('name', String)
     private _name: string = undefined;
 
@@ -95,6 +98,14 @@ export class Instance {
 
     public set uid(value: string) {
         this._uid = value;
+    }
+
+    get computeId(): string {
+        return this._computeId;
+    }
+
+    set computeId(value: string) {
+        this._computeId = value;
     }
 
     public get name(): string {
