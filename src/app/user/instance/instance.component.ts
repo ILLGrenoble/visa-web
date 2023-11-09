@@ -29,7 +29,6 @@ import {UrlComponent} from './url';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
 import {environment} from "../../../environments/environment";
-import {NgxFileSysContext} from "@illgrenoble/ngx-fs-client";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -48,8 +47,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-
-    private _fileSysContext: NgxFileSysContext;
 
     public stats$;
 
@@ -102,10 +99,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this._dataReceivedRate$;
     }
 
-    get fileSysContext(): NgxFileSysContext {
-        return this._fileSysContext;
-    }
-
     constructor(private route: ActivatedRoute,
                 private router: Router,
                 private accountService: AccountService,
@@ -127,12 +120,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
             next: (instance) => {
                 this.setInstance(instance);
                 this.createAuthenticationTicket();
-
-                this._fileSysContext = new NgxFileSysContext({
-                    basePath: `${environment.paths.visafs}/${instance.id}`,
-                    accessToken: instance.uid
-                });
-
             },
             error: (error) => {
                 if (error.status === 404) {
@@ -530,7 +517,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
         const socket = tunnel.getSocket();
         socket.on('disconnect', () => {
-            // this.closeAllDialogs();
+            this.closeAllDialogs();
         });
         socket.on('users:connected', (data) => {
             this.users$.next(data);
@@ -834,7 +821,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
             width: '850px',
             hasBackdrop: true,
             data: {
-                context: this._fileSysContext
+                context: {
+                    basePath: `${environment.paths.visafs}/${this.instance.id}`,
+                    accessToken: this.instance.uid
+                }
             },
         });
         dialog.afterClosed().subscribe(() => this.manager.setFocused(true));

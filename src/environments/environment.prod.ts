@@ -4,6 +4,7 @@ export const environment = {
         api: '/api',
         vdi: '/ws/vdi',
         graphql: '/graphql',
-        jupyter: '/jupyter'
+        jupyter: '/jupyter',
+        visafs: '/visafs',
     }
 };
