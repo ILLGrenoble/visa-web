@@ -28,7 +28,7 @@ import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
-import {environment} from "../../../environments/environment";
+import {environment} from "environments/environment";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
