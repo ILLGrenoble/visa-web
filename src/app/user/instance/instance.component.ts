@@ -130,11 +130,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
                 this._fileSysContext = new NgxFileSysContext({
                     basePath: `${environment.paths.visafs}/${instance.id}`,
-                    // basePath: `${environment.paths.visafs}`,
-                    accessToken: 'KJS4RZ50A1LF72PKAOOYSY8O3OKGKE29'
+                    accessToken: instance.uid
                 });
-
-                this.handleFileManager();
 
             },
             error: (error) => {

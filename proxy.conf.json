@@ -27,12 +27,9 @@
         "ws": true
     },
     "/visafs/*": {
-        "target": "http://localhost:8090",
+        "target": "http://localhost:8088",
         "secure": false,
         "logLevel": "debug",
-        "pathRewrite": {
-            "^\/visafs\/[0-9]+\/": "\/"
-        },
         "changeOrigin": true
     },
     "/ws/vdi/": {

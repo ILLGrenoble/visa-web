@@ -42,7 +42,7 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
-            [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST')"
+            [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST') || !instance?.hasProtocolWithName('VISAFS')"
             (click)="handleFileManager()"
             align="left">
             <clr-icon shape="folder"></clr-icon>
