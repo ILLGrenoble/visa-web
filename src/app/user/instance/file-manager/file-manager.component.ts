@@ -5,7 +5,8 @@ import {NgxFileSysContext} from "@illgrenoble/ngx-fs-client";
 
 @Component({
     selector: 'visa-file-manager-dialog',
-    templateUrl: './file-manager.component.html'
+    templateUrl: './file-manager.component.html',
+    styleUrls: ['./file-manager.component.scss'],
 })
 export class FileManagerComponent implements OnInit, OnDestroy, AfterViewInit {
 
