@@ -1,6 +1,7 @@
 import {Component, Inject, ViewEncapsulation} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {BehaviorSubject} from 'rxjs';
+import {filter} from "rxjs/operators";
 
 @Component({
     selector: 'visa-instance-settings-dialog',
@@ -43,6 +44,9 @@ export class SettingsComponent {
         this.timeElapsed$ = data.timeElapsed$;
         this.totalDataReceived$ = data.totalDataReceived$;
         this.dataReceivedRate$ = data.dataReceivedRate$;
+
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
 

@@ -3,6 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {OnScreenKeyboard} from '@illgrenoble/visa-guacamole-common-js';
 import {VirtualDesktopManager} from '@vdi';
 import {de, en, fr} from './layouts';
+import {filter} from "rxjs/operators";
 
 @Component({
     selector: 'visa-instance-keyboard-dialog',

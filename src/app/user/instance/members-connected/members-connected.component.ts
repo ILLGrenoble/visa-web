@@ -4,6 +4,7 @@ import {Instance, User} from '@core';
 import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {GuacamoleVirtualDesktopManager, VirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
+import {filter} from "rxjs/operators";
 
 @Component({
     selector: 'visa-instance-members-connected-dialog',
@@ -57,6 +58,9 @@ export class MembersConnectedComponent {
         data.users$.subscribe((users) => {
             this.users = users;
         });
+
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     public onNoClick(): void {

@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {BehaviorSubject, ReplaySubject, Subject, timer} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 import {VirtualDesktopManager} from '@vdi';
 import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 
@@ -112,6 +112,8 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
             .subscribe(() => {
                 this._codeEditorCmp.codeMirror.refresh();
             });
+
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     public ngAfterViewInit(): void {

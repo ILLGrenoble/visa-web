@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Inject, OnDestroy, OnInit} from '@angular/core
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Subject} from 'rxjs';
 import {NgxFileSysContext} from "@illgrenoble/ngx-fs-client";
+import {filter} from "rxjs/operators";
 
 @Component({
     selector: 'visa-file-manager-dialog',
@@ -36,6 +37,7 @@ export class FileManagerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     public ngOnInit(): void {
+        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     public ngAfterViewInit(): void {
