@@ -1,4 +1,4 @@
-2.10.0 20/10/2023
+2.10.0 20/11/2023
 ================
  * Update to Angular 16
  * Integrate ngx-fs-client, show Files menu on remote desktop when instance supports VISAFS
