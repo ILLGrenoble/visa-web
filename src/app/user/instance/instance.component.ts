@@ -339,7 +339,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             } else if (state === 'CONNECTED') {
                 this.accessPending = false;
 
-                this.printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: 'ABCDEF123456789'}).subscribe(event => {
+                this.printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: this.instance.computeId}).subscribe(event => {
                     console.log(`${event.connectionId} ${event.type}`);
                     if (event.type === 'CONNECTED') {
                         this._connectionId = event.connectionId;
