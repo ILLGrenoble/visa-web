@@ -28,7 +28,8 @@ import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
-import {environment} from "environments/environment";
+import {environment} from 'environments/environment';
+import {PrintJobAvailableEvent, VisaPrintService} from '@illgrenoble/visa-print-client';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -87,6 +88,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private _useWebX = true;
 
+    private _connectionId: string;
+
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
     }
@@ -108,7 +111,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 private notifierService: NotifierService,
                 private analyticsService: AnalyticsService,
                 private store: Store<ApplicationState>,
-                private configurationService: ConfigService) {
+                private configurationService: ConfigService,
+                private printService: VisaPrintService) {
     }
 
     public ngOnInit(): void {
@@ -334,6 +338,18 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.removeDialog('clipboard-dialog');
             } else if (state === 'CONNECTED') {
                 this.accessPending = false;
+
+                this.printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: 'ABCDEF123456789'}).subscribe(event => {
+                    console.log(`${event.connectionId} ${event.type}`);
+                    if (event.type === 'CONNECTED') {
+                        this._connectionId = event.connectionId;
+
+                        this.printService.enablePrinting(this._connectionId);
+                    } else if (event.type === 'PRINT_JOB_AVAILABLE') {
+                        const printJob = event.data as PrintJobAvailableEvent;
+                        this.printService.openPrintable(event.connectionId, printJob.jobId);
+                    }
+                });
             }
         });
     }
