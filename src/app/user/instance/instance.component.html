@@ -50,6 +50,22 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
+            [hidden]="!isPrinterEnabled() || !isPrinterConnected()"
+            (click)="togglePrinterEnabled()"
+            align="left">
+            <cds-icon shape="printer" [badge]="getPrinterBadge()"></cds-icon>
+            Disable printer
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="isPrinterEnabled() || !isPrinterConnected()"
+            (click)="togglePrinterEnabled()"
+            align="left">
+            <cds-icon shape="printer"></cds-icon>
+            Enable printer
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected()"
             (click)="handleSettings()"
             align="right">

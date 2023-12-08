@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {ClarityModule} from '@clr/angular';
+import { ClarityIcons, printerIcon } from '@cds/core/icon';
 import {CodemirrorModule} from '@ctrl/ngx-codemirror';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {HotkeyModule} from 'angular2-hotkeys';
@@ -45,6 +46,8 @@ import {
     InstanceFilterPipe, SafePipe
 } from './pipes';
 import {MatCommonModule} from '@angular/material/core';
+
+ClarityIcons.addIcons(printerIcon);
 
 export function markedOptionsFactory(): MarkedOptions {
     const renderer = new MarkedRenderer();

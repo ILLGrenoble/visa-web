@@ -6,7 +6,7 @@ import {InstanceListModule} from './instance-list';
 import {InstanceModule} from './instance';
 import {ROUTING} from './user.routing';
 import {JupyterModule} from './jupyter';
-import {VisaPrintModule, VisaPrintService} from '@illgrenoble/visa-print-client';
+import {VisaPrintModule} from '@illgrenoble/visa-print-client';
 
 @NgModule({
     imports: [
