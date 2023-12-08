@@ -6,5 +6,6 @@ export const environment = {
         graphql: '/graphql',
         jupyter: '/jupyter',
         visafs: '/visafs',
+        print: '/ws/print',
     }
 };
