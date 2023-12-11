@@ -29,7 +29,6 @@ import {UrlComponent} from './url';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
 import {environment} from 'environments/environment';
-import {PrintJobAvailableEvent, VisaPrintService} from '@illgrenoble/visa-print-client';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -88,9 +87,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private _useWebX = true;
 
-    private _printerConnectionId: string;
-    private _printerEnabled: boolean = true;
-
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
     }
@@ -112,8 +108,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 private notifierService: NotifierService,
                 private analyticsService: AnalyticsService,
                 private store: Store<ApplicationState>,
-                private configurationService: ConfigService,
-                private printService: VisaPrintService) {
+                private configurationService: ConfigService) {
     }
 
     public ngOnInit(): void {
@@ -237,54 +232,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this.manager.getScaleMode() === ScaleMode.Optimal;
     }
 
-    public connectPrinter(): void {
-        if (this.instance.membership.role === 'OWNER') {
-            this.printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: this.instance.computeId}).subscribe(event => {
-                console.log(`${event.connectionId} ${event.type}`);
-                if (event.type === 'CONNECTED') {
-                    this._printerConnectionId = event.connectionId;
-
-                    if (this._printerEnabled) {
-                        this.printService.enablePrinting(this._printerConnectionId);
-                    }
-                } else if (event.type === 'PRINT_JOB_AVAILABLE') {
-                    const printJob = event.data as PrintJobAvailableEvent;
-                    this.printService.openPrintable(event.connectionId, printJob.jobId);
-                }
-            });
-        }
-    }
-
-    public disconnectPrinter(): void {
-        if (this._printerConnectionId) {
-            this.printService.disconnect(this._printerConnectionId);
-            this._printerConnectionId = null;
-        }
-    }
-
-    public togglePrinterEnabled(): void {
-        if (this._printerConnectionId) {
-            this._printerEnabled = !this._printerEnabled;
-            if (this._printerEnabled) {
-                this.printService.enablePrinting(this._printerConnectionId);
-            } else {
-                this.printService.disablePrinting(this._printerConnectionId);
-            }
-        }
-    }
-
-    public isPrinterEnabled(): boolean {
-        return this._printerEnabled;
-    }
-
-    public isPrinterConnected(): boolean {
-        return this._printerConnectionId != null;
-    }
-
-    public getPrinterBadge(): string {
-        if (this._printerEnabled) {
-            return 'success';
-        }
+    public isFilesAvailable(): boolean {
+        return this.instance?.membership.role === 'OWNER' && this.manager.isConnected() && this.instance?.hasProtocolWithName('VISA_FS');
     }
 
     /**
@@ -388,12 +337,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.removeDialog('keyboard-dialog');
                 this.removeDialog('clipboard-dialog');
 
-                this.disconnectPrinter();
-
             } else if (state === 'CONNECTED') {
                 this.accessPending = false;
-
-                this.connectPrinter();
             }
         });
     }

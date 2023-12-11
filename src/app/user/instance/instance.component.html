@@ -42,7 +42,7 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
-            [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST') || !instance?.hasProtocolWithName('VISAFS')"
+            [hidden]="!isFilesAvailable()"
             (click)="handleFileManager()"
             align="left">
             <clr-icon shape="folder"></clr-icon>
@@ -50,20 +50,10 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
-            [hidden]="!isPrinterEnabled() || !isPrinterConnected()"
-            (click)="togglePrinterEnabled()"
             align="left">
-            <cds-icon shape="printer" [badge]="getPrinterBadge()"></cds-icon>
-            Disable printer
+            <visa-printer [manager]="manager" [instance]="instance"></visa-printer>
         </ngx-remote-desktop-toolbar-item>
 
-        <ngx-remote-desktop-toolbar-item
-            [hidden]="isPrinterEnabled() || !isPrinterConnected()"
-            (click)="togglePrinterEnabled()"
-            align="left">
-            <cds-icon shape="printer"></cds-icon>
-            Enable printer
-        </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected()"

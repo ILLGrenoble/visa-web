@@ -1,0 +1,18 @@
+<div
+    [hidden]="!isPrinterAvailable()"
+    (click)="togglePrinterEnabled()"
+    align="left">
+    <div class="printer-container">
+        <clr-icon shape="printer"></clr-icon>
+        <span class="badge printer-badge" [ngClass]="{
+            'printer-badge__connecting': state === 'CONNECTING',
+            'printer-badge__enabled': state === 'ENABLED',
+            'printer-badge__disabled': state === 'DISABLED' || state === 'UNAVAILABLE',
+            'printer-badge__error': state === 'ERROR',
+            }"></span>
+        <div class="printer-text">
+            Printer
+        </div>
+    </div>
+</div>
+

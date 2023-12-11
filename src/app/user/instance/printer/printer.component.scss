@@ -1,0 +1,33 @@
+.printer-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.printer-badge {
+    margin-left: -4px;
+    margin-top: -8px;
+    min-width: 0.4rem;
+    height: 0.4rem;
+
+    &__enabled {
+        background-color: green;
+    }
+
+    &__disabled {
+        background-color: #888888;
+    }
+
+    &__connecting {
+        background-color: #ffcf46;
+    }
+
+    &__error {
+        background-color: #e23232;
+    }
+}
+
+.printer-text {
+
+}
