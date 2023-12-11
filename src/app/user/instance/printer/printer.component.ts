@@ -22,7 +22,7 @@ export class PrinterComponent implements OnInit, OnDestroy {
 
     private _managerState$: Subscription;
 
-    private _state: 'UNAVAILABLE' | 'CONNECTING' | 'ENABLED' | 'DISABLED' | 'ERROR' = 'UNAVAILABLE';
+    private _state: 'UNAVAILABLE' | 'CONNECTING' | 'ENABLED' | 'DISABLED' | 'RECEIVING_DATA' | 'ERROR' = 'UNAVAILABLE';
 
     private _requestDialogs: MatDialogRef<PrintRequestComponent>[] = [];
 
@@ -44,7 +44,7 @@ export class PrinterComponent implements OnInit, OnDestroy {
         this._instance = value;
     }
 
-    get state(): 'UNAVAILABLE' | 'CONNECTING' | 'ENABLED' | 'DISABLED' | 'ERROR' {
+    get state(): 'UNAVAILABLE' | 'CONNECTING' | 'ENABLED' | 'DISABLED' | 'RECEIVING_DATA' | 'ERROR' {
         return this._state;
     }
 
@@ -95,6 +95,9 @@ export class PrinterComponent implements OnInit, OnDestroy {
                 } else if (event.type === 'ERROR') {
                     this._state = 'ERROR';
 
+                } else if (event.type === 'PRINT_JOB_CHUNK_RECEIVED') {
+                    this._state = 'RECEIVING_DATA';
+
                 } else if (event.type === 'PRINT_JOB_HANDLED') {
                     const printJob = event.data as PrintJobHandledEvent;
                     const id = `${event.connectionId}-${printJob.jobId}`;
@@ -106,6 +109,8 @@ export class PrinterComponent implements OnInit, OnDestroy {
                     this._requestDialogs = this._requestDialogs.filter(dialog => dialog.id !== id);
 
                 } else if (event.type === 'PRINT_JOB_AVAILABLE') {
+                    this._state = 'ENABLED';
+
                     const printJob = event.data as PrintJobAvailableEvent;
                     const id = `${event.connectionId}-${printJob.jobId}`;
                     const dialog = this._dialog.open(PrintRequestComponent, {
