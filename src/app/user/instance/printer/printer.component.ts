@@ -57,6 +57,7 @@ export class PrinterComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy() {
+        this.disconnectPrinter();
         if (this._managerState$) {
             this._managerState$.unsubscribe();
             this._managerState$ = null;
