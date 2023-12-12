@@ -38,7 +38,7 @@
     "@ctrl/ngx-codemirror": "^7.0.0",
     "@illgrenoble/ngx-fs-client": "^1.1.1",
     "@illgrenoble/visa-guacamole-common-js": "^0.0.2",
-    "@illgrenoble/visa-print-client": "^1.0.0",
+    "@illgrenoble/visa-print-client": "^1.0.2",
     "@illgrenoble/webx-client": "^0.1.1",
     "@ng-select/ng-select": "^10.0.4",
     "@ngrx/effects": "^15.4.0",

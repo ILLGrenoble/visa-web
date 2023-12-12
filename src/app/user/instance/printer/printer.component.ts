@@ -80,9 +80,10 @@ export class PrinterComponent implements OnInit, OnDestroy {
             this._state = 'CONNECTING';
             this._printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: this.instance.computeId}).subscribe(event => {
                 // console.log(event.type);
-                if (event.type === 'CONNECTED') {
+                if (event.type === 'CONNECTING') {
                     this._printerConnectionId = event.connectionId;
 
+                } else if (event.type === 'CONNECTED') {
                     if (this._printerEnabled) {
                         this._printService.enablePrinting(this._printerConnectionId);
                     }
