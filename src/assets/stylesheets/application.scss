@@ -185,10 +185,6 @@ $visa-theme: mat.define-light-theme((
         }
     }
 
-    .ngx-remote-desktop-status-bar-item:not(:last-child) {
-        flex: 1;
-    }
-
 
     $navigation-sidebar-background-color: #003a92;
     $navigation-sidebar-border-color: #002538;

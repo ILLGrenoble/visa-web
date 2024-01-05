@@ -8,7 +8,6 @@ import {
     ErrorMessageComponent,
     MessageComponent,
     RemoteDesktopComponent,
-    StatusBarComponent,
     StatusBarItemComponent,
     ToolbarItemComponent,
 } from './components';
@@ -35,7 +34,6 @@ export class HammerConfig extends HammerGestureConfig {
         ErrorMessageComponent,
         DisconnectedMessageComponent,
         ConnectingMessageComponent,
-        StatusBarComponent,
         StatusBarItemComponent,
     ],
     exports: [
@@ -44,7 +42,6 @@ export class HammerConfig extends HammerGestureConfig {
         ErrorMessageComponent,
         DisconnectedMessageComponent,
         ConnectingMessageComponent,
-        StatusBarComponent,
         StatusBarItemComponent
     ],
     bootstrap: [RemoteDesktopComponent],

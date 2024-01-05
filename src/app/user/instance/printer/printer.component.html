@@ -1,7 +1,4 @@
-<div
-    [hidden]="!isPrinterAvailable()"
-    (click)="togglePrinterEnabled()"
-    align="left">
+<div [hidden]="!isPrinterAvailable()" (click)="toggleStatusVisible()">
     <div class="printer-container">
         <clr-icon shape="printer"></clr-icon>
         <span class="badge printer-badge" [ngClass]="{
@@ -11,8 +8,11 @@
             'printer-badge__receiving': state === 'RECEIVING_DATA',
             'printer-badge__error': state === 'ERROR',
             }"></span>
-        <div class="printer-text">
-            Printer
+    </div>
+    <div *ngIf="statusVisible" class="printer-status">
+        Printer status: <strong>{{state.replace('_', ' ') | titlecase}}</strong>
+        <div *ngFor="let transferState of transferStates">
+            Job {{transferState.jobId}}: {{transferState.progress | number:'1.0-0'}}%
         </div>
     </div>
 </div>

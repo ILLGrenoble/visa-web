@@ -103,7 +103,21 @@ import screenfull from 'screenfull';
                 <!-- End display -->
             </section>
             <section [class.ngx-remote-desktop-status-bar-hidden]="manager.isFullScreen()">
-                <ng-content select="ngx-remote-desktop-status-bar"></ng-content>
+                <!-- Status bar items template -->
+                <ng-template #statusBarItems>
+                    <div class="ngx-remote-desktop-status-bar-items">
+                        <ng-content select='ngx-remote-desktop-status-bar-item[align=left]'></ng-content>
+                    </div>
+                    <div class="ngx-remote-desktop-status-bar-items">
+                        <ng-content select='ngx-remote-desktop-status-bar-item[align=right]'></ng-content>
+                    </div>
+                </ng-template>
+                <!-- End status bar items template -->
+                <!-- status bar -->
+                <div class="ngx-remote-desktop-status-bar" [hidden]="!manager.isConnected()">
+                    <template [ngTemplateOutlet]="statusBarItems"></template>
+                </div>
+                <!-- End status bar -->
             </section>
         </main>
     `,

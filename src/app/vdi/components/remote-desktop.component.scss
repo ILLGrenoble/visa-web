@@ -33,6 +33,7 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
         padding: 0px 5px 0px 5px;
         border-top: 1px solid $ngx-remote-desktop-status-bar-border-color;
         justify-content: space-between;
+        cursor: default;
         a,
         strong {
             padding-right: 2px;
@@ -48,9 +49,16 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
             text-decoration: none;
             outline: none;
         }
-        .ngx-remote-desktop-status-bar {
-            flex: 1;
+
+        .ngx-remote-desktop-status-bar-items {
+            display: flex;
+            flex-direction: row;
+
+            .ngx-remote-desktop-status-bar-item {
+                padding: 0 0.5em;
+            }
         }
+
     }
     .ngx-remote-desktop-toolbar {
         flex: 0 0 35px;

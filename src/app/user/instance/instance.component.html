@@ -50,12 +50,6 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
-            align="left">
-            <visa-printer [manager]="manager" [instance]="instance"></visa-printer>
-        </ngx-remote-desktop-toolbar-item>
-
-
-        <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected()"
             (click)="handleSettings()"
             align="right">
@@ -173,20 +167,22 @@
             </div>
         </ngx-remote-desktop-error-message>
 
-        <ngx-remote-desktop-status-bar [hidden]="!manager.isConnected()">
-            <ngx-remote-desktop-status-bar-item>
-                Connected to:
-                <strong>{{ instance?.name }}</strong>
-                <span [hidden]="!instance?.membership.isRole('GUEST')">(View only)</span>
-                <span [hidden]="!instance?.membership.isRole('OWNER', 'USER')">(Full control)</span>
-                <span [hidden]="!instance?.membership.isRole('SUPPORT')">(Full control - Support)</span>
-            </ngx-remote-desktop-status-bar-item>
-            <ngx-remote-desktop-status-bar-item>
-                Connection time: <strong> {{ (timeElapsed$ | async) | timeDuration:'milliseconds' }}</strong>
-            </ngx-remote-desktop-status-bar-item>
-            <ngx-remote-desktop-status-bar-item (click)="handleMembersConnected()" style="cursor: pointer">
-                Members connected: <strong>{{ (users$ | async)?.length }}</strong>
-            </ngx-remote-desktop-status-bar-item>
-        </ngx-remote-desktop-status-bar>
+        <ngx-remote-desktop-status-bar-item align="left">
+            Connected to:
+            <strong>{{ instance?.name }}</strong>
+            <span [hidden]="!instance?.membership.isRole('GUEST')">(View only)</span>
+            <span [hidden]="!instance?.membership.isRole('OWNER', 'USER')">(Full control)</span>
+            <span [hidden]="!instance?.membership.isRole('SUPPORT')">(Full control - Support)</span>
+            <span> {{ (timeElapsed$ | async) | timeDuration:'milliseconds' }} ago</span>
+        </ngx-remote-desktop-status-bar-item>
+
+        <ngx-remote-desktop-status-bar-item align="right" (click)="handleMembersConnected()" style="cursor: pointer">
+            Members connected: <strong>{{ (users$ | async)?.length }}</strong>
+        </ngx-remote-desktop-status-bar-item>
+
+        <ngx-remote-desktop-status-bar-item align="right">
+            <visa-printer [manager]="manager" [instance]="instance"></visa-printer>
+        </ngx-remote-desktop-status-bar-item>
+
     </ngx-remote-desktop>
 </div>

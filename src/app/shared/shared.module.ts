@@ -114,7 +114,7 @@ export function markedOptionsFactory(): MarkedOptions {
                     distance: 12,
                 }, vertical: {
                     position: 'bottom',
-                    distance: 12,
+                    distance: 31,
                     gap: 10,
                 },
             },

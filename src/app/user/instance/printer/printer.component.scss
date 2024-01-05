@@ -3,6 +3,23 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    cursor: pointer;
+}
+
+.printer-status {
+    position: absolute;
+    right: 21px;
+    bottom: 28px;
+    background-color: rgba(255,255,255,0.8);
+    color: #444;
+    padding: 3px 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    strong {
+        text-decoration: none;
+        color: #444;
+    }
 }
 
 .printer-badge {

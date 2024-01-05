@@ -1,11 +1,12 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {environment} from "environments/environment";
-import {PrintJobAvailableEvent, PrintJobHandledEvent, VisaPrintService} from '@illgrenoble/visa-print-client';
+import {PrintJobAvailableEvent, PrintJobChunkEvent, VisaPrintService} from '@illgrenoble/visa-print-client';
 import {VirtualDesktopManager} from "@vdi";
 import {Instance} from "@core";
 import {Subscription} from "rxjs";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {PrintRequestComponent} from "./print-request";
+import {NotifierService} from "angular-notifier";
 
 @Component({
     selector: 'visa-printer',
@@ -23,6 +24,8 @@ export class PrinterComponent implements OnInit, OnDestroy {
     private _managerState$: Subscription;
 
     private _state: 'UNAVAILABLE' | 'CONNECTING' | 'ENABLED' | 'DISABLED' | 'RECEIVING_DATA' | 'ERROR' = 'UNAVAILABLE';
+    private _transferStates: {jobId: number; progress: number}[] = [];
+    private _statusVisible = false;
 
     private _requestDialogs: MatDialogRef<PrintRequestComponent>[] = [];
 
@@ -48,7 +51,16 @@ export class PrinterComponent implements OnInit, OnDestroy {
         return this._state;
     }
 
+    get statusVisible(): boolean {
+        return this._statusVisible;
+    }
+
+    get transferStates(): { jobId: number; progress: number }[] {
+        return this._transferStates;
+    }
+
     constructor(private _printService: VisaPrintService,
+                private _notifierService: NotifierService,
                 private _dialog: MatDialog) {
     }
 
@@ -98,11 +110,24 @@ export class PrinterComponent implements OnInit, OnDestroy {
                     this._state = 'ERROR';
 
                 } else if (event.type === 'PRINT_JOB_CHUNK_RECEIVED') {
+                    const data = event.data as PrintJobChunkEvent;
+                    const transferState = this._transferStates.find(state => state.jobId === event.jobId);
+                    transferState.progress = (100.0 * data.chunkId) / data.chunkCount;
+
+                } else if (event.type === 'PRINT_JOB_TRANSFER_STARTED') {
                     this._state = 'RECEIVING_DATA';
+                    if (!this._statusVisible) {
+                        this._notifierService.notify('success', `Print job ${event.jobId} is being received`);
+                    }
+                    this._transferStates.push({jobId: event.jobId, progress: 0.0});
+
+                } else if (event.type === 'PRINT_JOB_TRANSFER_TERMINATED') {
+                    this._state = 'ENABLED';
+                    this._transferStates = this._transferStates.filter(state => state.jobId !== event.jobId);
 
                 } else if (event.type === 'PRINT_JOB_HANDLED') {
-                    const printJob = event.data as PrintJobHandledEvent;
-                    const id = `${event.connectionId}-${printJob.jobId}`;
+                    const jobId = event.jobId;
+                    const id = `${event.connectionId}-${jobId}`;
                     const dialog = this._requestDialogs.find(dialog => dialog.id === id);
                     if (dialog) {
                         dialog.close(false);
@@ -118,7 +143,8 @@ export class PrinterComponent implements OnInit, OnDestroy {
                     const dialog = this._dialog.open(PrintRequestComponent, {
                         height: 'auto',
                         width: '480px',
-                        id
+                        id,
+                        data: {jobId: printJob.jobId}
                     });
                     this._requestDialogs.push(dialog);
 
@@ -140,15 +166,8 @@ export class PrinterComponent implements OnInit, OnDestroy {
         }
     }
 
-    public togglePrinterEnabled(): void {
-        // if (this._printerConnectionId) {
-        //     this._printerEnabled = !this._printerEnabled;
-        //     if (this._printerEnabled) {
-        //         this._printService.enablePrinting(this._printerConnectionId);
-        //     } else {
-        //         this._printService.disablePrinting(this._printerConnectionId);
-        //     }
-        // }
+    public toggleStatusVisible(): void {
+        this._statusVisible = !this._statusVisible;
     }
 
     public isPrinterAvailable(): boolean {

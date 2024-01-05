@@ -8,8 +8,11 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 })
 export class PrintRequestComponent {
 
+    jobId: number;
+
     constructor(private dialogRef: MatDialogRef<PrintRequestComponent>,
-                @Inject(MAT_DIALOG_DATA) private data: any) {
+                @Inject(MAT_DIALOG_DATA) private data: { jobId: number }) {
+        this.jobId = data.jobId;
     }
 
     public onAccept(): void {
