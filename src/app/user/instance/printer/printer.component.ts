@@ -170,10 +170,6 @@ export class PrinterComponent implements OnInit, OnDestroy {
         this._statusVisible = !this._statusVisible;
     }
 
-    public isPrinterAvailable(): boolean {
-        return this._instance?.membership.role === 'OWNER' && this._instance?.hasProtocolWithName('VISA_PRINT');
-    }
-
     public isPrinterEnabled(): boolean {
         return this._printerEnabled;
     }

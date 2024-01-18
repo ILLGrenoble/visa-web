@@ -180,7 +180,7 @@
             Members connected: <strong>{{ (users$ | async)?.length }}</strong>
         </ngx-remote-desktop-status-bar-item>
 
-        <ngx-remote-desktop-status-bar-item align="right">
+        <ngx-remote-desktop-status-bar-item align="right" *ngIf="isPrinterAvailable()">
             <visa-printer [manager]="manager" [instance]="instance"></visa-printer>
         </ngx-remote-desktop-status-bar-item>
 

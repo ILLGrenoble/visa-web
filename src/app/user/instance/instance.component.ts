@@ -236,6 +236,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this.instance?.membership.role === 'OWNER' && this.manager.isConnected() && this.instance?.hasProtocolWithName('VISA_FS');
     }
 
+    public isPrinterAvailable(): boolean {
+        return this.instance?.membership.role === 'OWNER' && this.instance?.hasProtocolWithName('VISA_PRINT');
+    }
+
     /**
      * Enter into full screen mode
      */
