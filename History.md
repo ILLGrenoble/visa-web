@@ -1,3 +1,7 @@
+2.11.1 18/01/2024
+================
+ * Bug fix: Do not attempt visa print connection if protocol is not available.
+
 2.11.0 09/01/2024
 ================
  * Integrate visa-print to enable printing to a local printer from the remote desktop
