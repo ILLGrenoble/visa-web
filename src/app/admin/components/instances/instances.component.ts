@@ -156,6 +156,9 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                         name
                                     }
                                 }
+                                cloudInstance {
+                                    address
+                                }
                                 activeSessions {
                                     id
                                     user {

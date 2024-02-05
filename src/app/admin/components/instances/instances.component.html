@@ -17,6 +17,11 @@
                                     ID
                                 </ng-container>
                             </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-container>
+                                    IP Address
+                                </ng-container>
+                            </clr-dg-column>
                             <clr-dg-column [clrDgSortBy]="'name'" [clrDgSortOrder]="isColumnSorted('name')">
                                 <ng-container>
                                     Name
@@ -71,6 +76,7 @@
                             <clr-dg-row *ngFor="let instance of instances?.data" [style.cursor]="'pointer'"
                                         [routerLink]="['/admin/compute/instances/', instance.id]">
                                 <clr-dg-cell>{{ instance.id }}</clr-dg-cell>
+                                <clr-dg-cell>{{ instance.cloudInstance?.address }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.fullName }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.owner.affiliation ? instance.owner.affiliation.name : 'No affiliation' }}</clr-dg-cell>
