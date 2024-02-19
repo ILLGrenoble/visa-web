@@ -1,3 +1,8 @@
+2.11.2 19/02/2024
+================
+ * Bug fix: Handle print dialog opening automatically on Firefox
+ * Improvement: Show error dialog when opening PDF documents is not enabled for browsers
+
 2.11.1 18/01/2024
 ================
  * Bug fix: Do not attempt visa print connection if protocol is not available.
