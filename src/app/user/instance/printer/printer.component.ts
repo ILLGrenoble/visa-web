@@ -7,6 +7,7 @@ import {Subscription} from "rxjs";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {PrintRequestComponent} from "./print-request";
 import {NotifierService} from "angular-notifier";
+import {PrintDialogFailComponent} from "./print-dialog-fail";
 
 @Component({
     selector: 'visa-printer',
@@ -124,6 +125,17 @@ export class PrinterComponent implements OnInit, OnDestroy {
                 } else if (event.type === 'PRINT_JOB_TRANSFER_TERMINATED') {
                     this._state = 'ENABLED';
                     this._transferStates = this._transferStates.filter(state => state.jobId !== event.jobId);
+
+                } else if (event.type === 'PRINT_DIALOG_FAILED') {
+                    const jobId = event.jobId;
+                    const id = `${event.connectionId}-${jobId}`;
+
+                    this._dialog.open(PrintDialogFailComponent, {
+                        height: 'auto',
+                        width: '640px',
+                        id,
+                        data: {jobId: jobId}
+                    });
 
                 } else if (event.type === 'PRINT_JOB_HANDLED') {
                     const jobId = event.jobId;

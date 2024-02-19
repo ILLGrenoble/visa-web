@@ -1,0 +1,11 @@
+.modal-footer {
+    &--space-between {
+        cursor: pointer;
+        justify-content: space-between;
+    }
+}
+
+
+.print-dialog-error-text {
+    margin: 12px 0;
+}

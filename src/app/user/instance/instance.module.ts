@@ -13,7 +13,7 @@ import {StatsComponent} from './stats';
 import {UrlComponent} from './url';
 import {FileManagerComponent} from './file-manager';
 import {NgxFileSysModule} from "@illgrenoble/ngx-fs-client";
-import {PrinterComponent, PrintRequestComponent} from "./printer";
+import {PrintDialogFailComponent, PrinterComponent, PrintRequestComponent} from "./printer";
 
 @NgModule({
     imports: [
@@ -35,6 +35,7 @@ import {PrinterComponent, PrintRequestComponent} from "./printer";
         FileManagerComponent,
         PrinterComponent,
         PrintRequestComponent,
+        PrintDialogFailComponent,
     ]
 })
 export class InstanceModule {
