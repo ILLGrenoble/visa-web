@@ -11,7 +11,6 @@ import {
     selectLoggedInUser,
     User
 } from '@core';
-import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {ScaleMode, VirtualDesktopManager, GuacamoleVirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
@@ -517,106 +516,107 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Handle any socket messages received
      */
     private handleSocketMessages(): void {
-        let tunnel;
-        if (this._useWebX) {
-            tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
-
-        } else {
-            tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
-        }
-        const socket = tunnel.getSocket();
-        socket.on('disconnect', () => {
-            this.closeAllDialogs();
-        });
-        socket.on('users:connected', (data) => {
-            this.users$.next(data);
-        });
-        socket.on('user:connected', (data) => {
-            this.notifierService.notify('success', `${data.fullName} has connected to the instance`);
-        });
-        socket.on('user:disconnected', (data) => {
-            this.notifierService.notify('success', `${data.fullName} has disconnected from the instance`);
-        });
-        socket.on('owner:away', () => {
-            this.ownerNotConnected = true;
-        });
-        socket.on('room:locked', () => {
-            this.unlockedRole = this.instance.membership.role;
-            if (this.instance.membership.role === 'USER') {
-                // tslint:disable-next-line:max-line-length
-                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected. All connections are now read-only.`);
-                this.instance.membership.role = 'GUEST';
-
-            } else {
-                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
-            }
-        });
-        socket.on('room:unlocked', () => {
-            if (this.unlockedRole === 'USER') {
-                // tslint:disable-next-line:max-line-length
-                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
-                this.instance.membership.role = this.unlockedRole;
-                this.unlockedRole = null;
-
-            } else {
-                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected.`);
-            }
-        });
-        socket.on('access:denied', () => {
-            this.error = 'You have not been given access to this instance';
-        });
-        socket.on('access:pending', () => {
-            this.accessPending = true;
-        });
-        socket.on('access:request', (data) => {
-            const dialogId = 'access-request-dialog-' + data.token;
-            this.createAccessRequestDialog(dialogId, data.userFullName, (response: string) => {
-                socket.emit('access:reply', {id: data.token, response});
-            });
-        });
-        socket.on('access:cancel', (data) => {
-            const dialogId = 'access-request-dialog-' + data.token;
-            const dialog = this.dialog.getDialogById(dialogId);
-            if (dialog) {
-                dialog.close();
-                this.notifierService.notify('success', `${data.userFullName} has cancelled their request to access your instance`);
-            }
-        });
-        socket.on('access:granted', (data) => {
-            const grant = data === 'GUEST' ? 'read-only' : (data === 'USER' || data === 'SUPPORT') ? 'full' : '';
-            this.instance.membership.role = data;
-            this.notifierService.notify('success', `${this.instance.owner.fullName} has granted you ${grant} access to the instance`);
-
-            this.accessPending = true;
-        });
-        socket.on('access:revoked', () => {
-            this.accessRevoked = true;
-        });
-
-        if (this.instance.membership.isRole('OWNER', 'SUPPORT')) {
-            // take a screenshot every minute
-            this.thumbnailInterval$ = timer(10000, 60000).subscribe(() => {
-                if (this.manager.isConnected()) {
-                    const {screenHeight, screenWidth} = this.instance;
-                    const thumbnailWidth = 320;
-                    this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
-                        .then((blob) => {
-                            if (blob) {
-                                this.createChecksumForThumbnail(blob).then((checksum) => {
-                                    if (checksum !== this.thumbnailChecksum) {
-                                        socket.emit('thumbnail', blob);
-                                        this.thumbnailChecksum = checksum;
-                                    }
-                                });
-                            }
-                        });
-                }
-            });
-        }
-
-        document.body.addEventListener('offline', () => {
-            socket.disconnect();
-        }, false);
+        console.log('TODO: handleSocketMessages');
+        // let tunnel;
+        // if (this._useWebX) {
+        //     tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
+        //
+        // } else {
+        //     tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
+        // }
+        // const socket = tunnel.getSocket();
+        // socket.on('disconnect', () => {
+        //     this.closeAllDialogs();
+        // });
+        // socket.on('users:connected', (data) => {
+        //     this.users$.next(data);
+        // });
+        // socket.on('user:connected', (data) => {
+        //     this.notifierService.notify('success', `${data.fullName} has connected to the instance`);
+        // });
+        // socket.on('user:disconnected', (data) => {
+        //     this.notifierService.notify('success', `${data.fullName} has disconnected from the instance`);
+        // });
+        // socket.on('owner:away', () => {
+        //     this.ownerNotConnected = true;
+        // });
+        // socket.on('room:locked', () => {
+        //     this.unlockedRole = this.instance.membership.role;
+        //     if (this.instance.membership.role === 'USER') {
+        //         // tslint:disable-next-line:max-line-length
+        //         this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected. All connections are now read-only.`);
+        //         this.instance.membership.role = 'GUEST';
+        //
+        //     } else {
+        //         this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
+        //     }
+        // });
+        // socket.on('room:unlocked', () => {
+        //     if (this.unlockedRole === 'USER') {
+        //         // tslint:disable-next-line:max-line-length
+        //         this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
+        //         this.instance.membership.role = this.unlockedRole;
+        //         this.unlockedRole = null;
+        //
+        //     } else {
+        //         this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected.`);
+        //     }
+        // });
+        // socket.on('access:denied', () => {
+        //     this.error = 'You have not been given access to this instance';
+        // });
+        // socket.on('access:pending', () => {
+        //     this.accessPending = true;
+        // });
+        // socket.on('access:request', (data) => {
+        //     const dialogId = 'access-request-dialog-' + data.token;
+        //     this.createAccessRequestDialog(dialogId, data.userFullName, (response: string) => {
+        //         socket.emit('access:reply', {id: data.token, response});
+        //     });
+        // });
+        // socket.on('access:cancel', (data) => {
+        //     const dialogId = 'access-request-dialog-' + data.token;
+        //     const dialog = this.dialog.getDialogById(dialogId);
+        //     if (dialog) {
+        //         dialog.close();
+        //         this.notifierService.notify('success', `${data.userFullName} has cancelled their request to access your instance`);
+        //     }
+        // });
+        // socket.on('access:granted', (data) => {
+        //     const grant = data === 'GUEST' ? 'read-only' : (data === 'USER' || data === 'SUPPORT') ? 'full' : '';
+        //     this.instance.membership.role = data;
+        //     this.notifierService.notify('success', `${this.instance.owner.fullName} has granted you ${grant} access to the instance`);
+        //
+        //     this.accessPending = true;
+        // });
+        // socket.on('access:revoked', () => {
+        //     this.accessRevoked = true;
+        // });
+        //
+        // if (this.instance.membership.isRole('OWNER', 'SUPPORT')) {
+        //     // take a screenshot every minute
+        //     this.thumbnailInterval$ = timer(10000, 60000).subscribe(() => {
+        //         if (this.manager.isConnected()) {
+        //             const {screenHeight, screenWidth} = this.instance;
+        //             const thumbnailWidth = 320;
+        //             this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
+        //                 .then((blob) => {
+        //                     if (blob) {
+        //                         this.createChecksumForThumbnail(blob).then((checksum) => {
+        //                             if (checksum !== this.thumbnailChecksum) {
+        //                                 socket.emit('thumbnail', blob);
+        //                                 this.thumbnailChecksum = checksum;
+        //                             }
+        //                         });
+        //                     }
+        //                 });
+        //         }
+        //     });
+        // }
+        //
+        // document.body.addEventListener('offline', () => {
+        //     socket.disconnect();
+        // }, false);
     }
 
     private createChecksumForThumbnail(blob: Blob): Promise<string> {

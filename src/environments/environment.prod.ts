@@ -3,6 +3,7 @@ export const environment = {
     paths: {
         api: '/api',
         vdi: '/ws/vdi',
+        vdi2: '/ws/vdi2',
         graphql: '/graphql',
         jupyter: '/jupyter',
         visafs: '/visafs',

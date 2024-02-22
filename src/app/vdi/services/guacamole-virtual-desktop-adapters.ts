@@ -1,8 +1,8 @@
-import { Client, Display, Keyboard, Mouse } from '@illgrenoble/visa-guacamole-common-js';
+import Guacamole from 'guacamole-common-js';
 import {ClientAdapter, DisplayAdapter, KeyboardAdapter, MouseAdapter, MouseState} from './virtual-desktop-adapters';
 
 class GuacamoleKeyboardAdapter extends KeyboardAdapter {
-    constructor(private _keyboard: Keyboard) {
+    constructor(private _keyboard: Guacamole.Keyboard) {
         super();
     }
 
@@ -21,26 +21,38 @@ class GuacamoleKeyboardAdapter extends KeyboardAdapter {
 
 class GuacamoleMouseAdapter extends MouseAdapter {
 
-    constructor(private _mouse: Mouse) {
+    constructor(private _mouse: Guacamole.Mouse) {
         super();
     }
 
     set onmousedown(handler: (mouseState: MouseState) => void) {
-        this._mouse.onmousedown = handler;
+        this._mouse.on('mousedown', (event) => {
+            if (handler) {
+                handler((event as any).state)
+            }
+        });
     }
 
     set onmousemove(handler: (mouseState: MouseState) => void) {
-        this._mouse.onmousemove = handler;
+        this._mouse.on('mousemove', (event) => {
+            if (handler) {
+                handler((event as any).state)
+            }
+        });
     }
 
     set onmouseup(handler: (mouseState: MouseState) => void) {
-        this._mouse.onmouseup = handler;
+        this._mouse.on('mouseup', (event) => {
+            if (handler) {
+                handler((event as any).state)
+            }
+        });
     }
 }
 
 class GuacamoleDisplayAdapter extends DisplayAdapter {
 
-    constructor(private _display: Display) {
+    constructor(private _display: Guacamole.Display) {
         super();
     }
 
@@ -69,19 +81,19 @@ class GuacamoleDisplayAdapter extends DisplayAdapter {
     }
 
     createMouse(element: HTMLElement): MouseAdapter {
-        return new GuacamoleMouseAdapter(new Mouse(element));
+        return new GuacamoleMouseAdapter(new Guacamole.Mouse(element));
     }
 
     createKeyboard(element: HTMLElement | Document): KeyboardAdapter {
-        return new GuacamoleKeyboardAdapter(new Keyboard(element));
+        return new GuacamoleKeyboardAdapter(new Guacamole.Keyboard(element));
     }
 }
 
 export class GuacamoleClientAdapter extends ClientAdapter {
 
-    private _client: Client;
+    private _client: Guacamole.Client;
 
-    constructor(client: Client) {
+    constructor(client: Guacamole.Client) {
         super(new GuacamoleDisplayAdapter(client.getDisplay()));
         this._client = client;
     }
@@ -91,7 +103,7 @@ export class GuacamoleClientAdapter extends ClientAdapter {
     }
 
     sendMouseState(mouseState: MouseState): void {
-        this._client.sendMouseState(mouseState as Mouse.State);
+        this._client.sendMouseState(mouseState as Guacamole.Mouse.State);
     }
 
 }

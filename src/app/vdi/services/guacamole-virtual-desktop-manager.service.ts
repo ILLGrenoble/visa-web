@@ -1,4 +1,4 @@
-import { Client, StringReader, StringWriter, Tunnel } from '@illgrenoble/visa-guacamole-common-js';
+import Guacamole from 'guacamole-common-js';
 import {BehaviorSubject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {ConnectionParameters, VirtualDesktopManager} from './virtual-desktop-manager.service';
@@ -17,20 +17,20 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * The actual underlying remote desktop client
      */
-    private readonly client: Client;
+    private readonly client: Guacamole.Client;
 
     /**
      * The tunnel being used by the underlying remote desktop client
      */
-    private readonly tunnel: Tunnel;
+    private readonly tunnel: Guacamole.Tunnel;
 
     /**
      * Set up the manager
      */
-    constructor(tunnel: Tunnel) {
+    constructor(tunnel: Guacamole.Tunnel) {
         super();
         this.tunnel = tunnel;
-        this.client = new Client(this.tunnel);
+        this.client = new Guacamole.Client(this.tunnel);
         super.setClientAdapter(new GuacamoleClientAdapter(this.client));
 
         this.onTunnelInstruction.pipe(
@@ -44,7 +44,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Get the guacamole tunnel
      */
-    public getTunnel(): Tunnel {
+    public getTunnel(): Guacamole.Tunnel {
         return this.tunnel;
     }
 
@@ -115,7 +115,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     public sendRemoteClipboardData(text: string): void {
         if (text) {
             const stream = this.client.createClipboardStream('text/plain');
-            const writer = new StringWriter(stream);
+            const writer = new Guacamole.StringWriter(stream);
             writer.sendText(text);
             writer.sendEnd();
             this.onRemoteClipboardData.next({content: text, event: 'sent'});
@@ -129,7 +129,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     private handleClipboard(stream: any, mimetype: string): void {
         // If the received data is text, read it as a simple string
         if (/^text\//.exec(mimetype)) {
-            const reader = new StringReader(stream);
+            const reader = new Guacamole.StringReader(stream);
 
             // Assemble received data into a single string
             let data = '';

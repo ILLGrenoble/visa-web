@@ -42,6 +42,16 @@
         "logLevel": "debug",
         "ws": true
     },
+    "/ws/vdi2": {
+        "target": "http://localhost:8085",
+        "secure": false,
+        "pathRewrite": {
+            "^/ws/vdi2": "/socket"
+        },
+        "changeOrigin": true,
+        "logLevel": "debug",
+        "ws": true
+    },
     "/ws/print/": {
         "target": "http://localhost:8088",
         "secure": false,

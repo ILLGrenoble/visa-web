@@ -1,7 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, User} from '@core';
-import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {GuacamoleVirtualDesktopManager, VirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
 import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {filter} from "rxjs/operators";
@@ -82,17 +81,18 @@ export class MembersConnectedComponent {
 
     public dropUser(event, user: User): void {
         event.preventDefault();
-
-        let tunnel;
-        if (this._useWebX) {
-            tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
-
-        } else {
-            tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
-        }
-        const socket = tunnel.getSocket();
-
-        socket.emit('access:revoked', {userId: user.id});
+        console.log('TODO: handle dropUser');
+        //
+        // let tunnel;
+        // if (this._useWebX) {
+        //     tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
+        //
+        // } else {
+        //     tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
+        // }
+        // const socket = tunnel.getSocket();
+        //
+        // socket.emit('access:revoked', {userId: user.id});
     }
 
 }

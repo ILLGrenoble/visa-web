@@ -1,9 +1,8 @@
 import {AfterViewInit, Component, ElementRef, Inject, Renderer2, ViewChild, ViewEncapsulation} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {OnScreenKeyboard} from '@illgrenoble/visa-guacamole-common-js';
 import {VirtualDesktopManager} from '@vdi';
 import {de, en, fr} from './layouts';
-import {filter} from "rxjs/operators";
+import Guacamole from "guacamole-common-js";
 
 @Component({
     selector: 'visa-instance-keyboard-dialog',
@@ -23,7 +22,7 @@ export class KeyboardComponent implements AfterViewInit {
 
     public selectedLayout = this.layouts[0];
 
-    private keyboard: OnScreenKeyboard;
+    private keyboard: Guacamole.OnScreenKeyboard;
 
     @ViewChild('container')
     private container: ElementRef;
@@ -50,9 +49,9 @@ export class KeyboardComponent implements AfterViewInit {
         this.createKeyboardDisplay(this.selectedLayout.layout);
     }
 
-    private createKeyboard(layoutId: string): OnScreenKeyboard {
-        const layout = new OnScreenKeyboard.Layout(layoutId);
-        return new OnScreenKeyboard(layout);
+    private createKeyboard(layoutId: string): Guacamole.OnScreenKeyboard {
+        const layout = new Guacamole.OnScreenKeyboard.Layout(layoutId);
+        return new Guacamole.OnScreenKeyboard(layout);
     }
 
     private bindKeyboardHandlers(): void {
