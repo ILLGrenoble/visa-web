@@ -11,13 +11,19 @@ import {
     selectLoggedInUser,
     User
 } from '@core';
-import {ScaleMode, VirtualDesktopManager, GuacamoleVirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
+import {
+    ScaleMode,
+    VirtualDesktopManager,
+    GuacamoleVirtualDesktopManager,
+    WebXVirtualDesktopManager,
+    DesktopConnection
+} from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as md5 from 'blueimp-md5';
 import * as FileSaver from 'file-saver';
-import {BehaviorSubject, combineLatest, interval, Subject, Subscription, timer} from 'rxjs';
-import {filter, finalize, map, scan, share, startWith, takeUntil, timeInterval} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, interval, Observable, Subject, Subscription, throwError, timer} from 'rxjs';
+import {catchError, filter, finalize, map, scan, share, startWith, takeUntil, timeInterval} from 'rxjs/operators';
 import {AccessRequestComponent} from './access-request';
 import {ClipboardComponent} from './clipboard';
 import {KeyboardComponent} from './keyboard';
@@ -25,9 +31,9 @@ import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
-import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
 import {environment} from 'environments/environment';
+import {de} from "./keyboard/layouts";
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -46,6 +52,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+    private _desktopConnection: DesktopConnection = new DesktopConnection();
 
     public stats$;
 
@@ -64,11 +71,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Subscription for the remote desktop state
      */
     private state$;
-
-    /**
-     * Subscription for an authentication ticket
-     */
-    private authenticationTicket$;
 
     public ownerNotConnected = false;
     public accessPending = false;
@@ -118,7 +120,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accountService.getInstance(instanceId).subscribe({
             next: (instance) => {
                 this.setInstance(instance);
-                this.createAuthenticationTicket();
+                this.handleConnect();
             },
             error: (error) => {
                 if (error.status === 404) {
@@ -130,6 +132,23 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         });
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
+
+        this._desktopConnection.events$.pipe(
+            takeUntil(this._destroy$),
+            filter(event => event != null),
+        ).subscribe({
+            next: (desktopEvent) => {
+                this.handleDesktopEvent(desktopEvent.event, desktopEvent.data);
+            },
+            complete: () => {
+                console.log('!!! DesktopConnection events completed !!!');
+                this.closeAllDialogs();
+            }
+        });
+
+        document.body.addEventListener('offline', () => {
+            this._desktopConnection.disconnect();
+        }, false);
     }
 
     /**
@@ -139,7 +158,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.closeAllDialogs();
         this.unbindManagerHandlers();
         this.unbindHotkeys();
-        this.unbindAuthenticationHandlers();
         this.unbindManagerHandlers();
         this.unbindWindowListeners();
         if (this.manager != null) {
@@ -167,7 +185,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.error = null;
         this.accessPending = false;
         this.accessRevoked = false;
-        this.createAuthenticationTicket();
+        this.createAuthenticationTicket().subscribe(ticket => {
+            this._desktopConnection.connect({token: ticket, path: environment.paths.ws.connector});
+        });
     }
 
     /**
@@ -292,30 +312,20 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Create an authentication ticket and then connect to the remote desktop
      * Bind the manager handlers
      */
-    private createAuthenticationTicket(): void {
-        if ((this.manager != null && this.manager.isConnected())) {
-            return;
-        }
-        this.authenticationTicket$ = this.accountService.createInstanceAuthenticationTicket(this.instance)
-            .pipe(filter((ticket: string) => ticket !== null))
-            .subscribe({
-                next: (ticket: string) => {
-                    if (this.manager == null) {
-                        this.createManager();
-                    }
+    private createAuthenticationTicket(): Observable<string> {
+        return this.accountService.createInstanceAuthenticationTicket(this.instance).pipe(
+            takeUntil(this._destroy$),
+            filter((ticket: string) => ticket !== null),
+            catchError(error => {
+                if (error.status === 401) {
+                    this.error = 'Failed to connect: the instance owner has not connected';
 
-                    this.manager.connect({token: ticket, protocol: this._useWebX ? 'webx' : 'guacamole'});
-                    this.bindManagerHandlers();
-                },
-                error: (error) => {
-                    if (error.status === 401) {
-                        this.error = 'Failed to connect: the instance owner has not connected';
-
-                    } else {
-                        this.error = 'Failed to connect to the instance';
-                    }
+                } else {
+                    this.error = 'Failed to connect to the instance';
                 }
-            });
+                return throwError(error);
+            })
+        );
     }
 
     /**
@@ -325,10 +335,31 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.handleSocketMessages();
         this.handleTunnelInstructionMessages();
         this.handleState();
+        this.handleThumbnailGeneration();
         this.handleClipboardData();
         this.bindWindowListeners();
     }
 
+    /**
+     * Unbind all of the manager handlers
+     */
+    private unbindManagerHandlers(): void {
+        if (this.statsInterval$) {
+            this.statsInterval$.unsubscribe();
+        }
+        if (this.dataReceivedMessages$) {
+            this.dataReceivedMessages$.unsubscribe();
+        }
+        if (this.state$) {
+            this.state$.unsubscribe();
+        }
+        if (this.thumbnailInterval$) {
+            this.thumbnailInterval$.unsubscribe();
+        }
+        if (this.clipboard$) {
+            this.clipboard$.unsubscribe();
+        }
+    }
     /**
      * Handle the current state of the remote desktop connection
      * If the state is disconnected, unbind all of the manager handles and close any relevant open dialogs
@@ -344,6 +375,29 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.accessPending = false;
             }
         });
+    }
+
+    private handleThumbnailGeneration() {
+        if (!this.thumbnailInterval$ && this.instance.membership.isRole('OWNER', 'SUPPORT')) {
+            // take a screenshot every minute
+            this.thumbnailInterval$ = timer(10000, 60000).subscribe(() => {
+                if (this.manager.isConnected()) {
+                    const {screenHeight, screenWidth} = this.instance;
+                    const thumbnailWidth = 320;
+                    this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
+                        .then((blob) => {
+                            if (blob) {
+                                this.createChecksumForThumbnail(blob).then((checksum) => {
+                                    if (checksum !== this.thumbnailChecksum) {
+                                        this._desktopConnection.emit('thumbnail', blob);
+                                        this.thumbnailChecksum = checksum;
+                                    }
+                                });
+                            }
+                        });
+                }
+            });
+        }
     }
 
     private handleWindowFocus(event: FocusEvent): void {
@@ -438,36 +492,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Unbind all of the manager handlers
-     */
-    private unbindManagerHandlers(): void {
-        if (this.statsInterval$) {
-            this.statsInterval$.unsubscribe();
-        }
-        if (this.dataReceivedMessages$) {
-            this.dataReceivedMessages$.unsubscribe();
-        }
-        if (this.state$) {
-            this.state$.unsubscribe();
-        }
-        if (this.thumbnailInterval$) {
-            this.thumbnailInterval$.unsubscribe();
-        }
-        if (this.clipboard$) {
-            this.clipboard$.unsubscribe();
-        }
-    }
-
-    /**
-     * Unbind the authentication handlers
-     */
-    private unbindAuthenticationHandlers(): void {
-        if (this.authenticationTicket$) {
-            this.authenticationTicket$.unsubscribe();
-        }
-    }
-
-    /**
      * Update the connection stats when a new tunnel instruction is received from the remote desktop
      */
     private handleTunnelInstructionMessages(): void {
@@ -510,6 +534,82 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.dataReceivedRate$.next(bytesPerSecond);
                 this.timeElapsed$.next(timeElapsed);
             });
+    }
+
+    private handleDesktopEvent(event: string, data?: any): void {
+        console.log(event);
+        if (event === 'connected') {
+            // Start the desktop streaming
+            if (this.manager == null) {
+                this.createManager();
+            }
+            this.createAuthenticationTicket().subscribe(ticket => {
+                this.manager.connect({token: ticket, protocol: this._useWebX ? 'webx' : 'guacamole'});
+                this.bindManagerHandlers();
+            })
+
+        } else if (event === 'users:connected') {
+            this.users$.next(data);
+
+        } else if (event === 'user:connected') {
+            this.notifierService.notify('success', `${data.fullName} has connected to the instance`);
+
+        } else if (event === 'user:disconnected') {
+            this.notifierService.notify('success', `${data.fullName} has disconnected from the instance`);
+
+        } else if (event === 'owner:away') {
+            this.ownerNotConnected = true;
+
+        } else if (event === 'room:locked') {
+            this.unlockedRole = this.instance.membership.role;
+            if (this.instance.membership.role === 'USER') {
+                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected. All connections are now read-only.`);
+                this.instance.membership.role = 'GUEST';
+
+            } else {
+                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
+            }
+
+        } else if (event === 'room:unlocked') {
+            if (this.unlockedRole === 'USER') {
+                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
+                this.instance.membership.role = this.unlockedRole;
+                this.unlockedRole = null;
+
+            } else {
+                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected.`);
+            }
+
+        } else if (event === 'access:denied') {
+            this.error = 'You have not been given access to this instance';
+
+        } else if (event === 'access:pending') {
+            this.accessPending = true;
+
+        } else if (event === 'access:request') {
+            const dialogId = 'access-request-dialog-' + data.token;
+            this.createAccessRequestDialog(dialogId, data.userFullName, (response: string) => {
+                this._desktopConnection.emit('access:reply', {id: data.token, response});
+            });
+
+        } else if (event === 'access:cancel') {
+            const dialogId = 'access-request-dialog-' + data.token;
+            const dialog = this.dialog.getDialogById(dialogId);
+            if (dialog) {
+                dialog.close();
+                this.notifierService.notify('success', `${data.userFullName} has cancelled their request to access your instance`);
+            }
+
+        } else if (event === 'access:granted') {
+            const grant = data === 'GUEST' ? 'read-only' : (data === 'USER' || data === 'SUPPORT') ? 'full' : '';
+            this.instance.membership.role = data;
+            this.notifierService.notify('success', `${this.instance.owner.fullName} has granted you ${grant} access to the instance`);
+
+            this.accessPending = true;
+
+        } else if (event === 'access:revoked') {
+            this.accessRevoked = true;
+        }
     }
 
     /**

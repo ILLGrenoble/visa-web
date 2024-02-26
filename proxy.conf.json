@@ -32,21 +32,21 @@
         "logLevel": "debug",
         "changeOrigin": true
     },
-    "/ws/vdi/": {
+    "/ws/connector/": {
         "target": "http://localhost:8087",
         "secure": false,
         "pathRewrite": {
-            "^/ws/vdi/": "/socket.io/"
+            "^/ws/connector/": "/socket.io/"
         },
         "changeOrigin": true,
         "logLevel": "debug",
         "ws": true
     },
-    "/ws/vdi2": {
+    "/ws/vdi": {
         "target": "http://localhost:8085",
         "secure": false,
         "pathRewrite": {
-            "^/ws/vdi2": "/socket"
+            "^/ws/vdi": "/ws/vdi"
         },
         "changeOrigin": true,
         "logLevel": "debug",

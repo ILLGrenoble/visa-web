@@ -352,12 +352,12 @@ export class AccountService {
     // }
 
     public createGuacamoleRemoteDesktopTunnel(): Guacamole.WebSocketTunnel {
-        const path = environment.paths.vdi2;
+        const path = environment.paths.ws.vdi;
         return new Guacamole.WebSocketTunnel(path);
     }
 
     public createWebXRemoteDesktopTunnel(): WebXSocketIOTunnel {
-        const path = environment.paths.vdi;
+        const path = environment.paths.ws.vdi;
         const connectionOptions = {
             'force new connection': true,
             forceNew: true,
