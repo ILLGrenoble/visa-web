@@ -133,21 +133,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         });
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
 
-        this._desktopConnection.events$.pipe(
-            takeUntil(this._destroy$),
-            filter(event => event != null),
-        ).subscribe({
-            next: (desktopEvent) => {
-                this.handleDesktopEvent(desktopEvent.event, desktopEvent.data);
-            },
-            complete: () => {
-                console.log('!!! DesktopConnection events completed !!!');
-                this.closeAllDialogs();
-                // Verify that the desktop-manager is disconnected
-                this.destroyManager();
-            }
-        });
-
         document.body.addEventListener('offline', () => {
             this._desktopConnection.disconnect();
         }, false);
@@ -162,7 +147,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.unbindHotkeys();
         this.unbindManagerHandlers();
         this.unbindWindowListeners();
-        this.destroyManager();
+        if (this.manager) {
+            this.manager.disconnect();
+            this.manager = null;
+        }
         this._desktopConnection.disconnect();
 
         this._destroy$.next(true);
@@ -187,7 +175,20 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accessPending = false;
         this.accessRevoked = false;
         this.createAuthenticationTicket().subscribe(ticket => {
-            this._desktopConnection.connect({token: ticket, path: environment.paths.ws.connector});
+            this._desktopConnection.connect({token: ticket, path: environment.paths.ws.connector}).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: (desktopEvent) => {
+                    this.handleDesktopEvent(desktopEvent.event, desktopEvent.data);
+                },
+                complete: () => {
+                    console.log('!!! DesktopConnection events completed !!!');
+                    if (this.manager) {
+                        this.manager.disconnect();
+                    }
+                    this.closeAllDialogs();
+                }
+            });
         });
     }
 
@@ -309,14 +310,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
     }
 
-    private destroyManager(): void {
-        if (this.manager != null) {
-            this.manager.disconnect();
-            this.manager = null;
-        }
-        this._desktopConnection.disconnect();
-    }
-
     /**
      * Create an authentication ticket and then connect to the remote desktop
      * Bind the manager handlers
@@ -375,12 +368,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private handleState(): void {
         this.state$ = this.manager.onStateChange.subscribe((state) => {
             if (state === 'DISCONNECTED') {
-                // Shutdown desktop connection too
                 this._desktopConnection.disconnect();
 
-                this.unbindManagerHandlers();
                 this.removeDialog('keyboard-dialog');
                 this.removeDialog('clipboard-dialog');
+
+                this.unbindManagerHandlers();
 
             } else if (state === 'CONNECTED') {
                 this.accessPending = false;

@@ -13,17 +13,12 @@ export type DesktopEvent = {
 
 export class DesktopConnection {
 
-    private _events$: BehaviorSubject<DesktopEvent> = new BehaviorSubject<DesktopEvent>(null);
     private _socket: Socket;
-
-    get events$(): Observable<DesktopEvent> {
-        return this._events$;
-    }
 
     constructor() {
     }
 
-    connect(data: DesktopConnectionData) {
+    connect(data: DesktopConnectionData): Observable<DesktopEvent> {
         if (this._socket) {
             return;
         }
@@ -44,15 +39,19 @@ export class DesktopConnection {
 
         console.log('Connecting to socket.io server');
 
+        const events$ = new Subject<DesktopEvent>();
+
         this._socket = io(`/desktop-connection`, socketOptions);
         this._socket.onAny((event, data) => {
             if (event === 'disconnect') {
-                this._events$.complete();
+                events$.complete();
 
             } else {
-                this._events$.next({event, data});
+                events$.next({event, data});
             }
         });
+
+        return events$;
     }
 
     disconnect(): void {
