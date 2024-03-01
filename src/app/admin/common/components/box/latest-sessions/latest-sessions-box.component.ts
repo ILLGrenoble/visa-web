@@ -108,7 +108,6 @@ export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
                                 }
                                 current
                             }
-                            sessionId
                             user {
                                 id
                                 fullName

@@ -154,7 +154,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                 }
                                 current
                             }
-                            sessionId
                             user {
                                 id
                                 fullName

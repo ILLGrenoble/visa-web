@@ -8,8 +8,9 @@ export enum ScaleMode {
 }
 
 export interface ConnectionParameters {
-    token?: string,
-    protocol?: string,
+    token: string,
+    protocol: string,
+    connectionId: string,
 }
 /**
  * Manages the connection to the remote desktop

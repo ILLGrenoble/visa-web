@@ -1,8 +1,7 @@
 import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {io, Socket} from "socket.io-client";
+import {io, ManagerOptions, Socket, SocketOptions} from "socket.io-client";
 
 export type DesktopConnectionData = {
-    host?: string;
     path?: string;
     token?: string;
 }
@@ -29,33 +28,31 @@ export class DesktopConnection {
             return;
         }
 
-        const socketOptions: any = {
+        const socketOptions: Partial<ManagerOptions & SocketOptions> = {
             transports: ['websocket'],
             timeout: 1000,
             forceNew: true,
             reconnection: false,
+            query: {
+                token: data.token
+            }
         }
 
         if (data.path) {
             socketOptions.path = data.path;
         }
 
-        const host = data.host ? `${data.host}` : '';
-
         console.log('Connecting to socket.io server');
 
-        this._socket = io(`${host}?token=${data.token}`, socketOptions);
-        this._socket.on('connected', (data) => {
-           console.log('connected');
+        this._socket = io(`/desktop-connection`, socketOptions);
+        this._socket.onAny((event, data) => {
+            if (event === 'disconnect') {
+                this._events$.complete();
+
+            } else {
+                this._events$.next({event, data});
+            }
         });
-        // this._socket.onAny((event, data) => {
-        //     if (event === 'disconnect') {
-        //         this._events$.complete();
-        //
-        //     } else {
-        //         this._events$.next({event, data});
-        //     }
-        // });
     }
 
     disconnect(): void {

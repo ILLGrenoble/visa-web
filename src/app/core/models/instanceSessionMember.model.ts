@@ -14,9 +14,6 @@ export class InstanceSessionMember {
     @JsonProperty('instanceSession', InstanceSession)
     private _instanceSession: InstanceSession = undefined;
 
-    @JsonProperty('sessionId', String)
-    private _sessionId: string = undefined;
-
     @JsonProperty('user', User)
     private _user: User = undefined;
 
@@ -30,7 +27,6 @@ export class InstanceSessionMember {
         this.id = data.id;
         this.createdAt = data.createdAt;
         this.instanceSession = data.instanceSession;
-        this.sessionId = data.sessionId;
         this.user = data.user;
         this.role = data.role;
         this.active = data.active;
@@ -59,14 +55,6 @@ export class InstanceSessionMember {
 
     public set instanceSession(value: InstanceSession) {
         this._instanceSession = value;
-    }
-
-    public get sessionId(): string {
-        return this._sessionId;
-    }
-
-    public set sessionId(value: string) {
-        this._sessionId = value;
     }
 
     public get user(): User {

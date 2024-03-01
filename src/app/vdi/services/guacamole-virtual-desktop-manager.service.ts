@@ -52,7 +52,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Connect to the remote desktop
      */
-    public connect(parameters: ConnectionParameters = {}): void {
+    public connect(parameters: ConnectionParameters): void {
         const configuration = this.buildParameters(parameters);
         this.client.connect(configuration);
         this.bindEventHandlers();
@@ -145,7 +145,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Build the URL query parameters to send to the tunnel connection
      */
-    private buildParameters(parameters: ConnectionParameters = {}): string {
+    private buildParameters(parameters: ConnectionParameters): string {
         const params = new URLSearchParams();
         for (const key in parameters) {
             params.set(key, parameters[key]);

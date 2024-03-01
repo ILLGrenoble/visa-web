@@ -8,6 +8,7 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {PrintRequestComponent} from "./print-request";
 import {NotifierService} from "angular-notifier";
 import {PrintDialogFailComponent} from "./print-dialog-fail";
+import {ManagerOptions, SocketOptions} from "socket.io-client";
 
 @Component({
     selector: 'visa-printer',
@@ -91,7 +92,12 @@ export class PrinterComponent implements OnInit, OnDestroy {
     public connectPrinter(): void {
         if (this.instance.membership.role === 'OWNER') {
             this._state = 'CONNECTING';
-            this._printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: this.instance.computeId}).subscribe(event => {
+            const connectionOptions: Partial<ManagerOptions & SocketOptions> = {
+                reconnectionDelay: 2000,
+                reconnectionAttempts: 2,
+                reconnectionDelayMax: 16000,
+            };
+            this._printService.connect({path: `${environment.paths.print}/${this.instance.id}`, token: this.instance.computeId}, connectionOptions).subscribe(event => {
                 // console.log(event.type);
                 if (event.type === 'CONNECTING') {
                     this._printerConnectionId = event.connectionId;

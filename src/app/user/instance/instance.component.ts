@@ -143,6 +143,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
             complete: () => {
                 console.log('!!! DesktopConnection events completed !!!');
                 this.closeAllDialogs();
+                // Verify that the desktop-manager is disconnected
+                this.destroyManager();
             }
         });
 
@@ -160,9 +162,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.unbindHotkeys();
         this.unbindManagerHandlers();
         this.unbindWindowListeners();
-        if (this.manager != null) {
-            this.manager.disconnect();
-        }
+        this.destroyManager();
+        this._desktopConnection.disconnect();
 
         this._destroy$.next(true);
         this._destroy$.unsubscribe();
@@ -308,6 +309,14 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
     }
 
+    private destroyManager(): void {
+        if (this.manager != null) {
+            this.manager.disconnect();
+            this.manager = null;
+        }
+        this._desktopConnection.disconnect();
+    }
+
     /**
      * Create an authentication ticket and then connect to the remote desktop
      * Bind the manager handlers
@@ -332,7 +341,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Bind all manager handlers
      */
     private bindManagerHandlers(): void {
-        this.handleSocketMessages();
         this.handleTunnelInstructionMessages();
         this.handleState();
         this.handleThumbnailGeneration();
@@ -367,6 +375,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private handleState(): void {
         this.state$ = this.manager.onStateChange.subscribe((state) => {
             if (state === 'DISCONNECTED') {
+                // Shutdown desktop connection too
+                this._desktopConnection.disconnect();
+
                 this.unbindManagerHandlers();
                 this.removeDialog('keyboard-dialog');
                 this.removeDialog('clipboard-dialog');
@@ -389,7 +400,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             if (blob) {
                                 this.createChecksumForThumbnail(blob).then((checksum) => {
                                     if (checksum !== this.thumbnailChecksum) {
-                                        this._desktopConnection.emit('thumbnail', blob);
+                                        //this._desktopConnection.emit('thumbnail', blob);
                                         this.thumbnailChecksum = checksum;
                                     }
                                 });
@@ -544,7 +555,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.createManager();
             }
             this.createAuthenticationTicket().subscribe(ticket => {
-                this.manager.connect({token: ticket, protocol: this._useWebX ? 'webx' : 'guacamole'});
+                const connectionId = data as string;
+                this.manager.connect({token: ticket, protocol: this._useWebX ? 'webx' : 'guacamole', connectionId});
                 this.bindManagerHandlers();
             })
 

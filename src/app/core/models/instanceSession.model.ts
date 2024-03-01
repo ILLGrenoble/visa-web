@@ -7,9 +7,6 @@ export class InstanceSession {
     @JsonProperty('id', Number)
     private _id: number = undefined;
 
-    @JsonProperty('connectionId', String)
-    private _connectionId: string = undefined;
-
     @JsonProperty('instance', Instance)
     private _instance: Instance = undefined;
 
@@ -18,7 +15,6 @@ export class InstanceSession {
 
     public copy(data: InstanceSession): InstanceSession {
         this.id = data.id;
-        this.connectionId = data.connectionId;
         this.instance = data.instance;
         this.current = data.current;
         return this;
@@ -30,14 +26,6 @@ export class InstanceSession {
 
     public set id(value: number) {
         this._id = value;
-    }
-
-    public get connectionId(): string {
-        return this._connectionId;
-    }
-
-    public set connectionId(value: string) {
-        this._connectionId = value;
     }
 
     public get instance(): Instance {

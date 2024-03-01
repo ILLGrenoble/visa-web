@@ -171,7 +171,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                     role
                                     duration
                                     instanceSession {
-                                      connectionId
                                        instance {
                                          id
                                          uid

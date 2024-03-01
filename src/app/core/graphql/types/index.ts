@@ -212,7 +212,6 @@ export type InstanceAttribute = {
 export type InstanceSession = {
     __typename?: 'InstanceSession';
     id: Scalars['Int'];
-    connectionId: Scalars['String'];
     instance: Instance;
     current: Scalars['Boolean'];
 };
@@ -221,7 +220,6 @@ export type InstanceSessionMember = {
     __typename?: 'InstanceSessionMember';
     id: Scalars['Int'];
     instanceSession: InstanceSession;
-    sessionId: Scalars['String'];
     user: User;
     createdAt: Scalars['String'];
     updatedAt: Scalars['String'];
