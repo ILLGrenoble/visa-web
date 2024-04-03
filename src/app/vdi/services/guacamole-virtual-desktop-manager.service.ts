@@ -17,42 +17,29 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * The actual underlying remote desktop client
      */
-    private readonly client: Guacamole.Client;
+    private client: Guacamole.Client;
 
     /**
      * The tunnel being used by the underlying remote desktop client
      */
-    private readonly tunnel: Guacamole.Tunnel;
+    private tunnel: Guacamole.Tunnel;
+
+    private readonly tunnelBuilder: () => Guacamole.Tunnel;
 
     /**
      * Set up the manager
      */
-    constructor(tunnel: Guacamole.Tunnel) {
+    constructor(tunnelBuilder: () => Guacamole.Tunnel) {
         super();
-        this.tunnel = tunnel;
-        this.client = new Guacamole.Client(this.tunnel);
-        super.setClientAdapter(new GuacamoleClientAdapter(this.client));
-
-        this.onTunnelInstruction.pipe(
-                filter(instruction => instruction && instruction.opcode === 'blob'),
-                map(instruction => ({length: atob(instruction.parameters[1]).length})))
-            .subscribe(data => {
-                this.onDataReceived.next(data);
-            });
+        this.tunnelBuilder = tunnelBuilder;
     }
-
-    /**
-     * Get the guacamole tunnel
-     */
-    public getTunnel(): Guacamole.Tunnel {
-        return this.tunnel;
-    }
-
 
     /**
      * Connect to the remote desktop
      */
     public connect(parameters: ConnectionParameters): void {
+        this.createClient(this.tunnelBuilder());
+
         const configuration = this.buildParameters(parameters);
         this.client.connect(configuration);
         this.bindEventHandlers();
@@ -70,6 +57,9 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
      */
     public createThumbnail(width: number = 340, height: number = 240): Promise<Blob> {
         return new Promise<Blob>((resolve, reject) => {
+            if (!this.client) {
+                reject();
+            }
             const display = this.client.getDisplay();
             if (display && display.getWidth() > 0 && display.getHeight() > 0) {
                 // Get screenshot
@@ -99,6 +89,10 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
      */
     public createScreenshot(): Promise<Blob> {
         return new Promise((resolve, reject) => {
+            if (!this.client) {
+                reject();
+            }
+
             const display = this.client.getDisplay();
             if (display && display.getWidth() > 0 && display.getHeight() > 0) {
                 const canvas = display.flatten();
@@ -113,7 +107,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
      * Send text to the remote clipboard
      */
     public sendRemoteClipboardData(text: string): void {
-        if (text) {
+        if (this.client && text) {
             const stream = this.client.createClipboardStream('text/plain');
             const writer = new Guacamole.StringWriter(stream);
             writer.sendText(text);
@@ -121,6 +115,19 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
             this.onRemoteClipboardData.next({content: text, event: 'sent'});
         }
 
+    }
+
+    private createClient(tunnel: Guacamole.Tunnel) {
+        this.tunnel = tunnel;
+        this.client = new Guacamole.Client(this.tunnel);
+        super.setClientAdapter(new GuacamoleClientAdapter(this.client));
+
+        this.onTunnelInstruction.pipe(
+            filter(instruction => instruction && instruction.opcode === 'blob'),
+            map(instruction => ({length: atob(instruction.parameters[1]).length})))
+            .subscribe(data => {
+                this.onDataReceived.next(data);
+            });
     }
 
     /**

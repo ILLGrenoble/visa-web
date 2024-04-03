@@ -305,8 +305,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.manager = new WebXVirtualDesktopManager(tunnel);
 
         } else {
-            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel();
-            this.manager = new GuacamoleVirtualDesktopManager(tunnel);
+            this.manager = new GuacamoleVirtualDesktopManager(() => this.accountService.createGuacamoleRemoteDesktopTunnel());
         }
     }
 
