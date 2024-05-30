@@ -20,9 +20,6 @@ export class User {
     @JsonProperty('affiliation', Employer)
     public affiliation: Employer = undefined;
 
-    @JsonProperty('instanceQuotaLimit', Number, true)
-    public instanceQuotaLimit: number = undefined;
-
     @JsonProperty('email', String, true)
     public email: string = undefined;
 

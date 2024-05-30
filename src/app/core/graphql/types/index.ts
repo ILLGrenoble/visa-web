@@ -161,7 +161,6 @@ export type ImageProtocol = {
     id: Scalars['Int'];
     name: Scalars['String'];
     port: Scalars['Int'];
-    isUp: Scalars['Boolean'];
 };
 
 export type Instance = {

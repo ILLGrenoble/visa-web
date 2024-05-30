@@ -13,12 +13,6 @@
         "logLevel": "debug",
         "changeOrigin": true
     },
-    "/graphql/*": {
-        "target": "http://localhost:8086",
-        "secure": false,
-        "logLevel": "debug",
-        "changeOrigin": true
-    },
     "/jupyter/*": {
         "target": "http://localhost:8088",
         "secure": false,

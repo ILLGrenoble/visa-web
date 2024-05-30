@@ -65,7 +65,7 @@ export class UserComponent implements OnInit, OnDestroy {
                 const id = this._user.id;
                 this.apollo.mutate({
                     mutation: gql`
-                      mutation updateUser($id: Int!, $input: UserInput!) {
+                      mutation updateUser($id: String!, $input: UserInput!) {
                         updateUser(id: $id, input: $input) {
                           id
                         }

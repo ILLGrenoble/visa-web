@@ -171,7 +171,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.apollo.mutate({
             mutation: gql`
                   mutation rebootInstance($id: Int!) {
-                    startInstance(id: $id) {
+                    rebootInstance(id: $id) {
                       message
                     }
                   }
