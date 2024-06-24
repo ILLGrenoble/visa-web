@@ -529,13 +529,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.closeAllDialogs();
         });
         socket.on('users:connected', (data) => {
-            this.users$.next(data);
+            this.users$.next(data.users);
         });
         socket.on('user:connected', (data) => {
-            this.notifierService.notify('success', `${data.fullName} has connected to the instance`);
+            this.notifierService.notify('success', `${data.user.fullName} has connected to the instance`);
         });
         socket.on('user:disconnected', (data) => {
-            this.notifierService.notify('success', `${data.fullName} has disconnected from the instance`);
+            this.notifierService.notify('success', `${data.user.fullName} has disconnected from the instance`);
         });
         socket.on('owner:away', () => {
             this.ownerNotConnected = true;
@@ -569,13 +569,21 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.accessPending = true;
         });
         socket.on('access:request', (data) => {
-            const dialogId = 'access-request-dialog-' + data.token;
+            const dialogId = 'access-request-dialog-' + data.requesterConnectionId;
             this.createAccessRequestDialog(dialogId, data.userFullName, (response: string) => {
-                socket.emit('access:reply', {id: data.token, response});
+                socket.emit('access:reply', {instanceId: data.instanceId, requesterConnectionId: data.requesterConnectionId, response});
             });
         });
+        socket.on('access:reply', (data) => {
+            // Check for open access request dialog and close it
+            const dialogId = 'access-request-dialog-' + data.requesterConnectionId;
+            const dialog = this.dialog.getDialogById(dialogId);
+            if (dialog) {
+                dialog.close();
+            }
+        });
         socket.on('access:cancel', (data) => {
-            const dialogId = 'access-request-dialog-' + data.token;
+            const dialogId = 'access-request-dialog-' + data.requesterConnectionId;
             const dialog = this.dialog.getDialogById(dialogId);
             if (dialog) {
                 dialog.close();
