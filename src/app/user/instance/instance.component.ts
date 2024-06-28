@@ -540,7 +540,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         socket.on('owner:away', () => {
             this.ownerNotConnected = true;
         });
-        socket.on('room:locked', () => {
+        socket.on('session:locked', () => {
             this.unlockedRole = this.instance.membership.role;
             if (this.instance.membership.role === 'USER') {
                 // tslint:disable-next-line:max-line-length
@@ -551,7 +551,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
             }
         });
-        socket.on('room:unlocked', () => {
+        socket.on('session:unlocked', () => {
             if (this.unlockedRole === 'USER') {
                 // tslint:disable-next-line:max-line-length
                 this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
@@ -571,7 +571,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         socket.on('access:request', ({sessionId, user, requesterConnectionId}) => {
             const dialogId = 'access-request-dialog-' + requesterConnectionId;
             this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
-                socket.emit('access:reply', {sessionId, requesterConnectionId, response});
+                socket.emit('event', {type: 'access:reply', data: {sessionId, requesterConnectionId, response}});
             });
         });
         socket.on('access:reply', (data) => {
@@ -610,9 +610,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
                     this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
                         .then((blob) => {
                             if (blob) {
-                                this.createChecksumForThumbnail(blob).then((checksum) => {
+                                this.convertBlobToBase64(blob).then(({base64, checksum}) => {
                                     if (checksum !== this.thumbnailChecksum) {
-                                        socket.emit('thumbnail', blob);
+                                        socket.emit('event', {type: 'thumbnail', data: base64});
                                         this.thumbnailChecksum = checksum;
                                     }
                                 });
@@ -627,13 +627,24 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }, false);
     }
 
-    private createChecksumForThumbnail(blob: Blob): Promise<string> {
+    private convertBlobToBase64(blob: Blob): Promise<{base64: string, checksum: string}> {
+        function arrayBufferToBase64(buffer: ArrayBuffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.readAsBinaryString(blob);
+            reader.readAsArrayBuffer(blob);
             reader.onloadend = () => {
-                const hash = md5((reader.result as string)).toString();
-                resolve(hash);
+                const base64 = arrayBufferToBase64(reader.result as ArrayBuffer);
+                const checksum = md5(base64).toString();
+                resolve({base64, checksum});
             };
         });
     }

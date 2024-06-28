@@ -92,7 +92,7 @@ export class MembersConnectedComponent {
         }
         const socket = tunnel.getSocket();
 
-        socket.emit('access:revoked', {userId: user.id});
+        socket.emit('event', {type: 'access:revoked', data: {userId: user.id}});
     }
 
 }
