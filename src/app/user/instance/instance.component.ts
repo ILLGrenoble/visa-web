@@ -568,10 +568,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
         socket.on('access:pending', () => {
             this.accessPending = true;
         });
-        socket.on('access:request', (data) => {
-            const dialogId = 'access-request-dialog-' + data.requesterConnectionId;
-            this.createAccessRequestDialog(dialogId, data.userFullName, (response: string) => {
-                socket.emit('access:reply', {instanceId: data.instanceId, requesterConnectionId: data.requesterConnectionId, response});
+        socket.on('access:request', ({sessionId, user, requesterConnectionId}) => {
+            const dialogId = 'access-request-dialog-' + requesterConnectionId;
+            this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
+                socket.emit('access:reply', {sessionId, requesterConnectionId, response});
             });
         });
         socket.on('access:reply', (data) => {
