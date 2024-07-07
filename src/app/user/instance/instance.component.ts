@@ -17,7 +17,7 @@ import {
     VirtualDesktopManager,
     GuacamoleVirtualDesktopManager,
     WebXVirtualDesktopManager,
-    DesktopEvent, DesktopConnection
+    DesktopEvent, EventChannel
 } from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
@@ -53,7 +53,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private _desktopConnection: DesktopConnection = new DesktopConnection();
+    private eventChannel: EventChannel = new EventChannel();
 
     public stats$;
 
@@ -135,7 +135,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
 
         document.body.addEventListener('offline', () => {
-            this._desktopConnection.disconnect();
+            this.eventChannel.disconnect();
         }, false);
     }
 
@@ -152,7 +152,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.manager.disconnect();
             this.manager = null;
         }
-        this._desktopConnection.disconnect();
+        this.eventChannel.disconnect();
 
         this._destroy$.next(true);
         this._destroy$.unsubscribe();
@@ -176,7 +176,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accessPending = false;
         this.accessRevoked = false;
         this.createAuthenticationTicket().subscribe(ticket => {
-            this._desktopConnection.connect({token: ticket, path: environment.paths.ws.events, protocol: this._useWebX ? 'webx' : 'guacamole'}).pipe(
+            this.eventChannel.connect({token: ticket, path: environment.paths.ws.events, protocol: this._useWebX ? 'webx' : 'guacamole'}).pipe(
                 takeUntil(this._destroy$),
             ).subscribe({
                 next: (desktopEvent: DesktopEvent) => {
@@ -368,7 +368,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private handleState(): void {
         this.state$ = this.manager.onStateChange.subscribe((state) => {
             if (state === 'DISCONNECTED') {
-                this._desktopConnection.disconnect();
+                this.eventChannel.disconnect();
 
                 this.removeDialog('keyboard-dialog');
                 this.removeDialog('clipboard-dialog');
@@ -393,7 +393,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             if (blob) {
                                 this.convertBlobToBase64(blob).then(({base64, checksum}) => {
                                     if (checksum !== this.thumbnailChecksum) {
-                                        this._desktopConnection.emit('thumbnail', base64);
+                                        this.eventChannel.emit('thumbnail', base64);
                                         this.thumbnailChecksum = checksum;
                                     }
                                 });
@@ -541,7 +541,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     private handleDesktopEvent(event: string, data?: any): void {
-        if (event === 'connection:initiated') {
+        if (event === 'event_channel_open') {
             const token = data.token;
             // Start the desktop streaming
             if (this.manager == null) {
@@ -592,7 +592,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             const {sessionId, user, requesterConnectionId} = data;
             const dialogId = 'access-request-dialog-' + requesterConnectionId;
             this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
-                this._desktopConnection.emit('access:reply', {sessionId, requesterConnectionId, response});
+                this.eventChannel.emit('access:reply', {sessionId, requesterConnectionId, response});
             });
 
         } else if (event === 'access:reply') {
@@ -621,96 +621,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         } else if (event === 'access:revoked') {
             this.accessRevoked = true;
         }
-    }
-
-    /**
-     * Handle any socket messages received
-     */
-    private handleSocketMessages(): void {
-        let tunnel;
-        if (this._useWebX) {
-            tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
-
-        } else {
-            tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
-        }
-        const socket = tunnel.getSocket();
-        socket.on('disconnect', () => {
-            this.closeAllDialogs();
-        });
-        socket.on('users:connected', (data) => {
-            this.users$.next(data.users);
-        });
-        socket.on('user:connected', (data) => {
-            this.notifierService.notify('success', `${data.user.fullName} has connected to the instance`);
-        });
-        socket.on('user:disconnected', (data) => {
-            this.notifierService.notify('success', `${data.user.fullName} has disconnected from the instance`);
-        });
-        socket.on('owner:away', () => {
-            this.ownerNotConnected = true;
-        });
-        socket.on('session:locked', () => {
-            this.unlockedRole = this.instance.membership.role;
-            if (this.instance.membership.role === 'USER') {
-                // tslint:disable-next-line:max-line-length
-                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected. All connections are now read-only.`);
-                this.instance.membership.role = 'GUEST';
-
-            } else {
-                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
-            }
-        });
-        socket.on('session:unlocked', () => {
-            if (this.unlockedRole === 'USER') {
-                // tslint:disable-next-line:max-line-length
-                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
-                this.instance.membership.role = this.unlockedRole;
-                this.unlockedRole = null;
-
-            } else {
-                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected.`);
-            }
-        });
-        socket.on('access:denied', () => {
-            this.error = 'You have not been given access to this instance';
-        });
-        socket.on('access:pending', () => {
-            this.accessPending = true;
-        });
-        socket.on('access:request', ({sessionId, user, requesterConnectionId}) => {
-            const dialogId = 'access-request-dialog-' + requesterConnectionId;
-            this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
-                socket.emit('event', {type: 'access:reply', data: {sessionId, requesterConnectionId, response}});
-            });
-        });
-        socket.on('access:reply', (data) => {
-            // Check for open access request dialog and close it
-            const dialogId = 'access-request-dialog-' + data.requesterConnectionId;
-            const dialog = this.dialog.getDialogById(dialogId);
-            if (dialog) {
-                dialog.close();
-            }
-        });
-        socket.on('access:cancel', (data) => {
-            const dialogId = 'access-request-dialog-' + data.requesterConnectionId;
-            const dialog = this.dialog.getDialogById(dialogId);
-            if (dialog) {
-                dialog.close();
-                this.notifierService.notify('success', `${data.userFullName} has cancelled their request to access your instance`);
-            }
-        });
-        socket.on('access:granted', (data) => {
-            const grant = data === 'GUEST' ? 'read-only' : (data === 'USER' || data === 'SUPPORT') ? 'full' : '';
-            this.instance.membership.role = data;
-            this.notifierService.notify('success', `${this.instance.owner.fullName} has granted you ${grant} access to the instance`);
-
-            this.accessPending = true;
-        });
-        socket.on('access:revoked', () => {
-            this.accessRevoked = true;
-        });
-
     }
 
     private convertBlobToBase64(blob: Blob): Promise<{base64: string, checksum: string}> {
@@ -866,7 +776,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 users$: this.users$,
                 user: this.user,
                 eventEmitter: (type: string, data?: any) => {
-                    this._desktopConnection.emit(type, data);
+                    this.eventChannel.emit(type, data);
                 }
             },
         });

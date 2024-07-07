@@ -11,7 +11,7 @@ export type DesktopEvent = {
     data?: any;
 }
 
-export class DesktopConnection {
+export class EventChannel {
 
     private _socket: WebSocketSubject<DesktopEvent>;
 
@@ -27,7 +27,7 @@ export class DesktopConnection {
 
         const url = `${path}/${token}?protocol=${protocol}`;
 
-        console.log(`Connecting to socket server at ${url}`);
+        // console.log(`Connecting to socket server at ${url}`);
 
         this._socket = webSocket<DesktopEvent>(url);
 
