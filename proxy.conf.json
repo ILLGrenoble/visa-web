@@ -36,6 +36,16 @@
         "logLevel": "debug",
         "ws": true
     },
+    "/api/ws/*": {
+        "target": "http://localhost:8086",
+        "secure": false,
+        "pathRewrite": {
+            "^/": ""
+        },
+        "changeOrigin": true,
+        "logLevel": "debug",
+        "ws": true
+    },
     "/ws/print/": {
         "target": "http://localhost:8088",
         "secure": false,

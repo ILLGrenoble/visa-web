@@ -1,9 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Instance, User} from '@core';
-import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
-import {GuacamoleVirtualDesktopManager, VirtualDesktopManager, WebXVirtualDesktopManager} from '@vdi';
-import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {filter} from "rxjs/operators";
 
 @Component({
@@ -16,16 +13,9 @@ export class MembersConnectedComponent {
     private _users = [];
     private _user: User;
     private _instance: Instance;
-    private _manager: VirtualDesktopManager;
-    private readonly _useWebX: boolean;
 
-    get manager(): VirtualDesktopManager {
-        return this._manager;
-    }
+    private _eventEmitter: (type: string, data: any) => void;
 
-    set manager(value: VirtualDesktopManager) {
-        this._manager = value;
-    }
     get instance(): Instance {
         return this._instance;
     }
@@ -52,9 +42,8 @@ export class MembersConnectedComponent {
     constructor(private dialogRef: MatDialogRef<MembersConnectedComponent>,
                 @Inject(MAT_DIALOG_DATA) private data: any) {
         this._instance = data.instance;
-        this._manager = data.manager;
+        this._eventEmitter = data.eventEmitter;
         this._user = data.user;
-        this._useWebX = data.useWebX;
         data.users$.subscribe((users) => {
             this.users = users;
         });
@@ -83,16 +72,7 @@ export class MembersConnectedComponent {
     public dropUser(event, user: User): void {
         event.preventDefault();
 
-        let tunnel;
-        if (this._useWebX) {
-            tunnel = (this.manager as WebXVirtualDesktopManager).getTunnel() as WebXSocketIOTunnel;
-
-        } else {
-            tunnel = (this.manager as GuacamoleVirtualDesktopManager).getTunnel() as SocketIOTunnel;
-        }
-        const socket = tunnel.getSocket();
-
-        socket.emit('event', {type: 'access:revoked', data: {userId: user.id}});
+        this._eventEmitter('access:revoked', {userId: user.id});
     }
 
 }

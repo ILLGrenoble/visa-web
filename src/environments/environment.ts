@@ -7,7 +7,10 @@ export const environment = {
     production: false,
     paths: {
         api: '/api',
-        vdi: '/ws/vdi',
+        ws: {
+            vdi: '/ws/vdi',
+            events: '/api/ws/events',
+        },
         graphql: '/api/graphql',
         jupyter: '/jupyter',
         visafs: '/visafs',

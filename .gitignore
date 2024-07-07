@@ -10,3 +10,4 @@ typings/
 .npmrc
 .vscode
 .angular
+.worktrees

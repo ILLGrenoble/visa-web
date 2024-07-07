@@ -340,7 +340,7 @@ export class AccountService {
     }
 
     public createGuacamoleRemoteDesktopTunnel(): SocketIOTunnel {
-        const path = environment.paths.vdi;
+        const path = environment.paths.ws.vdi;
         const connectionOptions = {
             'force new connection': true,
             forceNew: true,
@@ -352,7 +352,7 @@ export class AccountService {
     }
 
     public createWebXRemoteDesktopTunnel(): WebXSocketIOTunnel {
-        const path = environment.paths.vdi;
+        const path = environment.paths.ws.vdi;
         const connectionOptions = {
             'force new connection': true,
             forceNew: true,
