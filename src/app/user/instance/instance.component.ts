@@ -393,7 +393,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             if (blob) {
                                 this.convertBlobToBase64(blob).then(({base64, checksum}) => {
                                     if (checksum !== this.thumbnailChecksum) {
-                                        this._desktopConnection.emit('thumbnail', {data: base64});
+                                        this._desktopConnection.emit('thumbnail', base64);
                                         this.thumbnailChecksum = checksum;
                                     }
                                 });
