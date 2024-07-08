@@ -72,7 +72,7 @@ export class MembersConnectedComponent {
     public dropUser(event, user: User): void {
         event.preventDefault();
 
-        this._eventEmitter('access:revoked', {userId: user.id});
+        this._eventEmitter('access_revoked', {userId: user.id});
     }
 
 }
