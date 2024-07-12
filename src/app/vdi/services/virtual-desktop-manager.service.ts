@@ -179,7 +179,7 @@ export abstract class VirtualDesktopManager {
     /**
      * Connect to the remote desktop
      */
-    public abstract connect(parameters: ConnectionParameters): void;
+    public abstract connect(parameters?: ConnectionParameters): void;
 
     /**
      * Generate a thumbnail

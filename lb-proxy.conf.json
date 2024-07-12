@@ -26,11 +26,11 @@
         "logLevel": "debug",
         "changeOrigin": true
     },
-    "/ws/vdi/": {
-        "target": "http://localhost:8001",
+    "/api/ws/*": {
+        "target": "http://localhost:8086",
         "secure": false,
         "pathRewrite": {
-            "^/ws/vdi/": "/socket.io/"
+            "^/": ""
         },
         "changeOrigin": true,
         "logLevel": "debug",

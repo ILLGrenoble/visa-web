@@ -133,12 +133,26 @@ import screenfull from 'screenfull';
         ]),
     ],
 })
-export class RemoteDesktopComponent implements OnInit, OnDestroy {
+export class RemoteDesktopComponent {
+
+    private _manager: VirtualDesktopManager;
+
     /**
      * Client that manages the connection to the remote desktop
      */
     @Input()
-    public manager: VirtualDesktopManager;
+    public set manager(manager: VirtualDesktopManager) {
+        if (this._manager != null) {
+            this.unbindSubscriptions();
+        }
+        this._manager = manager;
+        this.state.next(this.states.CONNECTING);
+        this.bindSubscriptions();
+    }
+
+    get manager(): VirtualDesktopManager {
+        return this._manager;
+    }
 
     /**
      * Guacamole has more states than the list below however for the component we are only interested
@@ -180,20 +194,6 @@ export class RemoteDesktopComponent implements OnInit, OnDestroy {
      * Hide or show the toolbar
      */
     public toolbarVisible = true;
-
-    /**
-     * Subscribe to the connection state  and full screen state when the component is initialised
-     */
-    ngOnInit(): void {
-        this.bindSubscriptions();
-    }
-
-    /**
-     * Remove all subscriptions when the component is destroyed
-     */
-    ngOnDestroy(): void {
-        this.unbindSubscriptions();
-    }
 
     /**
      * Bind the subscriptions

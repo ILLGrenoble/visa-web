@@ -1,6 +1,6 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
+import Guacamole from 'guacamole-common-js';
 import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -339,20 +339,13 @@ export class AccountService {
         );
     }
 
-    public createGuacamoleRemoteDesktopTunnel(): SocketIOTunnel {
-        const path = environment.paths.ws.vdi;
-        const connectionOptions = {
-            'force new connection': true,
-            forceNew: true,
-            path,
-            reconnection: false,
-            transports: ['websocket'],
-        };
-        return new SocketIOTunnel(window.location.origin, connectionOptions, 'display');
+    public createGuacamoleRemoteDesktopTunnel(token: string): Guacamole.WebSocketTunnel {
+        const path = `${environment.paths.vdi}/${token}/guacamole`;
+        return new Guacamole.WebSocketTunnel(path);
     }
 
-    public createWebXRemoteDesktopTunnel(): WebXSocketIOTunnel {
-        const path = environment.paths.ws.vdi;
+    public createWebXRemoteDesktopTunnel(token: string): WebXSocketIOTunnel {
+        const path = `${environment.paths.vdi}/${token}/webx`;
         const connectionOptions = {
             'force new connection': true,
             forceNew: true,

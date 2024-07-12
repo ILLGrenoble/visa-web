@@ -11,13 +11,12 @@ import {
     selectLoggedInUser,
     User
 } from '@core';
-import {SocketIOTunnel} from '@illgrenoble/visa-guacamole-common-js';
 import {
     ScaleMode,
     VirtualDesktopManager,
     GuacamoleVirtualDesktopManager,
     WebXVirtualDesktopManager,
-    DesktopEvent, EventChannel
+    EventChannel
 } from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
@@ -32,7 +31,6 @@ import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
-import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
 import {FileManagerComponent} from "./file-manager";
 import {environment} from 'environments/environment';
 
@@ -146,7 +144,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.closeAllDialogs();
         this.unbindManagerHandlers();
         this.unbindHotkeys();
-        this.unbindManagerHandlers();
         this.unbindWindowListeners();
         if (this.manager) {
             this.manager.disconnect();
@@ -176,7 +173,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accessPending = false;
         this.accessRevoked = false;
         this.createAuthenticationTicket().subscribe(token => {
-            this.eventChannel.connect({token: token, path: environment.paths.ws.events, protocol: this._useWebX ? 'webx' : 'guacamole'}).pipe(
+            this.eventChannel.connect({token: token, path: environment.paths.vdi, protocol: this._useWebX ? 'webx' : 'guacamole'}).pipe(
                 takeUntil(this._destroy$),
             ).subscribe({
                 complete: () => {
@@ -294,18 +291,23 @@ export class InstanceComponent implements OnInit, OnDestroy {
     /**
      * If the manager does not exist, create it.
      */
-    private createManager(): void {
+    private createManager(token: string): boolean {
         if (this.manager) {
-            return;
+            if (this.manager.isConnected()) {
+                return false;
+            } else {
+                this.unbindManagerHandlers();
+            }
         }
         if (this._useWebX) {
-            const tunnel = this.accountService.createWebXRemoteDesktopTunnel();
+            const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token);
             this.manager = new WebXVirtualDesktopManager(tunnel);
 
         } else {
-            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel();
+            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel(token);
             this.manager = new GuacamoleVirtualDesktopManager(tunnel);
         }
+        return true;
     }
 
     /**
@@ -541,11 +543,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private bindEventChannelListeners(): void {
         this.eventChannel.on('event_channel_open', ({token}) => {
             // Start the desktop streaming
-            if (this.manager == null) {
-                this.createManager();
+            if (this.createManager(token)) {
+                this.bindManagerHandlers();
+                this.manager.connect();
             }
-            this.manager.connect({token});
-            this.bindManagerHandlers();
 
         }).on('users_connected', ({users}) => {
             this.users$.next(users);

@@ -26,12 +26,12 @@ export class EventChannel {
 
     connect(data: DesktopConnectionData): WebSocketSubject<DesktopEvent> {
         if (this._socket) {
-            return;
+            return this._socket;
         }
 
         const {path, token, protocol} = data;
 
-        const url = `${path}/${token}?protocol=${protocol}`;
+        const url = `${path}/${token}/events?protocol=${protocol}`;
 
         // console.log(`Connecting to socket server at ${url}`);
 
