@@ -51,7 +51,6 @@
               "moment-duration-format",
               "blueimp-md5",
               "file-saver",
-              "@illgrenoble/visa-guacamole-common-js",
               "@illgrenoble/webx-client",
               "@ctrl/ngx-codemirror"
             ]
