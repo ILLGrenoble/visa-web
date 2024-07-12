@@ -17,7 +17,7 @@ import {
 } from '../models';
 import {InstancesFilterState, toParams} from './filter/instances-filter-state.model';
 import {ObjectMapperService} from './object-mapper.service';
-import {WebXSocketIOTunnel} from '@illgrenoble/webx-client';
+import {WebXWebSocketTunnel} from '@illgrenoble/webx-client';
 import {Response} from "./visa-response";
 
 @Injectable()
@@ -344,16 +344,9 @@ export class AccountService {
         return new Guacamole.WebSocketTunnel(path);
     }
 
-    public createWebXRemoteDesktopTunnel(token: string): WebXSocketIOTunnel {
+    public createWebXRemoteDesktopTunnel(token: string): WebXWebSocketTunnel {
         const path = `${environment.paths.vdi}/${token}/webx`;
-        const connectionOptions = {
-            'force new connection': true,
-            forceNew: true,
-            path,
-            reconnection: false,
-            transports: ['websocket'],
-        };
-        return new WebXSocketIOTunnel(window.location.origin, connectionOptions, 'webxdisplay');
+        return new WebXWebSocketTunnel(path);
     }
 
     public getQuotas(): Observable<Quota> {
