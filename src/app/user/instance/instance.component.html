@@ -119,10 +119,28 @@
                 <div class="blankslate">
                     <div class="title">
                         <clr-icon shape="disconnect"></clr-icon>
-                        <h3>Disconnected from the instance</h3>
+                        <div *ngIf="ownerNotConnected">
+                            <h3>Owner disconnected</h3>
+                        </div>
+                        <div *ngIf="accessRevoked">
+                            <h3>Disconnected</h3>
+                        </div>
+                        <div *ngIf="!ownerNotConnected && !accessRevoked">
+                            <h3>Disconnected from the instance</h3>
+                        </div>
                     </div>
                     <div class="description">
-                        <p>You are not connected to the instance</p>
+                        <div *ngIf="ownerNotConnected">
+                            <p>The owner of the instance isn't currently connected.<br>You can only access their desktop while they are connected. Please try again later.</p>
+
+                        </div>
+                        <div *ngIf="accessRevoked">
+                            <p>The owner has disconnected you from their remote desktop.</p>
+
+                        </div>
+                        <div *ngIf="!ownerNotConnected && !accessRevoked">
+                            <p>You are not connected to the instance</p>
+                        </div>
                     </div>
                     <div class="actions">
                         <button class="btn btn-outline" (click)="handleConnect()">Connect to the instance</button>
@@ -136,29 +154,10 @@
                 <div class="blankslate">
                     <div class="title">
                         <clr-icon shape="error-standard"></clr-icon>
-                        <div *ngIf="ownerNotConnected">
-                            <h3>Owner disconnected</h3>
-                        </div>
-                        <div *ngIf="accessRevoked">
-                            <h3>Disconnected</h3>
-                        </div>
-                        <div *ngIf="!ownerNotConnected && !accessRevoked">
-                            <h3>Connection error</h3>
-                        </div>
+                        <h3>Connection error</h3>
                     </div>
                     <div class="description">
-                        <div *ngIf="ownerNotConnected">
-                            <p>The owner of the instance isn't currently connected.<br>You can only access their desktop while they are connected. Please try again later.</p>
-
-                        </div>
-                        <div *ngIf="accessRevoked">
-                            <p>The owner has disconnected you from their remote desktop.</p>
-
-                        </div>
-                        <div *ngIf="!ownerNotConnected && !accessRevoked">
-                            <p>There was an error connecting to the instance or the connection has been terminated</p>
-
-                        </div>
+                        <p>There was an error connecting to the instance or the connection has been terminated</p>
                     </div>
                     <div class="actions">
                         <button class="btn btn-outline" (click)="handleConnect()">Connect to the instance</button>
