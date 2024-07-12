@@ -177,6 +177,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 takeUntil(this._destroy$),
             ).subscribe({
                 complete: () => {
+                    if (this.manager && this.manager.isConnected()) {
+                        this.notifierService.notify('warning', `The event channel to the instance has been lost: the connection is not stable.`);
+                    }
+
                     // console.log('DesktopConnection events completed: handle reconnect if manager still connected');
                 },
                 error: (err) => {
