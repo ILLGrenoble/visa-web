@@ -177,7 +177,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 takeUntil(this._destroy$),
             ).subscribe({
                 complete: () => {
-                    console.log('DesktopConnection events completed: handle reconnect if manager still connected');
+                    // console.log('DesktopConnection events completed: handle reconnect if manager still connected');
                 },
                 error: (err) => {
                     console.error(`DesktopConnection events error: ${err}`);
