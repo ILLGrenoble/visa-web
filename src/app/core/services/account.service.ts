@@ -364,6 +364,15 @@ export class AccountService {
         return this.http.get<Response<number>>(url).pipe(map((response) => response.data));
     }
 
+    public createThumbnailForInstance(instance: Instance, thumbnail: Blob): Observable<boolean> {
+        const baseUrl = environment.paths.api;
+        const formData = new FormData();
+        formData.append('file', thumbnail);
+        const url = `${baseUrl}/account/instances/${instance.id}/thumbnail`;
+        return this.http.post<FormData>(url, formData)
+            .pipe(map((res) => true));
+    }
+
     public getThumbnailUrlForInstance(instance: Instance): string {
         const baseUrl = environment.paths.api;
         return `${baseUrl}/account/instances/${instance.uid}/thumbnail`;

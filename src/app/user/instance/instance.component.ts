@@ -395,10 +395,11 @@ export class InstanceComponent implements OnInit, OnDestroy {
                     this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
                         .then((blob) => {
                             if (blob) {
-                                this.convertBlobToBase64(blob).then(({base64, checksum}) => {
+                                this.createChecksumForThumbnail(blob).then((checksum) => {
                                     if (checksum !== this.thumbnailChecksum) {
-                                        this.eventChannel.emit('thumbnail', base64);
-                                        this.thumbnailChecksum = checksum;
+                                        this.accountService.createThumbnailForInstance(this.instance, blob).subscribe(_ => {
+                                            // do nothing
+                                        })
                                     }
                                 });
                             }
@@ -624,24 +625,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
         });
     }
 
-    private convertBlobToBase64(blob: Blob): Promise<{base64: string, checksum: string}> {
-        function arrayBufferToBase64(buffer: ArrayBuffer) {
-            let binary = '';
-            const bytes = new Uint8Array(buffer);
-            const len = bytes.byteLength;
-            for (let i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return btoa(binary);
-        }
-
+    private createChecksumForThumbnail(blob: Blob): Promise<string> {
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.readAsArrayBuffer(blob);
+            reader.readAsBinaryString(blob);
             reader.onloadend = () => {
-                const base64 = arrayBufferToBase64(reader.result as ArrayBuffer);
-                const checksum = md5(base64).toString();
-                resolve({base64, checksum});
+                const hash = md5((reader.result as string)).toString();
+                resolve(hash);
             };
         });
     }
