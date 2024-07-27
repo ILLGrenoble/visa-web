@@ -27,7 +27,7 @@
         "changeOrigin": true
     },
     "/api/ws/*": {
-        "target": "http://localhost:8086",
+        "target": "http://localhost:8000",
         "secure": false,
         "pathRewrite": {
             "^/": ""

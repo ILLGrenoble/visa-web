@@ -115,4 +115,16 @@ export class AuthenticationService {
         return this._oauthService.getAccessToken() != null && !isTokenExpired;
     }
 
+    public onLoggedIn(callback: () => void): void {
+        this._oauthService.events
+            .pipe(filter(event => event.type === 'token_received'))
+            .subscribe(() => callback());
+    }
+
+    public onLoggedOut(callback: () => void): void {
+        this._oauthService.events
+            .pipe(filter(event => event.type === 'logout'))
+            .subscribe(() => callback());
+    }
+
 }

@@ -15,7 +15,7 @@ import {
     CatalogueService,
     ConfigService,
     configServiceInitializerFactory,
-    DocumentationService,
+    DocumentationService, EventGateway, eventGatewayInitializerFactory,
     HelperService,
     InstrumentService,
     NotificationService,
@@ -56,6 +56,7 @@ import {InMemoryCache} from '@apollo/client/core';
         InstrumentService,
         ObjectMapperService,
         ConfigService,
+        EventGateway,
         NotificationService,
         DocumentationService,
         {
@@ -69,6 +70,12 @@ import {InMemoryCache} from '@apollo/client/core';
             useFactory: authenticationServiceInitializerFactory,
             multi: true,
             deps: [AuthenticationService],
+        },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: eventGatewayInitializerFactory,
+            multi: true,
+            deps: [EventGateway],
         },
         {
             provide: APP_INITIALIZER,

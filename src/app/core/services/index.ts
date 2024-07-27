@@ -9,3 +9,4 @@ export * from './filter/instances-filter-state.model';
 export * from './documentation.service';
 export * from './helper.service';
 export * from './analytics.service';
+export * from './event-gateway.service';

@@ -339,6 +339,17 @@ export class AccountService {
         );
     }
 
+    public createClientAuthenticationToken(clientId: string): Observable<string> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/clients/${clientId}/auth/token`;
+        return this.http.post<Response<{token: string}>>(url, null).pipe(
+            map((response) => {
+                const data = response.data;
+                return data.token;
+            })
+        );
+    }
+
     public createGuacamoleRemoteDesktopTunnel(token: string): Guacamole.WebSocketTunnel {
         const path = `${environment.paths.vdi}/${token}/guacamole`;
         return new Guacamole.WebSocketTunnel(path);
