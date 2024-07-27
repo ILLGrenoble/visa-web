@@ -6,7 +6,7 @@ import {
     AccountService,
     AnalyticsService,
     ApplicationState,
-    ConfigService,
+    ConfigService, EventGateway, GatewayEventSubscriber,
     Instance,
     selectLoggedInUser,
     User
@@ -16,7 +16,6 @@ import {
     VirtualDesktopManager,
     GuacamoleVirtualDesktopManager,
     WebXVirtualDesktopManager,
-    EventChannel
 } from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
@@ -51,7 +50,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private eventChannel: EventChannel = new EventChannel();
+    private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     public stats$;
 
@@ -108,7 +107,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 private notifierService: NotifierService,
                 private analyticsService: AnalyticsService,
                 private store: Store<ApplicationState>,
-                private configurationService: ConfigService) {
+                private configurationService: ConfigService,
+                private eventGateway: EventGateway) {
     }
 
     public ngOnInit(): void {
@@ -119,6 +119,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accountService.getInstance(instanceId).subscribe({
             next: (instance) => {
                 this.setInstance(instance);
+                this.bindEventGatewayListeners();
                 this.handleConnect();
             },
             error: (error) => {
@@ -131,10 +132,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         });
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
-
-        document.body.addEventListener('offline', () => {
-            this.eventChannel.disconnect();
-        }, false);
     }
 
     /**
@@ -142,6 +139,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
      */
     public ngOnDestroy(): void {
         this.closeAllDialogs();
+        this.unbindEventGatewayListeners();
         this.unbindManagerHandlers();
         this.unbindHotkeys();
         this.unbindWindowListeners();
@@ -149,7 +147,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.manager.disconnect();
             this.manager = null;
         }
-        this.eventChannel.disconnect();
 
         this._destroy$.next(true);
         this._destroy$.unsubscribe();
@@ -172,22 +169,15 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.error = null;
         this.accessPending = false;
         this.accessRevoked = false;
-        this.createAuthenticationTicket().subscribe(token => {
-            this.eventChannel.connect({token: token, path: environment.paths.vdi, protocol: this._useWebX ? 'webx' : 'guacamole'}).pipe(
-                takeUntil(this._destroy$),
-            ).subscribe({
-                complete: () => {
-                    if (this.manager && this.manager.isConnected()) {
-                        this.notifierService.notify('warning', `The event channel to the instance has been lost: the connection is not stable.`);
-                    }
 
-                    // console.log('DesktopConnection events completed: handle reconnect if manager still connected');
-                },
-                error: (err) => {
-                    console.error(`DesktopConnection events error: ${err}`);
-                }
-            });
-            this.bindEventChannelListeners();
+        // TODO check how it was done before
+
+        // Start the desktop streaming
+        this.createAuthenticationTicket().subscribe(token => {
+            if (this.createManager(token)) {
+                this.bindManagerHandlers();
+                this.manager.connect();
+            }
         });
     }
 
@@ -372,8 +362,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private handleState(): void {
         this.state$ = this.manager.onStateChange.subscribe((state) => {
             if (state === 'DISCONNECTED') {
-                this.eventChannel.disconnect();
-
                 this.removeDialog('keyboard-dialog');
                 this.removeDialog('clipboard-dialog');
 
@@ -545,15 +533,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
             });
     }
 
-    private bindEventChannelListeners(): void {
-        this.eventChannel.on('event_channel_open', ({token}) => {
-            // Start the desktop streaming
-            if (this.createManager(token)) {
-                this.bindManagerHandlers();
-                this.manager.connect();
-            }
-
-        }).on('users_connected', ({users}) => {
+    private bindEventGatewayListeners(): void {
+        this._gatewayEventSubscriber = this.eventGateway.subscribe().on('users_connected', ({users}) => {
             this.users$.next(users);
 
         }).on('user_connected', ({user}) => {
@@ -594,7 +575,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }).on('access_request', ({sessionId, user, requesterConnectionId}) => {
             const dialogId = 'access-request-dialog-' + requesterConnectionId;
             this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
-                this.eventChannel.emit('access_reply', {sessionId, requesterConnectionId, response});
+                this.eventGateway.emit('access_reply', {sessionId, requesterConnectionId, response});
             });
 
         }).on('access_reply', ({requesterConnectionId}) => {
@@ -623,6 +604,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }).on('access_revoked', () => {
             this.accessRevoked = true;
         });
+    }
+
+    private unbindEventGatewayListeners(): void {
+        if (this._gatewayEventSubscriber != null) {
+            this.eventGateway.unsubscribe(this._gatewayEventSubscriber);
+            this._gatewayEventSubscriber = null;
+        }
     }
 
     private createChecksumForThumbnail(blob: Blob): Promise<string> {
@@ -767,7 +755,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 users$: this.users$,
                 user: this.user,
                 eventEmitter: (type: string, data?: any) => {
-                    this.eventChannel.emit(type, data);
+                    this.eventGateway.emit(type, data);
                 }
             },
         });

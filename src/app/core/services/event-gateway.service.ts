@@ -20,12 +20,27 @@ type GatewayEventHandler = {
     callback: (data: any) => void;
 }
 
+export class GatewayEventSubscriber {
+    private _eventHandlers: GatewayEventHandler[] = [];
+
+    on(type: string, callback: (data: any) => void): GatewayEventSubscriber {
+        this._eventHandlers.push({type, callback});
+        return this;
+    }
+
+    handleGatewayEvent(type: string, data?: any): void {
+        this._eventHandlers.filter(handler => handler.type === type).forEach((handler) => {
+            handler.callback(data);
+        });
+    }
+}
+
 @Injectable()
 export class EventGateway {
 
     private readonly _clientId: string;
     private _socket: WebSocketSubject<GatewayEvent>;
-    private _eventHandlers: GatewayEventHandler[] = [];
+    private _subscribers: GatewayEventSubscriber[] = [];
 
     get clientId(): string {
         return this._clientId;
@@ -55,7 +70,7 @@ export class EventGateway {
                 return webSocket<GatewayEvent>(url);
             })) as WebSocketSubject<GatewayEvent>;
 
-        this._eventHandlers = [];
+        this._subscribers = [];
 
         this._socket.subscribe({
             next: (desktopEvent: GatewayEvent) => {
@@ -66,9 +81,14 @@ export class EventGateway {
         return this._socket;
     }
 
-    on(type: string, callback: (data: any) => void): EventGateway {
-        this._eventHandlers.push({type, callback});
-        return this;
+    subscribe(): GatewayEventSubscriber {
+        const gatewayEventSubscriber = new GatewayEventSubscriber();
+        this._subscribers.push(gatewayEventSubscriber);
+        return gatewayEventSubscriber;
+    }
+
+    unsubscribe(subscriber: GatewayEventSubscriber): void {
+        this._subscribers = this._subscribers.filter(aSubscriber => aSubscriber !== subscriber);
     }
 
     disconnect(): void {
@@ -76,7 +96,7 @@ export class EventGateway {
             this._socket.unsubscribe();
             this._socket = null;
         }
-        this._eventHandlers = [];
+        this._subscribers = [];
     }
 
     emit(type: string, data: any) {
@@ -86,9 +106,7 @@ export class EventGateway {
     }
 
     private _handleGatewayEvent(type: string, data?: any): void {
-        this._eventHandlers.filter(handler => handler.type === type).forEach((handler) => {
-            handler.callback(data);
-        });
+        this._subscribers.forEach(subscriber => subscriber.handleGatewayEvent(type, data));
     }
 
 }
