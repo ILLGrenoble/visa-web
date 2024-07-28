@@ -3,8 +3,10 @@ import {Injectable} from "@angular/core";
 import {AccountService} from "./account.service";
 import * as uuid from 'uuid';
 import {environment} from "../../../environments/environment";
-import { switchMap } from "rxjs/operators";
-import {AuthenticationService} from "./authentication.service";
+import {filter, switchMap, take} from "rxjs/operators";
+import {Store} from "@ngrx/store";
+import {ApplicationState} from "../state";
+import {selectLoggedInUser} from "../reducers";
 
 
 export function eventGatewayInitializerFactory(eventGateway: EventGateway): () => void {
@@ -47,13 +49,15 @@ export class EventGateway {
     }
 
     constructor(private _accountService: AccountService,
-                private _authenticationService: AuthenticationService) {
+                private _store: Store<ApplicationState>) {
         this._clientId = uuid.v4();
     }
 
     public init(): void {
-        this._authenticationService.onLoggedIn(() => this.connect());
-        this._authenticationService.onLoggedOut(() => this.disconnect());
+        // When we have a logged-in user then connect to the event gateway
+        this._store.select(selectLoggedInUser).pipe(filter(user => !!user)).subscribe(_ => {
+            this.connect();
+        });
     }
 
     public connect(): WebSocketSubject<GatewayEvent> {
@@ -65,8 +69,6 @@ export class EventGateway {
             switchMap(token => {
                 const url = `${environment.paths.api}/ws/${token}/${this._clientId}/gateway`;
 
-                // console.log(`Connecting to socket server at ${url}`);
-
                 return webSocket<GatewayEvent>(url);
             })) as WebSocketSubject<GatewayEvent>;
 
@@ -74,6 +76,9 @@ export class EventGateway {
             next: (desktopEvent: GatewayEvent) => {
                 this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
             },
+            complete: () => {
+                // TODO reconnect
+            }
         });
 
         return this._socket;

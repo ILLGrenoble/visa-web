@@ -27,11 +27,6 @@ export class AuthenticationService {
                 private _router: Router) {
 
         this._oauthService.events
-            .subscribe(event => {
-                console.log(`Received authentication event: ${event.type}`);
-            });
-
-        this._oauthService.events
             .pipe(filter(event => event.type === 'logout'))
             .subscribe(async () => {
                 const currentUrl = this._router.url;
@@ -119,17 +114,4 @@ export class AuthenticationService {
         const isTokenExpired = this._oauthService.getAccessTokenExpiration() <= new Date().getTime();
         return this._oauthService.getAccessToken() != null && !isTokenExpired;
     }
-
-    public onLoggedIn(callback: () => void): void {
-        this._oauthService.events
-            .pipe(filter(event => event.type === 'token_received'))
-            .subscribe(() => callback());
-    }
-
-    public onLoggedOut(callback: () => void): void {
-        this._oauthService.events
-            .pipe(filter(event => event.type === 'logout'))
-            .subscribe(() => callback());
-    }
-
 }
