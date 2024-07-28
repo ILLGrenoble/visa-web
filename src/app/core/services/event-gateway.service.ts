@@ -70,8 +70,6 @@ export class EventGateway {
                 return webSocket<GatewayEvent>(url);
             })) as WebSocketSubject<GatewayEvent>;
 
-        this._subscribers = [];
-
         this._socket.subscribe({
             next: (desktopEvent: GatewayEvent) => {
                 this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);

@@ -170,8 +170,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accessPending = false;
         this.accessRevoked = false;
 
-        // TODO check how it was done before
-
         // Start the desktop streaming
         this.createAuthenticationTicket().subscribe(token => {
             if (this.createManager(token)) {
@@ -294,11 +292,11 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         }
         if (this._useWebX) {
-            const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token);
+            const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token, this.eventGateway.clientId);
             this.manager = new WebXVirtualDesktopManager(tunnel);
 
         } else {
-            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel(token);
+            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel(token, this.eventGateway.clientId);
             this.manager = new GuacamoleVirtualDesktopManager(tunnel);
         }
         return true;
@@ -534,76 +532,77 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     private bindEventGatewayListeners(): void {
-        this._gatewayEventSubscriber = this.eventGateway.subscribe().on('users_connected', ({users}) => {
-            this.users$.next(users);
+        this._gatewayEventSubscriber = this.eventGateway.subscribe()
+            .on('vdi:users_connected', ({users}) => {
+                this.users$.next(users);
+            })
+            .on('vdi:user_connected', ({user}) => {
+                this.notifierService.notify('success', `${user.fullName} has connected to the instance`);
+            })
+            .on('vdi:user_disconnected', ({user}) => {
+                this.notifierService.notify('success', `${user.fullName} has disconnected from the instance`);
+            })
+            .on('vdi:owner_away', () => {
+                this.ownerNotConnected = true;
+            })
+            .on('vdi:session_locked', () => {
+                this.unlockedRole = this.instance.membership.role;
+                if (this.instance.membership.role === 'USER') {
+                    this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected. All connections are now read-only.`);
+                    this.instance.membership.role = 'GUEST';
 
-        }).on('user_connected', ({user}) => {
-            this.notifierService.notify('success', `${user.fullName} has connected to the instance`);
+                } else {
+                    this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
+                }
+            })
+            .on('vdi:session_unlocked', () => {
+                if (this.unlockedRole === 'USER') {
+                    this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
+                    this.instance.membership.role = this.unlockedRole;
+                    this.unlockedRole = null;
 
-        }).on('user_disconnected', ({user}) => {
-            this.notifierService.notify('success', `${user.fullName} has disconnected from the instance`);
+                } else {
+                    this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected.`);
+                }
+            })
+            .on('vdi:access_denied', () => {
+                this.error = 'You have not been given access to this instance';
+            })
+            .on('vdi:access_pending', () => {
+                this.accessPending = true;
+            })
+            .on('vdi:access_request', ({sessionId, user, requesterConnectionId}) => {
+                const dialogId = 'access-request-dialog-' + requesterConnectionId;
+                this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
+                    this.eventGateway.emit('vdi:access_reply', {sessionId, requesterConnectionId, response});
+                });
+            })
+            .on('vdi:access_reply', ({requesterConnectionId}) => {
+                // Check for open access request dialog and close it
+                const dialogId = 'access-request-dialog-' + requesterConnectionId;
+                const dialog = this.dialog.getDialogById(dialogId);
+                if (dialog) {
+                    dialog.close();
+                }
+            })
+            .on('vdi:access_cancel', ({userFullName, requesterConnectionId}) => {
+                const dialogId = 'access-request-dialog-' + requesterConnectionId;
+                const dialog = this.dialog.getDialogById(dialogId);
+                if (dialog) {
+                    dialog.close();
+                    this.notifierService.notify('success', `${userFullName} has cancelled their request to access your instance`);
+                }
+            })
+            .on('vdi:access_granted', (data) => {
+                const grant = data === 'GUEST' ? 'read-only' : (data === 'USER' || data === 'SUPPORT') ? 'full' : '';
+                this.instance.membership.role = data;
+                this.notifierService.notify('success', `${this.instance.owner.fullName} has granted you ${grant} access to the instance`);
 
-        }).on('owner_away', () => {
-            this.ownerNotConnected = true;
-
-        }).on('session_locked', () => {
-            this.unlockedRole = this.instance.membership.role;
-            if (this.instance.membership.role === 'USER') {
-                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected. All connections are now read-only.`);
-                this.instance.membership.role = 'GUEST';
-
-            } else {
-                this.notifierService.notify('warning', `The instance owner, ${this.instance.owner.fullName}, is no longer connected.`);
-            }
-
-        }).on('session_unlocked', () => {
-            if (this.unlockedRole === 'USER') {
-                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected. You have full control of this instance.`);
-                this.instance.membership.role = this.unlockedRole;
-                this.unlockedRole = null;
-
-            } else {
-                this.notifierService.notify('success', `The instance owner, ${this.instance.owner.fullName}, is now connected.`);
-            }
-
-        }).on('access_denied', () => {
-            this.error = 'You have not been given access to this instance';
-
-        }).on('access_pending', () => {
-            this.accessPending = true;
-
-        }).on('access_request', ({sessionId, user, requesterConnectionId}) => {
-            const dialogId = 'access-request-dialog-' + requesterConnectionId;
-            this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
-                this.eventGateway.emit('access_reply', {sessionId, requesterConnectionId, response});
+                this.accessPending = true;
+            })
+            .on('vdi:access_revoked', () => {
+                this.accessRevoked = true;
             });
-
-        }).on('access_reply', ({requesterConnectionId}) => {
-            // Check for open access request dialog and close it
-            const dialogId = 'access-request-dialog-' + requesterConnectionId;
-            const dialog = this.dialog.getDialogById(dialogId);
-            if (dialog) {
-                dialog.close();
-            }
-
-        }).on('access_cancel', ({userFullName, requesterConnectionId}) => {
-            const dialogId = 'access-request-dialog-' + requesterConnectionId;
-            const dialog = this.dialog.getDialogById(dialogId);
-            if (dialog) {
-                dialog.close();
-                this.notifierService.notify('success', `${userFullName} has cancelled their request to access your instance`);
-            }
-
-        }).on('access_granted', (data) => {
-            const grant = data === 'GUEST' ? 'read-only' : (data === 'USER' || data === 'SUPPORT') ? 'full' : '';
-            this.instance.membership.role = data;
-            this.notifierService.notify('success', `${this.instance.owner.fullName} has granted you ${grant} access to the instance`);
-
-            this.accessPending = true;
-
-        }).on('access_revoked', () => {
-            this.accessRevoked = true;
-        });
     }
 
     private unbindEventGatewayListeners(): void {

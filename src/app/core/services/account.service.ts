@@ -350,13 +350,13 @@ export class AccountService {
         );
     }
 
-    public createGuacamoleRemoteDesktopTunnel(token: string): Guacamole.WebSocketTunnel {
-        const path = `${environment.paths.vdi}/${token}/guacamole`;
+    public createGuacamoleRemoteDesktopTunnel(token: string, clientId: string): Guacamole.WebSocketTunnel {
+        const path = `${environment.paths.vdi}/${token}/${clientId}/guacamole`;
         return new Guacamole.WebSocketTunnel(path);
     }
 
-    public createWebXRemoteDesktopTunnel(token: string): WebXWebSocketTunnel {
-        const path = `${environment.paths.vdi}/${token}/webx`;
+    public createWebXRemoteDesktopTunnel(token: string, clientId: string): WebXWebSocketTunnel {
+        const path = `${environment.paths.vdi}/${token}/${clientId}/webx`;
         return new WebXWebSocketTunnel(path);
     }
 
