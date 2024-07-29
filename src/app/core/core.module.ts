@@ -15,7 +15,7 @@ import {
     CatalogueService,
     ConfigService,
     configServiceInitializerFactory,
-    DocumentationService, EventGateway, EventGatewayConfig, eventGatewayInitializerFactory,
+    DocumentationService, EventsGateway, EventsGatewayConfig, eventsGatewayInitializerFactory,
     HelperService,
     InstrumentService,
     NotificationService,
@@ -56,7 +56,7 @@ import {InMemoryCache} from '@apollo/client/core';
         InstrumentService,
         ObjectMapperService,
         ConfigService,
-        EventGateway,
+        EventsGateway,
         NotificationService,
         DocumentationService,
         {
@@ -75,13 +75,13 @@ import {InMemoryCache} from '@apollo/client/core';
             provide: 'EVENT_GATEWAY_CONFIG',
             useValue: {
                 reconnectionDelayMax: 10000,
-            } as EventGatewayConfig
+            } as EventsGatewayConfig
         },
         {
             provide: APP_INITIALIZER,
-            useFactory: eventGatewayInitializerFactory,
+            useFactory: eventsGatewayInitializerFactory,
             multi: true,
-            deps: [EventGateway],
+            deps: [EventsGateway],
         },
         {
             provide: APP_INITIALIZER,

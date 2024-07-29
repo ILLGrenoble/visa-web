@@ -7,11 +7,11 @@ import {filter} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {ApplicationState} from "../state";
 import {selectLoggedInUser} from "../reducers";
-import defaultOptions, {EventGatewayConfig} from "./models/event-gateway-config.model";
+import defaultOptions, {EventsGatewayConfig} from "./models/events-gateway-config.model";
 import {timer} from "rxjs";
 
 
-export function eventGatewayInitializerFactory(eventGateway: EventGateway): () => void {
+export function eventsGatewayInitializerFactory(eventGateway: EventsGateway): () => void {
     return () => eventGateway.init();
 }
 
@@ -46,12 +46,12 @@ export class GatewayEventSubscriber {
 }
 
 @Injectable()
-export class EventGateway {
+export class EventsGateway {
 
     private readonly _clientId: string;
     private _socket: WebSocketSubject<GatewayEvent>;
     private _subscribers: GatewayEventSubscriber[] = [];
-    private _config: EventGatewayConfig;
+    private _config: EventsGatewayConfig;
     private _reconnectionState: ReconnectionState;
 
     get clientId(): string {
@@ -60,7 +60,7 @@ export class EventGateway {
 
     constructor(private _accountService: AccountService,
                 private _store: Store<ApplicationState>,
-                @Inject('EVENT_GATEWAY_CONFIG') eventGatewayConfig?: EventGatewayConfig) {
+                @Inject('EVENT_GATEWAY_CONFIG') eventGatewayConfig?: EventsGatewayConfig) {
         this._clientId = uuid.v4();
         this._config = {...defaultOptions, ...eventGatewayConfig};
     }

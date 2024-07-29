@@ -6,7 +6,7 @@ import {
     AccountService,
     AnalyticsService,
     ApplicationState,
-    ConfigService, EventGateway, GatewayEventSubscriber,
+    ConfigService, EventsGateway, GatewayEventSubscriber,
     Instance,
     selectLoggedInUser,
     User
@@ -108,7 +108,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 private analyticsService: AnalyticsService,
                 private store: Store<ApplicationState>,
                 private configurationService: ConfigService,
-                private eventGateway: EventGateway) {
+                private eventsGateway: EventsGateway) {
     }
 
     public ngOnInit(): void {
@@ -292,11 +292,11 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         }
         if (this._useWebX) {
-            const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token, this.eventGateway.clientId);
+            const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token, this.eventsGateway.clientId);
             this.manager = new WebXVirtualDesktopManager(tunnel);
 
         } else {
-            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel(token, this.eventGateway.clientId);
+            const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel(token, this.eventsGateway.clientId);
             this.manager = new GuacamoleVirtualDesktopManager(tunnel);
         }
         return true;
@@ -532,7 +532,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     private bindEventGatewayListeners(): void {
-        this._gatewayEventSubscriber = this.eventGateway.subscribe()
+        this._gatewayEventSubscriber = this.eventsGateway.subscribe()
             .on('vdi:users_connected', ({users}) => {
                 this.users$.next(users);
             })
@@ -574,7 +574,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             .on('vdi:access_request', ({sessionId, user, requesterConnectionId}) => {
                 const dialogId = 'access-request-dialog-' + requesterConnectionId;
                 this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
-                    this.eventGateway.emit('vdi:access_reply', {sessionId, requesterConnectionId, response});
+                    this.eventsGateway.emit('vdi:access_reply', {sessionId, requesterConnectionId, response});
                 });
             })
             .on('vdi:access_reply', ({requesterConnectionId}) => {
@@ -607,7 +607,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private unbindEventGatewayListeners(): void {
         if (this._gatewayEventSubscriber != null) {
-            this.eventGateway.unsubscribe(this._gatewayEventSubscriber);
+            this.eventsGateway.unsubscribe(this._gatewayEventSubscriber);
             this._gatewayEventSubscriber = null;
         }
     }
@@ -754,7 +754,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 users$: this.users$,
                 user: this.user,
                 eventEmitter: (type: string, data?: any) => {
-                    this.eventGateway.emit(type, data);
+                    this.eventsGateway.emit(type, data);
                 }
             },
         });

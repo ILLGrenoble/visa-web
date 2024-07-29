@@ -1,4 +1,4 @@
-export type EventGatewayConfig = {
+export type EventsGatewayConfig = {
     reconnection?: boolean;
     reconnectionAttempts?: number;
     reconnectionDelay?: number;
