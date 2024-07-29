@@ -1,17 +1,20 @@
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import {Injectable} from "@angular/core";
+import {Inject, Injectable} from "@angular/core";
 import {AccountService} from "./account.service";
 import * as uuid from 'uuid';
 import {environment} from "../../../environments/environment";
-import {filter, switchMap, take} from "rxjs/operators";
+import {filter} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {ApplicationState} from "../state";
 import {selectLoggedInUser} from "../reducers";
+import defaultOptions, {EventGatewayConfig} from "./models/event-gateway-config.model";
+import {timer} from "rxjs";
 
 
 export function eventGatewayInitializerFactory(eventGateway: EventGateway): () => void {
     return () => eventGateway.init();
 }
+
 export type GatewayEvent = {
     type: string;
     data?: any;
@@ -20,6 +23,11 @@ export type GatewayEvent = {
 type GatewayEventHandler = {
     type: string;
     callback: (data: any) => void;
+}
+
+type ReconnectionState = {
+    delay: number,
+    attempt: number,
 }
 
 export class GatewayEventSubscriber {
@@ -43,14 +51,18 @@ export class EventGateway {
     private readonly _clientId: string;
     private _socket: WebSocketSubject<GatewayEvent>;
     private _subscribers: GatewayEventSubscriber[] = [];
+    private _config: EventGatewayConfig;
+    private _reconnectionState: ReconnectionState;
 
     get clientId(): string {
         return this._clientId;
     }
 
     constructor(private _accountService: AccountService,
-                private _store: Store<ApplicationState>) {
+                private _store: Store<ApplicationState>,
+                @Inject('EVENT_GATEWAY_CONFIG') eventGatewayConfig?: EventGatewayConfig) {
         this._clientId = uuid.v4();
+        this._config = {...defaultOptions, ...eventGatewayConfig};
     }
 
     public init(): void {
@@ -60,28 +72,36 @@ export class EventGateway {
         });
     }
 
-    public connect(): WebSocketSubject<GatewayEvent> {
+    public connect(): void {
         if (this._socket) {
-            return this._socket;
+            return;
         }
 
-        this._socket = this._accountService.createClientAuthenticationToken(this._clientId).pipe(
-            switchMap(token => {
+        this._accountService.createClientAuthenticationToken(this._clientId).subscribe({
+            next: token => {
                 const url = `${environment.paths.api}/ws/${token}/${this._clientId}/gateway`;
 
-                return webSocket<GatewayEvent>(url);
-            })) as WebSocketSubject<GatewayEvent>;
+                this._reconnectionState = null;
 
-        this._socket.subscribe({
-            next: (desktopEvent: GatewayEvent) => {
-                this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
+                this._socket = webSocket<GatewayEvent>(url);
+                this._socket.subscribe({
+                    next: (desktopEvent: GatewayEvent) => {
+                        this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
+                    },
+                    error: () => {
+                        this._socket = null;
+                        this._handleReconnection();
+                    },
+                    complete: () => {
+                        this._socket = null;
+                        this._handleReconnection();
+                    }
+                });
             },
-            complete: () => {
-                // TODO reconnect
+            error: _ => {
+                this._handleReconnection();
             }
         });
-
-        return this._socket;
     }
 
     subscribe(): GatewayEventSubscriber {
@@ -112,4 +132,29 @@ export class EventGateway {
         this._subscribers.forEach(subscriber => subscriber.handleGatewayEvent(type, data));
     }
 
+    private _handleReconnection(): void {
+        if (!this._config.reconnection) {
+            return;
+        }
+
+        if (this._reconnectionState == null) {
+            this._reconnectionState = {
+                delay: this._config.reconnectionDelay,
+                attempt: 0
+            }
+        } else {
+            this._reconnectionState.delay = Math.min(this._reconnectionState.delay * 2, this._config.reconnectionDelayMax);
+            this._reconnectionState.attempt++;
+        }
+
+        if (this._reconnectionState.attempt < this._config.reconnectionAttempts) {
+            // Run reconnection timer
+            timer(this._reconnectionState.delay).subscribe(() => {
+                this.connect();
+            });
+
+        } else {
+            console.log(`Reached maximum number of Event Gateway reconnection attempts (${this._config.reconnectionAttempts})`);
+        }
+    }
 }

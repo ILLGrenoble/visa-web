@@ -15,10 +15,10 @@ import {
     Quota,
     User
 } from '../models';
-import {InstancesFilterState, toParams} from './filter/instances-filter-state.model';
 import {ObjectMapperService} from './object-mapper.service';
 import {WebXWebSocketTunnel} from '@illgrenoble/webx-client';
 import {Response} from "./visa-response";
+import {InstancesFilterState, toParams} from "./models/instances-filter-state.model";
 
 @Injectable()
 export class AccountService {
