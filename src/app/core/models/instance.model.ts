@@ -78,6 +78,9 @@ export class Instance {
     @JsonProperty('unrestrictedAccess', Boolean, true)
     private _unrestrictedAccess: boolean = undefined;
 
+    @JsonProperty('deleteRequested', Boolean, true)
+    private _deleteRequested: boolean = undefined;
+
     @JsonProperty('keyboardLayout', String)
     private _keyboardLayout: string = undefined;
 
@@ -234,6 +237,14 @@ export class Instance {
 
     set canConnectWhileOwnerAway(value: boolean) {
         this._canConnectWhileOwnerAway = value;
+    }
+
+    get deleteRequested(): boolean {
+        return this._deleteRequested;
+    }
+
+    set deleteRequested(value: boolean) {
+        this._deleteRequested = value;
     }
 
     get unrestrictedAccess(): boolean {

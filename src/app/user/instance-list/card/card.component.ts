@@ -1,6 +1,14 @@
 import {Component, ElementRef, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import {AccountService, Configuration, Instance, User, ApplicationState, selectLoggedInUser} from '@core';
-import {Observable, Subject, Subscription, timer} from 'rxjs';
+import {
+    AccountService,
+    Configuration,
+    Instance,
+    User,
+    ApplicationState,
+    selectLoggedInUser,
+    GatewayEventSubscriber, EventsGateway, InstanceStateChangedEvent
+} from '@core';
+import {Observable, Subject} from 'rxjs';
 import {DetailsDialog, ExperimentsDialog, MembersDialog, RequestExtensionDialog} from '../dialogs';
 import {MatDialog} from '@angular/material/dialog';
 import {NotifierService} from 'angular-notifier';
@@ -20,15 +28,13 @@ import {filter} from 'rxjs/operators';
 })
 export class CardComponent implements OnInit, OnDestroy {
 
-    private static ACTIVE_UPDATE_PERIOD = 1000;
-    private static BACKGROUND_UPDATE_PERIOD = 30000;
-
     private _user$: Observable<User>;
     private _user: User;
 
     private _instance: Instance;
     private _configuration: Configuration;
     private _requestExtensionEnabled = false;
+    private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     @ViewChild('dropdown')
     public dropdownElement: ElementRef;
@@ -39,7 +45,7 @@ export class CardComponent implements OnInit, OnDestroy {
     @Input()
     set instance(value: Instance) {
         this._instance = value;
-        this.updateInstanceState();
+        this.onStateChanged();
     }
 
     get instance(): Instance {
@@ -61,28 +67,28 @@ export class CardComponent implements OnInit, OnDestroy {
 
     public isSettingsOpen = false;
 
-    private _currentUpdatePeriod = 0;
-    private _timerSubscription: Subscription = null;
     public expirationCountdown = '';
     public canConnect = false;
 
     constructor(private ref: ElementRef,
                 private notifierService: NotifierService,
                 private dialog: MatDialog,
-                private store: Store<ApplicationState>,
-                private accountService: AccountService) {
+                store: Store<ApplicationState>,
+                private accountService: AccountService,
+                private eventsGateway: EventsGateway) {
         this._user$ = store.select(selectLoggedInUser);
     }
 
     public ngOnInit(): void {
-        this.updateInstanceState();
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
         });
+
+        this.bindEventGatewayListeners();
     }
 
     public ngOnDestroy(): void {
-        this.stopUpdateTimers();
+        this.unbindEventGatewayListeners();
     }
 
     public toggleSettings(): void {
@@ -278,52 +284,42 @@ export class CardComponent implements OnInit, OnDestroy {
 
     }
 
-    private updateInstanceState(): void {
+    private updateInstanceFromStateEvent(event: InstanceStateChangedEvent): void {
         if (this._instance == null || this._instance.plan == null) {
-            this.stopUpdateTimers();
             return;
         }
 
+        this._instance.name = event.name;
+        this._instance.comments = event.comments;
+        this._instance.state = event.state;
+        this._instance.ipAddress = event.ipAddress
+        this._instance.terminationDate = event.terminationDate;
+        this._instance.expirationDate = event.expirationDate;
+        this._instance.deleteRequested = event.deleteRequested;
+        this._instance.unrestrictedAccess = event.unrestrictedMemberAccess;
+        this._instance.activeProtocols = event.activeProtocols;
+
+        this.onStateChanged();
+    }
+
+    private onStateChanged() {
+        if ((this._instance.state === 'STOPPED' || this._instance.state === 'STOPPING'
+            || this._instance.state === 'ACTIVE' || this._instance.state === 'PARTIALLY_ACTIVE') && this._instance.deleteRequested) {
+            this._instance.state = 'DELETING';
+        }
+
         this.updateCanConnect();
+        this.updateExpirationCountdown();
 
-        this.accountService.getInstanceState(this._instance).subscribe({
-            next: (instanceState) => {
-                if ((instanceState.state === 'STOPPED' || instanceState.state === 'STOPPING'
-                    || instanceState.state === 'ACTIVE' || instanceState.state === 'PARTIALLY_ACTIVE') && instanceState.deleteRequested) {
-                    this._instance.state = 'DELETING';
-                } else {
-                    this._instance.state = instanceState.state;
-                }
-                this._instance.expirationDate = instanceState.expirationDate == null ? null : new Date(instanceState.expirationDate);
-                this._instance.terminationDate = instanceState.terminationDate == null ? null : new Date(instanceState.terminationDate);
-                this._instance.activeProtocols = instanceState.activeProtocols;
+        if (this._instance.state === 'DELETED') {
+            this.doUpdateParent.next(null);
+        }
 
-                this.updateExpirationCountdown();
-
-                if (instanceState.state === 'DELETED') {
-                    this.doUpdateParent.next(null);
-                }
-
-                if (['UNKNOWN', 'STARTING', 'PARTIALLY_ACTIVE', 'REBOOTING', 'BUILDING', 'STOPPING', 'DELETING'].includes(this._instance.state)) {
-                    this.restartUpdateTimers(CardComponent.ACTIVE_UPDATE_PERIOD);
-
-                } else {
-                    this.restartUpdateTimers(CardComponent.BACKGROUND_UPDATE_PERIOD);
-
-                }
-
-                if (this.willExpireWarning() && !this.willExpireFromInactivity()) {
-                    this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
-                        this._requestExtensionEnabled = (instanceLifetimeExtension == null);
-                    });
-                }
-            },
-            error: () => {
-                this.stopUpdateTimers();
-
-                this.doUpdateParent.next(null);
-            }
-        });
+        if (this.willExpireWarning() && !this.willExpireFromInactivity()) {
+            this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
+                this._requestExtensionEnabled = (instanceLifetimeExtension == null);
+            });
+        }
     }
 
     private updateCanConnect(): void {
@@ -370,22 +366,19 @@ export class CardComponent implements OnInit, OnDestroy {
         }
     }
 
-    private restartUpdateTimers(period): void {
-        if (this._currentUpdatePeriod === period) {
-            return;
-        }
-
-        this.stopUpdateTimers();
-
-        this._currentUpdatePeriod = period;
-        const observable = timer(0, period);
-        this._timerSubscription = observable.subscribe(() => this.updateInstanceState());
+    private bindEventGatewayListeners(): void {
+        this._gatewayEventSubscriber = this.eventsGateway.subscribe()
+            .on('user:instance_state_changed', (event: InstanceStateChangedEvent) => {
+                if (event.instanceId === this._instance.id) {
+                    this.updateInstanceFromStateEvent(event);
+                }
+            })
     }
 
-    private stopUpdateTimers(): void {
-        if (this._timerSubscription != null) {
-            this._timerSubscription.unsubscribe();
-            this._timerSubscription = null;
+    private unbindEventGatewayListeners(): void {
+        if (this._gatewayEventSubscriber != null) {
+            this.eventsGateway.unsubscribe(this._gatewayEventSubscriber);
+            this._gatewayEventSubscriber = null;
         }
     }
 }

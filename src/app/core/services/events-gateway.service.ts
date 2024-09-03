@@ -9,6 +9,7 @@ import {ApplicationState} from "../state";
 import {selectLoggedInUser} from "../reducers";
 import defaultOptions, {EventsGatewayConfig} from "./models/events-gateway-config.model";
 import {timer} from "rxjs";
+import {convertJsonDates} from "./models/json-date-converter";
 
 
 export function eventsGatewayInitializerFactory(eventGateway: EventsGateway): () => void {
@@ -129,6 +130,7 @@ export class EventsGateway {
     }
 
     private _handleGatewayEvent(type: string, data?: any): void {
+        convertJsonDates(data);
         this._subscribers.forEach(subscriber => subscriber.handleGatewayEvent(type, data));
     }
 

@@ -1,6 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Title} from '@angular/platform-browser';
-import {AccountService, ApplicationState, ConfigService, Experiment, Instance, selectLoggedInUser, User, Configuration} from '@core';
+import {
+    AccountService,
+    ApplicationState,
+    ConfigService,
+    Experiment,
+    Instance,
+    selectLoggedInUser,
+    User,
+    Configuration,
+    EventsGateway, GatewayEventSubscriber
+} from '@core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {filter, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
@@ -10,7 +20,7 @@ import {Store} from '@ngrx/store';
     styleUrls: ['./home.component.scss'],
     templateUrl: './home.component.html',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
     private _user$: Observable<User>;
     private _user: User;
@@ -22,6 +32,7 @@ export class HomeComponent implements OnInit {
     private _loading = false;
     private _experiments: Experiment[] = [];
     private _configuration: Configuration;
+    private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     get destroy$(): Subject<boolean> {
         return this._destroy$;
@@ -85,9 +96,9 @@ export class HomeComponent implements OnInit {
     constructor(private accountService: AccountService,
                 private titleService: Title,
                 private route: ActivatedRoute,
-                private store: Store<ApplicationState>,
+                store: Store<ApplicationState>,
                 private configService: ConfigService,
-    ) {
+                private eventsGateway: EventsGateway) {
         this._user$ = store.select(selectLoggedInUser);
     }
 
@@ -116,6 +127,12 @@ export class HomeComponent implements OnInit {
             .subscribe((configuration) => {
                 this._configuration = configuration;
             });
+
+        this.bindEventGatewayListeners();
+    }
+
+    public ngOnDestroy(): void {
+        this.unbindEventGatewayListeners();
     }
 
     public refresh(): void {
@@ -139,4 +156,17 @@ export class HomeComponent implements OnInit {
         this.refresh$.next();
     }
 
+    private bindEventGatewayListeners(): void {
+        this._gatewayEventSubscriber = this.eventsGateway.subscribe()
+            .on('user:instances_changed', _ => {
+                this.refresh();
+            });
+    }
+
+    private unbindEventGatewayListeners(): void {
+        if (this._gatewayEventSubscriber != null) {
+            this.eventsGateway.unsubscribe(this._gatewayEventSubscriber);
+            this._gatewayEventSubscriber = null;
+        }
+    }
 }
