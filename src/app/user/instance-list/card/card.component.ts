@@ -8,13 +8,13 @@ import {
     selectLoggedInUser,
     GatewayEventSubscriber, EventsGateway, InstanceStateChangedEvent
 } from '@core';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, timer} from 'rxjs';
 import {DetailsDialog, ExperimentsDialog, MembersDialog, RequestExtensionDialog} from '../dialogs';
 import {MatDialog} from '@angular/material/dialog';
 import {NotifierService} from 'angular-notifier';
 import * as moment from 'moment';
 import {Store} from '@ngrx/store';
-import {filter} from 'rxjs/operators';
+import {filter,takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'visa-instance-list-card',
@@ -35,6 +35,7 @@ export class CardComponent implements OnInit, OnDestroy {
     private _configuration: Configuration;
     private _requestExtensionEnabled = false;
     private _gatewayEventSubscriber: GatewayEventSubscriber;
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     @ViewChild('dropdown')
     public dropdownElement: ElementRef;
@@ -85,10 +86,18 @@ export class CardComponent implements OnInit, OnDestroy {
         });
 
         this.bindEventGatewayListeners();
+
+        timer(0, 30000).pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(() => {
+            this.updateExpirationCountdown();
+        });
     }
 
     public ngOnDestroy(): void {
         this.unbindEventGatewayListeners();
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     public toggleSettings(): void {
