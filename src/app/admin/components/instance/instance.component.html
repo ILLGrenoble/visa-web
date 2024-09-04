@@ -160,11 +160,7 @@
                         <visa-tab id="thumbnail">
                             <visa-tab-title>Thumbnail</visa-tab-title>
                             <visa-tab-content>
-                                <visa-image
-                                    [url]="getThumbnailUrlForInstance(instance)"
-                                    [refreshable]="false"
-                                    [refreshInterval]="15000">
-                                </visa-image>
+                                <visa-instance-thumbnail [uid]="instance.uid"></visa-instance-thumbnail>
                             </visa-tab-content>
                         </visa-tab>
                         <visa-tab id="sessions">

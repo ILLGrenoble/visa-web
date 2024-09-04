@@ -9,6 +9,7 @@ export * from './member.model';
 export * from './instance.model';
 export * from './instance-state.model';
 export * from './instance-state-changed-event.model';
+export * from './instance-thumbnail-updated-event.model';
 export * from './paginated.model';
 export * from './image.model';
 export * from './instanceSessionMember.model';

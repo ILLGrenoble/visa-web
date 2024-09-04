@@ -68,11 +68,7 @@
                                 </span>
                                 </div>
                                 <div class="session-box__container">
-                                    <visa-image
-                                        [url]="getThumbnailUrlForInstance(instanceSessionMember.instanceSession.instance)"
-                                        [refreshable]="false"
-                                        [refreshInterval]="15000">
-                                    </visa-image>
+                                    <visa-instance-thumbnail [uid]="instanceSessionMember.instanceSession.instance.uid"></visa-instance-thumbnail>
                                 </div>
                                 <div class="session-box__activity">
                                 <span class="session-box__activity__content">

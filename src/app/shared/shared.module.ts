@@ -32,6 +32,7 @@ import {
     TabTitleComponent,
     TabTitleIconComponent,
     NotificationBadgeComponent,
+    InstanceThumbnailComponent,
 } from './components';
 import {AuthenticatedContainerComponent} from './containers';
 import {
@@ -143,6 +144,7 @@ export function markedOptionsFactory(): MarkedOptions {
         TimeConversionPipe,
         SafePipe,
         ImageComponent,
+        InstanceThumbnailComponent,
         FormsModule,
         NgSelectModule,
         MatCommonModule,
@@ -182,6 +184,7 @@ export function markedOptionsFactory(): MarkedOptions {
         TabTitleIconComponent,
         OwnerSearchComponent,
         ImageComponent,
+        InstanceThumbnailComponent,
         InvalidAccountDialogComponent,
         SanitizerPipe,
         NotificationBadgeComponent,

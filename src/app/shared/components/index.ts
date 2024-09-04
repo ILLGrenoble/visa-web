@@ -6,6 +6,7 @@ export * from './dropdown-menu';
 export * from './tabs';
 export * from './owner-search';
 export * from './image';
+export * from './instance-thumbnail';
 export * from './dialogs';
 export * from './notification-badge';
 

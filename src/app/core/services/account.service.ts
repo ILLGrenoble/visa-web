@@ -389,6 +389,11 @@ export class AccountService {
         return `${baseUrl}/account/instances/${instance.uid}/thumbnail`;
     }
 
+    public getThumbnailUrlForInstanceUid(uid: string): string {
+        const baseUrl = environment.paths.api;
+        return `${baseUrl}/account/instances/${uid}/thumbnail`;
+    }
+
     public getInstanceLifetimeExtension(instance: Instance): Observable<InstanceExtensionRequest> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/extension`;

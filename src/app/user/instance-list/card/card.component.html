@@ -51,11 +51,7 @@
 
     <div class="instance-card-details">
         <div class="instance-thumbnail" *ngIf="instance.membership.isRole('OWNER')">
-            <visa-image class="instance-thumbnail-img"
-                        [url]="getThumbnailUrl()"
-                        [refreshable]="true"
-                        [refreshInterval]="30000">
-            </visa-image>
+            <visa-instance-thumbnail class="instance-thumbnail-img" [uid]="instance.uid" [refreshable]="true"></visa-instance-thumbnail>
         </div>
 
 
