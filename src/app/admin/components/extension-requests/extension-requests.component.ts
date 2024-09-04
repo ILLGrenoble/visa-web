@@ -8,7 +8,7 @@ import {InstanceExtensionRequest} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
 import {ExtensionRequestHandlerComponent} from '../extension-request-handler';
-import {NotificationService} from '../../../core';
+import {EventsGateway, GatewayEventSubscriber, NotificationPayload, NotificationService} from '../../../core';
 
 @Component({
     selector: 'visa-admin-extension-requests',
@@ -21,6 +21,7 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
     private _extensionRequests: InstanceExtensionRequest[] = [];
     private _loading: boolean;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+    private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     get extensionRequests(): InstanceExtensionRequest[] {
         return this._extensionRequests;
@@ -34,17 +35,20 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
                 private notificationService: NotificationService,
                 private notifierService: NotifierService,
                 private dialog: MatDialog,
-                private titleService: Title) {
+                private titleService: Title,
+                private eventsGateway: EventsGateway) {
     }
 
     public ngOnInit(): void {
         this.titleService.setTitle(`Extension Requests | Compute | Admin | VISA`);
         this.load();
+        this.bindEventGatewayListeners();
     }
 
     public ngOnDestroy(): void {
         this._destroy$.next(true);
         this._destroy$.unsubscribe();
+        this.unbindEventGatewayListeners();
     }
 
     public formatImageName(image): void {
@@ -140,5 +144,19 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
 
     private showErrorNotification(message): void {
         this.notifierService.notify('error', message);
+    }
+
+    private bindEventGatewayListeners(): void {
+        this._gatewayEventSubscriber = this.eventsGateway.subscribe()
+            .on('admin:extension_requests_changed', _ => {
+                this.load();
+            });
+    }
+
+    private unbindEventGatewayListeners(): void {
+        if (this._gatewayEventSubscriber != null) {
+            this.eventsGateway.unsubscribe(this._gatewayEventSubscriber);
+            this._gatewayEventSubscriber = null;
+        }
     }
 }

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     ApplicationState,
-    AuthenticationService, NotificationPayload,
+    AuthenticationService, EventsGateway, GatewayEventSubscriber, NotificationPayload,
     NotificationService,
     selectLoggedInUser,
     SystemNotification,
@@ -25,13 +25,13 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
     public user$: Observable<User>;
     public systemNotifications: SystemNotification[] = [];
     public dismissedSystemNotifications: Array<number> = new Array<number>();
-    private _timerSubscription: Subscription = null;
-
+    private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     constructor(private authenticationService: AuthenticationService,
                 private notificationService: NotificationService,
                 private dialog: MatDialog,
-                private store: Store<ApplicationState>) {
+                store: Store<ApplicationState>,
+                private eventsGateway: EventsGateway) {
         this.user$ = store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1));
     }
 
@@ -50,17 +50,12 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
             );
         }
 
-        this._timerSubscription = timer(0, 10000).subscribe(
-            () => this.notificationService.getAll().subscribe((notificationPayload: NotificationPayload) => {
-                const systemNotifications = notificationPayload.systemNotifications;
-
-                this.cleanDismissedSystemNotifications(systemNotifications);
-                this.filterSystemNotifications(systemNotifications);
-            }));
+        this.getNotifications();
+        this.bindEventGatewayListeners();
     }
 
     public ngOnDestroy(): void {
-        this._timerSubscription.unsubscribe();
+        this.unbindEventGatewayListeners();
     }
 
     public handleLogout(): void {
@@ -85,6 +80,35 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
             return notificationUIDs.includes(dismissedNotification);
         });
         localStorage.setItem(AuthenticatedContainerComponent.DISMISSED_NOTIFICATIONS, this.dismissedSystemNotifications.join(','));
+    }
+
+    private bindEventGatewayListeners(): void {
+        this._gatewayEventSubscriber = this.eventsGateway.subscribe()
+            .on('global:notifications_changed', _ => {
+                this.getNotifications();
+            })
+            .on('admin:extension_requests_changed', _ => {
+                this.getNotifications();
+            })
+            .on('admin:instance_errors_changed', _ => {
+                this.getNotifications();
+            });
+    }
+
+    private unbindEventGatewayListeners(): void {
+        if (this._gatewayEventSubscriber != null) {
+            this.eventsGateway.unsubscribe(this._gatewayEventSubscriber);
+            this._gatewayEventSubscriber = null;
+        }
+    }
+
+    private getNotifications(): void {
+        this.notificationService.getAll().subscribe((notificationPayload: NotificationPayload) => {
+            const systemNotifications = notificationPayload.systemNotifications;
+
+            this.cleanDismissedSystemNotifications(systemNotifications);
+            this.filterSystemNotifications(systemNotifications);
+        });
     }
 
 }
