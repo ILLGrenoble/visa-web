@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # stage2 package with nginx
-FROM nginx:1.19.0-alpine
+FROM nginx:1.27.2-alpine3.20
 
 COPY nginx/default.conf /etc/nginx/conf.d/
 
