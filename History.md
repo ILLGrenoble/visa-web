@@ -1,3 +1,15 @@
+3.0.0 15/11/2024
+================
+ * Remove notification polling and handle notification websocket events
+ * Remove polling of instance states and instance list: use websocket events
+ * Automatically reconnect EventGateway on disconnect. Add ping-pong keep-alive events.
+ * Update all event names
+ * Add EventGateway websocket, created when valid account loaded, for all events and notifications (other than remote desktop)
+ * Send thumbnails using the REST API
+ * Use standard websocket for WebX tunnel (pure binary can now be used for WebX)
+ * Use official guacamole-common-js on a standard websocket (remove socket.io for remote desktop)
+ * Adapt to Quarkus server: change of graphql endpoint
+
 2.11.2 19/02/2024
 ================
  * Bug fix: Handle print dialog opening automatically on Firefox
