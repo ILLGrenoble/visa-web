@@ -89,12 +89,14 @@ export class EventsGateway {
                     next: (desktopEvent: GatewayEvent) => {
                         this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
                     },
-                    error: () => {
+                    error: (e) => {
                         this._socket = null;
+                        console.log(`Received events gateway error: ${e.message}`);
                         this._handleReconnection();
                     },
                     complete: () => {
                         this._socket = null;
+                        console.log(`Received events gateway complete`);
                         this._handleReconnection();
                     }
                 });
