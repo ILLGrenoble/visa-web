@@ -89,10 +89,10 @@ export class EventsGateway {
                     next: (desktopEvent: GatewayEvent) => {
                         this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
                     },
-                    error: (e) => {
-                        this._socket = null;
-                        console.log(`Received events gateway error: ${JSON.stringify(e)}`);
-                        this._handleReconnection();
+                    error: (error) => {
+                        if (error instanceof Event) {
+                            console.error(`Events gateway error:`, error);
+                        }
                     },
                     complete: () => {
                         this._socket = null;
