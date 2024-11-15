@@ -91,7 +91,7 @@ export class EventsGateway {
                     },
                     error: (e) => {
                         this._socket = null;
-                        console.log(`Received events gateway error: ${e.message}`);
+                        console.log(`Received events gateway error: ${JSON.stringify(e)}`);
                         this._handleReconnection();
                     },
                     complete: () => {
