@@ -3,12 +3,12 @@ import {Inject, Injectable} from "@angular/core";
 import {AccountService} from "./account.service";
 import * as uuid from 'uuid';
 import {environment} from "../../../environments/environment";
-import {filter} from "rxjs/operators";
+import {filter, takeUntil} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {ApplicationState} from "../state";
 import {selectLoggedInUser} from "../reducers";
 import defaultOptions, {EventsGatewayConfig} from "./models/events-gateway-config.model";
-import {timer} from "rxjs";
+import {interval, Subject, timer} from "rxjs";
 import {convertJsonDates} from "./models/json-date-converter";
 
 
@@ -85,6 +85,22 @@ export class EventsGateway {
                 this._reconnectionState = null;
 
                 this._socket = webSocket<GatewayEvent>(url);
+
+                const destroy$: Subject<boolean> = new Subject<boolean>();
+                interval(30000).pipe(
+                    takeUntil(destroy$),
+                ).subscribe({
+                    next: (_) => this.emit('ping'),
+                });
+
+                const onSocketClose = () => {
+                    if (this._socket) {
+                        destroy$.next(true);
+                        this._socket = null;
+                        this._handleReconnection();
+                    }
+                }
+
                 this._socket.subscribe({
                     next: (desktopEvent: GatewayEvent) => {
                         this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
@@ -92,17 +108,15 @@ export class EventsGateway {
                     error: (error) => {
                         if (error instanceof CloseEvent) {
                             console.error('Events Gateway closed: reconnecting...', error);
-                            this._socket = null;
-                            this._handleReconnection();
+                            onSocketClose();
 
                         } else if (error instanceof Event) {
                             console.error(`Events Gateway error:`, error);
                         }
                     },
                     complete: () => {
-                        this._socket = null;
                         console.log(`Received events gateway complete`);
-                        this._handleReconnection();
+                        onSocketClose();
                     }
                 });
             },
@@ -130,7 +144,7 @@ export class EventsGateway {
         this._subscribers = [];
     }
 
-    emit(type: string, data: any) {
+    emit(type: string, data?: any) {
         if (this._socket) {
             this._socket.next({type, data});
         }
