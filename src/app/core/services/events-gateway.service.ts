@@ -90,8 +90,13 @@ export class EventsGateway {
                         this._handleGatewayEvent(desktopEvent.type, desktopEvent.data);
                     },
                     error: (error) => {
-                        if (error instanceof Event) {
-                            console.error(`Events gateway error:`, error);
+                        if (error instanceof CloseEvent) {
+                            console.error('Events Gateway closed: reconnecting...', error);
+                            this._socket = null;
+                            this._handleReconnection();
+
+                        } else if (error instanceof Event) {
+                            console.error(`Events Gateway error:`, error);
                         }
                     },
                     complete: () => {
