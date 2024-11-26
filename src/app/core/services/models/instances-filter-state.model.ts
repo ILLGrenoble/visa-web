@@ -15,13 +15,13 @@ export function toParams(filterState: InstancesFilterState): any {
     const params: any = {};
     if (filterState.filters) {
         if (filterState.filters.name) {
-            params.name = filterState.filters.name;
+            params.nameLike = filterState.filters.name;
         }
         if (filterState.filters.id) {
             params.id = filterState.filters.id;
         }
         if (filterState.filters.owner) {
-            params.owner = filterState.filters.owner;
+            params.ownerId = filterState.filters.owner;
         }
         if (filterState.filters.instrument) {
             params.instrumentId = filterState.filters.instrument;
