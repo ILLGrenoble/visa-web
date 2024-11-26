@@ -10,6 +10,7 @@ import {QueryParameterBag} from '../../http';
 import {FilterAttribute, FilterProvider} from '../../services';
 import {InstancesFilterState} from './instances-filter-state';
 import {Title} from '@angular/platform-browser';
+import {InstancesColumnsState} from "./instances-columns-state";
 
 @Component({
     selector: 'visa-admin-instances',
@@ -21,7 +22,8 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     private _loading = true;
 
-    private _currentState: InstancesFilterState;
+    private _filterState: InstancesFilterState;
+    private _columnsState: InstancesColumnsState = { cloudClient: false, flavour: false, image: false, terminationDate: false}
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -45,12 +47,16 @@ export class InstancesComponent implements OnInit, OnDestroy {
         return this._state$;
     }
 
-    public get currentState(): InstancesFilterState {
-        return this._currentState;
+    public get filterState(): InstancesFilterState {
+        return this._filterState;
     }
 
-    public set currentState(value: InstancesFilterState) {
-        this._currentState = value;
+    public set filterState(value: InstancesFilterState) {
+        this._filterState = value;
+    }
+
+    get columnsState(): InstancesColumnsState {
+        return this._columnsState;
     }
 
     public get loading(): boolean {
@@ -78,7 +84,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
         this.state$.pipe(
             takeUntil(this.destroy$),
         ).subscribe((state) => {
-            this.currentState = state;
+            this.filterState = state;
             this.reload();
         });
 
@@ -86,7 +92,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
             takeUntil(this.destroy$),
             map((params) => new QueryParameterBag(params)),
         ).subscribe((params: QueryParameterBag) => {
-            const columns = params.getList('columns', []);
             const state = {
                 filters: {
                     name: params.getString('name', null),
@@ -96,12 +101,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
                     instrument: params.getNumber('instrument', null),
                     state: params.getString('state', null),
                     user: params.getString('user', null),
-                },
-                columns: {
-                    cloudClient: columns.includes('cloudClient'),
-                    image: columns.includes('image'),
-                    flavour: columns.includes('flavour'),
-                    terminationDate: columns.includes('terminationDate'),
                 },
                 page: params.getNumber('page', 1),
                 descending: params.getBoolean('descending', true),
@@ -117,7 +116,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     public reload(): void {
         const filters = this.processFilters();
-        const state = this.currentState;
+        const state = this.filterState;
         this.loading = true;
         this.apollo.query<any>({
             query: gql`
@@ -218,7 +217,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     public onGridChange(data: ClrDatagridStateInterface): void {
         this.state$.next({
-            ...this.currentState,
+            ...this.filterState,
             page: data.page ? Math.floor(data.page.from / 25) + 1 : 1,
             descending: !data.sort.reverse,
             orderBy: data.sort.by.toString(),
@@ -234,7 +233,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
      * @param column the column to check
      */
     public isColumnSorted(column: string): ClrDatagridSortOrder {
-        const currentState = this.currentState;
+        const currentState = this.filterState;
         if (column === currentState.orderBy) {
             if (currentState.descending) {
                 return ClrDatagridSortOrder.ASC;
@@ -263,21 +262,12 @@ export class InstancesComponent implements OnInit, OnDestroy {
     }
 
     private updateUrl(): void {
-        const currentState = this.currentState;
+        const currentState = this.filterState;
         this.router.navigate([],
             {
                 relativeTo: this.route,
                 queryParams: {
-                    ...this.currentState.filters,
-                    columns: (() => {
-                        const {columns} = this.currentState;
-                        const mapped = Object
-                            .entries(columns)
-                            .filter(([key, value]) => value)
-                            .map(([key, value]) => key)
-                            .join(',');
-                        return mapped || null;
-                    })(),
+                    ...this.filterState.filters,
                     page: currentState.page === 1 ? null : currentState.page,
                     orderBy: currentState.orderBy === 'id' ? null : currentState.orderBy,
                     descending: currentState.descending === true ? null : currentState.descending,
@@ -291,7 +281,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
     private processFilters(): any {
         const provider = this.createFilter();
         const query = provider.createQuery();
-        Object.entries(this.currentState.filters).map(([key, value]) => {
+        Object.entries(this.filterState.filters).map(([key, value]) => {
             if (value) {
                 query.setParameter(key, value);
             }

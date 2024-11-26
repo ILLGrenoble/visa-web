@@ -120,7 +120,8 @@ export class EventsGateway {
                     }
                 });
             },
-            error: _ => {
+            error: (error) => {
+                console.log(error);
                 this._handleReconnection();
             }
         });

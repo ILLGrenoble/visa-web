@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {AccountService} from '@core';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {InstancesFilterState} from './instances-filter-state';
+import {InstancesColumnsState} from "./instances-columns-state";
 import {NotifierService} from 'angular-notifier';
 
 @Component({
@@ -17,9 +17,10 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private static ADMIN_INSTANCES_FILTER_COLUMNS_KEY = 'admin.instances.filter.columns';
 
-    private _state: InstancesFilterState;
+    private _filterState: InstancesFilterState;
+    private _columnsState: InstancesColumnsState;
 
-    private _onState: EventEmitter<InstancesFilterState> = new EventEmitter();
+    private _onFilterState: EventEmitter<InstancesFilterState> = new EventEmitter();
 
     private _form: FormGroup;
 
@@ -39,22 +40,31 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this._destroy$ = value;
     }
 
-    public get state(): InstancesFilterState {
-        return this._state;
+    public get filterState(): InstancesFilterState {
+        return this._filterState;
     }
 
-    @Input('state')
-    public set state(value: InstancesFilterState) {
-        this._state = value;
+    public get columnsState(): InstancesColumnsState {
+        return this._columnsState;
     }
 
-    @Output('onState')
-    public get onState(): EventEmitter<InstancesFilterState> {
-        return this._onState;
+    @Input('filterState')
+    public set filterState(value: InstancesFilterState) {
+        this._filterState = value;
     }
 
-    public set onState(value: EventEmitter<InstancesFilterState>) {
-        this._onState = value;
+    @Output('onFilterState')
+    public get onFilterState(): EventEmitter<InstancesFilterState> {
+        return this._onFilterState;
+    }
+
+    public set onFilterState(value: EventEmitter<InstancesFilterState>) {
+        this._onFilterState = value;
+    }
+
+    @Input('columnsState')
+    public set columnsState(value: InstancesColumnsState) {
+        this._columnsState = value;
     }
 
     public get form(): FormGroup {
@@ -85,14 +95,15 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
-    constructor(private apollo: Apollo, private accountService: AccountService, private notifierService: NotifierService) {
+    constructor(private apollo: Apollo,
+                private notifierService: NotifierService) {
         this._form = this.createForm();
     }
 
     public onReset(): void {
         this._form.reset();
-        this._onState.emit({
-            ...this.state,
+        this._onFilterState.emit({
+            ...this.filterState,
             filters: {
                 id: null,
                 name: null,
@@ -107,23 +118,20 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
     }
 
     public onSubmit(): void {
-        this.onState.emit(this.processForm());
+        this.onFilterState.emit(this.processForm());
     }
 
     public onColumn(column): void {
-        this.state.columns[column] = !this.state.columns[column];
-        this.onState.emit(this.state);
+        this.columnsState[column] = !this.columnsState[column];
         this.updateColumnsLocalStorage();
     }
 
     public onResetColumns(): void {
-        this.state.columns = {
-            cloudClient: false,
-            image: false,
-            flavour: false,
-            terminationDate: false,
-        };
-        this.onState.emit(this.state);
+        this.columnsState.cloudClient = false;
+        this.columnsState.image = false;
+        this.columnsState.flavour = false;
+        this.columnsState.terminationDate = false;
+        this.updateColumnsLocalStorage();
     }
 
     public ngOnInit(): void {
@@ -131,13 +139,13 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         if (visibleColumnsString != null && visibleColumnsString.length !== undefined) {
             const visibleColumns = visibleColumnsString.split(',');
             visibleColumns.forEach((visibleColumn) => {
-                if (this.state.columns[visibleColumn] != null) {
-                    this.state.columns[visibleColumn] = true;
+                if (this.columnsState[visibleColumn] != null) {
+                    this.columnsState[visibleColumn] = true;
                 }
             });
         }
 
-        this.form.patchValue(this.state.filters);
+        this.form.patchValue(this.filterState.filters);
         this.apollo.query<any>({
             errorPolicy: 'all',
             query: gql`
@@ -174,7 +182,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                 this.notifierService.notify('error', 'There was an error loading the filters');
             }
         });
-        if (this.state.filters.user != null) {
+        if (this.filterState.filters.user != null) {
             this.apollo.query<any>({
                 errorPolicy: 'all',
                 query: gql`
@@ -188,14 +196,14 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                         }
                      `,
                 variables: {
-                    id: this.state.filters.user,
+                    id: this.filterState.filters.user,
                 },
             }).pipe(takeUntil(this.destroy$)).subscribe(({data}) => {
                 if (data) {
                     this.form.get('user').patchValue(data.user);
                 } else {
                     this.form.get('user').patchValue(null);
-                    this.onState.emit(this.processForm());
+                    this.onFilterState.emit(this.processForm());
                 }
             });
         }
@@ -221,7 +229,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
     private processForm(): InstancesFilterState {
         const {id, name, flavour, image, instrument, state, user} = this._form.value;
         return {
-            ...this._state,
+            ...this._filterState,
             filters: {
                 id,
                 name,
@@ -237,8 +245,8 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private updateColumnsLocalStorage(): void {
         const visibleColumns = [];
-        for (const column in this.state.columns) {
-            if (this.state.columns[column] === true) {
+        for (const column in this.columnsState) {
+            if (this.columnsState[column] === true) {
                 visibleColumns.push(column);
             }
         }

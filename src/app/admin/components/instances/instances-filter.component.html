@@ -7,20 +7,20 @@
     </div>
     <div class="filters-box-body">
         <clr-checkbox-wrapper *ngIf="multiCloudEnabled">
-            <input type="checkbox" clrCheckbox (change)="onColumn('cloudClient')" [checked]="state.columns.cloudClient"/>
+            <input type="checkbox" clrCheckbox (change)="onColumn('cloudClient')" [checked]="columnsState.cloudClient"/>
             <label>Cloud Provider</label>
         </clr-checkbox-wrapper>
         <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox (change)="onColumn('image')" [checked]="state.columns.image"/>
+            <input type="checkbox" clrCheckbox (change)="onColumn('image')" [checked]="columnsState.image"/>
             <label>Image</label>
         </clr-checkbox-wrapper>
         <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox (change)="onColumn('flavour')" [checked]="state.columns.flavour"/>
+            <input type="checkbox" clrCheckbox (change)="onColumn('flavour')" [checked]="columnsState.flavour"/>
             <label>Flavour</label>
         </clr-checkbox-wrapper>
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox (change)="onColumn('terminationDate')"
-                   [checked]="state.columns.terminationDate"/>
+                   [checked]="columnsState.terminationDate"/>
             <label>Termination date</label>
         </clr-checkbox-wrapper>
     </div>

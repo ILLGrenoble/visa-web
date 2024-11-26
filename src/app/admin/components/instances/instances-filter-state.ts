@@ -8,12 +8,6 @@ export interface InstancesFilterState {
         state: string;
         user: string;
     };
-    columns: {
-        image: boolean;
-        flavour: boolean;
-        cloudClient: boolean;
-        terminationDate: boolean;
-    };
     page: number;
     descending: boolean;
     orderBy: string;
