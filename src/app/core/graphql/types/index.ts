@@ -168,6 +168,7 @@ export type Instance = {
     id: Scalars['Int'];
     uid: Scalars['String'];
     name: Scalars['String'];
+    ipAddress: Scalars['String'];
     comments?: Maybe<Scalars['String']>;
     state: InstanceState;
     members?: Maybe<Array<Maybe<InstanceMember>>>;

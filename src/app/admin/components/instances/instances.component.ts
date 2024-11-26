@@ -140,6 +140,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                 terminationDate
                                 lastSeenAt
                                 lastInteractionAt
+                                ipAddress
                                 owner {
                                     fullName
                                     affiliation {
@@ -155,9 +156,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                     flavour {
                                         name
                                     }
-                                }
-                                cloudInstance {
-                                    address
                                 }
                                 activeSessions {
                                     id
