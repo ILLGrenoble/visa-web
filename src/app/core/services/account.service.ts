@@ -62,10 +62,10 @@ export class AccountService {
             params = params.append('includeOpenData', 'true');
         }
         if (filter && filter.proposals) {
-            params = params.append('proposals', filter.proposals.join(','));
+            params = params.appendAll({'proposal': filter.proposals});
         }
         if (filter && filter.dois) {
-            params = params.append('dois', filter.dois.join(','));
+            params = params.appendAll({'doi': filter.dois});
         }
         if (orderBy) {
             params = params.append('orderBy', orderBy.value);

@@ -546,6 +546,11 @@ export type InstanceFilterInput = {
     ownerId: Maybe<Scalars['String']>;
 }
 
+export type ExperimentFilterInput = {
+    userId: Maybe<Scalars['String']>;
+    proposalLike: Maybe<Scalars['String']>;
+}
+
 export type Role = {
     __typename?: 'Role';
     id: Scalars['Int'];

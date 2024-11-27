@@ -6,9 +6,8 @@ import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {map, takeUntil, tap} from 'rxjs/operators';
 import {QueryParameterBag} from '../../http';
-import {ExperimentConnection} from '../../../core/graphql';
+import {ExperimentConnection, ExperimentFilterInput} from '../../../core/graphql';
 import {UserExperimentsFilterState} from './user-experiments-filter-state';
-import {FilterAttribute, FilterProvider} from '../../services';
 
 @Component({
     selector: 'visa-admin-user-experiments',
@@ -101,7 +100,7 @@ export class UserExperimentsComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.apollo.query<any>({
             query: gql`
-                      query allExperiments($filter: QueryFilter, $orderBy: OrderBy, $pagination: Pagination!) {
+                      query allExperiments($filter: ExperimentFilterInput, $orderBy: OrderBy, $pagination: Pagination!) {
                         experiments(filter: $filter, pagination: $pagination, orderBy: $orderBy) {
                             pageInfo {
                                 currentPage
@@ -153,23 +152,12 @@ export class UserExperimentsComponent implements OnInit, OnDestroy {
         this.destroy$.unsubscribe();
     }
 
-    private processFilters(): any {
-        const provider = this._createFilter();
-        const query = provider.createQuery();
-        if (this._currentState.query) {
-            query.setParameter('proposal', this._currentState.query);
+    private processFilters(): ExperimentFilterInput {
+        return {
+            userId: this._userId,
+            proposalLike: this._currentState.query
         }
-        query.setParameter('user', this._userId);
-        return query.execute();
     }
-
-    private _createFilter(): FilterProvider {
-        return new FilterProvider({
-            proposal: new FilterAttribute('proposal.identifier', 'proposal', 'LIKE'),
-            user: new FilterAttribute('users.id', 'user', '='),
-        });
-    }
-
     public onGridChange(data: ClrDatagridStateInterface): void {
         this.state$.next({
             ...this.currentState,
