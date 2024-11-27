@@ -536,6 +536,16 @@ export type QueryFilter = {
     parameters?: Maybe<Array<Maybe<Parameter>>>;
 };
 
+export type InstanceFilterInput = {
+    id: Maybe<Scalars['Int']>;
+    nameLike: Maybe<Scalars['String']>;
+    instrumentId: Maybe<Scalars['Int']>;
+    imageId: Maybe<Scalars['Int']>;
+    flavourId: Maybe<Scalars['Int']>;
+    state: Maybe<Scalars['String']>;
+    ownerId: Maybe<Scalars['String']>;
+}
+
 export type Role = {
     __typename?: 'Role';
     id: Scalars['Int'];

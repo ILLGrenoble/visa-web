@@ -2,12 +2,11 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ClrDatagridSortOrder, ClrDatagridStateInterface} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
-import {Instance, InstanceConnection} from 'app/core/graphql/types';
+import {Instance, InstanceConnection, InstanceFilterInput} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {map, takeUntil, tap} from 'rxjs/operators';
 import {QueryParameterBag} from '../../http';
-import {FilterAttribute, FilterProvider} from '../../services';
 import {InstancesFilterState} from './instances-filter-state';
 import {Title} from '@angular/platform-browser';
 import {InstancesColumnsState} from "./instances-columns-state";
@@ -120,7 +119,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.apollo.query<any>({
             query: gql`
-                      query allInstances($filter: QueryFilter, $orderBy: OrderBy, $pagination: Pagination!) {
+                      query allInstances($filter: InstanceFilterInput, $orderBy: OrderBy, $pagination: Pagination!) {
                         instances(filter: $filter, pagination: $pagination, orderBy: $orderBy) {
                             pageInfo {
                                 currentPage
@@ -249,18 +248,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
         return timeSinceLastInteractionAtS < 300;
     }
 
-    private createFilter(): FilterProvider {
-        return new FilterProvider({
-            id: new FilterAttribute('id', 'id', '='),
-            name: new FilterAttribute('name', 'name', 'LIKE'),
-            instrument: new FilterAttribute('instrument.id', 'instrumentId', '='),
-            image: new FilterAttribute('plan.image.id', 'imageId', '='),
-            flavour: new FilterAttribute('plan.flavour.id', 'flavourId', '='),
-            state: new FilterAttribute('state', 'state', '='),
-            user: new FilterAttribute('user.id', 'state', '='),
-        });
-    }
-
     private updateUrl(): void {
         const currentState = this.filterState;
         this.router.navigate([],
@@ -278,15 +265,17 @@ export class InstancesComponent implements OnInit, OnDestroy {
         );
     }
 
-    private processFilters(): any {
-        const provider = this.createFilter();
-        const query = provider.createQuery();
-        Object.entries(this.filterState.filters).map(([key, value]) => {
-            if (value) {
-                query.setParameter(key, value);
-            }
-        });
-        return query.execute();
+    private processFilters(): InstanceFilterInput {
+        const {name, id, flavour, image, instrument, state, user} = this.filterState.filters;
+        return {
+            id,
+            nameLike: name,
+            instrumentId: instrument,
+            imageId: image,
+            flavourId: flavour,
+            state,
+            ownerId: user,
+        }
     }
 
     public formatImageName(image): void {
