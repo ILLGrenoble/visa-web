@@ -82,8 +82,8 @@ export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
     private fetch(): Observable<ApolloQueryResult<any>> {
         return this.apollo.query<any>({
             query: gql`
-                 query allSessions($pagination: Pagination!, $filter: QueryFilter, $orderBy: OrderBy) {
-                    sessions(pagination:$pagination, filter: $filter, orderBy: $orderBy) {
+                 query allSessions($pagination: Pagination!) {
+                    sessions(pagination:$pagination) {
                        pageInfo {
                             currentPage
                             totalPages
@@ -124,8 +124,6 @@ export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
             `,
             variables: {
                 pagination: {offset: 0, limit: 10},
-                filter: {query: 'active = :active', parameters: [{name: 'active', value: 'true'}]},
-                orderBy: {name: 'createdAt', ascending: false},
             },
         });
     }
