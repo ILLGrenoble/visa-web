@@ -95,6 +95,7 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                       uid
                       name
                       createdAt
+                      ipAddress
                       plan {
                         image {
                           name
@@ -105,9 +106,6 @@ export class LatestInstancesBoxComponent implements OnInit, OnDestroy {
                         }
                       }
                       state
-                      cloudInstance {
-                        address
-                      }
                       owner {
                         id
                         fullName
