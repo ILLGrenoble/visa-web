@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ClrDatagridSortOrder, ClrDatagridStateInterface} from '@clr/angular';
 import {Apollo} from 'apollo-angular';
-import {UserConnection} from 'app/core/graphql/types';
+import {UserConnection, UserFilterInput} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {Observable, Subject} from 'rxjs';
 import {filter, map, take, takeUntil, tap} from 'rxjs/operators';
@@ -112,7 +112,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.apollo.query<any>({
             query: gql`
-                      query allUsers($filter: QueryFilter, $orderBy: OrderBy, $pagination: Pagination!) {
+                      query allUsers($filter: UserFilterInput, $orderBy: OrderBy, $pagination: Pagination!) {
                         users(filter: $filter, pagination: $pagination, orderBy: $orderBy) {
                             pageInfo {
                                 currentPage
@@ -266,13 +266,6 @@ export class UsersComponent implements OnInit, OnDestroy {
         });
     }
 
-    private createFilter(): FilterProvider {
-        return new FilterProvider({
-            userId: new FilterAttribute('id', 'userId', '='),
-            role: new FilterAttribute('role', 'role', '='),
-        });
-    }
-
     private updateUrl(): void {
         const currentState = this.currentState;
         this.router.navigate([],
@@ -290,19 +283,12 @@ export class UsersComponent implements OnInit, OnDestroy {
         );
     }
 
-    private processFilters(): any {
-        const provider = this.createFilter();
-        const query = provider.createQuery();
-        Object.entries(this.currentState.filters).map(([key, value]) => {
-            if (value) {
-                query.setParameter(key, value);
-            }
-        });
-
-        if (this.currentState.filters.activated) {
-            query.addFixedQuery('activatedAt IS NOT NULL');
+    private processFilters(): UserFilterInput {
+        return {
+            id: this.currentState.filters.userId,
+            role: this.currentState.filters.role,
+            activated: this.currentState.filters.activated ? true : null,
         }
-        return query.execute();
     }
 
 }

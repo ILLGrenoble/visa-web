@@ -433,109 +433,6 @@ export type Query = {
 };
 
 
-export type QueryPlansArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
-export type QueryExperimentsArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
-export type QueryCountExperimentsArgs = {
-    filter?: Maybe<QueryFilter>;
-};
-
-
-export type QueryFlavoursArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
-export type QueryCountFlavoursArgs = {
-    filter?: Maybe<QueryFilter>;
-};
-
-
-export type QueryImagesArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
-export type QueryCountImagesArgs = {
-    filter?: Maybe<QueryFilter>;
-};
-
-
-export type QueryInstancesArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
-export type QueryCountInstancesArgs = {
-    filter?: Maybe<QueryFilter>;
-};
-
-
-export type QueryInstanceArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type QueryRecentInstancesArgs = {
-    pagination: Pagination;
-};
-
-
-export type QueryCountInstancesForStateArgs = {
-    state: InstanceState;
-};
-
-
-export type QueryCountInstancesForStatesArgs = {
-    states?: Maybe<Array<Maybe<InstanceState>>>;
-};
-
-
-export type QueryUsersArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-
-export type QueryCountUsersArgs = {
-    filter?: Maybe<QueryFilter>;
-};
-
-
-export type QueryUserArgs = {
-    id: Scalars['Int'];
-};
-
-
-export type QuerySessionsArgs = {
-    filter?: Maybe<QueryFilter>;
-    orderBy?: Maybe<OrderBy>;
-    pagination: Pagination;
-};
-
-export type QueryFilter = {
-    query: Scalars['String'];
-    parameters?: Maybe<Array<Maybe<Parameter>>>;
-};
-
 export type InstanceFilterInput = {
     id: Maybe<Scalars['Int']>;
     nameLike: Maybe<Scalars['String']>;
@@ -549,6 +446,12 @@ export type InstanceFilterInput = {
 export type ExperimentFilterInput = {
     userId: Maybe<Scalars['String']>;
     proposalLike: Maybe<Scalars['String']>;
+}
+
+export type UserFilterInput = {
+    id: Maybe<Scalars['String']>;
+    role: Maybe<Scalars['String']>;
+    activated: Maybe<Scalars['Boolean']>;
 }
 
 export type Role = {
