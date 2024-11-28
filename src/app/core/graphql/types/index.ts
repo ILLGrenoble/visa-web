@@ -702,6 +702,7 @@ export type SecurityGroup = {
     __typename?: 'SecurityGroup';
     id: Scalars['Int'];
     name: Scalars['String'];
+    cloudId: Scalars['Int'];
     cloudClient?: Maybe<CloudClient>;
 };
 

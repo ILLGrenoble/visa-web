@@ -62,30 +62,22 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         const {securityGroup} = this.form.value;
         this._apollo.query<any>({
             query: gql`
-              query allSecurityGroups($filter: QueryFilter) {
-                  securityGroups(filter: $filter) {
+              query securityGroupsByName($name: String!) {
+                  securityGroupsByName(name: $name) {
                     id
                     name
-                    cloudClient {
-                        id
-                    }
+                    cloudId
                  }
               }`,
             variables: {
-                filter: {
-                    query: 'name = :name',
-                    parameters: [{
-                        name: 'name',
-                        value: securityGroup.name
-                    }]
-                }
+                name: securityGroup.name
             }
         }).pipe(
             takeUntil(this._destroy$),
-            map(({data}) => data.securityGroups)
+            map(({data}) => data.securityGroupsByName)
         ).subscribe(securityGroups => {
             const existingSecurityGroups = securityGroups
-                .filter(aSecurityGroup => aSecurityGroup.cloudClient.id === this._cloudClient.id);
+                .filter(aSecurityGroup => aSecurityGroup.cloudId === this._cloudClient.id);
             if (existingSecurityGroups > 0) {
                 this._notifierService.notify('warning', `This security group has already been imported`);
             } else {

@@ -71,40 +71,22 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         const {securityGroup, objectIdentifier} = this.form.value;
         this._apollo.query<any>({
             query: gql`
-               query allSecurityGroupFilters($filter: QueryFilter!) {
-                     securityGroupFilters(filter: $filter) {
+               query securityGroupFilter($securityGroupId: Int!, $objectId: Int!, $objectType: String!) {
+                     securityGroupFilter(securityGroupId: $securityGroupId, objectId: $objectId, objectType: $objectType) {
                         id
-                        securityGroup {
-                            cloudClient {
-                                id
-                            }
-                        }
                     }
                 }
                     `,
             variables: {
-
-                filter: {
-                    query: 'sg.id = :securityGroupId AND objectId = :objectId AND objectType = :objectType',
-                    parameters: [{
-                        name: 'securityGroupId',
-                        value: securityGroup.id
-                    },
-                        {
-                            name: 'objectId',
-                            value: objectIdentifier.id
-                        },
-                        {
-                            name: 'objectType',
-                            value: this._objectType
-                        }]
-                }
+                securityGroupId: securityGroup.id,
+                objectId: objectIdentifier.id,
+                objectType: this._objectType,
             }
         }).pipe(
-            map(({data}) => ({securityGroupFilters: data.securityGroupFilters})),
+            map(({data}) => ({securityGroupFilter: data.securityGroupFilter})),
             takeUntil(this._destroy$),
-        ).subscribe(({securityGroupFilters}) => {
-            if (securityGroupFilters.length > 0) {
+        ).subscribe(({securityGroupFilter}) => {
+            if (securityGroupFilter != null) {
                 this._notifierService.notify('warning', `A rule already exists for these given parameters`);
             } else {
                 this.createFilter(securityGroup, objectIdentifier);
