@@ -7,7 +7,6 @@ import gql from 'graphql-tag';
 import {Observable, Subject} from 'rxjs';
 import {filter, map, take, takeUntil, tap} from 'rxjs/operators';
 import {QueryParameterBag} from '../../http';
-import {FilterAttribute, FilterProvider} from '../../services';
 import {UsersFilterState} from './users-filter-state';
 import {Store} from '@ngrx/store';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
