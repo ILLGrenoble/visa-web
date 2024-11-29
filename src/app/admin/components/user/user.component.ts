@@ -115,13 +115,11 @@ export class UserComponent implements OnInit, OnDestroy {
                             name
                             uid
                             username
+                            ipAddress
                             owner {
                                 id
                             }
                             terminationDate
-                            cloudInstance {
-                               address
-                            }
                         }
                     }
                 }
