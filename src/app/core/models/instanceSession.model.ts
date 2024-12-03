@@ -10,8 +10,8 @@ export class InstanceSession {
     @JsonProperty('connectionId', String)
     private _connectionId: string = undefined;
 
-    @JsonProperty('instance', Instance)
-    private _instance: Instance = undefined;
+    @JsonProperty('instanceId', Number)
+    private _instanceId: number = undefined;
 
     @JsonProperty('current', Boolean)
     private _current: boolean = undefined;
@@ -19,7 +19,7 @@ export class InstanceSession {
     public copy(data: InstanceSession): InstanceSession {
         this.id = data.id;
         this.connectionId = data.connectionId;
-        this.instance = data.instance;
+        this.instanceId = data.instanceId;
         this.current = data.current;
         return this;
     }
@@ -40,12 +40,12 @@ export class InstanceSession {
         this._connectionId = value;
     }
 
-    public get instance(): Instance {
-        return this._instance;
+    public get instanceId(): number {
+        return this._instanceId;
     }
 
-    public set instance(value: Instance) {
-        this._instance = value;
+    public set instanceId(value: number) {
+        this._instanceId = value;
     }
 
     public get current(): boolean {

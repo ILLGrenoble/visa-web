@@ -379,7 +379,7 @@ export class AccountService {
         const baseUrl = environment.paths.api;
         const formData = new FormData();
         formData.append('file', thumbnail);
-        const url = `${baseUrl}/account/instances/${instance.id}/thumbnail`;
+        const url = `${baseUrl}/account/instances/${instance.uid}/thumbnail`;
         return this.http.post<FormData>(url, formData)
             .pipe(map((res) => true));
     }
