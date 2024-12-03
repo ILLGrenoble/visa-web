@@ -22,8 +22,6 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
 
     private _refresh$: Subject<boolean> = new BehaviorSubject<boolean>(true);
 
-    private _hiddenColumns: string[] = [];
-
     public get destroy$(): Subject<boolean> {
         return this._destroy$;
     }
@@ -57,15 +55,6 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
         this._loading = value;
     }
 
-    get hiddenColumns(): string[] {
-        return this._hiddenColumns;
-    }
-
-    @Input('hiddenColumns')
-    set hiddenColumns(value: string[]) {
-        this._hiddenColumns = value;
-    }
-
     @Input()
     public get instance(): Instance {
         return this._instance;
@@ -97,14 +86,6 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                             createdAt
                             role
                             duration
-                            instanceSession {
-                              connectionId
-                               instance {
-                                 id
-                                 uid
-                                 name
-                               }
-                            }
                         }
                     }
                 }

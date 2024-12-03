@@ -434,7 +434,7 @@ export type Query = {
 
 
 export type InstanceFilterInput = {
-    id: Maybe<Scalars['Int']>;
+    ids: Maybe<Array<Maybe<Scalars['Int']>>>;
     nameLike: Maybe<Scalars['String']>;
     instrumentId: Maybe<Scalars['Int']>;
     imageId: Maybe<Scalars['Int']>;

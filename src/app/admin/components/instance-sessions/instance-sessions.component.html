@@ -1,15 +1,11 @@
 <clr-datagrid [clrDgLoading]="loading">
     <clr-dg-column>ID</clr-dg-column>
-    <clr-dg-column *ngIf="!hiddenColumns.includes('instance.id')">Instance ID</clr-dg-column>
-    <clr-dg-column *ngIf="!hiddenColumns.includes('instance.name')">Instance Name</clr-dg-column>
     <clr-dg-column>User</clr-dg-column>
     <clr-dg-column>Role</clr-dg-column>
     <clr-dg-column>Creation</clr-dg-column>
     <clr-dg-column>Time connected</clr-dg-column>
     <clr-dg-row *ngFor="let session of sessions">
         <clr-dg-cell>{{ session.id }}</clr-dg-cell>
-        <clr-dg-cell *ngIf="!hiddenColumns.includes('instance.id')">{{ session.instanceSession.instance.id }}</clr-dg-cell>
-        <clr-dg-cell *ngIf="!hiddenColumns.includes('instance.name')">{{ session.instanceSession.instance.name }}</clr-dg-cell>
         <clr-dg-cell>{{ session.user.fullName }}</clr-dg-cell>
         <clr-dg-cell>{{ session.role | titlecase }}</clr-dg-cell>
         <clr-dg-cell>{{ session.createdAt | date:'dd-MM-yyyy HH:mm:ss' }}</clr-dg-cell>

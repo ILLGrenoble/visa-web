@@ -166,9 +166,7 @@
                         <visa-tab id="sessions">
                             <visa-tab-title>Sessions</visa-tab-title>
                             <visa-tab-content>
-                                <visa-admin-instance-sessions [instance]="instance"
-                                                              [refresh]="refreshSession$"
-                                                              [hiddenColumns]="['instance.id', 'instance.name']"></visa-admin-instance-sessions>
+                                <visa-admin-instance-sessions [instance]="instance" [refresh]="refreshSession$"></visa-admin-instance-sessions>
                             </visa-tab-content>
                             <visa-tab-actions>
                                 <button class="visa-tabs-btn" (click)="this.refreshSession$.next(true)">

@@ -166,14 +166,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                     createdAt
                                     role
                                     duration
-                                    instanceSession {
-                                      connectionId
-                                       instance {
-                                         id
-                                         uid
-                                         name
-                                       }
-                                    }
                                }
                                cloudClient {
                                     id
@@ -268,7 +260,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
     private processFilters(): InstanceFilterInput {
         const {name, id, flavour, image, instrument, state, user} = this.filterState.filters;
         return {
-            id,
+            ids: id ? [id] : null,
             nameLike: name,
             instrumentId: instrument,
             imageId: image,
