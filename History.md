@@ -1,3 +1,10 @@
+3.0.1 04/12/2024
+================
+ * Force user to log in when oidc refresh is longer valid: token expired
+ * Simplify models (api performance improvements)
+ * Remove preql and convert to simple filters
+ * Remove request for cloud instances in admin views to improve page loading
+
 3.0.0 15/11/2024
 ================
  * Remove notification polling and handle notification websocket events
