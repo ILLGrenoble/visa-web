@@ -45,6 +45,13 @@ export class AuthenticationService {
                     this._updateCookie();
                 }
             });
+
+        this._oauthService.events
+            .pipe(filter(event => ['token_refresh_error', 'session_terminated'].includes(event.type)))
+            .subscribe(_ => {
+                // Access token is no longer valid and user must log in again
+                this.logout();
+            });
     }
 
     private _updateCookie(): void {
