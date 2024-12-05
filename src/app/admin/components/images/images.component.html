@@ -25,7 +25,8 @@
                 <clr-dg-cell>{{image.name}}</clr-dg-cell>
                 <clr-dg-cell>{{image.version}}</clr-dg-cell>
                 <clr-dg-cell>{{image.description}}</clr-dg-cell>
-                <clr-dg-cell>{{image.cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="image.cloudClient">{{image.cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="!image.cloudClient"><b>Not configured</b></clr-dg-cell>
                 <clr-dg-cell>{{image.cloudImage?.name}}</clr-dg-cell>
                 <clr-dg-cell>{{image.icon}}</clr-dg-cell>
                 <clr-dg-cell>

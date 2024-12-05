@@ -52,7 +52,6 @@ export type CloudImage = {
     id: Scalars['String'];
     name: Scalars['String'];
     size: Scalars['Int'];
-    createdAt: Scalars['String'];
 };
 
 export type CloudInstance = {

@@ -19,7 +19,8 @@
             <clr-dg-row *ngFor="let flavour of flavours;let i = index">
                 <clr-dg-cell>{{flavour.id}}</clr-dg-cell>
                 <clr-dg-cell>{{flavour.name}}</clr-dg-cell>
-                <clr-dg-cell>{{flavour.cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="flavour.cloudClient">{{flavour.cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="!flavour.cloudClient"><b>Not configured</b></clr-dg-cell>
                 <clr-dg-cell>{{flavour.cloudFlavour?.name}}</clr-dg-cell>
 
                 <clr-dg-cell>{{flavour.memory / 1024}}</clr-dg-cell>

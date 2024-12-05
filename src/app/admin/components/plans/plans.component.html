@@ -20,7 +20,8 @@
 
             <clr-dg-row *ngFor="let plan of plans;let i = index">
                 <clr-dg-cell>{{plan.id}}</clr-dg-cell>
-                <clr-dg-cell>{{plan.image.cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="plan.image.cloudClient">{{plan.image.cloudClient.name}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="!plan.image.cloudClient"><b>Not configured</b></clr-dg-cell>
                 <clr-dg-cell>{{plan.image.name}}</clr-dg-cell>
                 <clr-dg-cell>{{plan.image.version}}</clr-dg-cell>
                 <clr-dg-cell>{{plan.flavour.name}}</clr-dg-cell>

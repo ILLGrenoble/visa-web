@@ -95,7 +95,10 @@ export class PlansComponent implements OnInit, OnDestroy {
             )
             .subscribe(({plans, cloudClients}) => {
                 this._plans = plans;
-                this._multiCloudEnabled = cloudClients.length > 1;
+                this._multiCloudEnabled = cloudClients.length > 1 || plans
+                    .map((plan) => plan.image.cloudClient)
+                    .filter((value, index, array) => array.indexOf(value) === index)
+                    .length > 1;
             });
 
     }

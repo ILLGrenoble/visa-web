@@ -101,7 +101,7 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
                 tap(() => this._loading = false)
             )
             .subscribe(({securityGroups}) => {
-                this._securityGroups = securityGroups || [];
+                this._securityGroups = securityGroups.filter(securityGroup => !!securityGroup.cloudClient) || [];
                 this._filteredSecurityGroups = this._securityGroups
                     .filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient$.getValue()?.id);
             });

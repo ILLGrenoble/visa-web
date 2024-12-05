@@ -160,7 +160,7 @@ export class PlanEditComponent implements OnInit {
         const currentImage = this._form.value.image;
         if (currentImage) {
             const cloudClient = currentImage.cloudClient;
-            this._compatibleFlavours = this._flavours.filter(flavour => flavour == null || flavour.cloudClient.id === cloudClient.id);
+            this._compatibleFlavours = cloudClient != null ? this._flavours.filter(flavour => flavour == null || flavour.cloudClient?.id === cloudClient.id) : [];
             const currentFlavour = this._form.value.flavour;
             if (currentFlavour) {
                 if (!this._compatibleFlavours.find(flavour => flavour ? flavour.id === currentFlavour.id : false)) {

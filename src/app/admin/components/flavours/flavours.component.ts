@@ -101,7 +101,10 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 this._flavours = flavours;
                 this._instruments = instruments;
                 this._roles = roles;
-                this._multiCloudEnabled = cloudClients.length > 1;
+                this._multiCloudEnabled = cloudClients.length > 1 || flavours
+                    .map((flavour) => flavour.cloudClient)
+                    .filter((value, index, array) => array.indexOf(value) === index)
+                    .length > 1;
             });
     }
 

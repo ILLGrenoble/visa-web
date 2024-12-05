@@ -99,7 +99,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
             )
             .subscribe(({images, cloudClients}) => {
                 this._images = images;
-                this._multiCloudEnabled = cloudClients.length > 1;
+                this._multiCloudEnabled = cloudClients.length > 1 || images
+                    .map((image) => image.cloudClient)
+                    .filter((value, index, array) => array.indexOf(value) === index)
+                    .length > 1;
             });
     }
 
