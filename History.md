@@ -1,3 +1,8 @@
+3.0.2 05/12/2024
+================
+ * Handle cases where cloud provider has been removed but images, flavours and security groups are still configured
+ * Allow for default cloud provider to be disabled (use only configured providers from the database)
+
 3.0.1 04/12/2024
 ================
  * Force user to log in when oidc refresh is longer valid: token expired
