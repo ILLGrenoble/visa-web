@@ -1,3 +1,7 @@
+3.0.3 06/12/2024
+================
+ * Increase gateway events socket keep-alive messages
+
 3.0.2 05/12/2024
 ================
  * Handle cases where cloud provider has been removed but images, flavours and security groups are still configured
