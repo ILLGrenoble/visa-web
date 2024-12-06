@@ -87,7 +87,7 @@ export class EventsGateway {
                 this._socket = webSocket<GatewayEvent>(url);
 
                 const destroy$: Subject<boolean> = new Subject<boolean>();
-                interval(30000).pipe(
+                interval(15000).pipe(
                     takeUntil(destroy$),
                 ).subscribe({
                     next: (_) => this.emit('ping'),
