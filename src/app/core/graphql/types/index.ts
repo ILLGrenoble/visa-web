@@ -213,6 +213,7 @@ export type InstanceSession = {
     id: Scalars['Int'];
     connectionId: Scalars['String'];
     instanceId: Scalars['Int'];
+    instance: Instance;
     current: Scalars['Boolean'];
 };
 
