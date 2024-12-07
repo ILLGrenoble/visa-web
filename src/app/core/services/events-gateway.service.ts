@@ -3,12 +3,12 @@ import {Inject, Injectable} from "@angular/core";
 import {AccountService} from "./account.service";
 import * as uuid from 'uuid';
 import {environment} from "../../../environments/environment";
-import {filter, takeUntil} from "rxjs/operators";
+import {filter} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {ApplicationState} from "../state";
 import {selectLoggedInUser} from "../reducers";
 import defaultOptions, {EventsGatewayConfig} from "./models/events-gateway-config.model";
-import {interval, Subject, timer} from "rxjs";
+import {Subject, timer} from "rxjs";
 import {convertJsonDates} from "./models/json-date-converter";
 
 
@@ -49,16 +49,11 @@ export class GatewayEventSubscriber {
 @Injectable()
 export class EventsGateway {
 
-    private static PING_INTERVAL_MS = 5000;
-    private static PING_TICK_MS = 500;
     private readonly _clientId: string;
     private _socket: WebSocketSubject<GatewayEvent>;
     private _subscribers: GatewayEventSubscriber[] = [];
     private _config: EventsGatewayConfig;
     private _reconnectionState: ReconnectionState;
-
-    private _lastPingTime: number = 0;
-    private _pingTimeout: number;
 
     get clientId(): string {
         return this._clientId;
@@ -89,13 +84,7 @@ export class EventsGateway {
 
                 this._reconnectionState = null;
 
-                this._lastPingTime = Date.now();
-                this._socket = webSocket<GatewayEvent>({
-                    url,
-                    openObserver: {
-                        next: _ => this._resetPingTimer()
-                    },
-                });
+                this._socket = webSocket<GatewayEvent>(url);
 
                 const destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -157,33 +146,11 @@ export class EventsGateway {
         }
     }
 
-    private _resetPingTimer(): void {
-        if (this._pingTimeout) {
-            clearTimeout(this._pingTimeout);
-            this._pingTimeout = null;
-        }
-        this._onPingTick();
-    }
-
-    private _onPingTick(): void {
-        const currentTime = Date.now();
-        const pingDelay = Math.max(this._lastPingTime + EventsGateway.PING_INTERVAL_MS - currentTime, 0);
-        if (pingDelay > 0) {
-            this._pingTimeout = setTimeout(() => this._onPingTick(), EventsGateway.PING_TICK_MS);
+    private _handleGatewayEvent(type: string, data?: any): void {
+        if (type === 'ping') {
+            this.emit('pong');
 
         } else {
-            this._sendPing()
-        }
-    }
-
-    private _sendPing(): void {
-        this.emit('ping');
-        this._lastPingTime = Date.now();
-    }
-
-    private _handleGatewayEvent(type: string, data?: any): void {
-        this._resetPingTimer();
-        if (type !== 'ping') {
             convertJsonDates(data);
             this._subscribers.forEach(subscriber => subscriber.handleGatewayEvent(type, data));
         }
