@@ -49,11 +49,16 @@ export class GatewayEventSubscriber {
 @Injectable()
 export class EventsGateway {
 
+    private static PING_INTERVAL_MS = 5000;
+    private static PING_TICK_MS = 500;
     private readonly _clientId: string;
     private _socket: WebSocketSubject<GatewayEvent>;
     private _subscribers: GatewayEventSubscriber[] = [];
     private _config: EventsGatewayConfig;
     private _reconnectionState: ReconnectionState;
+
+    private _lastPingTime: number = 0;
+    private _pingTimeout: number;
 
     get clientId(): string {
         return this._clientId;
@@ -84,14 +89,15 @@ export class EventsGateway {
 
                 this._reconnectionState = null;
 
-                this._socket = webSocket<GatewayEvent>(url);
+                this._lastPingTime = Date.now();
+                this._socket = webSocket<GatewayEvent>({
+                    url,
+                    openObserver: {
+                        next: _ => this._resetPingTimer()
+                    },
+                });
 
                 const destroy$: Subject<boolean> = new Subject<boolean>();
-                interval(15000).pipe(
-                    takeUntil(destroy$),
-                ).subscribe({
-                    next: (_) => this.emit('ping'),
-                });
 
                 const onSocketClose = () => {
                     if (this._socket) {
@@ -151,9 +157,36 @@ export class EventsGateway {
         }
     }
 
+    private _resetPingTimer(): void {
+        if (this._pingTimeout) {
+            clearTimeout(this._pingTimeout);
+            this._pingTimeout = null;
+        }
+        this._onPingTick();
+    }
+
+    private _onPingTick(): void {
+        const currentTime = Date.now();
+        const pingDelay = Math.max(this._lastPingTime + EventsGateway.PING_INTERVAL_MS - currentTime, 0);
+        if (pingDelay > 0) {
+            this._pingTimeout = setTimeout(() => this._onPingTick(), EventsGateway.PING_TICK_MS);
+
+        } else {
+            this._sendPing()
+        }
+    }
+
+    private _sendPing(): void {
+        this.emit('ping');
+        this._lastPingTime = Date.now();
+    }
+
     private _handleGatewayEvent(type: string, data?: any): void {
-        convertJsonDates(data);
-        this._subscribers.forEach(subscriber => subscriber.handleGatewayEvent(type, data));
+        this._resetPingTimer();
+        if (type !== 'ping') {
+            convertJsonDates(data);
+            this._subscribers.forEach(subscriber => subscriber.handleGatewayEvent(type, data));
+        }
     }
 
     private _handleReconnection(): void {
