@@ -1,3 +1,8 @@
+3.0.4 08/12/2024
+================
+ * Increase guacamole unstable threshold to 10s (recovery from unstable state unclear)
+ * Event channel ping messages initiated from the server: client replies on ping reception (avoid hidden tabs from producing unreliable timer events)
+
 3.0.3 06/12/2024
 ================
  * Increase gateway events socket keep-alive messages
