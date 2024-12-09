@@ -3,6 +3,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {Apollo} from "apollo-angular";
 import gql from "graphql-tag";
 import {map, takeUntil} from 'rxjs/operators';
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'visa-admin-dashboard',
@@ -15,7 +16,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private _multiCloudEnabled = false;
 
-    constructor(private readonly _apollo: Apollo) {
+    constructor(private readonly _apollo: Apollo,
+                private readonly _titleService: Title) {
     }
 
     get refreshEvent$(): Subject<void> {
@@ -35,6 +37,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this._titleService.setTitle(`Dashboard | Admin | VISA`);
+
         this._apollo.query<any>({
             query: gql`
                 query {

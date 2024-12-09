@@ -13,6 +13,7 @@ import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../c
 import {User} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 import {UsersFilterComponent} from "./users-filter.component";
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'visa-admin-users',
@@ -75,11 +76,14 @@ export class UsersComponent implements OnInit, OnDestroy {
         private router: Router,
         private route: ActivatedRoute,
         private store: Store<ApplicationState>,
-        private notifierService: NotifierService) {
+        private notifierService: NotifierService,
+        private readonly titleService: Title) {
         this._user$ = store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1));
     }
 
     public ngOnInit(): void {
+        this.titleService.setTitle(`Users | Admin | VISA`);
+
         this.state$.pipe(
             takeUntil(this.destroy$),
         ).subscribe((state) => {
