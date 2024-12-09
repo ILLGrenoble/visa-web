@@ -223,7 +223,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     private handleTunnelStateChange(state: number): void {
         switch (state) {
             // Connection is being established
-            case 1:
+            case 0:
                 this.setState(VirtualDesktopManager.STATE.CONNECTING);
                 break;
             // Connection has closed

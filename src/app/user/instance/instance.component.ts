@@ -297,7 +297,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
         } else {
             const tunnel = this.accountService.createGuacamoleRemoteDesktopTunnel(token, this.eventsGateway.clientId);
-            tunnel.unstableThreshold = 10000;
             this.manager = new GuacamoleVirtualDesktopManager(tunnel);
         }
         return true;
