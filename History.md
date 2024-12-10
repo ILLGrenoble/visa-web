@@ -1,3 +1,9 @@
+3.0.5 10/12/2024
+================
+ * FIX #5: Improve the admin sessions grid view: stop the thumbnails from flashing when a refresh is made
+ * FIX #4: Set tab titles for admin dashboard and users pages
+ * FIX #3: Fix handling of change of guacamole tunnel states: stops client becoming stuck in a "connecting" page
+
 3.0.4 08/12/2024
 ================
  * Increase guacamole unstable threshold to 10s (recovery from unstable state unclear)
