@@ -384,11 +384,6 @@ export class AccountService {
             .pipe(map((res) => true));
     }
 
-    public getThumbnailUrlForInstance(instance: Instance): string {
-        const baseUrl = environment.paths.api;
-        return `${baseUrl}/account/instances/${instance.uid}/thumbnail`;
-    }
-
     public getThumbnailUrlForInstanceUid(uid: string): string {
         const baseUrl = environment.paths.api;
         return `${baseUrl}/account/instances/${uid}/thumbnail`;

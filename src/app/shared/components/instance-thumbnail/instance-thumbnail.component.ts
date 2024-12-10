@@ -1,12 +1,18 @@
-import {Component, Input, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
-import {Subject} from 'rxjs';
+import {
+    Component,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
 import {
     AccountService,
     EventsGateway,
     GatewayEventSubscriber,
-    Instance,
     InstanceThumbnailUpdatedEvent
 } from "@core";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'visa-instance-thumbnail',
@@ -18,6 +24,7 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
 
     private _uid: string;
     private _refreshable = true;
+    private _refresh$: Observable<void>;
     private _rand: number;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
@@ -46,14 +53,24 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
         return `${url}?${this._rand}`;
     }
 
+    @Input('refresh')
+    set refresh$(value: Observable<void>) {
+        this._refresh$ = value;
+    }
+
     constructor(private accountService: AccountService,
                 private eventsGateway: EventsGateway) {
     }
 
     public ngOnInit(): void {
-        this.updateRand();
+        this.updateImage();
         if (this._refreshable) {
             this.bindEventGatewayListeners();
+        }
+        if (this._refresh$) {
+            this._refresh$.pipe(
+                takeUntil(this._destroy$)
+            ).subscribe(() => this.updateImage());
         }
     }
 
@@ -65,7 +82,7 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
         }
     }
 
-    private updateRand(): void {
+    private updateImage(): void {
         this._rand = Math.floor(Math.random() * 999999999);
     }
 
@@ -73,7 +90,7 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
         this._gatewayEventSubscriber = this.eventsGateway.subscribe()
             .on('user:instance_thumbnail_updated', (event: InstanceThumbnailUpdatedEvent) => {
                 if (event.instanceUid === this._uid) {
-                    this.updateRand();
+                    this.updateImage();
                 }
             });
     }

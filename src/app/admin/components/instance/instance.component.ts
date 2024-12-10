@@ -5,7 +5,6 @@ import {Instance} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import {delay, map, retryWhen, share, switchMap, take, takeUntil} from 'rxjs/operators';
-import {environment} from '../../../../environments/environment';
 import * as moment from 'moment';
 import {NotifierService} from 'angular-notifier';
 
@@ -280,12 +279,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
             .pipe(
                 map(({data}) => data.instance),
             );
-    }
-
-
-    public getThumbnailUrlForInstance(instance: Instance): string {
-        const baseUrl = environment.paths.api;
-        return `${baseUrl}/instances/${instance.uid}/thumbnail`;
     }
 
     public formatImageName(image): void {

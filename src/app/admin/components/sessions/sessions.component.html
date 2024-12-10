@@ -50,7 +50,10 @@
                 <visa-tab-title>Grid view</visa-tab-title>
                 <visa-tab-content>
                     <div #gridContainer [ngClass]="{ 'admin-container--fullscreen' : isFullScreen()}">
-                        <div class="blankslate" *ngIf="sessions.length === 0">
+                        <div class="centered-content-area m-t-20" [hidden]="sessions.length > 0 || !loading">
+                            <clr-spinner [hidden]="!loading"></clr-spinner>
+                        </div>
+                        <div class="blankslate" *ngIf="sessions.length === 0 && !loading">
                             <div class="title">
                                 <img src="/assets/images/plug.png" [style.maxWidth]="'128px'" alt="plug"/>
                                 <h3>There are no sessions to display</h3>
@@ -68,7 +71,7 @@
                                 </span>
                                 </div>
                                 <div class="session-box__container">
-                                    <visa-instance-thumbnail [uid]="instanceSessionMember.instanceSession.instance.uid"></visa-instance-thumbnail>
+                                    <visa-instance-thumbnail [uid]="instanceSessionMember.instanceSession.instance.uid" [refresh]="this.refreshEvent$"></visa-instance-thumbnail>
                                 </div>
                                 <div class="session-box__activity">
                                 <span class="session-box__activity__content">

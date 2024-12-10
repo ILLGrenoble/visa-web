@@ -272,10 +272,6 @@ export class CardComponent implements OnInit, OnDestroy {
         return terminationDate !== expirationDate;
     }
 
-    public getThumbnailUrl(): string {
-        return this.accountService.getThumbnailUrlForInstance(this.instance);
-    }
-
     public requestExtension($event): void {
         $event.preventDefault();
         const dialogRef = this.dialog.open(RequestExtensionDialog, {

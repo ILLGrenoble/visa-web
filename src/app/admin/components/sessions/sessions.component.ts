@@ -1,11 +1,10 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
-import {Instance, InstanceSessionMember} from 'app/core/graphql/types';
+import {InstanceSessionMember} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {environment} from '../../../../environments/environment';
 import screenfull from 'screenfull';
 import {ApolloQueryResult} from '@apollo/client';
 import {Title} from '@angular/platform-browser';
@@ -74,8 +73,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.titleService.setTitle(`Sessions | Compute | Admin | VISA`);
 
-        const selectedTab = localStorage.getItem(SessionsComponent.SELECTED_TAB_KEY);
-        this._selectedTab = selectedTab;
+        this._selectedTab = localStorage.getItem(SessionsComponent.SELECTED_TAB_KEY);
 
         this.refreshEvent$
             .pipe(
@@ -88,9 +86,16 @@ export class SessionsComponent implements OnInit, OnDestroy {
                 if (errors) {
                     this.notifierService.notify('error', `There was an error loading the sessions`);
                 }
-                this.sessions = data.sessions.data;
+                this.mergeSessions(data.sessions.data);
                 this.loading = loading;
             });
+    }
+
+    private mergeSessions(sessions: InstanceSessionMember[]) {
+        const originalMap = new Map(this.sessions.map(session => [session.id, session]));
+        this.sessions = sessions.map(newSession => {
+            return originalMap.get(newSession.id) || newSession;
+        });
     }
 
     public ngOnDestroy(): void {
@@ -101,11 +106,6 @@ export class SessionsComponent implements OnInit, OnDestroy {
     public isInteractiveSession(instanceSessionMember: InstanceSessionMember): boolean {
         const timeSinceLastInteractionAtS = (new Date().getTime() - new Date(instanceSessionMember.lastInteractionAt).getTime()) / 1000;
         return timeSinceLastInteractionAtS < 300;
-    }
-
-    public getThumbnailUrlForInstance(instance: Instance): string {
-        const baseUrl = environment.paths.api;
-        return `${baseUrl}/instances/${instance.uid}/thumbnail`;
     }
 
     /**
