@@ -1,3 +1,7 @@
+3.0.6 11/12/2024
+================
+ * Fix close of on-screen keyboard
+
 3.0.5 10/12/2024
 ================
  * FIX #5: Improve the admin sessions grid view: stop the thumbnails from flashing when a refresh is made
