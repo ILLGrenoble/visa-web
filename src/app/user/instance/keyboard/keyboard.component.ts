@@ -36,7 +36,6 @@ export class KeyboardComponent implements AfterViewInit {
     }
 
     public onNoClick(): void {
-        this.keyboard.reset();
         this.dialogRef.close();
     }
 
