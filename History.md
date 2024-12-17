@@ -1,3 +1,7 @@
+3.1.1 17/12/2024
+================
+ * Explicitly set gateway events websocket url with the protocol, host and port (older browser versions consider the URL to be invalid otherwise).
+
 3.1.0 12/12/2024
 ================
 * Release version of VISA 3.X: tag alignment of visa-api-server, visa-web, visa-accounts and visa-jupyter-proxy
