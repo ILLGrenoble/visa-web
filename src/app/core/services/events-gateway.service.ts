@@ -80,7 +80,12 @@ export class EventsGateway {
 
         this._accountService.createClientAuthenticationToken(this._clientId).subscribe({
             next: token => {
-                const url = `${environment.paths.api}/ws/${token}/${this._clientId}/gateway`;
+                const location = window.location;
+                const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const hostname = location.hostname;
+                const port = location.port ? `:${location.port}` : '';
+
+                const url = `${protocol}//${hostname}${port}${environment.paths.api}/ws/${token}/${this._clientId}/gateway`;
 
                 this._reconnectionState = null;
 
