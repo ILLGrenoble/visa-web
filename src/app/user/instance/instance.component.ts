@@ -411,7 +411,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private handleClipboardData(): void {
         this.readAsyncClipboard();
-        this.configurationService.load()
+        this.configurationService.configuration$()
             .pipe(takeUntil(this._destroy$))
             .subscribe((configuration) => {
                 const isValidUri = (url) => {

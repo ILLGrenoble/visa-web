@@ -25,7 +25,7 @@ export class AnalyticsService {
     }
 
     public init(): Observable<void> {
-        return this.configService.load().pipe(
+        return this.configService.configuration$().pipe(
             map(config => {
                 const analytics = config.analytics;
                 const {enabled, url, siteId} = analytics;

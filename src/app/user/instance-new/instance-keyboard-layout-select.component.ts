@@ -60,7 +60,7 @@ export class InstanceKeyboardLayoutSelectComponent implements OnInit, OnDestroy 
     }
 
     ngOnInit(): void {
-        this._configurationService.load()
+        this._configurationService.configuration$()
             .pipe(takeUntil(this._destroy$))
             .subscribe((config) => {
                 this._layouts = config.desktop.keyboardLayouts;

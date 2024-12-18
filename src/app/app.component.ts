@@ -64,7 +64,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private checkForApplicationVersion(): Observable<Configuration> {
-        return from(this.configService.load());
+        return from(this.configService.reload());
     }
 
     private isNewVersionAvailable(version: string): boolean {

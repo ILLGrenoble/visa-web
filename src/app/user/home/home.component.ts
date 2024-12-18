@@ -122,7 +122,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this._user = user;
         });
 
-        this.configService.load()
+        this.configService.configuration$()
             .pipe(takeUntil(this._destroy$))
             .subscribe((configuration) => {
                 this._configuration = configuration;

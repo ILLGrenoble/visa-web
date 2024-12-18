@@ -84,7 +84,7 @@ export class AuthenticationService {
     public init(): Observable<void> {
         this._removeCookie();
 
-        return this._configService.load().pipe(
+        return this._configService.configuration$().pipe(
             map(config => ({
                 ...config.login,
                 redirectUri: `${window.location.origin}/home`,

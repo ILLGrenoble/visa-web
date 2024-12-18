@@ -58,7 +58,7 @@ export class DocumentationComponent implements OnInit, OnDestroy {
         this.titleService.setTitle(title);
         this.analyticsService.trackPageView(title);
 
-        this.configService.load()
+        this.configService.configuration$()
             .pipe(takeUntil(this._destroy$))
             .subscribe((config) => {
                 this._contactEmail = config.contactEmail;

@@ -175,7 +175,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
             this._user = user;
         });
 
-        this.configurationService.load()
+        this.configurationService.configuration$()
             .pipe(takeUntil(this._destroy$))
             .subscribe((config) => {
                 this._openDataIncluded = config.experiments.openDataIncluded;
