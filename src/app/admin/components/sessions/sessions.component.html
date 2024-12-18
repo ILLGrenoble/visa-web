@@ -49,9 +49,11 @@
                 <visa-tab-title-icon><clr-icon shape="grid-view" class="is-solid"></clr-icon></visa-tab-title-icon>
                 <visa-tab-title>Grid view</visa-tab-title>
                 <visa-tab-content>
-                    <div #gridContainer [ngClass]="{ 'admin-container--fullscreen' : isFullScreen()}">
-                        <div class="centered-content-area m-t-20" [hidden]="sessions.length > 0 || !loading">
-                            <clr-spinner [hidden]="!loading"></clr-spinner>
+                    <div #gridContainer class="sessions-content"  [ngClass]="{ 'admin-container--fullscreen' : isFullScreen()}">
+                        <div class="sessions-spinner-outer" [hidden]="!loading">
+                            <div class="sessions-spinner">
+                                <clr-spinner></clr-spinner>
+                            </div>
                         </div>
                         <div class="blankslate" *ngIf="sessions.length === 0 && !loading">
                             <div class="title">

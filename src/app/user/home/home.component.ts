@@ -138,7 +138,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public refresh(): void {
         this.loading = true;
         this.accountService.getInstances().subscribe((instances) => {
-            this.instances = instances;
+            this.mergeInstances(instances);
             this.experiments = [].concat(...instances.map(instance => instance.experiments))
                 .filter((v, i, a) => {
                     return a.findIndex(t => (t.id === v.id)) === i;
@@ -154,6 +154,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public handleUpdate(): void {
         this.refresh$.next();
+    }
+
+    private mergeInstances(instances: Instance[]) {
+        const originalMap = new Map(this.instances.map(instance => [instance.id, instance]));
+        this.instances = instances.map(newInstance => {
+            return originalMap.get(newInstance.id) || newInstance;
+        });
     }
 
     private bindEventGatewayListeners(): void {

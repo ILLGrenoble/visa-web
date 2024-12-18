@@ -58,10 +58,12 @@
                     {{ experiment.startDate | date: 'MMM yyyy' }})
                 </ng-option>
             </ng-select>
-            <div class="centered-content-area m-t-20" [hidden]="!loading">
-                <clr-spinner [hidden]="!loading"></clr-spinner>
+            <div class="home-spinner-outer" [hidden]="!loading">
+                <div class="home-spinner">
+                    <clr-spinner></clr-spinner>
+                </div>
             </div>
-            <visa-tabs [hidden]="loading">
+            <visa-tabs>
                 <visa-tab>
                     <visa-tab-title>My instances <span class="label">{{ (instances | instanceFilterPipe: ['OWNER']: selectedExperiment).length }}</span></visa-tab-title>
                     <visa-tab-actions>

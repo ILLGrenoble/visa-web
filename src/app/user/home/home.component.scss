@@ -6,3 +6,15 @@
     padding-top: 8px;
     padding-bottom: 8px;
 }
+
+.home-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.home-spinner {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}

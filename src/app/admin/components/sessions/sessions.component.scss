@@ -97,3 +97,22 @@
         background-color: #ea5f02;
     }
 }
+
+.sessions-content {
+    min-height: 150px;
+}
+
+.sessions-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.sessions-spinner {
+    height: 150px;
+    top: 16px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 999999;
+}
