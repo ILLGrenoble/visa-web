@@ -68,7 +68,10 @@ export class EventsGateway {
 
     public init(): void {
         // When we have a logged-in user then connect to the event gateway
-        this._store.select(selectLoggedInUser).pipe(filter(user => !!user)).subscribe(_ => {
+        this._store.select(selectLoggedInUser).pipe(
+            filter(user => !!user),
+            filter(user => user.id !== '0')
+        ).subscribe(_ => {
             this.connect();
         });
     }
