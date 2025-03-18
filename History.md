@@ -1,3 +1,7 @@
+3.1.2 18/03/2025
+================
+ * Verify that the user.id is valid before connecting the events gateway websocket
+
 3.1.1 17/12/2024
 ================
  * Explicitly set gateway events websocket url with the protocol, host and port (older browser versions consider the URL to be invalid otherwise).
