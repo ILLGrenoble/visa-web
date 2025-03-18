@@ -1,6 +1,8 @@
 3.1.2 18/03/2025
 ================
  * Verify that the user.id is valid before connecting the events gateway websocket
+ * Reduce number of calls to /api/configuration
+ * Avoid flicker of home page when reloading instances: merge received list of instances with current ones to avoid component recreation
 
 3.1.1 17/12/2024
 ================
