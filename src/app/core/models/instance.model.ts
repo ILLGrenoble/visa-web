@@ -287,7 +287,7 @@ export class Instance {
     }
 
     public willExpireInHours(hours: number): boolean {
-        if (this.expirationDate != null) {
+        if (this.expirationDate instanceof Date) {
             const durationS = (this.expirationDate.getTime() - new Date().getTime());
             return durationS < hours * 60 * 60 * 1000;
         }
