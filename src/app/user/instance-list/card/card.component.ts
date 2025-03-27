@@ -347,7 +347,7 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     private updateExpirationCountdown(): void {
-        if (this.instance.expirationDate) {
+        if (this.instance.expirationDate instanceof Date) {
             const second = 1000;
             const minute = second * 60;
             const hour = minute * 60;
