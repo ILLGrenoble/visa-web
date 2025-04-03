@@ -14,7 +14,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
 import {NotifierModule} from 'angular-notifier';
-import {MarkdownModule, MarkedOptions, MarkedRenderer} from 'ngx-markdown';
+import {MarkdownModule, MARKED_OPTIONS, MarkedOptions, MarkedRenderer} from 'ngx-markdown';
 import {
     AccountComponent,
     DropdownMenuButtonComponent,
@@ -103,7 +103,7 @@ export function markedOptionsFactory(): MarkedOptions {
         MarkdownModule.forRoot({
             loader: HttpClient,
             markedOptions: {
-                provide: MarkedOptions,
+                provide: MARKED_OPTIONS,
                 useFactory: markedOptionsFactory,
             },
         }),

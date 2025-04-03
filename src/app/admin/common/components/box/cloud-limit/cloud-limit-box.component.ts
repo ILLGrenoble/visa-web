@@ -67,8 +67,8 @@ export class CloudLimitBoxComponent implements OnInit, OnDestroy {
                 }
                 this._detailedCloudLimits = data.cloudLimits;
                 this._detailedCloudLimits.forEach(detailedCloudLimit => {
-                    if (detailedCloudLimit.error) {
-                        console.error(`Failed to get CloudLimit for cloud provider ${detailedCloudLimit.cloudClient.name}: ${detailedCloudLimit.error}`);
+                    if (detailedCloudLimit.cloudLimit == null) {
+                        detailedCloudLimit.error = "Failed to fetch cloud limit";
                     }
                 })
                 this.loading = loading;
