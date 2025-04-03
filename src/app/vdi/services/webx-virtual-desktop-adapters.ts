@@ -86,10 +86,7 @@ export class WebXDisplayAdapter extends DisplayAdapter {
 
     private _createElement(): void {
         this._element = document.createElement('div');
-        this._element.style.position = 'relative';
-        this._element.style.display = 'flex';
-        this._element.style.alignItems =  'center';
-        this._element.style.justifyContent = 'center';
+        this._element.classList.add('webx-display-container');
     }
 }
 

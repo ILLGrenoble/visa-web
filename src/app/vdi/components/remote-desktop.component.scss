@@ -212,3 +212,17 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
 .ngx-remote-desktop-fullscreen {
     position: fixed;
 }
+
+.webx-display-container {
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        cursor: none;
+    }
+}
