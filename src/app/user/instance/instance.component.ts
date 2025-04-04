@@ -266,9 +266,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Generate a screenshot of the remote desktop and download to the client
      */
     private createScreenshot(): void {
-        this.manager.createScreenshot().then((blob) => {
+        this.manager.createScreenshot('image/jpeg', 0.9).then((blob) => {
             if (blob) {
-                FileSaver.saveAs(blob, `screenshot.png`);
+                FileSaver.saveAs(blob, `screenshot.jpg`);
             }
         });
     }

@@ -73,24 +73,37 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         this._client.disconnect();
     }
 
-    async createScreenshot(): Promise<Blob> {
-        // todo
-        console.log('createScreenshot not implemented for WebX Virtual Desktop Manager');
-        return null;
+    async createScreenshot(type: string, quality: number): Promise<Blob> {
+        return this._client.createScreenshot(type, quality);
     }
 
     async createThumbnail(width: number, height: number): Promise<Blob> {
-        // todo
-        console.log('createThumbnail not implemented for WebX Virtual Desktop Manager');
-        return null;
+        const screenshotBlob = await this.createScreenshot('image/png', 1.0);
+        const img = new Image();
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = width;
+        canvas.height = height;
+
+        return new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(screenshotBlob);
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob(blob => {
+                    resolve(blob);
+                    URL.revokeObjectURL(url);
+                }, 'image/jpeg', 0.8);
+            };
+            img.onerror = reject;
+            img.src = url;
+        });
     }
 
     sendRemoteClipboardData(text: string): void {
         // todo
         throw new Error('sendRemoteClipboardData not implemented for WebX Virtual Desktop Manager');
     }
-
-
 
     private _onConnected(): void {
         this.setState(VirtualDesktopManager.STATE.WAITING);

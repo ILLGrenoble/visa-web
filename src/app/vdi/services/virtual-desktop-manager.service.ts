@@ -188,8 +188,11 @@ export abstract class VirtualDesktopManager {
 
     /**
      * Generate a screenshot
+     *
+     * @param type The image type (image/png, image/jpeg, etc.)
+     * @param quality The image quality (0-1)
      */
-    public abstract createScreenshot(): Promise<Blob>;
+    public abstract createScreenshot(type: string, quality: number): Promise<Blob>;
 
     /**
      * Send text to the remote clipboard

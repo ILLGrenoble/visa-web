@@ -97,12 +97,12 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
     /**
      * Generate a screenshot
      */
-    public createScreenshot(): Promise<Blob> {
+    public createScreenshot(type: string, quality: number): Promise<Blob> {
         return new Promise((resolve, reject) => {
             const display = this.client.getDisplay();
             if (display && display.getWidth() > 0 && display.getHeight() > 0) {
                 const canvas = display.flatten();
-                return canvas.toBlob(resolve);
+                return canvas.toBlob(resolve, type, quality);
             } else {
                 reject();
             }
