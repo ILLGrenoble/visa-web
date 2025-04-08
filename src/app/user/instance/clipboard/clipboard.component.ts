@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {BehaviorSubject, ReplaySubject, Subject, timer} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
+import { takeUntil, tap} from 'rxjs/operators';
 import {VirtualDesktopManager} from '@vdi';
 import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 
@@ -81,7 +81,9 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 @Inject(MAT_DIALOG_DATA) private data: { manager: VirtualDesktopManager }) {
         this._manager = data.manager;
         this._clipboardSubscription$ = this._manager.onRemoteClipboardData;
-        this._clipboardSubscription$.pipe(takeUntil(this._destroy$)).subscribe((text) => this._text = text.content);
+        this._clipboardSubscription$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe((text) => this._text = text.content);
     }
 
     private handleOnKeydown(event: KeyboardEvent): void {
@@ -110,16 +112,18 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 takeUntil(this.destroy$),
             )
             .subscribe(() => {
-                this._codeEditorCmp.codeMirror.refresh();
+                this._codeEditorCmp.codeMirror?.refresh();
             });
 
         this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     public ngAfterViewInit(): void {
-        const inputField = this._codeEditorCmp.codeMirror.getInputField();
-        inputField.focus();
-        inputField.addEventListener('keydown', this.handleOnKeydown.bind(this));
+        this._codeEditorCmp.codeMirrorLoaded.subscribe(codeMirrorComponent => {
+            const inputField = codeMirrorComponent.codeMirror.getInputField();
+            inputField.focus();
+            inputField.addEventListener('keydown', this.handleOnKeydown.bind(this));
+        });
         this._codeEditorCmp.autoFocus = true;
     }
 

@@ -101,8 +101,8 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
     }
 
     sendRemoteClipboardData(text: string): void {
-        // todo
-        throw new Error('sendRemoteClipboardData not implemented for WebX Virtual Desktop Manager');
+        this._client.sendClipboardContent(text);
+        this.onRemoteClipboardData.next({ content: text, event: 'sent'});
     }
 
     private _onConnected(): void {
@@ -145,6 +145,9 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
             .subscribe(this.onDataReceived);
 
         this._client.registerTracer('stats', this._statsHandler);
+        this._client.clipboardHandler = (clipboardContent: string) => {
+            this.onRemoteClipboardData.next({ content: clipboardContent, event: 'received'});
+        };
 
         window.addEventListener('resize', this._resizeHandler);
         window.addEventListener('blur', this._blurHandler);
@@ -155,6 +158,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
         this._statsInterrupt$.next(true);
         this._client.unregisterTracer('stats');
+        this._client.clipboardHandler = (clipboardContent: string) => {};
 
         window.removeEventListener('resize', this._resizeHandler);
         window.removeEventListener('blur', this._blurHandler);

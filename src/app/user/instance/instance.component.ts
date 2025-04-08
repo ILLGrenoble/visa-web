@@ -16,6 +16,7 @@ import {
     VirtualDesktopManager,
     GuacamoleVirtualDesktopManager,
     WebXVirtualDesktopManager,
+    ClipboardService,
 } from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
@@ -83,6 +84,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _dataReceivedRate$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private dataReceivedMessages$: Subscription;
     private clipboard$: Subscription;
+    private _clipboardService: ClipboardService = new ClipboardService();
 
     private _useWebX = true;
 
@@ -331,6 +333,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.handleThumbnailGeneration();
         this.handleClipboardData();
         this.bindWindowListeners();
+        this._clipboardService.start(this.manager);
     }
 
     /**
@@ -352,6 +355,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.clipboard$) {
             this.clipboard$.unsubscribe();
         }
+        this._clipboardService.stop();
     }
     /**
      * Handle the current state of the remote desktop connection
