@@ -23,7 +23,6 @@ class StatsHandler extends WebXStatsHandler {
     }
 
     destroy(): void {
-        // todo
     }
 }
 
@@ -46,8 +45,6 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         this._client = new WebXClient(tunnel);
 
         this.setClientAdapter(new WebXClientAdapter(this._client));
-
-        // Data handlers to measure data rate
     }
 
     /**

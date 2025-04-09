@@ -66,6 +66,8 @@ export class WebXDisplayAdapter extends DisplayAdapter {
 
     scale(scale: number): void {
         this.display.resize(scale);
+        this._element.style.width = `${scale * this.display.screenWidth}px`;
+        this._element.style.height = `${scale * this.display.screenHeight}px`;
     }
 
     showCursor(isShown: boolean): void {
