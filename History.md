@@ -1,3 +1,9 @@
+3.2.0 11/04/2025
+================
+ * Automatic synchronisation of host and remote desktop clipboards (chrome and firefox only)
+ * Full integration of WebX: webx-client 1.3.0; screenshot and thumbnail integration; clipboard; remove host cursor;
+ * Fix ILLGrenoble/visa-api#23: Connect button not being enabled once the instance is active (verification of instance expiration data)
+
 3.1.2 18/03/2025
 ================
  * Verify that the user.id is valid before connecting the events gateway websocket
