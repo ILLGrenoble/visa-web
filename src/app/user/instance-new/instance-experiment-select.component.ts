@@ -118,6 +118,9 @@ export class InstanceExperimentSelectComponent implements OnInit {
             this.includeOpenData = true;
         }
 
+        // Ensure valid years read from localStorage
+        const currentYear = new Date().getFullYear();
+
         const localInstrumentId = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_INSTRUMENT_ID_KEY);
         const localFromYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_FROM_YEAR_KEY);
         const localToYear = localStorage.getItem(InstanceExperimentSelectComponent.USER_INSTANCE_EXPERIMENTS_TO_YEAR_KEY);
@@ -129,10 +132,10 @@ export class InstanceExperimentSelectComponent implements OnInit {
             this._instrumentId = +localInstrumentId;
         }
         if (localFromYear) {
-            this._fromYear = +localFromYear;
+            this._fromYear = Math.min(+localFromYear, currentYear);
         }
         if (localToYear) {
-            this._toYear = +localToYear;
+            this._toYear = Math.min(+localToYear, currentYear);
         }
         if (localIncludingOpenData) {
             this._includeOpenData = localIncludingOpenData === 'true';
