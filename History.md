@@ -1,6 +1,7 @@
 3.2.1 16/04/2025
 ================
  * Bug fix: Remove use of destroy$ subscription as the service is started and stopped for multiple connections.
+ * Ensure valid year is read from local storage (experiment search)
 
 3.2.0 11/04/2025
 ================
