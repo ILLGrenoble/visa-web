@@ -1,3 +1,7 @@
+3.2.1 16/04/2025
+================
+ * Bug fix: Remove use of destroy$ subscription as the service is started and stopped for multiple connections.
+
 3.2.0 11/04/2025
 ================
  * Automatic synchronisation of host and remote desktop clipboards (chrome and firefox only)
