@@ -7,7 +7,6 @@ export class ClipboardService {
     private _canUseClipboard: boolean = true;
     private _clipboardContent: string = null;
     private _manager: VirtualDesktopManager
-    private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     private _clipboardSubscription$: ReplaySubject<{ content: string, event: string }>;
 
@@ -19,9 +18,7 @@ export class ClipboardService {
             this._manager = manager;
 
             this._clipboardSubscription$ = this._manager.onRemoteClipboardData;
-            this._clipboardSubscription$.pipe(
-                takeUntil(this._destroy$),
-            ).subscribe(this.onClipboardData);
+            this._clipboardSubscription$.subscribe(this.onClipboardData);
 
             this._startClipboardReadTimer();
         }
@@ -29,8 +26,7 @@ export class ClipboardService {
 
     public stop(): void {
         if (this._manager) {
-            this._destroy$.next(true);
-            this._destroy$.unsubscribe();
+            this._clipboardSubscription$.unsubscribe();
             this._canUseClipboard = false;
             this._manager = null;
         }
