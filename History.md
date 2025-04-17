@@ -1,3 +1,7 @@
+3.2.2 17/04/2025
+================
+ * Update to webx-client 1.4.1
+
 3.2.1 16/04/2025
 ================
  * Bug fix: Remove use of destroy$ subscription as the service is started and stopped for multiple connections.
