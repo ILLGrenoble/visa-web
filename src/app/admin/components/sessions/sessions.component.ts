@@ -86,16 +86,9 @@ export class SessionsComponent implements OnInit, OnDestroy {
                 if (errors) {
                     this.notifierService.notify('error', `There was an error loading the sessions`);
                 }
-                this.mergeSessions(data.sessions.data);
+                this.sessions = data.sessions.data;
                 this.loading = loading;
             });
-    }
-
-    private mergeSessions(sessions: InstanceSessionMember[]) {
-        const originalMap = new Map(this.sessions.map(session => [session.id, session]));
-        this.sessions = sessions.map(newSession => {
-            return originalMap.get(newSession.id) || newSession;
-        });
     }
 
     public ngOnDestroy(): void {

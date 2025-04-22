@@ -387,8 +387,14 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             if (blob) {
                                 this.createChecksumForThumbnail(blob).then((checksum) => {
                                     if (checksum !== this.thumbnailChecksum) {
-                                        this.accountService.createThumbnailForInstance(this.instance, blob).subscribe(_ => {
-                                            // do nothing
+                                        this.accountService.createThumbnailForInstance(this.instance, blob).subscribe({
+                                            error: error => {
+                                                console.log(`Failed to upload thumbnail for instance ${this.instance.uid}: ${error.message}`);
+                                                if (error.status === 401) {
+                                                    // Token expired? reload the page
+                                                    location.reload();
+                                                }
+                                            }
                                         })
                                     }
                                 });
