@@ -72,10 +72,10 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
         &.ngx-remote-desktop-toolbar-fullscreen {
             opacity: 0.9;
             position: absolute;
-            top: 0;
+            top: 10%;
             left: 0;
             width: $ngx-remote-desktop-toolbar-width;
-            height: 100%;
+            height: 80%;
             z-index: 1000;
             flex-flow: column wrap;
             .ngx-remote-desktop-toolbar-items {
@@ -83,6 +83,7 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
             }
             border-right: 1px solid $ngx-remote-desktop-toolbar-border-color;
             border-bottom: none;
+            border-radius: 0 20px 20px 0;
         }
         .ngx-remote-desktop-toolbar-items {
             display: flex;
@@ -92,7 +93,6 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
             list-style: none;
             .ngx-remote-desktop-toolbar-item {
                 line-height: 18px;
-                text-align: center;
                 text-decoration: none;
                 user-select: none;
                 padding: 0.5em 0.5em;
@@ -111,7 +111,6 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
         flex-direction: column;
         overflow: hidden;
         .ngx-remote-desktop-viewport {
-            border: 1px solid $ngx-remote-desktop-viewport-background-color;
             position: relative;
             display: flex;
             flex: 1;

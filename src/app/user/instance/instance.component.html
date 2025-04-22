@@ -20,7 +20,7 @@
 
 <div class="remote-desktop-container" *ngIf="manager && !error">
     <ngx-remote-desktop [manager]="manager">
-        <ngx-remote-desktop-toolbar-item align="left" [hidden]="!manager.isConnected()" (click)="handleScreenshot()">
+        <ngx-remote-desktop-toolbar-item toolbarPosition="left" [hidden]="!manager.isConnected()" (click)="handleScreenshot()">
             <clr-icon shape="printer"></clr-icon>
             Take screenshot
         </ngx-remote-desktop-toolbar-item>
@@ -28,7 +28,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST')"
             (click)="handleClipboard()"
-            align="left">
+            toolbarPosition="left">
             <clr-icon shape="clipboard"></clr-icon>
             Clipboard
         </ngx-remote-desktop-toolbar-item>
@@ -36,7 +36,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected() || instance?.membership.isRole('GUEST')"
             (click)="handleKeyboard()"
-            align="left">
+            toolbarPosition="left">
             <clr-icon shape="keyboard"></clr-icon>
             Keyboard
         </ngx-remote-desktop-toolbar-item>
@@ -44,7 +44,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="!isFilesAvailable()"
             (click)="handleFileManager()"
-            align="left">
+            toolbarPosition="left">
             <clr-icon shape="folder"></clr-icon>
             Files
         </ngx-remote-desktop-toolbar-item>
@@ -52,7 +52,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isConnected()"
             (click)="handleSettings()"
-            align="right">
+            toolbarPosition="right">
             <clr-icon shape="information"></clr-icon>
             Information
         </ngx-remote-desktop-toolbar-item>
@@ -60,7 +60,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="isDisplayScaled() || !manager.isConnected()"
             (click)="toggleScaledMode()"
-            align="right">
+            toolbarPosition="right">
             <clr-icon shape="resize-down"></clr-icon>
             Full-scale display
         </ngx-remote-desktop-toolbar-item>
@@ -68,7 +68,7 @@
 <!--        <ngx-remote-desktop-toolbar-item-->
 <!--            [hidden]="!isDisplayUnscaled() || !manager.isConnected()"-->
 <!--            (click)="toggleScaledMode()"-->
-<!--            align="right">-->
+<!--            toolbarPosition="right">-->
 <!--            <clr-icon shape="resize-up"></clr-icon>-->
 <!--            Unscaled display-->
 <!--        </ngx-remote-desktop-toolbar-item>-->
@@ -76,7 +76,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="isDisplayOptimal() || !manager.isConnected()"
             (click)="toggleScaledMode()"
-            align="right">
+            toolbarPosition="right">
             <clr-icon shape="resize-up"></clr-icon>
             Auto-scale display
         </ngx-remote-desktop-toolbar-item>
@@ -84,7 +84,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="manager.isFullScreen() || !manager.isConnected()"
             (click)="handleEnterFullScreen()"
-            align="right">
+            toolbarPosition="right">
             <clr-icon shape="pop-out"></clr-icon>
             Enter full screen
         </ngx-remote-desktop-toolbar-item>
@@ -92,7 +92,7 @@
         <ngx-remote-desktop-toolbar-item
             [hidden]="!manager.isFullScreen() || !manager.isConnected()"
             (click)="handleExitFullScreen()"
-            align="right">
+            toolbarPosition="right">
             <clr-icon shape="window-restore"></clr-icon>
             Exit full screen
         </ngx-remote-desktop-toolbar-item>
@@ -166,7 +166,7 @@
             </div>
         </ngx-remote-desktop-error-message>
 
-        <ngx-remote-desktop-status-bar-item align="left">
+        <ngx-remote-desktop-status-bar-item toolbarPosition="left">
             Connected to:
             <strong>{{ instance?.name }}</strong>
             <span [hidden]="!instance?.membership.isRole('GUEST')">(View only)</span>
@@ -175,11 +175,11 @@
             <span> {{ (timeElapsed$ | async) | timeDuration:'milliseconds' }} ago</span>
         </ngx-remote-desktop-status-bar-item>
 
-        <ngx-remote-desktop-status-bar-item align="right" (click)="handleMembersConnected()" style="cursor: pointer">
+        <ngx-remote-desktop-status-bar-item toolbarPosition="right" (click)="handleMembersConnected()" style="cursor: pointer">
             Members connected: <strong>{{ (users$ | async)?.length }}</strong>
         </ngx-remote-desktop-status-bar-item>
 
-        <ngx-remote-desktop-status-bar-item align="right" *ngIf="isPrinterAvailable()">
+        <ngx-remote-desktop-status-bar-item toolbarPosition="right" *ngIf="isPrinterAvailable()">
             <visa-printer [manager]="manager" [instance]="instance"></visa-printer>
         </ngx-remote-desktop-status-bar-item>
 

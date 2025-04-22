@@ -30,10 +30,10 @@ import screenfull from 'screenfull';
             <!-- Toolbar items template -->
             <ng-template #toolbarItems>
                 <ul class="ngx-remote-desktop-toolbar-items">
-                    <ng-content select='ngx-remote-desktop-toolbar-item[align=left]'></ng-content>
+                    <ng-content select='ngx-remote-desktop-toolbar-item[toolbarPosition=left]'></ng-content>
                 </ul>
                 <ul class="ngx-remote-desktop-toolbar-items">
-                    <ng-content select='ngx-remote-desktop-toolbar-item[align=right]'></ng-content>
+                    <ng-content select='ngx-remote-desktop-toolbar-item[toolbarPosition=right]'></ng-content>
                 </ul>
             </ng-template>
             <!-- End toolbar items template -->
@@ -106,10 +106,10 @@ import screenfull from 'screenfull';
                 <!-- Status bar items template -->
                 <ng-template #statusBarItems>
                     <div class="ngx-remote-desktop-status-bar-items">
-                        <ng-content select='ngx-remote-desktop-status-bar-item[align=left]'></ng-content>
+                        <ng-content select='ngx-remote-desktop-status-bar-item[toolbarPosition=left]'></ng-content>
                     </div>
                     <div class="ngx-remote-desktop-status-bar-items">
-                        <ng-content select='ngx-remote-desktop-status-bar-item[align=right]'></ng-content>
+                        <ng-content select='ngx-remote-desktop-status-bar-item[toolbarPosition=right]'></ng-content>
                     </div>
                 </ng-template>
                 <!-- End status bar items template -->
@@ -126,8 +126,16 @@ import screenfull from 'screenfull';
     styleUrls: ['./remote-desktop.component.scss'],
     animations: [
         trigger('toolbarAnimation', [
-            state('1', style({transform: 'translateX(0%)'})),
-            state('0', style({transform: 'translateX(-100%)'})),
+            state('1', style({
+                transform: 'translateX(0%)',
+                opacity: 1,
+                'pointer-events': 'all'
+            })),
+            state('0', style({
+                transform: 'translateX(calc(-100% + 10px))',
+                opacity: 0.5,
+                'pointer-events': 'none',
+            })),
             transition('1 => 0', animate('100ms 200ms ease-out')),
             transition('0 => 1', animate('100ms ease-out')),
         ]),
@@ -196,6 +204,11 @@ export class RemoteDesktopComponent {
     public toolbarVisible = true;
 
     /**
+     * Timer for showing toolbar in fullscreen
+     */
+    private hoverOverToolbarAreaTimer: number = null;
+
+    /**
      * Bind the subscriptions
      */
     private bindSubscriptions(): void {
@@ -252,6 +265,10 @@ export class RemoteDesktopComponent {
             return;
         }
         screenfull.exit();
+        if (this.hoverOverToolbarAreaTimer) {
+            window.clearTimeout(this.hoverOverToolbarAreaTimer);
+        }
+        this.handleToolbar();
     }
 
     /**
@@ -286,8 +303,33 @@ export class RemoteDesktopComponent {
         }
     }
 
+    /**
+     * Hide or show toolbar
+     */
     private handleToolbar(): void {
         this.toolbarVisible = (!this.manager.isFullScreen());
+    }
+
+    /**
+     * Clear the timer for showing the toolbar in fullscreen
+     */
+    private clearHoverOverToolbarAreaTimeout(): void {
+        if (this.hoverOverToolbarAreaTimer != null) {
+            window.clearTimeout(this.hoverOverToolbarAreaTimer);
+            this.hoverOverToolbarAreaTimer = null;
+        }
+    }
+
+    /**
+     * Restart the timer for showing the toolbar in fullscreen
+     */
+    private restartHoverOverToolbarAreaTimeout(): void {
+        this.clearHoverOverToolbarAreaTimeout();
+        this.hoverOverToolbarAreaTimer = window.setTimeout(() => {
+            this.toolbarVisible = true;
+            this.hoverOverToolbarAreaTimer = null;
+
+        }, 500);
     }
 
     /**
@@ -298,23 +340,14 @@ export class RemoteDesktopComponent {
             return;
         }
         const toolbarWidth = this.toolbar.nativeElement.clientWidth;
-        if ($event.x >= toolbarWidth) {
-            this.toolbarVisible = false;
-        }
-    }
-
-    @HostListener('document:mousemove', ['$event'])
-    public onDocumentMousemove($event: MouseEvent): void {
-        if (!this.manager.isFullScreen()) {
-            return;
-        }
-        const toolbarWidth = this.toolbar.nativeElement.clientWidth;
         const x = $event.x;
-        if (x >= -1 && x <= 0) {
-            this.toolbarVisible = true;
+        if (x >= 0 && x <= 10) {
+            this.restartHoverOverToolbarAreaTimeout();
         }
-        if (x >= toolbarWidth) {
+
+        if ((x >= toolbarWidth && this.toolbarVisible == true) || (x > 10 && this.toolbarVisible == false)) {
             this.toolbarVisible = false;
+            this.clearHoverOverToolbarAreaTimeout();
         }
     }
 

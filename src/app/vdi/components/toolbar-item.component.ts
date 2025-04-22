@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 /**
  * Toolbar item inside the toolbar
@@ -9,4 +9,6 @@ import { Component } from '@angular/core';
 })
 export class ToolbarItemComponent {
 
+    @Input("toolbarPosition")
+    public toolbarPosition: string = null;
 }
