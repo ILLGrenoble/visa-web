@@ -1,3 +1,9 @@
+3.2.3 22/04/2025
+================
+ * Reload the page if the thumbnail creation is unauthorised (token invalid).
+ * Fully update list of sessions to ensure that the interaction time is correct.
+ * Update to webx-client 1.4.3
+
 3.2.2 17/04/2025
 ================
  * Update to webx-client 1.4.1
