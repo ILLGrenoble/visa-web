@@ -79,11 +79,11 @@ export class WebXDisplayAdapter extends DisplayAdapter {
     }
 
     createMouse(element: HTMLElement): MouseAdapter {
-        return new WebXMouseAdapter(new WebXMouse(element));
+        return new WebXMouseAdapter(this._client.createMouse(element));
     }
 
     createKeyboard(element: HTMLElement | Document): KeyboardAdapter {
-        return new WebXKeyboardAdapter(new WebXKeyboard(element));
+        return new WebXKeyboardAdapter(this._client.createKeyboard(element));
     }
 
     private _createElement(): void {
@@ -105,8 +105,10 @@ export class WebXClientAdapter extends ClientAdapter {
         this._client.sendKeyEvent(keysym, pressed);
     }
 
-    sendMouseState(mouseState: MouseState): void {
-
+    sendMouseState(mouseState: MouseState, scale: number): void {
+        // WebX uses a different coordinate system than guacamole: don't need the scrollLeft and scrollTop (already included in mouse state)
+        mouseState.x /= scale;
+        mouseState.y /= scale;
         this._client.sendMouse(new WebXMouseState(mouseState));
     }
 

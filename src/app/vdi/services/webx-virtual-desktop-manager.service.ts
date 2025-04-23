@@ -107,7 +107,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
         const container = this.getClient().getDisplay().getElement();
 
-        this._client.initialise(container)
+        this._client.initialise(container, {useDefaultMouseAdapter: false, useDefaultKeyboardAdapter: false})
             .then((display: WebXDisplay) => {
                 // Start animating the display once everything has been initialised
                 display.animate();

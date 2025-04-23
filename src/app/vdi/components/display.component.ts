@@ -330,9 +330,13 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      */
     private bindDisplayInputListeners(): void {
         this.removeDisplayInputListeners();
-        this.mouse.onmousedown = this.mouse.onmouseup = this.mouse.onmousemove = this.handleMouseState.bind(this);
-        this.keyboard.onkeyup = this.handleKeyUp.bind(this);
-        this.keyboard.onkeydown = this.handleKeyDown.bind(this);
+        if (this.mouse) {
+            this.mouse.onmousedown = this.mouse.onmouseup = this.mouse.onmousemove = this.handleMouseState.bind(this);
+        }
+        if (this.keyboard) {
+            this.keyboard.onkeyup = this.handleKeyUp.bind(this);
+            this.keyboard.onkeydown = this.handleKeyDown.bind(this);
+        }
         this.touchscreen.onmousedown = this.touchscreen.onmouseup = this.touchscreen.onmousemove = this.handleMouseState.bind(this);
     }
 
@@ -373,16 +377,8 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
 
         const display = this.getDisplay();
         const scale = display.getScale();
-        const scaledState = new MouseState(
-            (mouseState.x + scrollLeft) / scale,
-            (mouseState.y + scrollTop) / scale,
-            mouseState.left,
-            mouseState.middle,
-            mouseState.right,
-            mouseState.up,
-            mouseState.down);
-        // this.scrollToMouse(mouseState);
-        this.getClient().sendMouseState(scaledState);
+
+        this.getClient().sendMouseState(mouseState, scale, scrollLeft, scrollTop);
         this.mouseMove$.next(mouseState);
     }
 
@@ -414,45 +410,6 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
     ngAfterViewInit(): void {
         this.createDisplayCanvas();
         this.bindSubscriptions();
-    }
-
-
-    public scrollToMouse(mouseState: any): void {
-
-        const main = document.getElementsByClassName('ngx-remote-desktop-container')[0] as HTMLElement;
-        // Determine mouse position within view
-        const mouseViewX = mouseState.x + this.display.nativeElement.offsetLeft - main.scrollLeft;
-        const mouseViewY = mouseState.y + this.display.nativeElement.offsetTop - main.scrollTop;
-
-
-        // Determine viewport dimensions
-        const viewWidth = main.offsetWidth;
-        const viewHeight = main.offsetHeight;
-
-        // Determine scroll amounts based on mouse position relative to document
-
-        let scrollAmountX;
-        if (mouseViewX > viewWidth) {
-            scrollAmountX = mouseViewX - viewWidth;
-        } else if (mouseViewX < 0) {
-            scrollAmountX = mouseViewX;
-        } else {
-            scrollAmountX = 0;
-        }
-
-        let scrollAmountY;
-        if (mouseViewY > viewHeight) {
-            scrollAmountY = mouseViewY - viewHeight;
-        } else if (mouseViewY < 0) {
-            scrollAmountY = mouseViewY;
-        } else {
-            scrollAmountY = 0;
-        }
-
-        // Scroll (if necessary) to keep mouse on screen.
-        main.scrollLeft += scrollAmountX;
-        main.scrollTop += scrollAmountY;
-
     }
 
     public handlePan(event): void {

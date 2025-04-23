@@ -42,7 +42,7 @@ export abstract class ClientAdapter {
         return this._displayAdapter;
     }
 
-    abstract sendMouseState(mouseState: MouseState): void;
+    abstract sendMouseState(mouseState: MouseState, scale: number, scrollLeft: number, scrollTop: number): void;
     abstract sendKeyEvent(pressed: boolean, keysym: number): void;
 
 }

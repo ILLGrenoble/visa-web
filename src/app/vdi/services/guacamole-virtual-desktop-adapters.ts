@@ -90,8 +90,17 @@ export class GuacamoleClientAdapter extends ClientAdapter {
         this._client.sendKeyEvent(pressed ? 1 : 0, keysym);
     }
 
-    sendMouseState(mouseState: MouseState): void {
-        this._client.sendMouseState(mouseState as Guacamole.Mouse.State);
+    sendMouseState(mouseState: MouseState, scale: number, scrollLeft: number, scrollTop: number): void {
+        const scaledState = new MouseState(
+            (mouseState.x + scrollLeft) / scale,
+            (mouseState.y + scrollTop) / scale,
+            mouseState.left,
+            mouseState.middle,
+            mouseState.right,
+            mouseState.up,
+            mouseState.down);
+
+        this._client.sendMouseState(scaledState as Guacamole.Mouse.State);
     }
 
 }
