@@ -550,6 +550,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
             })
             .on('vdi:owner_away', () => {
                 this.ownerNotConnected = true;
+                this.accessPending = false;
             })
             .on('vdi:session_locked', () => {
                 this.unlockedRole = this.instance.membership.role;
