@@ -1,3 +1,11 @@
+3.3.0 06/05/2025
+================
+ * update to webx-client 1.7.1.
+ * Handle owner disconnected when a support user is requesting access.
+ * Fix webx mouse adapter: bug existed with 2 adapters being created one of which sent incorrect positions when the canvas was scrolled.
+ * remove auto-reload on thumbnail upload with 401 response.
+ * Fix #6: true full screen without the lhs pixel. Show transparent toolbar zone on the left - hover mouse to show toolbar.
+
 3.2.3 22/04/2025
 ================
  * Reload the page if the thumbnail creation is unauthorised (token invalid).
