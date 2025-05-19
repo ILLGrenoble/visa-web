@@ -1,3 +1,7 @@
+3.3.1 19/05/2025
+================
+* update to webx-client 1.8.1 (fixes websocket urls for older clients and sends the webx-client version to the webx-engine)
+
 3.3.0 06/05/2025
 ================
  * update to webx-client 1.7.1.

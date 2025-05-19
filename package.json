@@ -1,6 +1,6 @@
 {
   "name": "@illgrenoble/visa-web",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "VISA Web Application",
   "angular-cli": {},
   "scripts": {
