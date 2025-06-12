@@ -1,5 +1,5 @@
 # stage1 as builder
-FROM node:20-alpine as builder
+FROM node:22-alpine AS builder
 
 COPY package.json package-lock.json ./
 
