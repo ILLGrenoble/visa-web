@@ -798,17 +798,18 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     private createSettingsDialog(): void {
-        this.manager.setFocused(false);
-        const dialog = this.dialog.open(SettingsComponent, {
+        this.dialog.open(SettingsComponent, {
             id: 'settings-dialog',
             width: '450px',
             data: {
                 timeElapsed$: this.timeElapsed$,
                 totalDataReceived$: this.totalDataReceived$,
-                dataReceivedRate$: this.dataReceivedRate$
+                dataReceivedRate$: this.dataReceivedRate$,
+                manager: this.manager.isConnectionTestAvailable() ? this.manager : null,
+                isAdmin: this.manager.isConnectionTestAvailable() ? this.user.admin : false,
             },
+            hasBackdrop: false,
         });
-        dialog.afterClosed().subscribe(() => this.manager.setFocused(true));
     }
 
     private createAccessRequestDialog(dialogId: string, userFullName: string, callback: (response: string) => void): void {

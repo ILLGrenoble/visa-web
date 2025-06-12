@@ -20,6 +20,17 @@
     </tr>
     </tbody>
 </table>
+
+<div *ngIf="isConnectionTestAvailable()" class="profiling-button">
+    <div *ngIf="manager != null && !isConnectionTestRunning()" class="profiling-button-content">
+        <button type="button" (click)="startConnectionTesting()" class="btn btn-success">Profile Connection</button>
+    </div>
+    <div *ngIf="manager != null && isConnectionTestRunning()" class="profiling-button-content">
+        <button type="button" (click)="stopConnectionTesting()" class="btn btn-warning">Stop profiling</button>
+        <div>Open debug console to see the profiling results.</div>
+    </div>
+</div>
+
 <div class="modal-footer modal-footer--space-between">
     <div></div>
     <button type="button" (click)="close.next(null)" class="btn btn-outline">Close</button>

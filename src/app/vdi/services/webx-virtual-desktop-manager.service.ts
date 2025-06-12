@@ -2,7 +2,7 @@ import {ConnectionParameters, VirtualDesktopManager} from './virtual-desktop-man
 import {WebXClientAdapter } from './webx-virtual-desktop-adapters';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
-import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel} from '@illgrenoble/webx-client';
+import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel, WebXMessage, WebXScreenInstruction, WebXScreenMessage} from '@illgrenoble/webx-client';
 
 class StatsHandler extends WebXStatsHandler {
 
@@ -40,6 +40,9 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
     private readonly _connectHandler = this._onConnected.bind(this);
     private readonly _disconnectedHandler = this._onDisconnected.bind(this);
 
+    private _testing: boolean = false;
+    private _connectionTest: Promise<WebXMessage> = null;
+
     constructor(tunnel: WebXTunnel) {
         super();
         this._client = new WebXClient(tunnel);
@@ -52,6 +55,58 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
      */
     public getTunnel(): WebXTunnel {
         return this._client.tunnel;
+    }
+
+    async startConnectionTesting(): Promise<void> {
+        if (!this._testing) {
+            this._testing = true;
+            await this._doConnectionTest(this.getTunnel());
+        }
+    }
+
+    async stopConnectionTesting(): Promise<void> {
+        if (this._testing) {
+            this._testing = false;
+            if (this._connectionTest) {
+                await this._connectionTest;
+                this._connectionTest = null;
+            }
+        }
+    }
+
+    public isConnectionTestRunning(): boolean {
+        return this._testing;
+    }
+
+    public isConnectionTestAvailable(): boolean {
+        return true;
+    }
+
+    private async _doConnectionTest(tunnel: WebXTunnel): Promise<void> {
+        if (this._testing) {
+            setTimeout(() => this._doConnectionTest(tunnel), 1000);
+        }
+
+        const screenInstruction = new WebXScreenInstruction();
+
+        const startTime = new Date();
+        this._connectionTest = tunnel.sendRequest(screenInstruction);
+        try {
+            const response = await this._connectionTest as WebXScreenMessage;
+            this._connectionTest = null;
+            const endTime = new Date();
+
+            const latency = endTime.getTime() - startTime.getTime();
+            console.log(`${startTime.toISOString()}: Latency: ${latency} ms ${latency > 5000 ? '❗❗❗' : latency > 1000 ? '❗' : latency > 500 ? '⚠️' : ''}`);
+
+        } catch (e) {
+            this._connectionTest = null;
+            const endTime = new Date();
+
+            const latency = endTime.getTime() - startTime.getTime();
+            console.log(`${startTime.toISOString()}: Latency: ${latency} ms: Failed to get response (${e.message})`);
+        }
+
     }
 
     connect(parameters: ConnectionParameters): void {
@@ -67,6 +122,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
     }
 
     disconnect(): void {
+        super.disconnect();
         this._client.disconnect();
     }
 

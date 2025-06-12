@@ -172,9 +172,34 @@ export abstract class VirtualDesktopManager {
     }
 
     /**
+     * Start connection testing
+     * This is used to test the connection to the remote desktop
+     */
+    public abstract startConnectionTesting(): Promise<void>;
+
+    /**
+     * Stop connection testing
+     */
+    public abstract stopConnectionTesting(): Promise<void>;
+
+    /**
+     * Check if a connection test is currently running
+     */
+    public abstract isConnectionTestRunning(): boolean;
+
+    /**
+     * Check if a connection test is available
+     */
+    public abstract isConnectionTestAvailable(): boolean;
+
+    /**
      * Disconnect from the remote desktop
      */
-    public abstract disconnect(): void;
+    public disconnect(): void {
+        if (this.isConnectionTestRunning()) {
+            this.stopConnectionTesting();
+        }
+    }
 
     /**
      * Connect to the remote desktop

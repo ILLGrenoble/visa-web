@@ -48,6 +48,19 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
         return this.tunnel;
     }
 
+    public async startConnectionTesting(): Promise<void> {
+    }
+
+    public async stopConnectionTesting(): Promise<void> {
+    }
+
+    public isConnectionTestRunning(): boolean {
+        return false;
+    }
+
+    public isConnectionTestAvailable(): boolean {
+        return false;
+    }
 
     /**
      * Connect to the remote desktop
@@ -62,6 +75,7 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
      * Disconnect from the remote desktop
      */
     public disconnect(): void {
+        super.disconnect();
         this.client.disconnect();
     }
 

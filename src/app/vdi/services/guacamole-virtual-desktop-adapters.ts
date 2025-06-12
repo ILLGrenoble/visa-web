@@ -17,6 +17,10 @@ class GuacamoleKeyboardAdapter extends KeyboardAdapter {
     reset(): void {
         this._keyboard.reset();
     }
+
+    dispose(): void {
+    }
+
 }
 
 class GuacamoleMouseAdapter extends MouseAdapter {
@@ -35,6 +39,9 @@ class GuacamoleMouseAdapter extends MouseAdapter {
 
     set onmouseup(handler: (mouseState: MouseState) => void) {
         this._mouse.onmouseup = handler;
+    }
+
+    dispose(): void {
     }
 }
 

@@ -323,6 +323,13 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
         const element = this.display.nativeElement;
         const display = this.getDisplay();
         this.renderer.removeChild(element, display.getElement());
+
+        if (this.keyboard) {
+            this.keyboard.dispose();
+        }
+        if (this.mouse) {
+            this.mouse.dispose();
+        }
     }
 
     /**

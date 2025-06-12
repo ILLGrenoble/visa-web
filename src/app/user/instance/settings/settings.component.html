@@ -1,21 +1,23 @@
-<div class="modal-header">
+<div class="modal-header" cdkDrag cdkDragHandle  cdkDragRootElement=".cdk-overlay-pane">
     <div mat-dialog-title  class="title">Information</div>
 </div>
 <div mat-dialog-content>
     <clr-tabs>
-        <clr-tab>
-            <button clrTabLink>Keyboard shortcuts</button>
-            <clr-tab-content id="keyboard-shortcuts">
-                <visa-instance-keyboard-shortcuts (close)="handleClose()"></visa-instance-keyboard-shortcuts>
-            </clr-tab-content>
-        </clr-tab>
         <clr-tab>
             <button clrTabLink>Stats</button>
             <clr-tab-content>
                 <visa-instance-stats [totalDataReceived]="totalDataReceived$ | async"
                                      [dataReceivedRate]="dataReceivedRate$ | async"
                                      [timeElapsed]="timeElapsed$ | async"
+                                     [manager]="manager"
+                                     [isAdmin]="isAdmin"
                                      (close)="handleClose()"></visa-instance-stats>
+            </clr-tab-content>
+        </clr-tab>
+        <clr-tab>
+            <button clrTabLink>Keyboard shortcuts</button>
+            <clr-tab-content id="keyboard-shortcuts">
+                <visa-instance-keyboard-shortcuts (close)="handleClose()"></visa-instance-keyboard-shortcuts>
             </clr-tab-content>
         </clr-tab>
     </clr-tabs>

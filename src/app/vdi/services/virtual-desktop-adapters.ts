@@ -13,12 +13,14 @@ export abstract class KeyboardAdapter {
     abstract set onkeyup(handler: (keysym: number) => boolean);
     abstract set onkeydown(handler: (keysym: number) => boolean);
     abstract reset(): void;
+    abstract dispose(): void;
 }
 
 export abstract class MouseAdapter {
     abstract set onmousedown(handler: (mouseState: MouseState) => void);
     abstract set onmouseup(handler: (mouseState: MouseState) => void);
     abstract set onmousemove(handler: (mouseState: MouseState) => void);
+    abstract dispose(): void;
 }
 
 export abstract class DisplayAdapter {

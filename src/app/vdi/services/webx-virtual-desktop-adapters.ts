@@ -17,6 +17,10 @@ class WebXKeyboardAdapter extends KeyboardAdapter {
     reset(): void {
         this._keyboard.reset();
     }
+
+    dispose(): void {
+        this._keyboard.dispose();
+    }
 }
 
 class WebXMouseAdapter extends MouseAdapter {
@@ -35,6 +39,10 @@ class WebXMouseAdapter extends MouseAdapter {
 
     set onmouseup(handler: (mouseState: MouseState) => void) {
         this._mouse.onMouseUp = handler;
+    }
+
+    dispose(): void {
+        this._mouse.dispose();
     }
 }
 
