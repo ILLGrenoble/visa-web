@@ -11,3 +11,5 @@ typings/
 .vscode
 .angular
 .worktrees
+
+proxy.conf.*.json
