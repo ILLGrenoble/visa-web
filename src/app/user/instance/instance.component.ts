@@ -333,7 +333,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.handleThumbnailGeneration();
         this.handleClipboardData();
         this.bindWindowListeners();
-        this._clipboardService.start(this.manager);
     }
 
     /**
@@ -371,6 +370,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
             } else if (state === 'CONNECTED') {
                 this.accessPending = false;
+                this._clipboardService.start(this.manager);
             }
         });
     }
