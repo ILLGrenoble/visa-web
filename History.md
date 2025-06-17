@@ -1,3 +1,11 @@
+3.3.2 17/06/2025
+================
+ * Start clipboard service after remote desktop is connected.
+ * update webx-client (1.9.5) adding stencil map capability and to use the guacamole keyboard logic.
+ * Allow stats model to be moved around and interactions to occur on desktop to better monitor network stats.
+ * Properly dispose of keyboard and mouse.
+ * Integrate connection profiling as an admin tool (hidden in the Information modal): profiles round-trip-time latency to the instance; information written to the console.
+
 3.3.1 19/05/2025
 ================
 * update to webx-client 1.8.1 (fixes websocket urls for older clients and sends the webx-client version to the webx-engine)
