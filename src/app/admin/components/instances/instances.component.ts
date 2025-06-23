@@ -22,7 +22,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
     private _loading = true;
 
     private _filterState: InstancesFilterState;
-    private _columnsState: InstancesColumnsState = { cloudClient: false, flavour: false, image: false, terminationDate: false}
+    private _columnsState: InstancesColumnsState = { vdiProtocol: false, cloudClient: false, flavour: false, image: false, terminationDate: false}
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -135,6 +135,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                 uid
                                 name
                                 state
+                                vdiProtocol
                                 terminationDate
                                 lastSeenAt
                                 lastInteractionAt

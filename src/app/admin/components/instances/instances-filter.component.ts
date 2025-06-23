@@ -127,6 +127,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
     }
 
     public onResetColumns(): void {
+        this.columnsState.vdiProtocol = false;
         this.columnsState.cloudClient = false;
         this.columnsState.image = false;
         this.columnsState.flavour = false;

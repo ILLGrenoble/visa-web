@@ -47,6 +47,11 @@
                                     Session activity
                                 </ng-container>
                             </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-template clrDgHideableColumn [clrDgHidden]="!columnsState.vdiProtocol">
+                                    VDI Protocol
+                                </ng-template>
+                            </clr-dg-column>
                             <clr-dg-column [clrDgSortBy]="'createdAt'" [clrDgSortOrder]="isColumnSorted('createdAt')">
                                 <ng-container>
                                     Created
@@ -96,6 +101,7 @@
                                     </clr-tooltip>
 
                                 </clr-dg-cell>
+                                <clr-dg-cell>{{ instance.vdiProtocol || 'undefined' }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.cloudClient.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ formatImageName(instance.plan.image) }}</clr-dg-cell>

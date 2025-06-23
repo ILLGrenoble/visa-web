@@ -6,13 +6,17 @@
         <button class="filters-box-clear" type="button" (click)="onResetColumns()">Reset to default</button>
     </div>
     <div class="filters-box-body">
-        <clr-checkbox-wrapper *ngIf="multiCloudEnabled">
-            <input type="checkbox" clrCheckbox (change)="onColumn('cloudClient')" [checked]="columnsState.cloudClient"/>
-            <label>Cloud Provider</label>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox (change)="onColumn('vdiProtocol')" [checked]="columnsState.vdiProtocol"/>
+            <label>VDI Protocol</label>
         </clr-checkbox-wrapper>
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox (change)="onColumn('image')" [checked]="columnsState.image"/>
             <label>Image</label>
+        </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper *ngIf="multiCloudEnabled">
+            <input type="checkbox" clrCheckbox (change)="onColumn('cloudClient')" [checked]="columnsState.cloudClient"/>
+            <label>Cloud Provider</label>
         </clr-checkbox-wrapper>
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox (change)="onColumn('flavour')" [checked]="columnsState.flavour"/>

@@ -247,15 +247,6 @@ export class InstancesComponent implements OnInit, OnDestroy {
         return instance.canConnectWhileOwnerAway;
     }
 
-    public isWebX(instance: Instance): boolean {
-        const mainSession = this.getInstanceSessionMembers(instance)
-            .filter(sessionMember => sessionMember.role === 'OWNER')
-            .sort((a, b) => b.id - a.id)
-            [0];
-
-        return mainSession ? mainSession.instanceSession.protocol === 'webx' : false;
-    }
-
     private updateUrl(): void {
         const currentState = this.currentState;
         this.router.navigate([],

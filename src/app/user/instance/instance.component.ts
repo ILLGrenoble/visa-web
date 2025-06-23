@@ -86,8 +86,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private clipboard$: Subscription;
     private _clipboardService: ClipboardService = new ClipboardService();
 
-    private _useWebX = true;
-
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
     }
@@ -117,7 +115,6 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.createAndBindHotkeys();
         const instanceId = this.route.snapshot.paramMap.get('id');
 
-        this._useWebX = this.route.snapshot.data.useWebX != null ? this.route.snapshot.data.useWebX : false;
         this.accountService.getInstance(instanceId).subscribe({
             next: (instance) => {
                 this.setInstance(instance);
@@ -293,7 +290,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.unbindManagerHandlers();
             }
         }
-        if (this._useWebX) {
+
+        // Open VDI tunnel for different protocols
+        if (this.instance.vdiProtocol === 'WEBX') {
             const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token, this.eventsGateway.clientId);
             this.manager = new WebXVirtualDesktopManager(tunnel);
 

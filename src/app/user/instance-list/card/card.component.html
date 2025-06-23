@@ -178,12 +178,6 @@
                             <visa-dropdown-menu-item [routerLink]="['/instances', instance.uid]">
                                 <clr-icon shape="display" class="is-solid" style="margin-right: 8px"></clr-icon>Remote Desktop
                             </visa-dropdown-menu-item>
-                            <visa-dropdown-menu-item *ngIf="canAccessWebXDesktop()" [routerLink]="['/instances', instance.uid, 'beta']">
-                                <div style="margin-right: 8px">
-                                    <img width="16px" src="/assets/images/X11.png">
-                                </div>
-                                Remote Desktop (beta)
-                            </visa-dropdown-menu-item>
                             <visa-dropdown-menu-item *ngIf="canAccessJupyter()" [routerLink]="['/instances', instance.uid, 'jupyter']">
                                 <div style="margin-right: 8px">
                                     <img width="16px" src="/assets/images/jupyter_logo.svg">
@@ -194,10 +188,7 @@
                     </div>
                 </div>
                 <div *ngIf="!instance.membership.isRole('OWNER')" class="instance-access">
-                    <button *ngIf="ownerSession === 'webx'" class="instance-access-btn" [routerLink]="['/instances', instance.uid, 'beta']" [disabled]="!canConnect">
-                        <clr-icon shape="display" class="is-solid"></clr-icon> Connect
-                    </button>
-                    <button *ngIf="ownerSession !== 'guacamole'" class="instance-access-btn" [routerLink]="['/instances', instance.uid]" [disabled]="!canConnect">
+                    <button class="instance-access-btn" [routerLink]="['/instances', instance.uid]" [disabled]="!canConnect">
                         <clr-icon shape="display" class="is-solid"></clr-icon> Connect
                     </button>
                 </div>

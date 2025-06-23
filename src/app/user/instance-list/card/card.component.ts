@@ -70,7 +70,6 @@ export class CardComponent implements OnInit, OnDestroy {
 
     public expirationCountdown = '';
     public canConnect = false;
-    public ownerSession: string;
 
     constructor(private ref: ElementRef,
                 private notifierService: NotifierService,
@@ -329,7 +328,6 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     private updateCanConnect(): void {
-        this.ownerSession = null;
         if (this._instance != null && (this._instance.state === 'ACTIVE' || this._instance.state === 'PARTIALLY_ACTIVE')) {
             if (this._instance.membership.role === 'OWNER') {
                 this.canConnect = true;
@@ -340,13 +338,6 @@ export class CardComponent implements OnInit, OnDestroy {
             } else {
                 this.accountService.getSessionMembersForInstance(this._instance).subscribe((sessionMembers) => {
                     this.canConnect = sessionMembers.length > 0;
-
-                    const mainSession = sessionMembers
-                        .filter(sessionMember => sessionMember.role === 'OWNER')
-                        .sort((a, b) => b.id - a.id)
-                        [0];
-
-                    this.ownerSession = mainSession ? mainSession.instanceSession.protocol : null;
                 });
             }
 

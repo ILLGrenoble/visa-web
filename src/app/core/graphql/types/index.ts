@@ -185,6 +185,7 @@ export type Instance = {
     username: Scalars['String'];
     attributes: Maybe<Array<Maybe<InstanceAttribute>>>;
     cloudClient?: Maybe<CloudClient>;
+    vdiProtocol: Scalars['String'];
 };
 
 export type InstanceConnection = {

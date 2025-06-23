@@ -94,10 +94,7 @@
                                 <clr-dg-cell class="support-cell">{{ instance.terminationDate | date:'dd MMM HH:mm' }}</clr-dg-cell>
                                 <clr-dg-cell>
                                     <div class="support-instance-access">
-                                        <button *ngIf="isWebX(instance)" class="support-instance-access-btn" [routerLink]="['/instances', instance.uid, 'beta']"
-                                                [disabled]="!canConnect(instance)"><clr-icon shape="display" class="is-solid"></clr-icon> Connect
-                                        </button>
-                                        <button *ngIf="!isWebX(instance)" class="support-instance-access-btn" [routerLink]="['/instances', instance.uid]"
+                                        <button class="support-instance-access-btn" [routerLink]="['/instances', instance.uid]"
                                                 [disabled]="!canConnect(instance)"><clr-icon shape="display" class="is-solid"></clr-icon> Connect
                                         </button>
                                     </div>
