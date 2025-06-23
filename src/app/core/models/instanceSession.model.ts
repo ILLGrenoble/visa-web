@@ -1,5 +1,4 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {Instance} from './instance.model';
 
 @JsonObject('InstanceSession')
 export class InstanceSession {
@@ -16,11 +15,15 @@ export class InstanceSession {
     @JsonProperty('current', Boolean)
     private _current: boolean = undefined;
 
+    @JsonProperty('protocol', String)
+    private _protocol: string = undefined;
+
     public copy(data: InstanceSession): InstanceSession {
         this.id = data.id;
         this.connectionId = data.connectionId;
         this.instanceId = data.instanceId;
         this.current = data.current;
+        this.protocol = data.protocol;
         return this;
     }
 
@@ -56,4 +59,11 @@ export class InstanceSession {
         this._current = value;
     }
 
+    public get protocol(): string {
+        return this._protocol;
+    }
+
+    public set protocol(value: string) {
+        this._protocol = value;
+    }
 }

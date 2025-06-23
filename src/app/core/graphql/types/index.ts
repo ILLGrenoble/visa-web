@@ -215,6 +215,7 @@ export type InstanceSession = {
     instanceId: Scalars['Int'];
     instance: Instance;
     current: Scalars['Boolean'];
+    protocol: Scalars['String'];
 };
 
 export type InstanceSessionMember = {

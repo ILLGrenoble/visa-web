@@ -14,6 +14,7 @@
                         <clr-dg-column>User</clr-dg-column>
                         <clr-dg-column>Affiliation</clr-dg-column>
                         <clr-dg-column>Role</clr-dg-column>
+                        <clr-dg-column>Protocol</clr-dg-column>
                         <clr-dg-column>Time connected</clr-dg-column>
                         <clr-dg-column>Last interaction</clr-dg-column>
                         <clr-dg-column>Connect</clr-dg-column>
@@ -27,6 +28,7 @@
                             <clr-dg-cell>{{instanceSessionMember.user.fullName}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.user.affiliation ? instanceSessionMember.user.affiliation.name : 'No affiliation'}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.role}}</clr-dg-cell>
+                            <clr-dg-cell>{{instanceSessionMember.instanceSession.protocol}}</clr-dg-cell>
                             <clr-dg-cell>{{instanceSessionMember.duration | timeConversion}}</clr-dg-cell>
                             <clr-dg-cell>
                                 {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}
@@ -67,6 +69,9 @@
                                 <div class="session-box__details">
                                 <span class="session-box__details__content" style="text-align: left; font-size: 13px">
                                     {{instanceSessionMember.instanceSession.instance.name}}
+                                </span>
+                                <span class="session-box__details__content" style="text-align: center; font-size: 13px; font-weight: 300; ">
+                                    {{instanceSessionMember.instanceSession.protocol}}
                                 </span>
                                 <span class="session-box__details__content" style="text-align: right; font-size: 10px">
                                     {{instanceSessionMember.user.fullName}}

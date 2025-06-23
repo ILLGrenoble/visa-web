@@ -146,6 +146,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                     name
                                 }
                                 current
+                                protocol
                             }
                             sessionId
                             user {
