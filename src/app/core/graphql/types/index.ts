@@ -145,6 +145,7 @@ export type Image = {
     visible: Scalars['Boolean'];
     autologin: Maybe<Scalars['String']>;
     protocols?: Maybe<Array<Maybe<ImageProtocol>>>;
+    defaultVdiProtocol?: Maybe<ImageProtocol>;
     bootCommand: Scalars['String'];
     cloudClient?: Maybe<CloudClient>;
 };
@@ -489,6 +490,7 @@ export type ImageInput = {
     computeId: Scalars['String'];
     visible: Scalars['Boolean'];
     protocolIds?: Maybe<Array<Scalars['Int']>>;
+    defaultVdiProtocolId?: Maybe<Scalars['Int']>;
     bootCommand?: Maybe<Scalars['String']>;
     autologin?: Maybe<Scalars['String']>;
 };

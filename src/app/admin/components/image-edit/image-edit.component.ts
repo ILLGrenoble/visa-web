@@ -41,6 +41,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             protocols: new FormControl(null),
             autologin: new FormControl(null),
             bootCommand: new FormControl(null),
+            defaultVdiProtocol: new FormControl(null, Validators.required),
         });
 
         if (image) {
@@ -75,6 +76,11 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return this._protocols;
     }
 
+    get availableVdiProtocols(): ImageProtocol[] {
+        const selectedProtocols = this._form.value.protocols || [];
+        return selectedProtocols.filter(protocol => ['GUACD', 'WEBX'].includes(protocol.name));
+    }
+
     get icons(): string[] {
         return this._icons;
     }
@@ -105,6 +111,13 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return image1.id === image2.id;
     }
 
+    public compareProtocol(protocol1: ImageProtocol, protocol2: ImageProtocol): boolean {
+        if (protocol1 == null || protocol2 == null) {
+            return false;
+        }
+        return protocol1.id === protocol2.id;
+    }
+
     private _createFormFromImage(image: Image): void {
         const {
             name,
@@ -115,6 +128,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             cloudImage,
             description,
             protocols,
+            defaultVdiProtocol,
             autologin,
             bootCommand
         } = image;
@@ -124,6 +138,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             icon,
             visible,
             protocols,
+            defaultVdiProtocol,
             autologin,
             bootCommand,
             description,
@@ -209,7 +224,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, autologin, bootCommand} = this.form.value;
+        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, autologin, bootCommand} = this.form.value;
         const input = {
             name,
             version,
@@ -219,6 +234,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             computeId: cloudImage.id,
             visible,
             protocolIds: protocols.map(protocol => protocol.id),
+            defaultVdiProtocolId: defaultVdiProtocol.id,
             bootCommand,
             autologin
         } as ImageInput;

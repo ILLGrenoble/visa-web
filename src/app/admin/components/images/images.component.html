@@ -17,6 +17,7 @@
             <clr-dg-column>Cloud Image</clr-dg-column>
             <clr-dg-column>Icon</clr-dg-column>
             <clr-dg-column>Protocols</clr-dg-column>
+            <clr-dg-column>Default VDI Protocol</clr-dg-column>
             <clr-dg-column>Visible</clr-dg-column>
             <clr-dg-column>Actions</clr-dg-column>
 
@@ -34,6 +35,7 @@
                         {{protocol.name}}
                     </span>
                 </clr-dg-cell>
+                <clr-dg-cell>{{image.defaultVdiProtocol?.name}}</clr-dg-cell>
 
                 <clr-dg-cell><input [checked]="image.visible" disabled type="checkbox"/></clr-dg-cell>
                 <clr-dg-cell>

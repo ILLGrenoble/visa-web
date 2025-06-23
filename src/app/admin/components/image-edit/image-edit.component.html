@@ -50,6 +50,14 @@
             </clr-combobox-container>
 
             <clr-select-container>
+                <label for="image">VDI Protocol</label>
+                <select clrSelect id="vdiProtocol" formControlName="defaultVdiProtocol" [compareWith]="compareProtocol">
+                    <option *ngFor="let imageProtocol of availableVdiProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
+                </select>
+                <clr-control-helper>Please select a VDI protocol (the image protocols must include GUACD and/or WEBX</clr-control-helper>
+            </clr-select-container>
+
+            <clr-select-container>
                 <label for="icon">Icon</label>
                 <select clrSelect id="icon" formControlName="icon">
                     <option *ngFor="let icon of icons">{{icon}}</option>
