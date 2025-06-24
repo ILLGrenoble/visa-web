@@ -232,7 +232,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
                         lastSeenAt
                         createdAt
                         keyboardLayout
-                        vdiProtocol
+                        vdiProtocol {
+                          id
+                          name
+                        }
                         owner {
                             id
                             firstName

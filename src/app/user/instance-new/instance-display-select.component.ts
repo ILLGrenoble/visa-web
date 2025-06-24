@@ -1,6 +1,7 @@
-import {Component, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, OnDestroy, OnInit, Input, Output} from '@angular/core';
 import {combineLatest, BehaviorSubject, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
+import {Protocol, Plan} from "@core";
 
 @Component({
     selector: 'visa-instance-display-select',
@@ -8,6 +9,7 @@ import {filter, takeUntil} from 'rxjs/operators';
     styleUrls: ['./instance-display-select.component.scss'],
 })
 export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
+    private static USER_INSTANCE_VDI_PROTOCOL_KEY = 'user.instance.vdi.protocol';
 
     public screenResolutions = [{
         label: 'WXGA (1280 x 720) 16:9',
@@ -52,6 +54,9 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     }];
 
     private _defaultDisplayWidth = 1920;
+    private _availableVdiProtocols: Protocol[] = null;
+    private _vdiProtocol$: BehaviorSubject<Protocol> = new BehaviorSubject(null);
+    private _showAdvancedSettings = false;
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -59,6 +64,21 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
 
     private _selectedSingleScreenResolution: BehaviorSubject<{ label: string; width: number; height: number }> =
         new BehaviorSubject<{ label: string; width: number; height: number }>(null);
+
+    get availableVdiProtocols(): Protocol[] {
+        return this._availableVdiProtocols;
+    }
+
+    @Input()
+    set plan(plan: Plan) {
+        this._availableVdiProtocols = plan?.image.availableVdiProtocols();
+        const userPreferredProtocol = this._availableVdiProtocols?.find(protocol => protocol.name === localStorage.getItem(InstanceDisplaySelectComponent.USER_INSTANCE_VDI_PROTOCOL_KEY));
+        if (userPreferredProtocol) {
+            this._vdiProtocol$.next(userPreferredProtocol);
+        } else {
+            this._vdiProtocol$.next(plan?.image.defaultVdiProtocol ? this._availableVdiProtocols?.find(protocol => protocol.id === plan?.image.defaultVdiProtocol.id) : null);
+        }
+    }
 
     public get destroy$(): Subject<boolean> {
         return this._destroy$;
@@ -85,6 +105,28 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
 
     set selectedSingleScreenResolution(value: { label: string, width: number, height: number }) {
         this._selectedSingleScreenResolution.next(value);
+    }
+
+    get vdiProtocol(): Protocol {
+        return this._vdiProtocol$.getValue();
+    }
+
+    set vdiProtocol(value: Protocol) {
+        this._vdiProtocol$.next(value);
+        localStorage.setItem(InstanceDisplaySelectComponent.USER_INSTANCE_VDI_PROTOCOL_KEY, value.name);
+    }
+
+    get showAdvancedSettings(): boolean {
+        return this._showAdvancedSettings;
+    }
+
+    set showAdvancedSettings(value: boolean) {
+        this._showAdvancedSettings = value;
+    }
+
+    @Output("vdiProtocol")
+    get vdiProtocol$(): BehaviorSubject<Protocol> {
+        return this._vdiProtocol$;
     }
 
     @Output()
@@ -161,5 +203,15 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     public ngOnDestroy(): void {
         this.destroy$.next(true);
         this.destroy$.unsubscribe();
+    }
+
+    getProtocolDescription(protocol: Protocol): string {
+        if (protocol.name === 'GUACD') {
+            return 'Proven remote desktop protocol but can have noticeable latency and limited graphical quality';
+
+        } else if (protocol.name === 'WEBX') {
+            return 'Experimental remote desktop protocol with low latency and high graphical quality';
+        }
+        return null;
     }
 }

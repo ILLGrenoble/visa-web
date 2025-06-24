@@ -292,7 +292,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
 
         // Open VDI tunnel for different protocols
-        if (this.instance.vdiProtocol === 'WEBX') {
+        if (this.instance.vdiProtocol?.name === 'WEBX') {
             const tunnel = this.accountService.createWebXRemoteDesktopTunnel(token, this.eventsGateway.clientId);
             this.manager = new WebXVirtualDesktopManager(tunnel);
 

@@ -13,6 +13,7 @@ export class InstanceForm extends FormGroup {
         this.addControl('screenResolution', this.createScreenResolutionControl());
         this.addControl('keyboardLayout', this.createKeyboardLayoutControl());
         this.addControl('unrestrictedAccess', this.createUnrestrictedAccessControl());
+        this.addControl('vdiProtocol', this.createVdiProtocolControl());
     }
 
     private createScreenResolutionControl(): FormControl {
@@ -41,6 +42,10 @@ export class InstanceForm extends FormGroup {
     }
 
     private createUnrestrictedAccessControl(): FormControl {
+        return new FormControl(false, Validators.required);
+    }
+
+    private createVdiProtocolControl(): FormControl {
         return new FormControl(false, Validators.required);
     }
 }

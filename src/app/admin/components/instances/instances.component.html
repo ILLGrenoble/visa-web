@@ -101,7 +101,7 @@
                                     </clr-tooltip>
 
                                 </clr-dg-cell>
-                                <clr-dg-cell>{{ instance.vdiProtocol || 'undefined' }}</clr-dg-cell>
+                                <clr-dg-cell>{{ instance.vdiProtocol?.name || 'undefined' }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.cloudClient.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ formatImageName(instance.plan.image) }}</clr-dg-cell>

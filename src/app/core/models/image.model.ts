@@ -1,5 +1,6 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {Protocol} from './protocol.model';
+import {protocol} from "socket.io-client";
 
 @JsonObject('Image')
 export class Image {
@@ -24,6 +25,9 @@ export class Image {
 
     @JsonProperty('protocols', [Protocol], true)
     private _protocols: Protocol[] = undefined;
+
+    @JsonProperty('defaultVdiProtocol', Protocol, true)
+    private _defaultVdiProtocol: Protocol = undefined;
 
     @JsonProperty('visible', Boolean, true)
     private _visible: boolean = undefined;
@@ -53,6 +57,7 @@ export class Image {
         this.icon = data.icon;
         this.computeId = data.computeId;
         this.protocols = data.protocols;
+        this.defaultVdiProtocol = data.defaultVdiProtocol;
         this.visible = data.visible;
         this.deleted = data.deleted;
         this.bootCommand = data.bootCommand;
@@ -115,6 +120,14 @@ export class Image {
         this._protocols = value;
     }
 
+    get defaultVdiProtocol(): Protocol {
+        return this._defaultVdiProtocol;
+    }
+
+    set defaultVdiProtocol(value: Protocol) {
+        this._defaultVdiProtocol = value;
+    }
+
     public get visible(): boolean {
         return this._visible;
     }
@@ -149,6 +162,14 @@ export class Image {
 
     public hasProtocolWithName(protocolName: string): boolean {
         return this._protocols.map(protocol => protocol.name).includes(protocolName);
+    }
+
+    public availableVdiProtocols(): Protocol[] {
+        const availableVdiProtocols = this._protocols.filter(protocol => ['GUACD', 'WEBX'].includes(protocol.name));
+        if (availableVdiProtocols.length == 0) {
+            availableVdiProtocols.push(this._defaultVdiProtocol);
+        }
+        return availableVdiProtocols;
     }
 
 }

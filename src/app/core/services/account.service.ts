@@ -252,7 +252,8 @@ export class AccountService {
             planId: instance.plan.id,
             screenHeight: instance.screenHeight,
             screenWidth: instance.screenWidth,
-            keyboardLayout: instance.keyboardLayout
+            keyboardLayout: instance.keyboardLayout,
+            vdiProtocolId: instance.vdiProtocol.id,
         };
         return this.http.post<Response<Instance>>(url, body).pipe(
             map((response) => {

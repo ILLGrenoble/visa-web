@@ -175,7 +175,11 @@
                                 </h2>
                             </div>
                             <div class="content">
-                                <visa-instance-display-select (resolution)="setScreenResolution($event)"></visa-instance-display-select>
+                                <visa-instance-display-select
+                                    (resolution)="setScreenResolution($event)"
+                                    [plan]="selectedPlan"
+                                    (vdiProtocol)="setVdiProtocol($event)">
+                                </visa-instance-display-select>
                             </div>
                         </div>
                         <div class="section" *ngIf="stage > 1">

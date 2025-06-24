@@ -3,7 +3,7 @@ import {Experiment} from './experiment.model';
 import {Member} from './member.model';
 import {Plan} from './plan.model';
 import {User} from './user.model';
-import {state} from "@angular/animations";
+import {Protocol} from './protocol.model';
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -88,8 +88,8 @@ export class Instance {
     @JsonProperty('activeProtocols', [String])
     private _activeProtocols: string[] = undefined;
 
-    @JsonProperty('vdiProtocol', String)
-    private _vdiProtocol: string = undefined;
+    @JsonProperty('vdiProtocol', Protocol)
+    private _vdiProtocol: Protocol = undefined;
 
     public get id(): number {
         return this._id;
@@ -318,12 +318,11 @@ export class Instance {
         return this._activeProtocols.includes(protocolName);
     }
 
-
-    get vdiProtocol(): string {
+    get vdiProtocol(): Protocol {
         return this._vdiProtocol;
     }
 
-    set vdiProtocol(value: string) {
+    set vdiProtocol(value: Protocol) {
         this._vdiProtocol = value;
     }
 }

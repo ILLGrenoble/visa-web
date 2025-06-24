@@ -11,6 +11,7 @@ import {
     ImagePlans,
     Instance,
     Plan,
+    Protocol,
     Quota,
     selectLoggedInUser,
     User,
@@ -268,7 +269,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     public createInstance(): void {
 
         if (this.isValidData()) {
-            const {name, comments, screenResolution, keyboardLayout} = this.form.value;
+            const {name, comments, screenResolution, keyboardLayout, vdiProtocol} = this.form.value;
 
             const instance: Instance = new Instance();
             instance.name = name;
@@ -277,6 +278,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
             instance.screenHeight = screenResolution.height;
             instance.keyboardLayout = keyboardLayout;
             instance.plan = this._selectedPlan;
+            instance.vdiProtocol = vdiProtocol;
             this._experimentsObservable.getValue().forEach((experiment) => instance.addExperiment(experiment));
 
             this._canSubmit = false;
@@ -295,6 +297,10 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
 
     public setScreenResolution(resolution: { width: number; height: number }): void {
         this.form.get('screenResolution').setValue(resolution);
+    }
+
+    public setVdiProtocol(protocol: Protocol): void {
+        this.form.get('vdiProtocol').setValue(protocol);
     }
 
     public setKeyboardLayout(value: { layout: string; name: string, selected: boolean }): void {

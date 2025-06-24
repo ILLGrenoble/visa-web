@@ -135,7 +135,10 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                 uid
                                 name
                                 state
-                                vdiProtocol
+                                vdiProtocol {
+                                  id
+                                  name
+                                }
                                 terminationDate
                                 lastSeenAt
                                 lastInteractionAt

@@ -1,13 +1,18 @@
-.display-title,.resolution-title,.layout-title {
+.section-title {
     h3 {
         font-size: 0.8rem;
-        margin: 0 0 0 0;
+        margin: 12px 0 4px 0;
     }
 }
 
-.resolution-text {
+.section-text {
     margin: 6px 0;
 }
+
+.section-element {
+    margin: 0 0 16px 0;
+}
+
 .displays {
     width: 100%;
     display: inline-block;
@@ -20,7 +25,7 @@
         display: block;
         height: auto;
         float: left;
-        padding: 0.5rem 1rem 0.5rem 0;
+        padding: 0.5rem 1rem 0 0;
         list-style: none;
 
         &:first-child {
@@ -107,4 +112,19 @@
 .screen-resolution-select {
     width: 250px;
     margin: 10px 0;
+}
+
+.protocol-details {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+
+    .protocol-name {
+        font-weight: 500;
+        width: 70px;
+    }
+    .protocol-description {
+        font-weight: 300;
+    }
 }

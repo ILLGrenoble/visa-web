@@ -457,7 +457,10 @@
 
         &--larger {
             font-size: 0.7rem;
-            font-weight: 500;
+
+            &--bold {
+                font-weight: 500;
+            }
         }
 
         &--smaller {
@@ -477,10 +480,17 @@
         margin: 0 0 5px;
     }
 
+    .instance-details-part {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        height: 22px;
+    }
+
     .dot {
         &:after {
             content: "\00B7";
-            margin-left: 3px;
+            margin-left: 6px;
             margin-right: 3px;
         }
     }
