@@ -73,19 +73,6 @@
                 </div>
             </div>
             <div class="clr-col-12">
-
-<!--                <clr-select-container>-->
-<!--                    <select clrSelect id="vdiProtocol" formControlName="vdiProtocol">-->
-<!--                        <option *ngFor="let protocol of availableVdiProtocols" [ngValue]="protocol">-->
-<!--                            <div class="protocol-details">-->
-<!--                                <div class="protocol-name">{{ protocol.name }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>-->
-<!--                            </div>-->
-<!--                        </option>-->
-<!--                    </select>-->
-<!--                    <clr-control-helper>Please select a VDI protocol (the image protocols must include GUACD and/or WEBX</clr-control-helper>-->
-<!--                </clr-select-container>-->
-
-<!--                <ng-select [(ngModel)]="vdiProtocol" [searchable]="false" [clearable]="false" class="vdi-protocol-select">-->
                 <ng-select formControlName="vdiProtocol" bindLabel="name" [searchable]="false" [clearable]="false" class="vdi-protocol-select">
                     <ng-option *ngFor="let protocol of availableVdiProtocols" [value]="protocol">
                         <div class="protocol-details">
