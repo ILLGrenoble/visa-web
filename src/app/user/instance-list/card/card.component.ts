@@ -118,10 +118,16 @@ export class CardComponent implements OnInit, OnDestroy {
             data: {instance: this.instance},
         });
 
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
+        dialogRef.afterClosed().subscribe(({instance, reboot}) => {
+            if (instance) {
                 this.notifierService.notify('success', 'Successfully updated instance details');
                 this.doUpdateParent.next();
+            }
+            if (reboot) {
+                this.accountService.instanceReboot(this.instance).subscribe((instance) => {
+                    this.instance = instance;
+                    this.notifierService.notify('success', 'Rebooting instance');
+                });
             }
         });
     }
@@ -303,6 +309,7 @@ export class CardComponent implements OnInit, OnDestroy {
         this._instance.deleteRequested = event.deleteRequested;
         this._instance.unrestrictedAccess = event.unrestrictedMemberAccess;
         this._instance.activeProtocols = event.activeProtocols;
+        this._instance.vdiProtocol = event.vdiProtocol ? event.vdiProtocol : this._instance.vdiProtocol;
 
         this.onStateChanged();
     }

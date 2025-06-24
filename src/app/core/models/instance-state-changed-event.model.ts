@@ -1,3 +1,4 @@
+import {Protocol} from "./protocol.model";
 
 export interface InstanceStateChangedEvent {
     instanceId: number;
@@ -11,4 +12,5 @@ export interface InstanceStateChangedEvent {
     deleteRequested: boolean;
     unrestrictedMemberAccess: boolean;
     activeProtocols: string[];
+    vdiProtocol: Protocol;
 }

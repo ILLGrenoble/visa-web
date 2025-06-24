@@ -18,3 +18,38 @@
     color: #f5550d;
     font-size: 0.7rem;
 }
+
+.warning-label {
+    color: #ff9900;
+    font-size: 0.7rem;
+}
+
+.details-section {
+    margin-top: 12px;
+}
+
+.flex-row-center-align {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 8px;
+}
+
+.protocol-details {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+
+    .protocol-name {
+        font-weight: 500;
+        width: 90px;
+    }
+    .protocol-description {
+        font-weight: 300;
+    }
+}
+
+.change-vdi-protocol-warning {
+    margin: 8px 0;
+}

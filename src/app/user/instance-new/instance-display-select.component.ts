@@ -205,6 +205,16 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
         this.destroy$.unsubscribe();
     }
 
+    getProtocolName(protocol: Protocol): string {
+        if (protocol.name === 'GUACD') {
+            return 'Guacamole';
+
+        } else if (protocol.name === 'WEBX') {
+            return 'WebX';
+        }
+        return protocol.name;
+    }
+
     getProtocolDescription(protocol: Protocol): string {
         if (protocol.name === 'GUACD') {
             return 'Proven remote desktop protocol but can have noticeable latency and limited graphical quality';

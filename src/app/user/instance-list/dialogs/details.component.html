@@ -1,13 +1,16 @@
 <h1 mat-dialog-title style="margin-bottom: 0px;">Instance Details</h1>
 <div mat-dialog-content style="display: flex;flex-direction: column;">
     <form name="instance" [formGroup]="form"  clrForm clrLayout="horizontal">
-        <div class="clr-row">
+        <div class="clr-row details-section">
             <div class="clr-col-12">
                 <h5 style="margin-top: 0">Name</h5>
                 <p style="margin-top: 5px; margin-bottom: 5px">
                     Give your compute instance an identifying name you will remember it by.
                 </p>
             </div>
+        </div>
+
+        <div class="clr-row details-section">
             <div class="clr-col-12">
 
                 <input formControlName="name" type="text" class="clr-input" name="name" style="width: 100%"
@@ -24,6 +27,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="clr-row details-section">
             <div class="clr-col-12">
                 <h5 style="margin-top: 0.5rem">Notes</h5>
                 <p style="margin-top: 5px">
@@ -38,6 +44,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="clr-row details-section">
             <div class="clr-col-12">
                 <h5 style="margin-top: 0">Member access</h5>
                 <div class="full-access-warning">
@@ -49,9 +58,47 @@
                 </clr-toggle-wrapper>
             </div>
         </div>
+
+        <div class="clr-row details-section">
+            <div class="clr-col-12">
+                <h5 style="margin-top: 0.5rem">Accessing the remote desktop</h5>
+                <p style="margin-top: 5px">
+                    Select the communication protocol to access the remote desktop.
+                </p>
+                <div class="flex-row-center-align warning-label">
+                    <clr-icon shape="warning-standard"></clr-icon>
+                    <div class="change-vdi-protocol-warning">
+                        Changing the remote desktop protocol will reboot your instance!
+                    </div>
+                </div>
+            </div>
+            <div class="clr-col-12">
+
+<!--                <clr-select-container>-->
+<!--                    <select clrSelect id="vdiProtocol" formControlName="vdiProtocol">-->
+<!--                        <option *ngFor="let protocol of availableVdiProtocols" [ngValue]="protocol">-->
+<!--                            <div class="protocol-details">-->
+<!--                                <div class="protocol-name">{{ protocol.name }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>-->
+<!--                            </div>-->
+<!--                        </option>-->
+<!--                    </select>-->
+<!--                    <clr-control-helper>Please select a VDI protocol (the image protocols must include GUACD and/or WEBX</clr-control-helper>-->
+<!--                </clr-select-container>-->
+
+<!--                <ng-select [(ngModel)]="vdiProtocol" [searchable]="false" [clearable]="false" class="vdi-protocol-select">-->
+                <ng-select formControlName="vdiProtocol" bindLabel="name" [searchable]="false" [clearable]="false" class="vdi-protocol-select">
+                    <ng-option *ngFor="let protocol of availableVdiProtocols" [value]="protocol">
+                        <div class="protocol-details">
+                            <div class="protocol-name">{{ getProtocolName(protocol) }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>
+                        </div>
+                    </ng-option>
+                </ng-select>
+            </div>
+        </div>
     </form>
     <div class="modal-footer">
-        <button (click)="onNoClick()" class="btn btn-outline">Cancel</button>
-        <button (click)="submit()" [disabled]="!canSubmit()" class="btn btn-primary">Save</button>
+        <button (click)="cancel()" class="btn btn-outline">Cancel</button>
+        <button *ngIf="!willReboot" (click)="submit()" [disabled]="!canSubmit()" class="btn btn-primary">Save</button>
+        <button *ngIf="willReboot" (click)="submit()" [disabled]="!canSubmit()" class="btn btn-warning">Save and Reboot</button>
     </div>
 </div>

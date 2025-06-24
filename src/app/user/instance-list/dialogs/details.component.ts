@@ -1,9 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {AccountService, Instance} from '@core';
+import {AccountService, Instance, Protocol} from '@core';
 import {InstanceForm} from '@shared';
 import {filter} from 'rxjs/operators';
 import {AbstractControl} from "@angular/forms";
+import {ImageProtocol} from "../../../core/graphql";
 
 @Component({
     selector: 'visa-instance-list-details-dialog',
@@ -25,6 +26,9 @@ export class DetailsDialog implements OnInit {
     private _keyboardLayout: string;
 
     private _unrestrictedAccess: boolean;
+
+    private _availableVdiProtocols: Protocol[] = null;
+    private _originalVdiProtocol: Protocol;
 
     get form(): InstanceForm {
         return this._form;
@@ -58,6 +62,14 @@ export class DetailsDialog implements OnInit {
         this._unrestrictedAccess = value;
     }
 
+    get availableVdiProtocols(): Protocol[] {
+        return this._availableVdiProtocols;
+    }
+
+    get willReboot(): boolean {
+        return this._originalVdiProtocol != this.form.value.vdiProtocol;
+    }
+
     constructor(
         public dialogRef: MatDialogRef<DetailsDialog>,
         private accountService: AccountService,
@@ -74,6 +86,9 @@ export class DetailsDialog implements OnInit {
         this._keyboardLayout = instance.keyboardLayout;
         this.unrestrictedAccess = instance.unrestrictedAccess;
 
+        const image = instance.plan.image;
+        this._availableVdiProtocols = image.availableVdiProtocols();
+        this._originalVdiProtocol = this._originalVdiProtocol = instance.vdiProtocol ? this._availableVdiProtocols.find(protocol => protocol.id === instance.vdiProtocol.id) : null;
     }
 
     public isValidData(): boolean {
@@ -93,11 +108,11 @@ export class DetailsDialog implements OnInit {
             screenHeight: data.screenResolution.height,
             keyboardLayout: data.keyboardLayout,
             unrestrictedAccess: data.unrestrictedAccess,
-        }).subscribe((instance) => this.dialogRef.close(instance));
-    }
+            vdiProtocolId: data.vdiProtocol.id,
+        }).subscribe((instance) => {
 
-    public onNoClick(): void {
-        this.dialogRef.close();
+            this.dialogRef.close({instance, reboot: this.willReboot});
+        });
     }
 
     public ngOnInit(): void {
@@ -107,13 +122,37 @@ export class DetailsDialog implements OnInit {
         this.form.get('screenResolution').setValue(this._screenResolution);
         this.form.get('keyboardLayout').setValue(this._keyboardLayout);
         this.form.get('unrestrictedAccess').setValue(this.unrestrictedAccess);
+        this.form.get('vdiProtocol').setValue(this._originalVdiProtocol);
         // Disable the form if the user is not the owner
         if (this.instance.membership.role !== 'OWNER') {
             this.form.disable();
         }
 
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
+        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.cancel());
+        this.dialogRef.backdropClick().subscribe(() => this.cancel());
     }
 
+    getProtocolName(protocol: Protocol): string {
+        if (protocol.name === 'GUACD') {
+            return 'Guacamole';
+
+        } else if (protocol.name === 'WEBX') {
+            return 'WebX';
+        }
+        return protocol.name;
+    }
+
+    getProtocolDescription(protocol: Protocol): string {
+        if (protocol.name === 'GUACD') {
+            return 'Proven remote desktop protocol but can have noticeable latency and limited graphical quality';
+
+        } else if (protocol.name === 'WEBX') {
+            return 'Experimental remote desktop protocol with low latency and high graphical quality';
+        }
+        return null;
+    }
+
+    cancel() {
+        this.dialogRef.close({instance: null, reboot: false});
+    }
 }

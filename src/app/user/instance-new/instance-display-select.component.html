@@ -52,7 +52,7 @@
     <ng-select [(ngModel)]="vdiProtocol" [searchable]="false" [clearable]="false" class="vdi-protocol-select">
         <ng-option *ngFor="let protocol of availableVdiProtocols" [value]="protocol">
             <div class="protocol-details">
-                <div class="protocol-name">{{ protocol.name }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>
+                <div class="protocol-name">{{ getProtocolName(protocol) }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>
             </div>
         </ng-option>
     </ng-select>
