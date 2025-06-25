@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="clr-row details-section">
+        <div *ngIf="availableVdiProtocols?.length > 1" class="clr-row details-section">
             <div class="clr-col-12">
                 <h5 style="margin-top: 0.5rem">Accessing the remote desktop</h5>
                 <p style="margin-top: 5px">

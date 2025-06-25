@@ -33,14 +33,14 @@
     </ng-select>
 </div>
 
-<clr-toggle-container clrInline>
+<clr-toggle-container clrInline *ngIf="advancedSettingsAvailable">
     <clr-toggle-wrapper>
         <input type="checkbox" clrToggle name="experimentFree" [(ngModel)]="showAdvancedSettings"/>
         <label>Advanced display settings</label>
     </clr-toggle-wrapper>
 </clr-toggle-container>
 
-<div *ngIf="showAdvancedSettings">
+<div *ngIf="showAdvancedSettings && advancedSettingsAvailable">
     <div class="section-title">
         <h3>Accessing the remote desktop</h3>
     </div>

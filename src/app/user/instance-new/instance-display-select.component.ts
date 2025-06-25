@@ -116,6 +116,10 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
         localStorage.setItem(InstanceDisplaySelectComponent.USER_INSTANCE_VDI_PROTOCOL_KEY, value.name);
     }
 
+    get advancedSettingsAvailable(): boolean {
+        return this._availableVdiProtocols != null && this._availableVdiProtocols.length > 1;
+    }
+
     get showAdvancedSettings(): boolean {
         return this._showAdvancedSettings;
     }
