@@ -91,6 +91,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
                                   id
                                   name
                                 }
+                                secondaryVdiProtocol {
+                                  id
+                                  name
+                                }
                             }
                             cloudClients {
                                 id
@@ -135,6 +139,10 @@ export class ImagesComponent implements OnInit, OnDestroy {
                               icon
                               computeId
                               defaultVdiProtocol {
+                                id
+                                name
+                              }
+                              secondaryVdiProtocol {
                                 id
                                 name
                               }

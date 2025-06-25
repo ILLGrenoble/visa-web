@@ -42,6 +42,21 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             autologin: new FormControl(null),
             bootCommand: new FormControl(null),
             defaultVdiProtocol: new FormControl(null, Validators.required),
+            secondaryVdiProtocol: new FormControl(null, this._secondaryVdiProtocolValidator.bind(this)),
+        });
+
+        this._form.get('defaultVdiProtocol')?.valueChanges.subscribe(() => {
+            this._form.get('secondaryVdiProtocol')?.updateValueAndValidity();
+        });
+
+        this._form.get('protocols')?.valueChanges.subscribe(protocols => {
+            const availableGuacamoleProtocols = protocols.filter(protocol => ['RDP', 'VNC'].includes(protocol.name));
+            if (availableGuacamoleProtocols.length === 1) {
+                this._form.controls.secondaryVdiProtocol.setValue(availableGuacamoleProtocols[0]);
+            }
+            if (availableGuacamoleProtocols.length === 0) {
+                this._form.controls.secondaryVdiProtocol.setValue(null);
+            }
         });
 
         if (image) {
@@ -54,6 +69,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         } else {
             this._title = `Create image`;
         }
+
     }
 
     get form(): FormGroup {
@@ -77,8 +93,13 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     get availableVdiProtocols(): ImageProtocol[] {
-        const selectedProtocols = this._form.value.protocols || [];
+        const selectedProtocols = this._form?.value.protocols || [];
         return selectedProtocols.filter(protocol => ['GUACD', 'WEBX'].includes(protocol.name));
+    }
+
+    get availableGuacamoleProtocols(): ImageProtocol[] {
+        const selectedProtocols = this._form?.value.protocols || [];
+        return selectedProtocols.filter(protocol => ['RDP', 'VNC'].includes(protocol.name));
     }
 
     get icons(): string[] {
@@ -95,6 +116,10 @@ export class ImageEditComponent implements OnInit, OnDestroy {
 
     get multiCloudEnabled(): boolean {
         return this._multiCloudEnabled;
+    }
+
+    public isGuacamoleAvailable(): boolean {
+        return this.availableVdiProtocols.map(protocol => protocol.name).includes('GUACD');
     }
 
     public compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
@@ -129,6 +154,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             description,
             protocols,
             defaultVdiProtocol,
+            secondaryVdiProtocol,
             autologin,
             bootCommand
         } = image;
@@ -139,12 +165,19 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             visible,
             protocols,
             defaultVdiProtocol,
+            secondaryVdiProtocol,
             autologin,
             bootCommand,
             description,
             cloudClient,
             cloudImage
         });
+
+        if (secondaryVdiProtocol == null && this.isGuacamoleAvailable()) {
+            if (this.availableGuacamoleProtocols.length === 1) {
+                this._form.controls.secondaryVdiProtocol.setValue(this.availableGuacamoleProtocols[0]);
+            }
+        }
 
         // Initialise cloud flavours with current cloud flavour
         this._cloudImages = [null, cloudImage];
@@ -224,7 +257,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, autologin, bootCommand} = this.form.value;
+        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, secondaryVdiProtocol, autologin, bootCommand} = this.form.value;
         const input = {
             name,
             version,
@@ -235,9 +268,17 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             visible,
             protocolIds: protocols.map(protocol => protocol.id),
             defaultVdiProtocolId: defaultVdiProtocol.id,
+            secondaryVdiProtocolId: secondaryVdiProtocol?.id,
             bootCommand,
             autologin
         } as ImageInput;
         this._onSave$.next(input);
+    }
+
+    private _secondaryVdiProtocolValidator(control: FormControl): { [key: string]: boolean } | null {
+        if (this.isGuacamoleAvailable() && !control.value) {
+            return { required: true };
+        }
+        return null;
     }
 }

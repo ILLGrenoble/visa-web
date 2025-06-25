@@ -54,7 +54,15 @@
                 <select clrSelect id="vdiProtocol" formControlName="defaultVdiProtocol" [compareWith]="compareProtocol">
                     <option *ngFor="let imageProtocol of availableVdiProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
                 </select>
-                <clr-control-helper>Please select a default VDI protocol (the image protocols must include GUACD and/or WEBX</clr-control-helper>
+                <clr-control-helper>Please select a default VDI protocol (the image protocols must include GUACD and/or WEBX)</clr-control-helper>
+            </clr-select-container>
+
+            <clr-select-container *ngIf="isGuacamoleAvailable()">
+                <label for="image">Guacamole Protocol</label>
+                <select clrSelect id="guacamoleRDProtocol" formControlName="secondaryVdiProtocol" [compareWith]="compareProtocol">
+                    <option *ngFor="let imageProtocol of availableGuacamoleProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
+                </select>
+                <clr-control-helper>Please select a remote desktop protocol that will be used by Guacamole (the image protocols must include RDP)</clr-control-helper>
             </clr-select-container>
 
             <clr-select-container>
