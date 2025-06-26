@@ -538,6 +538,7 @@ export type CloudClientInput = {
 
 export type SystemNotificationInput = {
     level: Scalars['String'];
+    type: Scalars['String'];
     message: Scalars['String'];
     activatedAt?: Maybe<Scalars['String']>;
 };
@@ -603,6 +604,7 @@ export type SystemNotification = {
     __typename?: 'SystemNotification';
     id: Scalars['Int'];
     level: Scalars['String'];
+    type: Scalars['String'];
     message: Scalars['String'];
     activatedAt?: Maybe<Scalars['String']>;
 };

@@ -9,12 +9,17 @@ import {
     selectLoggedInUser,
     User,
     Configuration,
-    EventsGateway, GatewayEventSubscriber
+    EventsGateway, GatewayEventSubscriber, NotificationService, NotificationPayload, SystemNotification
 } from '@core';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {filter, takeUntil, tap} from 'rxjs/operators';
+import {BehaviorSubject, forkJoin, Observable, Subject} from 'rxjs';
+import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {Store} from '@ngrx/store';
+import {MatDialog} from "@angular/material/dialog";
+import {NotificationUpdateComponent} from "../../admin/components";
+import {UserNotificationDialog} from "./dialogs";
+import PluginHandler from "highcharts/dashboards/es-modules/Dashboards/PluginHandler";
+import revision = PluginHandler.revision;
 
 @Component({
     styleUrls: ['./home.component.scss'],
@@ -98,6 +103,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                 private route: ActivatedRoute,
                 store: Store<ApplicationState>,
                 private configService: ConfigService,
+                private notificationService: NotificationService,
+                private dialog: MatDialog,
                 private eventsGateway: EventsGateway) {
         this._user$ = store.select(selectLoggedInUser);
     }
@@ -128,7 +135,38 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this._configuration = configuration;
             });
 
+        forkJoin([
+            this.notificationService.getAll(),
+            this.notificationService.getAllAcknowledged()
+        ]).pipe(take(1))
+            .subscribe((response) => {
+                const acknowledgedNotifications: number[] = response[1];
+                const newNotifications = response[0].systemNotifications
+                    .filter(notification => notification.type === 'MODAL')
+                    .filter(notification => {
+                        return !acknowledgedNotifications.includes(notification.id);
+                    })
+                    .reverse();
+
+                    this.showNotificationDialog(newNotifications);
+            });
+
         this.bindEventGatewayListeners();
+    }
+
+    private showNotificationDialog(notifications: SystemNotification[]): void {
+        if (notifications.length > 0) {
+            const oldestNotification = notifications[0];
+            const dialogRef = this.dialog.open(UserNotificationDialog, {
+                width: '700px', data: { notification: oldestNotification },
+            });
+
+            dialogRef.componentInstance.onAck$.subscribe(() => {
+                notifications.shift();
+                this.notificationService.acknowledgeNotification(oldestNotification.id).subscribe();
+                this.showNotificationDialog(notifications);
+            })
+        }
     }
 
     public ngOnDestroy(): void {

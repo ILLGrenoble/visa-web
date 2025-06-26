@@ -4,6 +4,7 @@ import {SharedModule} from '@shared';
 import {InstanceListModule} from '../instance-list';
 import {InstanceNewModule} from '../instance-new/instance-new.module';
 import {HomeComponent} from './home.component';
+import {UserNotificationDialog} from "./dialogs";
 
 @NgModule({
     imports: [
@@ -14,6 +15,7 @@ import {HomeComponent} from './home.component';
     ],
     declarations: [
         HomeComponent,
+        UserNotificationDialog,
     ]
 })
 export class HomeModule {

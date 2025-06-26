@@ -15,6 +15,7 @@ interface SystemNotificationHolder {
     id: number,
     message: string;
     level: string;
+    type: string;
     activated: boolean;
     activatedAt: string;
     originalText: string;
@@ -28,6 +29,7 @@ interface SystemNotificationHolder {
 export class NotificationsComponent implements OnInit {
 
     public notifications: SystemNotificationHolder[];
+    private activeNotification: SystemNotificationHolder;
 
     constructor(private apollo: Apollo,
                 private notifierService: NotifierService,
@@ -48,6 +50,7 @@ export class NotificationsComponent implements OnInit {
             id: null,
             message: '',
             level: 'INFO',
+            type: 'BANNER',
             activatedAt: null,
             activated: false,
             originalText: '',
@@ -71,7 +74,7 @@ export class NotificationsComponent implements OnInit {
             });
             dialogRef.componentInstance.onUpdate$.subscribe(() => {
                 notification.activatedAt = notification.activatedAt != null ? moment(new Date()).format('YYYY-MM-DD hh:mm:ss') : null;
-                this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt})
+                this.update(notification.id, {level: notification.level, type: notification.type, message: notification.message, activatedAt: notification.activatedAt})
                     .subscribe(() => this.onDataChange(notification));
             });
 
@@ -88,13 +91,14 @@ export class NotificationsComponent implements OnInit {
         if (notification.id) {
             notification.activatedAt = notification.activatedAt != null ? moment(new Date()).format('YYYY-MM-DD hh:mm:ss') : null;
 
-            this.update(notification.id, {level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).subscribe({
+            this.update(notification.id, {level: notification.level, type: notification.type, message: notification.message, activatedAt: notification.activatedAt}).subscribe({
                next: (data) => {
                     notification.message = data.message;
                     notification.originalText = data.message;
                     notification.activatedAt = data.activatedAt;
                     notification.activated = notification.activatedAt != null;
                     notification.level = data.level;
+                    notification.type = data.type;
 
                     this.showNotification('The system notification has been updated');
                 },
@@ -105,7 +109,7 @@ export class NotificationsComponent implements OnInit {
             });
 
         } else {
-            this.create({level: notification.level, message: notification.message, activatedAt: notification.activatedAt}).subscribe({
+            this.create({level: notification.level, type: notification.type, message: notification.message, activatedAt: notification.activatedAt}).subscribe({
                 next: (data) => {
                     notification.id = data.id;
                     notification.message = data.message;
@@ -113,6 +117,7 @@ export class NotificationsComponent implements OnInit {
                     notification.activatedAt = data.activatedAt;
                     notification.activated = notification.activatedAt != null;
                     notification.level = data.level;
+                    notification.type = data.type;
 
                     this.showNotification('The system notification has been created');
                 },
@@ -162,16 +167,28 @@ export class NotificationsComponent implements OnInit {
                 systemNotifications {
                     id
                     level
+                    type
                     message
                     activatedAt
                 }
             }`,
             }).pipe(
                 map(({data}) => {
-                    return data.systemNotifications.map(({id, message, level, activatedAt}) => ({
-                        id, message, level, activatedAt, originalText: message, activated: activatedAt !== null
+                    return data.systemNotifications.map(({id, message, level, type, activatedAt}) => ({
+                        id, message, level, type, activatedAt, originalText: message, activated: activatedAt !== null
                     }));
                 }));
+    }
+
+    setActiveNotification(notification: SystemNotificationHolder): void {
+        this.activeNotification = notification;
+    }
+
+    getMessageRows(notification: SystemNotificationHolder): number {
+        if (this.activeNotification?.id === notification.id) {
+            return 10;
+        }
+        return 1;
     }
 
     private create(input: SystemNotificationInput): Observable<SystemNotification> {
@@ -181,6 +198,7 @@ export class NotificationsComponent implements OnInit {
                     createSystemNotification(input: $input) {
                         id
                         level
+                        type
                         message
                         activatedAt
                     }
@@ -199,6 +217,7 @@ export class NotificationsComponent implements OnInit {
                     updateSystemNotification(id: $id, input:$input) {
                         id
                         level
+                        type
                         message
                         activatedAt
                     }
@@ -217,6 +236,7 @@ export class NotificationsComponent implements OnInit {
                 deleteSystemNotification(id: $id) {
                     id
                     level
+                    type
                     message
                     activatedAt
                 }

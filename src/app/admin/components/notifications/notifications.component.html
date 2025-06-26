@@ -6,6 +6,7 @@
             <thead>
                 <tr>
                     <th>Message</th>
+                    <th>Type</th>
                     <th>Level</th>
                     <th></th>
                     <th></th>
@@ -14,7 +15,22 @@
             <tbody>
                 <tr *ngFor="let notification of notifications">
                     <td class="left">
-                        <input name="message" type="text" [(ngModel)]="notification.message" class="clr-input message" (change)="onTextChange(notification)" size="150" />
+                        <input *ngIf="notification.type != 'MODAL'" name="message" type="text" [(ngModel)]="notification.message" class="clr-input message" (change)="onTextChange(notification)" size="150" (focus)="setActiveNotification(notification)"/>
+                        <clr-textarea-container *ngIf="notification.type == 'MODAL'" class="message-textarea-container">
+                            <textarea clrTextarea name="message" type="text" class="message-textarea" [(ngModel)]="notification.message" (change)="onTextChange(notification)" cols="150" [rows]="getMessageRows(notification)" (focus)="setActiveNotification(notification)"></textarea>
+                            <clr-control-helper>Text can be entered in markdown</clr-control-helper>
+                        </clr-textarea-container>
+                        <div class="message-error" *ngIf="notification.message.length > 4096">
+                            Maximum length of message is 4096 characters
+                        </div>
+                    </td>
+                    <td>
+                        <div class="clr-select-wrapper type">
+                            <select [(ngModel)]="notification.type" required (change)="onDataChange(notification)">
+                                <option value="BANNER">Banner</option>
+                                <option value="MODAL">Modal</option>
+                            </select>
+                        </div>
                     </td>
                     <td>
                         <div class="clr-select-wrapper level">

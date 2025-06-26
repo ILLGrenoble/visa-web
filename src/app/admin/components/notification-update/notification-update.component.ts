@@ -49,4 +49,8 @@ export class NotificationUpdateComponent implements OnInit {
         this._dialogRef.close();
     }
 
+    public canUpdate(): boolean {
+        return this._notification.message.length <= 4096;
+    }
+
 }

@@ -25,6 +25,9 @@ export class SystemNotification {
     @JsonProperty('level', String)
     private _level: string = undefined;
 
+    @JsonProperty('type', String)
+    private _type: string = undefined;
+
     @JsonProperty('createdAt', DateConverter)
     private _createdAt: string = undefined;
 
@@ -50,6 +53,14 @@ export class SystemNotification {
 
     set level(value: string) {
         this._level = value;
+    }
+
+    get type(): string {
+        return this._type;
+    }
+
+    set type(value: string) {
+        this._type = value;
     }
 
     get createdAt(): string {

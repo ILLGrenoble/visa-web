@@ -1,9 +1,17 @@
 
 <h1 mat-dialog-title>Update notification</h1>
 <div mat-dialog-content>
-    <p>Are you sure you want to update the notification?</p>
-    <div class="modal-footer">
-        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-        <button (click)="onUpdate()" class="btn btn-primary">Update</button>
+    <div *ngIf="canUpdate()">
+        <p>Are you sure you want to update the notification?</p>
+        <div class="modal-footer">
+            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+            <button (click)="onUpdate()" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+    <div *ngIf="!canUpdate()">
+        <p>Cannot update the notification as errors exist</p>
+        <div class="modal-footer">
+            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        </div>
     </div>
 </div>

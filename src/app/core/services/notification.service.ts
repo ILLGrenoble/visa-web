@@ -36,4 +36,17 @@ export class NotificationService {
         );
     }
 
+    public getAllAcknowledged(): Observable<number[]> {
+        const notificationUrl = `${environment.paths.api}/notifications/acknowledged`;
+
+        return this.http.get<Response<number[]>>(notificationUrl).pipe(
+            map((response) => response.data));
+    }
+
+    public acknowledgeNotification(notificationId: number): Observable<boolean> {
+        const notificationUrl = `${environment.paths.api}/notifications/acknowledged`;
+
+        return this.http.post<Response<number>>(notificationUrl, notificationId).pipe(
+            map(() => true));
+    }
 }

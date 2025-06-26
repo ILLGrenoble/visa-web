@@ -1,0 +1,10 @@
+<div mat-dialog-content>
+    <div class="documentation-page-content">
+        <markdown [data]="notification?.message">
+        </markdown>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="submit()" class="btn btn-primary">Got it!</button>
+    </div>
+</div>

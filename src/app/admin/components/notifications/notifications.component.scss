@@ -1,12 +1,29 @@
-.level{
+.level {
     margin-top: 10px;
 }
 
-.message{
+.type {
     margin-top: 10px;
 }
 
-.addButton{
+.message {
+    margin-top: 10px;
+}
+
+.message-textarea-container {
+    margin-top: 0;
+}
+
+.message-textarea {
+    border: 1px solid #ccc;
+}
+
+.message-error {
+    color: red;
+    font-size: 0.55rem;
+    margin-top: 5px;
+}
+.addButton {
    float: right;
 }
 

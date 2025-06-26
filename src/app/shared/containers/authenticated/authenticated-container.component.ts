@@ -69,9 +69,11 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
     }
 
     private filterSystemNotifications(systemNotifications: SystemNotification[]): void {
-        this.systemNotifications = systemNotifications.filter(notification => {
-            return !this.dismissedSystemNotifications.includes(notification.uid);
-        });
+        this.systemNotifications = systemNotifications
+            .filter(notification => notification.type == null || notification.type === 'BANNER')
+            .filter(notification => {
+                return !this.dismissedSystemNotifications.includes(notification.uid);
+            });
     }
 
     private cleanDismissedSystemNotifications(systemNotifications: SystemNotification[]): void {
