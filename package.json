@@ -37,7 +37,7 @@
     "@clr/ui": "^13.16.0",
     "@ctrl/ngx-codemirror": "^7.0.0",
     "@illgrenoble/ngx-fs-client": "^1.2.0",
-    "@illgrenoble/visa-print-client": "^1.2.1",
+    "@illgrenoble/visa-print-client": "^1.2.2",
     "@illgrenoble/webx-client": "^1.9.6",
     "@ng-select/ng-select": "^10.0.4",
     "@ngrx/effects": "^15.4.0",
