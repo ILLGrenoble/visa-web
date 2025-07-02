@@ -72,12 +72,21 @@
                 </select>
             </clr-select-container>
             <clr-select-container>
-                <label for="autologin">Autologin</label>
+                <label for="autologin">Auto Login</label>
                 <select clrSelect id="autologin" formControlName="autologin">
                     <option value=""></option>
                     <option value="VISA_PAM">VISA PAM</option>
                 </select>
                 <clr-control-helper>Automatic login is possible if the VISA PAM module has been installed in the image</clr-control-helper>
+            </clr-select-container>
+            <clr-select-container>
+                <label for="autoAcceptExtension">Auto Grant Extension</label>
+                <select clrSelect id="autoAcceptExtension" formControlName="autoAcceptExtensionRequest">
+                    <option value="NONE">No one</option>
+                    <option value="STAFF">Staff only</option>
+                    <option value="ALL">Everyone</option>
+                </select>
+                <clr-control-helper>Automatically accepts instance extension requests</clr-control-helper>
             </clr-select-container>
             <clr-textarea-container>
                 <label for="bootCommand">Boot command</label>

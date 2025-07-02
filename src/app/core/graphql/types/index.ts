@@ -149,6 +149,7 @@ export type Image = {
     secondaryVdiProtocol?: Maybe<ImageProtocol>;
     bootCommand: Scalars['String'];
     cloudClient?: Maybe<CloudClient>;
+    autoAcceptExtensionRequest: Maybe<Scalars['String']>;
 };
 
 export type ImageConnection = {
@@ -495,6 +496,7 @@ export type ImageInput = {
     secondaryVdiProtocolId?: Maybe<Scalars['Int']>;
     bootCommand?: Maybe<Scalars['String']>;
     autologin?: Maybe<Scalars['String']>;
+    autoAcceptExtensionRequest?: Maybe<Scalars['String']>;
 };
 
 export type UserInput = {

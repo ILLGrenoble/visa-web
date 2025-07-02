@@ -40,6 +40,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             description: new FormControl(null),
             protocols: new FormControl(null),
             autologin: new FormControl(null),
+            autoAcceptExtensionRequest: new FormControl(null),
             bootCommand: new FormControl(null),
             defaultVdiProtocol: new FormControl(null, Validators.required),
             secondaryVdiProtocol: new FormControl(null, this._secondaryVdiProtocolValidator.bind(this)),
@@ -156,6 +157,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             defaultVdiProtocol,
             secondaryVdiProtocol,
             autologin,
+            autoAcceptExtensionRequest,
             bootCommand
         } = image;
         this.form.reset({
@@ -167,6 +169,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             defaultVdiProtocol,
             secondaryVdiProtocol,
             autologin,
+            autoAcceptExtensionRequest: autoAcceptExtensionRequest == null ? 'NONE' : autoAcceptExtensionRequest,
             bootCommand,
             description,
             cloudClient,
@@ -257,7 +260,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, secondaryVdiProtocol, autologin, bootCommand} = this.form.value;
+        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, secondaryVdiProtocol, autologin, autoAcceptExtensionRequest, bootCommand} = this.form.value;
         const input = {
             name,
             version,
@@ -270,7 +273,8 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             defaultVdiProtocolId: defaultVdiProtocol.id,
             secondaryVdiProtocolId: secondaryVdiProtocol?.id,
             bootCommand,
-            autologin
+            autologin,
+            autoAcceptExtensionRequest,
         } as ImageInput;
         this._onSave$.next(input);
     }
