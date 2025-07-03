@@ -1,3 +1,18 @@
+3.4.0 03/07/2025
+================
+ * Update image creation admin interface to set auto accepting instance extension requests on the image.
+ * Update to VISA Print Client to 1.2.3
+ * Update to WebX Client to 1.9.6
+ * Add new type of system notifications: modal (banner is the old type). Show new notifications to the user in the home page. When clicking on "got it" the notification is acknowledged (saved in the db) and not shown again.
+ * Only show vdi protocol options to users if more than one option is available.
+ * Use the secondary vdi protocol in the image: if guacamole is in the list of image protocols the secondary protocol is set so that we know which remote desktop protocol to use with guacamole.
+ * Remove legacy WebX (beta) code (WebX integrated as a first-class remote desktop protocol)
+ * Modify instance details page so that the instance vdi protocol can be changed. A change will reboot the instance automatically.
+ * Add choice of vdi protocol as an advanced display option when creating an instance. Show vdi protocol on card for admin user. Server sends full vdi protocol object with an instance and not just the name
+ * Update image creation and edition to set a default VDI protocol
+ * Only a single vdi protocol per instance: use protocol sent via the DTO from the server. Remove beta connect button. Show instance vdi protocol in admin pages.
+ * Display instance session protocol type in admin pages. Support connects to latest session protocol type. Shared users can only connect to the latest session protocol type.
+
 3.3.2 17/06/2025
 ================
  * Start clipboard service after remote desktop is connected.
