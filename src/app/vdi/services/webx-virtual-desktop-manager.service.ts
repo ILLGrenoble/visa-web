@@ -163,7 +163,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
         const container = this.getClient().getDisplay().getElement();
 
-        this._client.initialise(container, {useDefaultMouseAdapter: false, useDefaultKeyboardAdapter: false, connectionStatusCallback: (status: WebXConnectionStatus) => {
+        this._client.initialise(container, {useDefaultMouseAdapter: false, useDefaultKeyboardAdapter: false, waitForConnectionWithTimeout: 20000, connectionStatusCallback: (status: WebXConnectionStatus) => {
                 if (status === WebXConnectionStatus.STARTING) {
                     this.setState(VirtualDesktopManager.STATE.WAITING);
                 }
