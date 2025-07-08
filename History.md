@@ -1,3 +1,8 @@
+3.4.1 08/07/2025
+================
+ * Add 'waiting' stage to the remote desktop connection. When the connection is established but we're waiting for Xorg to start then show the waiting message.
+ * Update to webx-client 1.10.2 to handle asynchronous webx session creations.
+
 3.4.0 03/07/2025
 ================
  * Update image creation admin interface to set auto accepting instance extension requests on the image.
