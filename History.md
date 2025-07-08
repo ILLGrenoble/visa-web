@@ -1,5 +1,6 @@
 3.4.2 08/07/2025
 ================
+ * Increase default connection timeout for WebX
  * Fix typo in "waiting" description
 
 3.4.1 08/07/2025
