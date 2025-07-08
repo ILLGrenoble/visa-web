@@ -1,3 +1,7 @@
+3.4.2 08/07/2025
+================
+ * Fix typo in "waiting" description
+
 3.4.1 08/07/2025
 ================
  * Add 'waiting' stage to the remote desktop connection. When the connection is established but we're waiting for Xorg to start then show the waiting message.
