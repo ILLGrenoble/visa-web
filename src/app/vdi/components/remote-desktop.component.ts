@@ -15,6 +15,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 
 import {VirtualDesktopManager} from '../services';
 import {ConnectingMessageComponent} from './messages/connecting-message.component';
+import {WaitingMessageComponent} from "./messages/waiting-message.component";
 import {DisconnectedMessageComponent} from './messages/disconnected-message.component';
 import {ErrorMessageComponent} from './messages/error-message.component';
 import screenfull from 'screenfull';
@@ -61,6 +62,19 @@ import screenfull from 'screenfull';
                     </ngx-remote-desktop-message>
                 </div>
                 <!-- End connecting message -->
+
+                <!-- Waiting message -->
+                <div *ngIf="(state|async) === states.WAITING">
+                    <div class="ngx-remote-desktop-message" *ngIf="waitingMessage">
+                        <ng-content select="ngx-remote-desktop-waiting-message"></ng-content>
+                    </div>
+                    <ngx-remote-desktop-message *ngIf="!waitingMessage"
+                                                title="Waiting for the remote desktop"
+                                                message="Connection to the server established. Waiting for the remote desktop to be start..."
+                                                type="success">
+                    </ngx-remote-desktop-message>
+                </div>
+                <!-- End waiting message -->
 
                 <!-- Disconnected message -->
                 <div *ngIf="(state|async) === states.DISCONNECTED">
@@ -168,6 +182,7 @@ export class RemoteDesktopComponent {
      */
     public states = {
         CONNECTING: 'CONNECTING',
+        WAITING: 'WAITING',
         CONNECTED: 'CONNECTED',
         DISCONNECTED: 'DISCONNECTED',
         ERROR: 'ERROR'
@@ -180,6 +195,9 @@ export class RemoteDesktopComponent {
 
     @ContentChild(ConnectingMessageComponent)
     public connectingMessage: ConnectingMessageComponent;
+
+    @ContentChild(WaitingMessageComponent)
+    public waitingMessage: WaitingMessageComponent;
 
     @ContentChild(DisconnectedMessageComponent)
     public disconnectedMessage: DisconnectedMessageComponent;
@@ -244,8 +262,10 @@ export class RemoteDesktopComponent {
                 this.exitFullScreen();
                 this.setState(this.states.DISCONNECTED);
                 break;
-            case VirtualDesktopManager.STATE.CONNECTING:
             case VirtualDesktopManager.STATE.WAITING:
+                this.setState(this.states.WAITING);
+                break;
+            case VirtualDesktopManager.STATE.CONNECTING:
                 this.setState(this.states.CONNECTING);
                 break;
             case VirtualDesktopManager.STATE.CLIENT_ERROR:

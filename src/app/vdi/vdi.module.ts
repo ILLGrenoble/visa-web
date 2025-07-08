@@ -3,6 +3,7 @@ import {Injectable, NgModule} from '@angular/core';
 
 import {
     ConnectingMessageComponent,
+    WaitingMessageComponent,
     DisconnectedMessageComponent,
     DisplayComponent,
     ErrorMessageComponent,
@@ -34,6 +35,7 @@ export class HammerConfig extends HammerGestureConfig {
         ErrorMessageComponent,
         DisconnectedMessageComponent,
         ConnectingMessageComponent,
+        WaitingMessageComponent,
         StatusBarItemComponent,
     ],
     exports: [
@@ -42,6 +44,7 @@ export class HammerConfig extends HammerGestureConfig {
         ErrorMessageComponent,
         DisconnectedMessageComponent,
         ConnectingMessageComponent,
+        WaitingMessageComponent,
         StatusBarItemComponent
     ],
     bootstrap: [RemoteDesktopComponent],

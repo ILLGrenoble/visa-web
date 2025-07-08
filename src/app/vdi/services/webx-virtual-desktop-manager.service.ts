@@ -2,7 +2,7 @@ import {ConnectionParameters, VirtualDesktopManager} from './virtual-desktop-man
 import {WebXClientAdapter } from './webx-virtual-desktop-adapters';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
-import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel, WebXMessage, WebXScreenInstruction, WebXScreenMessage} from '@illgrenoble/webx-client';
+import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel, WebXMessage, WebXScreenInstruction, WebXScreenMessage, WebXConnectionStatus} from '@illgrenoble/webx-client';
 
 class StatsHandler extends WebXStatsHandler {
 
@@ -159,11 +159,15 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
     }
 
     private _onConnected(): void {
-        this.setState(VirtualDesktopManager.STATE.WAITING);
+        this.setState(VirtualDesktopManager.STATE.CONNECTING);
 
         const container = this.getClient().getDisplay().getElement();
 
-        this._client.initialise(container, {useDefaultMouseAdapter: false, useDefaultKeyboardAdapter: false})
+        this._client.initialise(container, {useDefaultMouseAdapter: false, useDefaultKeyboardAdapter: false, connectionStatusCallback: (status: WebXConnectionStatus) => {
+                if (status === WebXConnectionStatus.STARTING) {
+                    this.setState(VirtualDesktopManager.STATE.WAITING);
+                }
+            }})
             .then((display: WebXDisplay) => {
                 // Start animating the display once everything has been initialised
                 display.animate();
