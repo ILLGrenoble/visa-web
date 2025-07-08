@@ -70,7 +70,7 @@ import screenfull from 'screenfull';
                     </div>
                     <ngx-remote-desktop-message *ngIf="!waitingMessage"
                                                 title="Waiting for the remote desktop"
-                                                message="Connection to the server established. Waiting for the remote desktop to be start..."
+                                                message="Connection to the server established. Waiting for the remote desktop to start..."
                                                 type="success">
                     </ngx-remote-desktop-message>
                 </div>
