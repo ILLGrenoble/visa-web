@@ -33,7 +33,7 @@ import {InMemoryCache} from '@apollo/client/core';
                 resourceServer: {
                     sendAccessToken: true,
                     customUrlValidation: (url) => {
-                        const excludedUrls = ['/api/docs/(.*)+', '/api/configuration', '/api/notifications'];
+                        const excludedUrls = ['/api/docs/(.*)+', '/api/configuration', '^/api/notifications$'];
                         for (const excludedUrl of excludedUrls) {
                             if (url.match(excludedUrl)) {
                                 return false;

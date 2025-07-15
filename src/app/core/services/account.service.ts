@@ -385,9 +385,10 @@ export class AccountService {
             .pipe(map((res) => true));
     }
 
-    public getThumbnailUrlForInstanceUid(uid: string): string {
+    public getThumbnailDataForInstanceUid(uid: string): Observable<Blob> {
         const baseUrl = environment.paths.api;
-        return `${baseUrl}/account/instances/${uid}/thumbnail`;
+        const url = `${baseUrl}/account/instances/${uid}/thumbnail`;
+        return this.http.get(url, {responseType: 'blob'});
     }
 
     public getInstanceLifetimeExtension(instance: Instance): Observable<InstanceExtensionRequest> {

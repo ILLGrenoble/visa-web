@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {ApplicationState, ClientNotification, selectAdminNotifications} from '../../../core';
 
@@ -28,7 +28,7 @@ export class NotificationBadgeComponent implements OnInit , OnDestroy {
     }
 
     get isActive(): boolean {
-        return this._clientNotifications.length > 0;
+        return this._clientNotifications?.length > 0;
     }
 
     get count(): number {
@@ -48,6 +48,7 @@ export class NotificationBadgeComponent implements OnInit , OnDestroy {
         this.store.select(selectAdminNotifications)
             .pipe(
                 takeUntil(this._destroy$),
+                filter(clientNotifications => !!clientNotifications),
                 map((clientNotifications: ClientNotification[]) =>
                     clientNotifications.filter((clientNotification: ClientNotification) => {
                         if (this.badgeTags == null || this.badgeTags.length === 0) {

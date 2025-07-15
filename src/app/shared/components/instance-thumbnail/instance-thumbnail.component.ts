@@ -1,22 +1,11 @@
-import {
-    Component,
-    Input,
-    OnDestroy,
-    OnInit,
-    ViewEncapsulation
-} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {
-    AccountService,
-    EventsGateway,
-    GatewayEventSubscriber,
-    InstanceThumbnailUpdatedEvent
-} from "@core";
+import {AccountService, EventsGateway, GatewayEventSubscriber, InstanceThumbnailUpdatedEvent} from "@core";
 import {takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'visa-instance-thumbnail',
-    template: `<img *ngIf="uid" [src]="dynamicUrl"/>`,
+    template: `<img *ngIf="imageUrl" [src]="imageUrl"/>`,
     encapsulation: ViewEncapsulation.None,
     styles: ['img { max-width: 100%; max-height: 100%; display: block; object-fit: contain }'],
 })
@@ -25,9 +14,10 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
     private _uid: string;
     private _refreshable = true;
     private _refresh$: Observable<void>;
-    private _rand: number;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
+
+    public imageUrl: string | null = null;
 
     get uid(): string {
         return this._uid;
@@ -45,12 +35,6 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
     @Input('refreshable')
     set refreshable(value: boolean) {
         this._refreshable = value;
-    }
-
-    get dynamicUrl(): string {
-        const url = this.accountService.getThumbnailUrlForInstanceUid(this._uid);
-
-        return `${url}?${this._rand}`;
     }
 
     @Input('refresh')
@@ -75,6 +59,7 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
+        this.releaseImageUrl();
         this._destroy$.next(true);
         this._destroy$.unsubscribe();
         if (this._refreshable) {
@@ -83,7 +68,17 @@ export class InstanceThumbnailComponent implements OnInit, OnDestroy {
     }
 
     private updateImage(): void {
-        this._rand = Math.floor(Math.random() * 999999999);
+        this.accountService.getThumbnailDataForInstanceUid(this._uid).subscribe((blob) => {
+            this.releaseImageUrl();
+            this.imageUrl = URL.createObjectURL(blob);
+        });
+    }
+
+    private releaseImageUrl(): void {
+        if (this.imageUrl) {
+            URL.revokeObjectURL(this.imageUrl);
+            this.imageUrl = null;
+        }
     }
 
     private bindEventGatewayListeners(): void {
