@@ -1,3 +1,9 @@
+3.4.3 15/07/2025
+================
+ * Ensure /api/notifications/acknowledged adds the auth token
+ * Use http component to obtain thumbnails to ensure that the auth token is added to the request (rather than relying on the cookie).
+ * update webx-client which fixed the focus being lost after opening the details modal.
+
 3.4.2 08/07/2025
 ================
  * Increase default connection timeout for WebX
