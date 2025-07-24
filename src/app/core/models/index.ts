@@ -25,3 +25,4 @@ export * from './system-notification.model';
 export * from './documentation-section.model';
 export * from './quota.model';
 export * from './role.model';
+export * from './personal-access-token.model';

@@ -131,11 +131,24 @@
         }
 
         .public-access-role {
-            width: 175px;
+            width: 210px;
         }
 
         .public-access-token-copy {
             width: 135px;
+        }
+
+        .personal-access-role {
+            width: 170px;
+        }
+
+        .personal-access-token-copy {
+            width: 125px;
+        }
+
+        .personal-access-token-delete {
+            width: 55px;
+
         }
 
         label {
@@ -143,6 +156,18 @@
             font-size: 0.7rem;
         }
     }
+
+    .person-access-token-name-input {
+        border-color: #ccc;
+        border-style: solid;
+        border-width: 0 0 1px 0;
+
+        width: 420px;
+    }
+}
+
+.btn-icon-danger {
+    color: #e62700;
 }
 
 

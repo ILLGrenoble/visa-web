@@ -11,7 +11,7 @@ import {
     InstanceState,
     Instrument,
     Member,
-    Paginated,
+    Paginated, PersonalAccessToken,
     Quota,
     User
 } from '../models';
@@ -197,9 +197,49 @@ export class AccountService {
         );
     }
 
+    public getPersonalAccessTokens(instance: Instance): Observable<PersonalAccessToken[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/personal_access_tokens`;
+        return this.http.get<Response<PersonalAccessToken[]>>(url).pipe(
+            map((response) => {
+                const data = response.data;
+                return data.map((token) => this.objectMapper.deserialize(token, PersonalAccessToken));
+            })
+        );
+    }
+
+    public createPersonalAccessToken(instance: Instance, name: string, role: string): Observable<PersonalAccessToken> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/personal_access_tokens`;
+        return this.http.post<Response<PersonalAccessToken>>(url, {name, role}).pipe(
+            map((response) => {
+                const token = response.data;
+                return this.objectMapper.deserialize(token, PersonalAccessToken);
+            })
+        );
+    }
+
+    public updatePersonalAccessToken(instance: Instance, token: PersonalAccessToken): Observable<PersonalAccessToken> {
+        const {id, name, role} = token;
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/personal_access_tokens/${token.id}`;
+        return this.http.put<Response<PersonalAccessToken>>(url, {id, name, role}).pipe(
+            map((response) => {
+                const token = response.data;
+                return this.objectMapper.deserialize(token, PersonalAccessToken);
+            })
+        );
+    }
+
+    public deletePersonalAccessToken(instance: Instance, tokenId: number): Observable<void> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/personal_access_tokens/${tokenId}`;
+        return this.http.delete<void>(url);
+    }
+
     public createPublicAccessToken(instance: Instance, role: string): Observable<Instance> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/instances/${instance.uid}/public/access_token`;
+        const url = `${baseUrl}/account/instances/${instance.uid}/public_access_token`;
         const body = { role };
         return this.http.post<Response<Instance>>(url, body).pipe(
             map((response) => {
@@ -211,7 +251,7 @@ export class AccountService {
 
     public updatePublicAccessToken(instance: Instance, role: string): Observable<Instance> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/instances/${instance.uid}/public/access_token`;
+        const url = `${baseUrl}/account/instances/${instance.uid}/public_access_token`;
         const body = { role };
         return this.http.put<Response<Instance>>(url, body).pipe(
             map((response) => {
@@ -223,7 +263,7 @@ export class AccountService {
 
     public deletePublicAccessToken(instance: Instance): Observable<Instance> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/instances/${instance.uid}/public/access_token`;
+        const url = `${baseUrl}/account/instances/${instance.uid}/public_access_token`;
         return this.http.delete<Response<Instance>>(url).pipe(
             map((response) => {
                 const data = response.data;

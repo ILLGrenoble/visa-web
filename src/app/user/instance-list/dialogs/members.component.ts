@@ -1,6 +1,6 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {AccountService, Instance, Member, User} from '@core';
+import {AccountService, Instance, Member, PersonalAccessToken, User} from '@core';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
@@ -22,6 +22,7 @@ export class MembersDialog implements OnInit {
     public selectedSupportUser: User;
 
     public members: Member[];
+    public personalAccessTokens: PersonalAccessToken[];
 
     public roles = [
         {
@@ -57,6 +58,7 @@ export class MembersDialog implements OnInit {
         this.loadUsers();
         this.loadScientificSupportUsers();
         this.loadMembers();
+        this.loadPersonalAccessTokens();
 
         this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
         this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
@@ -161,6 +163,12 @@ export class MembersDialog implements OnInit {
         });
     }
 
+    private loadPersonalAccessTokens(): void {
+        this.accountService.getPersonalAccessTokens(this.instance).subscribe((tokens) => {
+            this.personalAccessTokens = tokens;
+        });
+    }
+
     private toOption(user: User): { value: User, label: string } {
         return {
             value: user,
@@ -195,11 +203,11 @@ export class MembersDialog implements OnInit {
                 next: (instance) => {
                     this.instance = instance;
                     this.publicAccessTokenEnabled = instance.publicAccessToken != null;
-                    this.showNotification('The public access token is active for this instance');
+                    this.showNotification('The public access link is active for this instance');
                 },
                 error: () => {
                     this.publicAccessTokenEnabled = false;
-                    this.notifierService.notify('error', 'Could not activate the public access token for this instance');
+                    this.notifierService.notify('error', 'Could not activate the public access link for this instance');
                 }
             });
         } else {
@@ -207,11 +215,11 @@ export class MembersDialog implements OnInit {
                 next: (instance) => {
                     this.instance = instance;
                     this.publicAccessTokenEnabled = instance.publicAccessToken != null;
-                    this.showNotification('The public access token was removed for this instance');
+                    this.showNotification('The public access link was removed for this instance');
                 },
                 error: () => {
                     this.publicAccessTokenEnabled = true;
-                    this.notifierService.notify('error', 'Could not deactivate the public access token for this instance');
+                    this.notifierService.notify('error', 'Could not deactivate the public access link for this instance');
                 }
             });
 
@@ -223,22 +231,70 @@ export class MembersDialog implements OnInit {
             this.accountService.updatePublicAccessToken(this.instance, this.publicAccessRole.id).subscribe({
                 next: (instance) => {
                     this.instance = instance;
-                    this.showNotification('The public access token has been updated');
+                    this.showNotification('The public access link has been updated');
                 },
                 error: () => {
-                    this.notifierService.notify('error', 'Could not update the public access token');
+                    this.notifierService.notify('error', 'Could not update the public access link');
                 }
             });
         }
     }
 
     public copyPublicUrlToClipboard(): void {
+        this.copyTokenLink(this.instance.publicAccessToken);
+    }
+
+    public createPersonalAccessToken(): void {
+        const tokenId = this.personalAccessTokens.length > 0 ? this.personalAccessTokens[length - 1].id + 1 : 1;
+        const tokenName = `Instance invitation link ${tokenId}`;
+        this.accountService.createPersonalAccessToken(this.instance, tokenName, this.roles[1].id).subscribe({
+            next: (token) => {
+                this.personalAccessTokens.push(token);
+                this.showNotification('The personal invitation link has been created');
+            },
+            error: () => {
+                this.notifierService.notify('error', 'Could not create a personal invitation link');
+            }
+        });
+    }
+
+    public onPersonalAccessTokenChanged(token: PersonalAccessToken): void {
+        this.accountService.updatePersonalAccessToken(this.instance, token).subscribe({
+            next: (token) => {
+                const existingToken = this.personalAccessTokens.find((it) => it.id === token.id);
+                existingToken.name = token.name;
+                existingToken.role = token.role;
+                this.showNotification('Updated the personal invitation link');
+            },
+            error: () => {
+                this.notifierService.notify('error', 'Could not update the personal invitation link');
+            }
+        });
+    }
+
+    public deletePersonalAccessUrlToClipboard(token: PersonalAccessToken): void {
+        this.accountService.deletePersonalAccessToken(this.instance, token.id).subscribe({
+            next: () => {
+                this.personalAccessTokens = this.personalAccessTokens.filter((it) => it.id !== token.id);
+                this.showNotification('Deleted the personal invitation link');
+            },
+            error: () => {
+                this.notifierService.notify('error', 'Could not delete the personal invitation link');
+            }
+        });
+    }
+
+    public copyPersonalAccessUrlToClipboard(token: PersonalAccessToken): void {
+        this.copyTokenLink(token.token);
+    }
+
+    private copyTokenLink(token: string): void {
         const location = window.location;
         const protocol = location.protocol;
         const hostname = location.hostname;
         const port = location.port ? `:${location.port}` : '';
 
-        const link = `${protocol}://${hostname}${port}/instances/${this.instance.uid}?access_token=${this.instance.publicAccessToken}`;
+        const link = `${protocol}://${hostname}${port}/instances/${this.instance.uid}?access_token=${token}`;
 
         if (!navigator.clipboard) {
             this.fallbackCopyTextToClipboard(link);
@@ -249,8 +305,8 @@ export class MembersDialog implements OnInit {
         }, () => {
             this.notifierService.notify('error', 'Failed to copy link to the clipboard');
         });
-
     }
+
 
     private fallbackCopyTextToClipboard(text: string): void {
         const textArea = document.createElement('textarea');
@@ -279,4 +335,5 @@ export class MembersDialog implements OnInit {
 
         document.body.removeChild(textArea);
     }
+
 }

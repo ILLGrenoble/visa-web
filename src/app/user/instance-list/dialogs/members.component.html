@@ -106,7 +106,7 @@
     <div class="member-tokens">
         <h2>Public Access Link</h2>
         <div class="member-token-description">
-            A public access link allow you to share you instance with other collaborators: anyone with this link can access your instance while you are connected.
+            A public access link allows you to share you instance with anyone: access to your instance is possible only if you are connected.
 
             <div class="public-access-token">
                 <div>
@@ -132,6 +132,44 @@
                 </div>
             </div>
         </div>
+
+        <h2>Access Invitation Links</h2>
+        <div class="member-token-description">
+            Access invitation links allow you to add permanent members to your instance. Share this link with the person you'd like to invite.
+        </div>
+
+        <div *ngFor="let token of personalAccessTokens">
+            <div class="public-access-token">
+                <div>
+                    <input id="name" name="name" type="text" [(ngModel)]="token.name" class="person-access-token-name-input" (change)="onPersonalAccessTokenChanged(token)">
+                </div>
+                <div class="public-access-token-role-and-copy">
+                    <div class="personal-access-role">
+                        <div class="clr-select-wrapper">
+                            <select name="role" [(ngModel)]="publicAccessRole" (change)="onPersonalAccessTokenChanged(token)">
+                                <option *ngFor="let role of roles | tail: 1" [ngValue]="role">{{ role.value }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="personal-access-token-copy">
+                        <button class="btn btn-outline btn-link" (click)="copyPersonalAccessUrlToClipboard(token)">
+                            <clr-icon shape="copy-to-clipboard" size="20"></clr-icon>
+                            Copy link
+                        </button>
+                    </div>
+                    <div class="personal-access-token-delete">
+                        <button class="btn btn-sm btn-link" (click)="deletePersonalAccessUrlToClipboard(token)">
+                            <clr-icon shape="trash" style="color: #e62700;"></clr-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-outline btn-sm" (click)="createPersonalAccessToken()">
+            New invitation
+        </button>
+
     </div>
 
     <div class="modal-footer">
