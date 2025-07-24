@@ -112,3 +112,37 @@
         font-size: 0.7rem;
     }
 }
+
+.member-tokens {
+    h2 {
+        font-size: 1.1rem;
+    }
+
+    .public-access-token {
+        margin: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .public-access-token-role-and-copy {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .public-access-role {
+            width: 175px;
+        }
+
+        .public-access-token-copy {
+            width: 135px;
+        }
+
+        label {
+            color: #565656;
+            font-size: 0.7rem;
+        }
+    }
+}
+
+

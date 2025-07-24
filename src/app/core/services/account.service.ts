@@ -105,9 +105,9 @@ export class AccountService {
             }));
     }
 
-    public getInstance(uid: string): Observable<Instance> {
+    public getInstance(uid: string, accessToken?: string): Observable<Instance> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/instances/${uid}`;
+        const url = accessToken ? `${baseUrl}/account/instances/${uid}?access_token=${accessToken}` : `${baseUrl}/account/instances/${uid}`;
         return this.http.get<Response<Instance>>(url).pipe(
             map((response) => {
                 const instance = response.data;
@@ -194,6 +194,41 @@ export class AccountService {
         const url = `${baseUrl}/account/instances/${instance.uid}/members/${member.id}`;
         return this.http.delete<Response<void>>(url).pipe(
             map(() => null)
+        );
+    }
+
+    public createPublicAccessToken(instance: Instance, role: string): Observable<Instance> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/public/access_token`;
+        const body = { role };
+        return this.http.post<Response<Instance>>(url, body).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
+    }
+
+    public updatePublicAccessToken(instance: Instance, role: string): Observable<Instance> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/public/access_token`;
+        const body = { role };
+        return this.http.put<Response<Instance>>(url, body).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
+        );
+    }
+
+    public deletePublicAccessToken(instance: Instance): Observable<Instance> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/instances/${instance.uid}/public/access_token`;
+        return this.http.delete<Response<Instance>>(url).pipe(
+            map((response) => {
+                const data = response.data;
+                return this.objectMapper.deserialize(data, Instance);
+            })
         );
     }
 
@@ -329,9 +364,9 @@ export class AccountService {
         );
     }
 
-    public createInstanceAuthenticationTicket(instance: Instance): Observable<string> {
+    public createInstanceAuthenticationTicket(instance: Instance, publicAccessToken?: string): Observable<string> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/instances/${instance.uid}/auth/token`;
+        const url = publicAccessToken ? `${baseUrl}/account/instances/${instance.uid}/auth/token/${publicAccessToken}` : `${baseUrl}/account/instances/${instance.uid}/auth/token`;
         return this.http.post<Response<{token: string}>>(url, null).pipe(
             map((response) => {
                 const data = response.data;

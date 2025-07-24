@@ -4,6 +4,7 @@ import {Member} from './member.model';
 import {Plan} from './plan.model';
 import {User} from './user.model';
 import {Protocol} from './protocol.model';
+import {state} from "@angular/animations";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -90,6 +91,12 @@ export class Instance {
 
     @JsonProperty('vdiProtocol', Protocol)
     private _vdiProtocol: Protocol = undefined;
+
+    @JsonProperty('publicAccessToken', String)
+    private _publicAccessToken: string = undefined;
+
+    @JsonProperty('publicAccessRole', String)
+    private _publicAccessRole: string = undefined;
 
     public get id(): number {
         return this._id;
@@ -324,5 +331,21 @@ export class Instance {
 
     set vdiProtocol(value: Protocol) {
         this._vdiProtocol = value;
+    }
+
+    get publicAccessToken(): string {
+        return this._publicAccessToken;
+    }
+
+    set publicAccessToken(value: string) {
+        this._publicAccessToken = value;
+    }
+
+    get publicAccessRole(): string {
+        return this._publicAccessRole;
+    }
+
+    set publicAccessRole(value: string) {
+        this._publicAccessRole = value;
     }
 }

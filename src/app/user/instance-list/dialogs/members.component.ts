@@ -40,12 +40,17 @@ export class MembersDialog implements OnInit {
     public selectedRole = this.roles[1];
     public selectedSupportRole = this.roles[1];
 
+    public publicAccessTokenEnabled: boolean;
+    public publicAccessRole = this.roles[1];
+
     constructor(private accountService: AccountService,
                 private notifierService: NotifierService,
                 private dialogRef: MatDialogRef<MembersDialog>,
                 @Inject(MAT_DIALOG_DATA)
                 private data: { instance: Instance }) {
         this.instance = data.instance;
+        this.publicAccessTokenEnabled = this.instance.publicAccessToken != null;
+        this.publicAccessRole = this.instance.publicAccessRole != null ? this.roles.find(role => role.id === this.instance.publicAccessRole) : this.roles[1];
     }
 
     public ngOnInit(): void {
@@ -182,7 +187,96 @@ export class MembersDialog implements OnInit {
             this.instance = instance;
             this.showNotification('Member access has been updated');
         });
+    }
+
+    public onPublicAccessTokenToggled(): void {
+        if (this.publicAccessTokenEnabled) {
+            this.accountService.createPublicAccessToken(this.instance, this.publicAccessRole.id).subscribe({
+                next: (instance) => {
+                    this.instance = instance;
+                    this.publicAccessTokenEnabled = instance.publicAccessToken != null;
+                    this.showNotification('The public access token is active for this instance');
+                },
+                error: () => {
+                    this.publicAccessTokenEnabled = false;
+                    this.notifierService.notify('error', 'Could not activate the public access token for this instance');
+                }
+            });
+        } else {
+            this.accountService.deletePublicAccessToken(this.instance).subscribe({
+                next: (instance) => {
+                    this.instance = instance;
+                    this.publicAccessTokenEnabled = instance.publicAccessToken != null;
+                    this.showNotification('The public access token was removed for this instance');
+                },
+                error: () => {
+                    this.publicAccessTokenEnabled = true;
+                    this.notifierService.notify('error', 'Could not deactivate the public access token for this instance');
+                }
+            });
+
+        }
+    }
+
+    public onPublicAccessRoleChanged(): void {
+        if (this.publicAccessTokenEnabled) {
+            this.accountService.updatePublicAccessToken(this.instance, this.publicAccessRole.id).subscribe({
+                next: (instance) => {
+                    this.instance = instance;
+                    this.showNotification('The public access token has been updated');
+                },
+                error: () => {
+                    this.notifierService.notify('error', 'Could not update the public access token');
+                }
+            });
+        }
+    }
+
+    public copyPublicUrlToClipboard(): void {
+        const location = window.location;
+        const protocol = location.protocol;
+        const hostname = location.hostname;
+        const port = location.port ? `:${location.port}` : '';
+
+        const link = `${protocol}://${hostname}${port}/instances/${this.instance.uid}?access_token=${this.instance.publicAccessToken}`;
+
+        if (!navigator.clipboard) {
+            this.fallbackCopyTextToClipboard(link);
+            return;
+        }
+        navigator.clipboard.writeText(link).then(() => {
+            this.showNotification('Link copied to the clipboard');
+        }, () => {
+            this.notifierService.notify('error', 'Failed to copy link to the clipboard');
+        });
 
     }
 
+    private fallbackCopyTextToClipboard(text: string): void {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+
+        // Avoid scrolling to bottom
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.position = 'fixed';
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        let successful = false;
+        try {
+            successful = document.execCommand('copy');
+        } catch (err) {
+        }
+
+        if (successful) {
+            this.showNotification('Link copied to the clipboard');
+        } else {
+            this.notifierService.notify('error', 'Failed to copy link to the clipboard');
+        }
+
+        document.body.removeChild(textArea);
+    }
 }

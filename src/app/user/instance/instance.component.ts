@@ -43,6 +43,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     public manager: VirtualDesktopManager;
     public instance: Instance;
+    private _publicAccessToken: string;
 
     public error: string = null;
 
@@ -114,11 +115,16 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.createAndBindHotkeys();
         const instanceId = this.route.snapshot.paramMap.get('id');
+        const accessToken = this.route.snapshot.queryParamMap.get('access_token');
 
-        this.accountService.getInstance(instanceId).subscribe({
+        this.accountService.getInstance(instanceId, accessToken).subscribe({
             next: (instance) => {
                 this.setInstance(instance);
                 this.bindEventGatewayListeners();
+                // Check whether the user is a real member (membership id is not null) if not use the public access token (if provided)
+                if (instance.membership?.id == null) {
+                    this._publicAccessToken = accessToken;
+                }
                 this.handleConnect();
             },
             error: (error) => {
@@ -170,7 +176,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.accessRevoked = false;
 
         // Start the desktop streaming
-        this.createAuthenticationTicket().subscribe(token => {
+        this.createAuthenticationTicket(this._publicAccessToken).subscribe(token => {
             if (this.createManager(token)) {
                 this.bindManagerHandlers();
                 this.manager.connect();
@@ -307,8 +313,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
      * Create an authentication ticket and then connect to the remote desktop
      * Bind the manager handlers
      */
-    private createAuthenticationTicket(): Observable<string> {
-        return this.accountService.createInstanceAuthenticationTicket(this.instance).pipe(
+    private createAuthenticationTicket(publicAccessToken?: string): Observable<string> {
+        return this.accountService.createInstanceAuthenticationTicket(this.instance, publicAccessToken).pipe(
             takeUntil(this._destroy$),
             filter((ticket: string) => ticket !== null),
             catchError(error => {
