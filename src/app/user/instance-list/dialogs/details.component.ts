@@ -4,7 +4,6 @@ import {AccountService, Instance, Protocol} from '@core';
 import {InstanceForm} from '@shared';
 import {filter} from 'rxjs/operators';
 import {AbstractControl} from "@angular/forms";
-import {ImageProtocol} from "../../../core/graphql";
 
 @Component({
     selector: 'visa-instance-list-details-dialog',

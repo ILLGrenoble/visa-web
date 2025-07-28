@@ -104,30 +104,32 @@
     </table>
 
     <div class="member-tokens">
-        <h2>Public Access Link</h2>
-        <div class="member-token-description">
-            A public access link allows you to share you instance with anyone: access to your instance is possible only if you are connected.
+        <div *ngIf="showPublicAccessToken">
+            <h2>Public Access Link</h2>
+            <div class="member-token-description">
+                A public access link allows you to share you instance with anyone: access to your instance is possible only if you are connected.
 
-            <div class="public-access-token">
-                <div>
-                    <clr-toggle-wrapper>
-                        <input type="checkbox" clrToggle [(ngModel)]="publicAccessTokenEnabled" name="unrestrictedAccess" (change)="onPublicAccessTokenToggled()"/>
-                        <label>Enabled a public access link to access your instance</label>
-                    </clr-toggle-wrapper>
-                </div>
-                <div class="public-access-token-role-and-copy">
-                    <div class="public-access-role">
-                        <div class="clr-select-wrapper">
-                            <select name="role" [(ngModel)]="publicAccessRole" (change)="onPublicAccessRoleChanged()">
-                                <option *ngFor="let role of roles | tail: 1" [ngValue]="role">{{ role.value }}</option>
-                            </select>
-                        </div>
+                <div class="public-access-token">
+                    <div>
+                        <clr-toggle-wrapper>
+                            <input type="checkbox" clrToggle [(ngModel)]="publicAccessTokenEnabled" name="unrestrictedAccess" (change)="onPublicAccessTokenToggled()"/>
+                            <label>Enabled a public access link to access your instance</label>
+                        </clr-toggle-wrapper>
                     </div>
-                    <div class="public-access-token-copy">
-                        <button class="btn btn-outline btn-link" [disabled]="instance.publicAccessToken == null" (click)="copyPublicUrlToClipboard()">
-                            <clr-icon shape="copy-to-clipboard" size="20"></clr-icon>
-                            Copy link
-                        </button>
+                    <div class="public-access-token-role-and-copy">
+                        <div class="public-access-role">
+                            <div class="clr-select-wrapper">
+                                <select name="role" [(ngModel)]="publicAccessRole" (change)="onPublicAccessRoleChanged()">
+                                    <option *ngFor="let role of roles | tail: 1" [ngValue]="role">{{ role.value }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="public-access-token-copy">
+                            <button class="btn btn-outline btn-link" [disabled]="instance.publicAccessToken == null" (click)="copyPublicUrlToClipboard()">
+                                <clr-icon shape="copy-to-clipboard" size="20"></clr-icon>
+                                Copy link
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

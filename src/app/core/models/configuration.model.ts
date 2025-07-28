@@ -22,5 +22,9 @@ export class Configuration {
         openDataIncluded: boolean,
     };
 
+    public instance: {
+        publicAccessTokenEnabled: boolean,
+    };
+
     public metadata: { [key: string]: string };
 }

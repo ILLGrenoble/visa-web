@@ -1,6 +1,6 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {AccountService, Instance, Member, PersonalAccessToken, User} from '@core';
+import {AccountService, ConfigService, Instance, Member, PersonalAccessToken, User} from '@core';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
@@ -43,15 +43,21 @@ export class MembersDialog implements OnInit {
 
     public publicAccessTokenEnabled: boolean;
     public publicAccessRole = this.roles[1];
+    public showPublicAccessToken = false;
 
     constructor(private accountService: AccountService,
+                private configService: ConfigService,
                 private notifierService: NotifierService,
                 private dialogRef: MatDialogRef<MembersDialog>,
                 @Inject(MAT_DIALOG_DATA)
                 private data: { instance: Instance }) {
-        this.instance = data.instance;
-        this.publicAccessTokenEnabled = this.instance.publicAccessToken != null;
-        this.publicAccessRole = this.instance.publicAccessRole != null ? this.roles.find(role => role.id === this.instance.publicAccessRole) : this.roles[1];
+
+        configService.configuration$().subscribe(configuration => {
+            this.instance = data.instance;
+            this.showPublicAccessToken = configuration.instance.publicAccessTokenEnabled;
+            this.publicAccessTokenEnabled = this.instance.publicAccessToken != null && configuration.instance.publicAccessTokenEnabled;
+            this.publicAccessRole = this.instance.publicAccessRole != null ? this.roles.find(role => role.id === this.instance.publicAccessRole) : this.roles[1];
+        })
     }
 
     public ngOnInit(): void {
