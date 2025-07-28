@@ -300,7 +300,7 @@ export class MembersDialog implements OnInit {
         const hostname = location.hostname;
         const port = location.port ? `:${location.port}` : '';
 
-        const link = `${protocol}://${hostname}${port}/instances/${this.instance.uid}?access_token=${token}`;
+        const link = `${protocol}//${hostname}${port}/instances/${this.instance.uid}?access_token=${token}`;
 
         if (!navigator.clipboard) {
             this.fallbackCopyTextToClipboard(link);
