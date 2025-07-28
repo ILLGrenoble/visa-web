@@ -1,5 +1,11 @@
 3.4.3 15/07/2025
 ================
+ * Use client configuration to determine whether to show public access links.
+ * Add personal access tokens: allows inviting anybody as a permanent member of the instance.
+ * Allow owners to enable public access links on instances to enable public access to their instance.
+
+3.4.3 15/07/2025
+================
  * Ensure /api/notifications/acknowledged adds the auth token
  * Use http component to obtain thumbnails to ensure that the auth token is added to the request (rather than relying on the cookie).
  * update webx-client which fixed the focus being lost after opening the details modal.
