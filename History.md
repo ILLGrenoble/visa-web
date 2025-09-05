@@ -1,6 +1,7 @@
 3.5.1 05/08/2025
 ================
  * Update to webx-client 1.10.6
+ * Send oidc token when getting notifications. Fixes bug on admin notifications not being received by the client.
 
 3.5.0 28/07/2025
 ================
