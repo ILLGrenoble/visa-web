@@ -1,3 +1,13 @@
+3.5.1 05/08/2025
+================
+ * Update to webx-client 1.10.6
+
+3.5.0 28/07/2025
+================
+ * Use client configuration to determine whether to show public access links.
+ * Add personal access tokens: allows inviting anybody as a permanent member of the instance.
+ * Allow owners to enable public access links on instances to enable public access to their instance.
+
 3.4.3 15/07/2025
 ================
  * Use client configuration to determine whether to show public access links.
