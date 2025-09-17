@@ -25,6 +25,7 @@ import {
     LatestSessionsBoxComponent,
     SettingsHeaderComponent,
     ComputeHeaderComponent,
+    CloudDevicePipe,
 } from './common';
 import {
     ApplicationCredentialDeleteComponent,
@@ -35,6 +36,8 @@ import {
     FlavourDeleteComponent,
     FlavourEditComponent,
     FlavoursComponent,
+    DevicePoolEditComponent,
+    DevicePoolDeleteComponent,
     ImageDeleteComponent,
     ImageEditComponent,
     ImagesComponent,
@@ -75,12 +78,14 @@ import {
     ExtensionRequestsComponent,
     ExtensionRequestHandlerComponent,
 } from './components';
+import {ClrSpinnerModule} from "@clr/angular";
 
 @NgModule({
     imports: [
         SharedModule,
         HighchartsChartModule,
         RouterModule.forChild(ROUTES),
+        ClrSpinnerModule,
     ],
     declarations: [
         DashboardComponent,
@@ -106,6 +111,8 @@ import {
         FlavoursComponent,
         FlavourDeleteComponent,
         FlavourEditComponent,
+        DevicePoolEditComponent,
+        DevicePoolDeleteComponent,
         SessionsComponent,
         CloudLimitBoxComponent,
         LatestInstancesBoxComponent,
@@ -150,6 +157,7 @@ import {
         ApplicationCredentialUpdateComponent,
         ExtensionRequestsComponent,
         ExtensionRequestHandlerComponent,
+        CloudDevicePipe,
     ],
     exports: [
         DashboardComponent,

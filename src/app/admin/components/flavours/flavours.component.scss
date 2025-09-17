@@ -1,0 +1,34 @@
+.flavours-overview {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.flavours-main {
+    flex: 3;
+    margin: 0;
+}
+
+.flavours-devices {
+    flex: 2;
+    margin: 0;
+}
+
+.flavours-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.home-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.home-spinner {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}

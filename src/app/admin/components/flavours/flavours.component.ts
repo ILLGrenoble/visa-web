@@ -1,46 +1,63 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
+import {DevicePool, DevicePoolInput, Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
-import {Title} from '@angular/platform-browser';
 import {FlavourEditComponent} from '../flavour-edit';
+import {DevicePoolEditComponent} from "../device-pool-edit";
+import {de} from "../../../user/instance/keyboard/layouts";
+import {DevicePoolDeleteComponent} from "../device-pool-delete";
 
 @Component({
     selector: 'visa-admin-flavours',
     templateUrl: './flavours.component.html',
+    styleUrls: ['./flavours.component.scss']
 })
 
 export class FlavoursComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private _refresh$: Subject<void> = new Subject();
+    private _refreshFlavours$: Subject<void> = new Subject();
+    private _refreshDevices$: Subject<void> = new Subject();
     private _flavours: Flavour[] = [];
+    private _devicePools: DevicePool[] = [];
     private _instruments: Instrument[];
     private _roles: Role[];
-    private _loading: boolean;
+    private _loadingFlavours: boolean;
+    private _loadingDevices: boolean;
     private _multiCloudEnabled = false;
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
-                private readonly _dialog: MatDialog,
-                private readonly _titleService: Title) {
+                private readonly _dialog: MatDialog) {
     }
 
     get flavours(): Flavour[] {
         return this._flavours;
     }
 
-    get loading(): boolean {
-        return this._loading;
+    get devicePools(): DevicePool[] {
+        return this._devicePools;
     }
 
-    public onRefresh(): void {
-        this._refresh$.next();
+    get loadingFlavours(): boolean {
+        return this._loadingFlavours;
+    }
+
+    get loadingDevices(): boolean {
+        return this._loadingDevices;
+    }
+
+    public onRefreshFlavours(): void {
+        this._refreshFlavours$.next();
+    }
+
+    public onRefreshDevices(): void {
+        this._refreshDevices$.next();
     }
 
     get multiCloudEnabled(): boolean {
@@ -48,12 +65,11 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this._titleService.setTitle(`Flavours | Cloud | Admin | VISA`);
-        this._refresh$
+        this._refreshFlavours$
             .pipe(
                 startWith(0),
                 takeUntil(this._destroy$),
-                tap(() => this._loading = true),
+                tap(() => this._loadingFlavours = true),
                 delay(250),
                 switchMap(() => this._apollo.query<any>({
                     query: gql`
@@ -91,20 +107,57 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 })),
                 map(({data}) => ({
                     flavours: data.flavours,
+                    devicePools: data.devicePools,
                     instruments: data.instruments,
                     roles: data.rolesAndGroups,
                     cloudClients: data.cloudClients,
                 })),
-                tap(() => this._loading = false)
+                tap(() => this._loadingFlavours = false)
             )
             .subscribe(({flavours, instruments, roles, cloudClients}) => {
                 this._flavours = flavours;
                 this._instruments = instruments;
                 this._roles = roles;
                 this._multiCloudEnabled = cloudClients.length > 1 || flavours
-                    .map((flavour) => flavour.cloudClient)
+                    .map((flavour) => flavour.cloudClient?.id || 0)
                     .filter((value, index, array) => array.indexOf(value) === index)
                     .length > 1;
+            });
+
+        this._refreshDevices$
+            .pipe(
+                startWith(0),
+                takeUntil(this._destroy$),
+                tap(() => this._loadingDevices = true),
+                delay(250),
+                switchMap(() => this._apollo.query<any>({
+                    query: gql`
+                        query AllDevices {
+                            devicePools {
+                                id
+                                name
+                                description
+                                deviceType
+                                computeIdentifier
+                                cloudDevice {
+                                    identifier
+                                    type
+                                }
+                                cloudClient {
+                                    id
+                                    name
+                                }
+                            }
+                        }
+                    `
+                })),
+                map(({data}) => ({
+                    devicePools: data.devicePools,
+                })),
+                tap(() => this._loadingDevices = false)
+            )
+            .subscribe(({devicePools}) => {
+                this._devicePools = devicePools;
             });
     }
 
@@ -139,7 +192,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             })).subscribe({
                 next: () => {
                     this._notifierService.notify('success', 'Flavour created');
-                    this._refresh$.next();
+                    this._refreshFlavours$.next();
                     dialogRef.close();
                 },
                 error: (error) => {
@@ -171,7 +224,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             })).subscribe({
                 next: () => {
                     this._notifierService.notify('success', 'Successfully deleted flavour');
-                    this._refresh$.next();
+                    this._refreshFlavours$.next();
                 },
                 error: (error) => {
                     this._notifierService.notify('error', error);
@@ -201,7 +254,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             })).subscribe({
                 next: () => {
                     this._notifierService.notify('success', 'Flavour saved');
-                    this._refresh$.next();
+                    this._refreshFlavours$.next();
                     dialogRef.close();
                 },
                 error: (error) => {
@@ -209,4 +262,103 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 }
             });
     }
+
+
+    public onCreateDevicePool(devicePool?: DevicePool): void {
+        const dialogRef = this._dialog.open(DevicePoolEditComponent, {
+            width: '800px',
+            data: { devicePool, clone: !!devicePool },
+        });
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: DevicePoolInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                            mutation createDevicePool($input: DevicePoolInput!){
+                                createDevicePool(input: $input) {
+                                    id
+                                    name
+                                    description
+                                    computeIdentifier
+                                    deviceType
+                                }
+                            }
+                        `,
+                    variables: {input},
+                }).pipe(
+                    takeUntil(this._destroy$),
+                );
+            })).subscribe({
+            next: () => {
+                this._notifierService.notify('success', 'Device Pool created');
+                this._refreshDevices$.next();
+                dialogRef.close();
+            },
+            error: (error) => {
+                this._notifierService.notify('error', error);
+            }
+        });
+    }
+
+    public onUpdateDevicePool(devicePool: DevicePool): void {
+        const dialogRef = this._dialog.open(DevicePoolEditComponent, {
+            width: '800px', data: { devicePool },
+        });
+
+        dialogRef.componentInstance.onSave$.pipe(
+            switchMap((input: DevicePoolInput) => {
+                return this._apollo.mutate<any>({
+                    mutation: gql`
+                        mutation updateDevicePool($id: Int!, $input: DevicePoolInput!){
+                            updateDevicePool(id: $id, input: $input) {
+                                id
+                            }
+                        }
+                        `,
+                    variables: {id: devicePool.id, input},
+                }).pipe(
+                    takeUntil(this._destroy$)
+                )
+            })).subscribe({
+            next: () => {
+                this._notifierService.notify('success', 'Device Pool saved');
+                this._refreshDevices$.next();
+                dialogRef.close();
+            },
+            error: (error) => {
+                this._notifierService.notify('error', error);
+            }
+        });
+    }
+
+    public onDeleteDevicePool(devicePool: DevicePool): void {
+        const dialogRef = this._dialog.open(DevicePoolDeleteComponent, {
+            width: '400px'
+        });
+
+        dialogRef.afterClosed().pipe(
+            filter(result => result),
+            switchMap(() => {
+                return this._apollo.mutate({
+                    mutation: gql`
+                        mutation deleteDevicePool($id: Int!){
+                            deleteDevicePool(id:$id) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {id: devicePool.id},
+                }).pipe(
+                    takeUntil(this._destroy$),
+                )
+            })).subscribe({
+            next: () => {
+                this._notifierService.notify('success', 'Successfully deleted device pool');
+                this._refreshDevices$.next();
+            },
+            error: (error) => {
+                this._notifierService.notify('error', error);
+            }
+        });
+    }
+
 }

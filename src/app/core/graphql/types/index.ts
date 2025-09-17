@@ -47,6 +47,12 @@ export type CloudFlavour = {
     ram: Scalars['Int'];
 };
 
+export type CloudDevice = {
+    __typename?: 'CloudDevice';
+    identifier: Scalars['String'];
+    type: Scalars['String'];
+};
+
 export type CloudImage = {
     __typename?: 'CloudImage';
     id: Scalars['String'];
@@ -115,6 +121,17 @@ export type Flavour = {
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
     cloudFlavour?: Maybe<CloudFlavour>;
+    cloudClient?: Maybe<CloudClient>;
+};
+
+export type DevicePool = {
+    __typename?: 'DevicePool';
+    id: Scalars['Int'];
+    name: Scalars['String'];
+    description?: Maybe<Scalars['String']>;
+    deviceType: Scalars['String'];
+    computeIdentifier: Scalars['String'];
+    cloudDevice?: Maybe<CloudDevice>;
     cloudClient?: Maybe<CloudClient>;
 };
 
@@ -308,6 +325,12 @@ export type Mutation = {
     updateFlavour: Flavour;
     /** Delete a flavour */
     deleteFlavour: Flavour;
+    /** Create a device pool */
+    createDevicePool: DevicePool;
+    /** Update a device pool */
+    updateDevicePool: DevicePool;
+    /** Delete a device pool */
+    deleteDevicePool: DevicePool;
     /** Create a plan */
     createPlan: Plan;
     /** Update a plan */
@@ -394,6 +417,8 @@ export type Query = {
     flavours: FlavourConnection;
     /** Count all flavours */
     countFlavours: Scalars['Int'];
+    /** Get all device pools */
+    devicePools: Array<DevicePool>;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
@@ -429,8 +454,10 @@ export type Query = {
     memory: Memory;
     /** Get images from cloud provider */
     cloudImages?: Maybe<Array<Maybe<CloudImage>>>;
-    /** Get flavours from cloud prrovider */
+    /** Get flavours from cloud provider */
     cloudFlavours?: Maybe<Array<Maybe<CloudFlavour>>>;
+    /** Get devices from cloud provider */
+    cloudDevices?: Maybe<Array<Maybe<CloudDevice>>>;
     /** Get cloud limits */
     cloudLimits?: Maybe<CloudLimit>;
     /** Get all sessions */
@@ -481,6 +508,14 @@ export type FlavourInput = {
     computeId: Scalars['String'];
     instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
     roleIds: Maybe<Array<Maybe<Scalars['Int']>>>
+};
+
+export type DevicePoolInput = {
+    name: Scalars['String'];
+    description: Maybe<Scalars['String']>;
+    computeIdentifier: Scalars['String'];
+    deviceType: Scalars['String'];
+    cloudId?: Maybe<Scalars['Int']>;
 };
 
 export type ImageInput = {
