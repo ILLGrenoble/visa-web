@@ -9,7 +9,6 @@ import {Subject} from 'rxjs';
 import {NotifierService} from 'angular-notifier';
 import {FlavourEditComponent} from '../flavour-edit';
 import {DevicePoolEditComponent} from "../device-pool-edit";
-import {de} from "../../../user/instance/keyboard/layouts";
 import {DevicePoolDeleteComponent} from "../device-pool-delete";
 
 @Component({
@@ -267,7 +266,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     public onCreateDevicePool(devicePool?: DevicePool): void {
         const dialogRef = this._dialog.open(DevicePoolEditComponent, {
             width: '800px',
-            data: { devicePool, clone: !!devicePool },
+            data: { devicePool, clone: !!devicePool, configuredDevicePools: this._devicePools },
         });
         dialogRef.componentInstance.onSave$.pipe(
             switchMap((input: DevicePoolInput) => {
@@ -301,7 +300,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     public onUpdateDevicePool(devicePool: DevicePool): void {
         const dialogRef = this._dialog.open(DevicePoolEditComponent, {
-            width: '800px', data: { devicePool },
+            width: '800px', data: { devicePool, configuredDevicePools: this._devicePools },
         });
 
         dialogRef.componentInstance.onSave$.pipe(

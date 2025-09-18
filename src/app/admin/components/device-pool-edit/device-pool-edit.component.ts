@@ -10,12 +10,14 @@ import {filter, map, takeUntil} from 'rxjs/operators';
 @Component({
     selector: 'visa-admin-device-pool-edit',
     templateUrl: './device-pool-edit.component.html',
+    styleUrls: ['./device-pool-edit.component.scss'],
 })
 export class DevicePoolEditComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup;
     private _cloudClients: CloudClient[];
     private _cloudDevices: CloudDevice[];
+    private _configuredDevicePools: DevicePool[];
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<DevicePoolInput> = new Subject<DevicePoolInput>();
@@ -23,7 +25,9 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
 
     constructor(private readonly _dialogRef: MatDialogRef<DevicePoolEditComponent>,
                 private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {devicePool, clone}) {
+                @Inject(MAT_DIALOG_DATA) {devicePool, clone, configuredDevicePools}) {
+
+        this._configuredDevicePools = configuredDevicePools || [];
 
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
@@ -40,6 +44,7 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
                 this._title = `Clone device pool`;
             } else {
                 this._title = `Edit device pool`;
+                this._configuredDevicePools = this._configuredDevicePools.filter(configuredDevicePool => configuredDevicePool.id != devicePool.id)
             }
             this._createFormFromDevicePool(devicePool);
         } else {
@@ -151,9 +156,18 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
             variables: { cloudId },
         }).pipe(
             map(({data}) => (data.cloudDevices)),
-        ).subscribe((cloudDevices) => {
+        ).subscribe((cloudDevices: CloudDevice[]) => {
             cloudDevices = cloudDevices || [];
-            cloudDevices.unshift(null);
+            // Filter out configured devices
+            cloudDevices = cloudDevices.filter(cloudDevice => {
+                return this._configuredDevicePools
+                    .filter(configuredDevicePool => configuredDevicePool.cloudClient.id == cloudId)
+                    .map(configuredDevicePool => configuredDevicePool.cloudDevice)
+                    .find(configuredCloudDevice => configuredCloudDevice.type === cloudDevice.type && configuredCloudDevice.identifier === cloudDevice.identifier) == null;
+            });
+            if (cloudDevices.length > 0) {
+                cloudDevices.unshift(null);
+            }
             this._cloudDevices = cloudDevices;
             this.form.controls.cloudDevice.reset(selectedCloudDevice);
         });

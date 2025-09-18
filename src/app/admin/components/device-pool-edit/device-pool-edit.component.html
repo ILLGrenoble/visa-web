@@ -22,13 +22,17 @@
                 <clr-control-helper>Please select the cloud provider</clr-control-helper>
             </clr-select-container>
 
-            <clr-select-container>
+            <clr-select-container *ngIf="cloudDevices?.length > 0">
                 <label for="device">Cloud device</label>
                 <select clrSelect id="device" formControlName="cloudDevice" [compareWith]="compareCloudDevice">
                     <option *ngFor="let cloudDevice of cloudDevices" [ngValue]="cloudDevice">{{ cloudDevice | cloudDevice }}</option>
                 </select>
                 <clr-control-helper>Please select a cloud device</clr-control-helper>
             </clr-select-container>
+
+            <div *ngIf="cloudDevices?.length == 0" class="device-pool-edit-none-remaining">
+                There are no unconfigured cloud devices
+            </div>
 
         </form>
         <div class="modal-footer">
