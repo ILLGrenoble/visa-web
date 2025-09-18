@@ -8,7 +8,7 @@ export class CloudDevicePipe implements PipeTransform {
         if (cloudDevice == null) {
             return '';
         }
-        const type = cloudDevice.type == 'PASSTHROUGH_GPU' ? 'GPU using PCI Passthrough' : cloudDevice.type == 'VIRTUAL_GPU' ? 'vGPU' : '<unknown>';
+        const type = cloudDevice.type == 'PCI_PASSTHROUGH' ? 'PCI Passthrough' : cloudDevice.type == 'VIRTUAL_GPU' ? 'vGPU' : '<unknown>';
         return `${cloudDevice.identifier} (${type})`;
     }
 }
