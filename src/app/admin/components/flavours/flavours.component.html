@@ -23,6 +23,7 @@
                 <clr-dg-column>Cloud Flavour</clr-dg-column>
                 <clr-dg-column>Memory / GB</clr-dg-column>
                 <clr-dg-column>CPUs</clr-dg-column>
+                <clr-dg-column>Device Pools</clr-dg-column>
                 <clr-dg-column></clr-dg-column>
 
                 <clr-dg-row *ngFor="let flavour of flavours;let i = index">
@@ -34,6 +35,11 @@
 
                     <clr-dg-cell>{{flavour.memory / 1024}}</clr-dg-cell>
                     <clr-dg-cell>{{flavour.cpu}}</clr-dg-cell>
+                    <clr-dg-cell>
+                        <span class="label" *ngFor="let devicePool of flavour.devicePools">
+                            {{devicePool.name}}
+                        </span>
+                    </clr-dg-cell>
                     <clr-dg-cell>
                         <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
                         <button (click)="onCreate(flavour)" class="btn btn-sm">Clone</button>

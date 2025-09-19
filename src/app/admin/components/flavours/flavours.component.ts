@@ -85,6 +85,11 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                     cpus
                                     ram
                                 }
+                                devicePools {
+                                    id
+                                    name
+                                    description
+                                }
                                 cloudClient {
                                     id
                                     name
@@ -136,8 +141,6 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 id
                                 name
                                 description
-                                deviceType
-                                computeIdentifier
                                 cloudDevice {
                                     identifier
                                     type
@@ -290,6 +293,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             next: () => {
                 this._notifierService.notify('success', 'Device Pool created');
                 this._refreshDevices$.next();
+                this._refreshFlavours$.next();
                 dialogRef.close();
             },
             error: (error) => {
@@ -321,6 +325,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             next: () => {
                 this._notifierService.notify('success', 'Device Pool saved');
                 this._refreshDevices$.next();
+                this._refreshFlavours$.next();
                 dialogRef.close();
             },
             error: (error) => {
@@ -353,6 +358,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             next: () => {
                 this._notifierService.notify('success', 'Successfully deleted device pool');
                 this._refreshDevices$.next();
+                this._refreshFlavours$.next();
             },
             error: (error) => {
                 this._notifierService.notify('error', error);

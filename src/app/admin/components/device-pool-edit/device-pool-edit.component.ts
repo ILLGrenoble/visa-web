@@ -95,11 +95,11 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
     }
 
     private _createFormFromDevicePool(devicePool: DevicePool): void {
-        const { name, description, deviceType, computeIdentifier, cloudClient } = devicePool;
-        this.form.reset({ name, description, cloudDevice: {type: deviceType, identifier: computeIdentifier}, cloudClient });
+        const { name, description, cloudDevice, cloudClient } = devicePool;
+        this.form.reset({ name, description, cloudDevice, cloudClient });
 
         // Initialise cloud devices with current cloud device
-        this._cloudDevices = [null, {type: deviceType, identifier: computeIdentifier}];
+        this._cloudDevices = [null, cloudDevice];
     }
 
     public ngOnInit(): void {
