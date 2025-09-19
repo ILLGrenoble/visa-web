@@ -45,6 +45,7 @@ export type CloudFlavour = {
     cpus: Scalars['Int'];
     disk: Scalars['Int'];
     ram: Scalars['Int'];
+    cloudDevices?: Maybe<Array<Maybe<CloudDevice>>>
 };
 
 export type CloudDevice = {
@@ -120,7 +121,7 @@ export type Flavour = {
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
-    devicePools: Maybe<Array<Maybe<DevicePool>>>
+    devicePools?: Maybe<Array<Maybe<DevicePool>>>
     cloudFlavour?: Maybe<CloudFlavour>;
     cloudClient?: Maybe<CloudClient>;
 };

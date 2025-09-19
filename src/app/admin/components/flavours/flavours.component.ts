@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {DevicePool, DevicePoolInput, Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
+import {CloudDevice, DevicePool, DevicePoolInput, Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -84,11 +84,19 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                     name
                                     cpus
                                     ram
+                                    cloudDevices {
+                                        identifier
+                                        type
+                                    }
                                 }
                                 devicePools {
                                     id
                                     name
                                     description
+                                    cloudDevice {
+                                        identifier
+                                        type
+                                    }
                                 }
                                 cloudClient {
                                     id
@@ -364,6 +372,14 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                 this._notifierService.notify('error', error);
             }
         });
+    }
+
+    public unconfiguredCloudDevices(flavour: Flavour): CloudDevice[] {
+        const configuredCloudDevices: CloudDevice[] = flavour.devicePools.map(devicePool => devicePool.cloudDevice);
+        return flavour.cloudFlavour.cloudDevices
+            .filter(cloudDevice => {
+                return configuredCloudDevices.find(configuredCloudDevice => configuredCloudDevice.identifier === cloudDevice.identifier && configuredCloudDevice.type === cloudDevice.type) == null;
+            })
     }
 
 }

@@ -39,6 +39,9 @@
                         <span class="label" *ngFor="let devicePool of flavour.devicePools">
                             {{devicePool.name}}
                         </span>
+                        <span class="label unconfigured-device-pool" *ngFor="let unconfiguredCloudDevice of unconfiguredCloudDevices(flavour)">
+                            {{unconfiguredCloudDevice.identifier}} unconfigured
+                        </span>
                     </clr-dg-cell>
                     <clr-dg-cell>
                         <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
