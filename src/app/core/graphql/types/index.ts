@@ -133,6 +133,7 @@ export type DevicePool = {
     description?: Maybe<Scalars['String']>;
     deviceType: Scalars['String'];
     computeIdentifier: Scalars['String'];
+    totalUnits?: Scalars['Int'];
     cloudDevice?: Maybe<CloudDevice>;
     cloudClient?: Maybe<CloudClient>;
 };
@@ -517,6 +518,7 @@ export type DevicePoolInput = {
     description: Maybe<Scalars['String']>;
     computeIdentifier: Scalars['String'];
     deviceType: Scalars['String'];
+    totalUnits?: Scalars['Int'];
     cloudId?: Maybe<Scalars['Int']>;
 };
 

@@ -27,12 +27,18 @@
                 <select clrSelect id="device" formControlName="cloudDevice" [compareWith]="compareCloudDevice">
                     <option *ngFor="let cloudDevice of cloudDevices" [ngValue]="cloudDevice">{{ cloudDevice | cloudDevice }}</option>
                 </select>
-                <clr-control-helper>Please select a cloud device</clr-control-helper>
+                <clr-control-error>Please select a cloud device</clr-control-error>
             </clr-select-container>
 
             <div *ngIf="cloudDevices?.length == 0" class="device-pool-edit-none-remaining">
                 There are no unconfigured cloud devices
             </div>
+
+            <clr-input-container>
+                <label for="totalUnits">Total Units</label>
+                <input type="number" clrInput id="totalUnits" formControlName="totalUnits" class="form-control"/>
+                <clr-control-helper>Please enter the total number of units available</clr-control-helper>
+            </clr-input-container>
 
         </form>
         <div class="modal-footer">

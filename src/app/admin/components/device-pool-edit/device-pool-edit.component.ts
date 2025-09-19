@@ -35,6 +35,7 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
         this._form = new FormGroup({
             name: new FormControl(null, Validators.required),
             description: new FormControl(null),
+            totalUnits: new FormControl(null),
             cloudDevice: new FormControl(null, Validators.required),
             cloudClient: new FormControl(null, Validators.required),
         });
@@ -95,8 +96,8 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
     }
 
     private _createFormFromDevicePool(devicePool: DevicePool): void {
-        const { name, description, cloudDevice, cloudClient } = devicePool;
-        this.form.reset({ name, description, cloudDevice, cloudClient });
+        const { name, description, totalUnits, cloudDevice, cloudClient } = devicePool;
+        this.form.reset({ name, description, totalUnits, cloudDevice, cloudClient });
 
         // Initialise cloud devices with current cloud device
         this._cloudDevices = [null, cloudDevice];
@@ -178,10 +179,11 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, description, cloudClient, cloudDevice} = this.form.value;
+        const {name, description, totalUnits, cloudClient, cloudDevice} = this.form.value;
         const input = {
             name,
             description,
+            totalUnits,
             cloudId: cloudClient.id,
             computeIdentifier: cloudDevice.identifier,
             deviceType: cloudDevice.type,

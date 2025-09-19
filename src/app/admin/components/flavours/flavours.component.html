@@ -73,6 +73,7 @@
                     </ng-template>
                 </clr-dg-column>
                 <clr-dg-column>Cloud Device</clr-dg-column>
+                <clr-dg-column>Total Units</clr-dg-column>
                 <clr-dg-column></clr-dg-column>
 
                 <clr-dg-row *ngFor="let devicePool of devicePools;let i = index">
@@ -81,6 +82,7 @@
                     <clr-dg-cell *ngIf="devicePool.cloudClient">{{devicePool.cloudClient.name}}</clr-dg-cell>
                     <clr-dg-cell *ngIf="!devicePool.cloudClient"><b>Not configured</b></clr-dg-cell>
                     <clr-dg-cell>{{devicePool.cloudDevice | cloudDevice}}</clr-dg-cell>
+                    <clr-dg-cell>{{devicePool.totalUnits}}</clr-dg-cell>
                     <clr-dg-cell>
                         <button (click)="onUpdateDevicePool(devicePool)" class="btn btn-sm">Edit</button>
                         <button (click)="onCreateDevicePool(devicePool)" class="btn btn-sm">Clone</button>

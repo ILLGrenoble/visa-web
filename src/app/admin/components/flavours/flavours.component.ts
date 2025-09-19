@@ -149,6 +149,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 id
                                 name
                                 description
+                                totalUnits
                                 cloudDevice {
                                     identifier
                                     type
