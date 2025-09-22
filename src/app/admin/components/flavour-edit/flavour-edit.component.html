@@ -39,8 +39,8 @@
                 <div class="clr-control-container form-control clr-col-md-10 clr-col-12">
                     <div class="clr-input-wrapper">
                         <div class="clr-input form-control" style="border-bottom: 0;">
-                           <span class="label" *ngFor="let device of devices">
-                                {{device.identifier}}
+                           <span class="label" *ngFor="let deviceAllocations of deviceAllocations">
+                                {{deviceAllocations | cloudDeviceAllocation}}
                            </span>
                         </div>
                     </div>

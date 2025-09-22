@@ -1,6 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {CloudDevice, DevicePool, DevicePoolInput, Flavour, FlavourInput, Instrument, Role} from '../../../core/graphql';
+import {
+    CloudDevice, CloudDeviceAllocation,
+    DevicePool,
+    DevicePoolInput,
+    Flavour,
+    FlavourInput,
+    Instrument,
+    DevicePoolUsage,
+    Role
+} from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
@@ -24,6 +33,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     private _refreshDevices$: Subject<void> = new Subject();
     private _flavours: Flavour[] = [];
     private _devicePools: DevicePool[] = [];
+    private _devicePoolCounts: DevicePoolUsage[];
     private _instruments: Instrument[];
     private _roles: Role[];
     private _loadingFlavours: boolean;
@@ -84,19 +94,25 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                     name
                                     cpus
                                     ram
-                                    cloudDevices {
-                                        identifier
-                                        type
+                                    deviceAllocations {
+                                        device {
+                                            identifier
+                                            type
+                                        }
+                                        unitCount
                                     }
                                 }
-                                devicePools {
-                                    id
-                                    name
-                                    description
-                                    cloudDevice {
-                                        identifier
-                                        type
+                                devices {
+                                    devicePool {
+                                        id
+                                        name
+                                        description
+                                        cloudDevice {
+                                            identifier
+                                            type
+                                        }
                                     }
+                                    unitCount
                                 }
                                 cloudClient {
                                     id
@@ -159,16 +175,23 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                     name
                                 }
                             }
+                            devicePoolUsage {
+                                devicePoolId
+                                devicePoolName
+                                total
+                            }
                         }
                     `
                 })),
                 map(({data}) => ({
                     devicePools: data.devicePools,
+                    counts: data.devicePoolUsage,
                 })),
                 tap(() => this._loadingDevices = false)
             )
-            .subscribe(({devicePools}) => {
+            .subscribe(({devicePools, counts}) => {
                 this._devicePools = devicePools;
+                this._devicePoolCounts = counts;
             });
     }
 
@@ -375,12 +398,16 @@ export class FlavoursComponent implements OnInit, OnDestroy {
         });
     }
 
-    public unconfiguredCloudDevices(flavour: Flavour): CloudDevice[] {
-        const configuredCloudDevices: CloudDevice[] = flavour.devicePools.map(devicePool => devicePool.cloudDevice);
-        return flavour.cloudFlavour.cloudDevices
-            .filter(cloudDevice => {
-                return configuredCloudDevices.find(configuredCloudDevice => configuredCloudDevice.identifier === cloudDevice.identifier && configuredCloudDevice.type === cloudDevice.type) == null;
+    public unconfiguredCloudDevices(flavour: Flavour): CloudDeviceAllocation[] {
+        const configuredCloudDevices: CloudDevice[] = flavour.devices.map(flavourDevice => flavourDevice.devicePool.cloudDevice);
+        return flavour.cloudFlavour.deviceAllocations
+            .filter(deviceAllocation => {
+                return configuredCloudDevices.find(configuredCloudDevice => configuredCloudDevice.identifier === deviceAllocation.device.identifier && configuredCloudDevice.type === deviceAllocation.device.type) == null;
             })
+    }
+
+    public devicePoolUsage(devicePool: DevicePool): number {
+        return this._devicePoolCounts.find(devicePoolCount => devicePoolCount.devicePoolId === devicePool.id)?.total || 0;
     }
 
 }

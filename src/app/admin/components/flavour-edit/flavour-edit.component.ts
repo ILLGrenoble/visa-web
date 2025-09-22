@@ -92,8 +92,8 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.cpus : 0;
     }
 
-    get devices(): CloudDevice[] {
-        return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.cloudDevices : [];
+    get deviceAllocations(): CloudDevice[] {
+        return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.deviceAllocations : [];
     }
 
     get onSave$(): Subject<FlavourInput> {
@@ -225,9 +225,12 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
                         name
                         cpus
                         ram
-                        cloudDevices {
-                            identifier
-                            type
+                        deviceAllocations {
+                            device {
+                                identifier
+                                type
+                            }
+                            unitCount
                         }
                     }
                 }

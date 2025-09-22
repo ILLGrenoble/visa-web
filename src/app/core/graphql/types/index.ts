@@ -45,13 +45,19 @@ export type CloudFlavour = {
     cpus: Scalars['Int'];
     disk: Scalars['Int'];
     ram: Scalars['Int'];
-    cloudDevices?: Maybe<Array<Maybe<CloudDevice>>>
+    deviceAllocations?: Maybe<Array<Maybe<CloudDeviceAllocation>>>
 };
 
 export type CloudDevice = {
     __typename?: 'CloudDevice';
     identifier: Scalars['String'];
     type: Scalars['String'];
+};
+
+export type CloudDeviceAllocation = {
+    __typename?: 'CloudDeviceAllocation';
+    device: CloudDevice;
+    unitCount: Scalars['Int'];
 };
 
 export type CloudImage = {
@@ -121,7 +127,7 @@ export type Flavour = {
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
-    devicePools?: Maybe<Array<Maybe<DevicePool>>>
+    devices?: Maybe<Array<Maybe<FlavourDevice>>>
     cloudFlavour?: Maybe<CloudFlavour>;
     cloudClient?: Maybe<CloudClient>;
 };
@@ -136,6 +142,12 @@ export type DevicePool = {
     totalUnits?: Scalars['Int'];
     cloudDevice?: Maybe<CloudDevice>;
     cloudClient?: Maybe<CloudClient>;
+};
+
+export type FlavourDevice = {
+    __typename?: 'FlavourDevice';
+    devicePool: DevicePool;
+    unitCount: Scalars['Int'];
 };
 
 export type FlavourConnection = {
@@ -441,6 +453,8 @@ export type Query = {
     countInstancesForState: Scalars['Int'];
     /** Count all instances for a given set of states */
     countInstancesForStates?: Maybe<Array<Maybe<InstanceStateCount>>>;
+    /** Count all device units used by device pools */
+    devicePoolUsage?: Maybe<Array<Maybe<DevicePoolUsage>>>;
     /**
      * Get all instance sessions
      *    activeInstanceSessions
@@ -623,6 +637,13 @@ export type NumberInstancesByFlavour = {
     __typename?: 'NumberInstancesByFlavour';
     id: Scalars['Int'];
     name: Scalars['String'];
+    total: Scalars['Int'];
+};
+
+export type DevicePoolUsage = {
+    __typename?: 'DevicePoolUsage';
+    devicePoolId: Scalars['Int'];
+    devicePoolName: Scalars['String'];
     total: Scalars['Int'];
 };
 
