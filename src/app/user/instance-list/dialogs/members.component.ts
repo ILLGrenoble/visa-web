@@ -197,6 +197,7 @@ export class MembersDialog implements OnInit {
             screenHeight: this.instance.screenHeight,
             keyboardLayout: this.instance.keyboardLayout,
             unrestrictedAccess: this.instance.unrestrictedAccess,
+            vdiProtocolId: this.instance.vdiProtocol.id,
         }).subscribe((instance) => {
             this.instance = instance;
             this.showNotification('Member access has been updated');
