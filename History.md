@@ -1,6 +1,7 @@
 3.5.2 30/08/2025
 ================
  * Update to webx-client 1.11.0
+ * Remove host cursor when WebXCanvasRenderer is used.
  * Show flavour name on instance card (home page)
 
 3.5.1 05/08/2025
