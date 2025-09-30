@@ -219,6 +219,10 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
     align-items: center;
     justify-content: center;
 
+    #webx-desktop-container {
+        cursor: none;
+    }
+
     canvas {
         width: 100%;
         height: 100%;
