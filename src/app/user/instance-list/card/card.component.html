@@ -84,7 +84,14 @@
                         <div class="instance-text--larger--bold">{{instance.plan.image.nameAndVersion}}</div>
                         <div *ngIf="user?.admin">({{instance.vdiProtocol.name}})</div>
                     </div>
-                    <div class="instance-text">{{instance.plan.flavour.name }}: {{getRamView()}}<span class="dot"> </span> {{getCpuView()}}</div>
+                    <div class="instance-text">
+                        <span style="font-weight: 600;">{{instance.plan.flavour.name }}:</span>
+                        {{getRamView()}}<span class="dot"></span> {{getCpuView()}}
+                        <span *ngFor="let device of instance.plan.flavour.devices">
+                            <span class="dot"></span>
+                            {{device.devicePool.name}}
+                        </span>
+                    </div>
                     <div class="instance-text">Instance <b>{{instance.id}}</b>
                         <span *ngIf="user?.admin"> (<b>{{instance.ipAddress}}</b>)</span> created on
                         <b>{{instance.createdAt | date}}</b>

@@ -7,7 +7,9 @@
 
 .flavours {
     width: 100%;
-    display: inline-block;
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
 
     ul {
         width: 100%;
@@ -22,9 +24,14 @@
     }
 
     .flavour-box {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+
         $primary-color: #0747a6;
         $disabled-color: #dfdfdf;
-        display: inline-block;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         text-align: center;
         color: #666;
         border: 1px solid $disabled-color;
@@ -38,24 +45,42 @@
             cursor: pointer;
             font-size: 13px;
             outline: 0;
-            padding: 10px;
+            height: 3rem;
+            line-height: 3rem;
         }
 
         .flavour-button {
             cursor: pointer;
             color: inherit;
-            height: 110px;
             &__detail {
                 font-size: 16px;
                 font-weight: 600;
                 display: block;
-                margin: 8px 0 10px;
+                margin: 4px 0;
                 cursor: pointer;
+                height: 26px;
+                line-height: 26px;
             }
+
+            &__device-name {
+            }
+
+            &__device-description {
+                font-size: 8pt;
+                line-height: 10px;
+                font-weight: 400;
+                height: 10px;
+            }
+
             background: #fff;
             width: 100%;
             outline: 0;
             border: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-grow: 1;
+            padding: 20px 0;
         }
 
 
