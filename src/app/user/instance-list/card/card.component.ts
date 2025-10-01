@@ -239,7 +239,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
     public getRamView(): string {
         if (this.instance && this.instance.plan.flavour) {
-            return (Math.round(this.instance.plan.flavour.memory / 1024 * 10) / 10) + ' GB';
+            return (Math.round(this.instance.plan.flavour.memory / 1024 * 10) / 10) + ' GB RAM';
         }
         return null;
     }

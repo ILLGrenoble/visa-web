@@ -85,11 +85,13 @@
                         <div *ngIf="user?.admin">({{instance.vdiProtocol.name}})</div>
                     </div>
                     <div class="instance-text">
-                        <span style="font-weight: 600;">{{instance.plan.flavour.name }}:</span>
-                        {{getRamView()}}<span class="dot"></span> {{getCpuView()}}
-                        <span *ngFor="let device of instance.plan.flavour.devices">
-                            <span class="dot"></span>
-                            {{device.devicePool.name}}
+                        {{instance.plan.flavour.name }}:
+                        <span style="font-weight: 600;">
+                            {{getRamView()}}<span class="dot"></span> {{getCpuView()}}
+                            <span *ngFor="let device of instance.plan.flavour.devices">
+                                <span class="dot"></span>
+                                {{device.devicePool.name}}
+                            </span>
                         </span>
                     </div>
                     <div class="instance-text">Instance <b>{{instance.id}}</b>

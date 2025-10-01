@@ -21,6 +21,9 @@ export class Flavour {
     @JsonProperty('devices', [FlavourDevice], true)
     private _devices: FlavourDevice[] = undefined;
 
+    @JsonProperty('available', Boolean)
+    private _available: boolean = undefined;
+
     public copy(data: Flavour): Flavour {
         this.id = data.id;
         this.name = data.name;
@@ -28,6 +31,7 @@ export class Flavour {
         this.cpu = data.cpu;
         this.computeId = data.computeId;
         this.devices = data.devices;
+        this.available = data.available;
 
         return this;
     }
@@ -78,5 +82,13 @@ export class Flavour {
 
     set devices(value: FlavourDevice[]) {
         this._devices = value;
+    }
+
+    get available(): boolean {
+        return this._available;
+    }
+
+    set available(value: boolean) {
+        this._available = value;
     }
 }

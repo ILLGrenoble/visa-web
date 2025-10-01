@@ -37,27 +37,30 @@
         border: 1px solid $disabled-color;
         box-sizing: border-box;
         width: 200px;
+        cursor: pointer;
+
+        * {
+            cursor: inherit;
+        }
 
         .flavour-details {
             text-align: center;
             border-top: 1px solid $disabled-color;
-            display: block;
-            cursor: pointer;
             font-size: 13px;
             outline: 0;
             height: 3rem;
-            line-height: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .flavour-button {
-            cursor: pointer;
             color: inherit;
             &__detail {
                 font-size: 16px;
                 font-weight: 600;
                 display: block;
                 margin: 4px 0;
-                cursor: pointer;
                 height: 26px;
                 line-height: 26px;
             }
@@ -93,6 +96,21 @@
                 border-top: 1px solid $primary-color;
                 color: #0747a6;
                 background: #f5f9ff;
+            }
+        }
+
+        &--disabled {
+            border: 1px solid #d0d0d0;
+            color: #d0d0d0;
+            cursor: default;
+
+            .flavour-details {
+                border-top: 1px solid #d0d0d0;
+                color: #d0d0d0;
+
+                .unavailable {
+                    font-size: 8pt;
+                }
             }
         }
 

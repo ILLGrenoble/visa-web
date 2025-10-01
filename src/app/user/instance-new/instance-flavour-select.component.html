@@ -3,7 +3,7 @@
         <h3>Choose hardware requirements</h3>
     </div>
     <div class="flavours">
-        <div *ngFor="let plan of imagePlans.plans" (click)="selectedPlan.next(plan)" class="flavour-box flavour-box--selected" [ngClass]="{'flavour-box--selected': plan === selectedPlan.getValue()}">
+        <div *ngFor="let plan of imagePlans.plans" (click)="plan.flavour.available ? selectedPlan.next(plan) : ''" class="flavour-box" [ngClass]="{'flavour-box--selected': plan === selectedPlan.getValue(), 'flavour-box--disabled': !plan.flavour.available}">
             <button class="flavour-button">
                 <div class="flavour-button__detail">
                     {{getCpuView(plan.flavour)}}
@@ -21,7 +21,12 @@
                 </div>
             </button>
             <div class="flavour-details">
-                {{plan.flavour.name}}
+                <div>
+                    {{plan.flavour.name}}
+                </div>
+                <div *ngIf="!plan.flavour.available" class="unavailable">
+                    CURRENTLY UNAVAILABLE
+                </div>
             </div>
         </div>
     </div>
