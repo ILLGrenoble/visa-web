@@ -644,7 +644,8 @@ export type DevicePoolUsage = {
     __typename?: 'DevicePoolUsage';
     devicePoolId: Scalars['Int'];
     devicePoolName: Scalars['String'];
-    total: Scalars['Int'];
+    totalUnits: Scalars['Int'];
+    usedUnits: Scalars['Int'];
 };
 
 export type NumberInstancesByImage = {

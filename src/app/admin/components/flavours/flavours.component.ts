@@ -178,7 +178,8 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                             devicePoolUsage {
                                 devicePoolId
                                 devicePoolName
-                                total
+                                totalUnits
+                                usedUnits
                             }
                         }
                     `
@@ -407,7 +408,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     }
 
     public devicePoolUsage(devicePool: DevicePool): number {
-        return this._devicePoolCounts.find(devicePoolCount => devicePoolCount.devicePoolId === devicePool.id)?.total || 0;
+        return this._devicePoolCounts.find(devicePoolCount => devicePoolCount.devicePoolId === devicePool.id)?.usedUnits || 0;
     }
 
 }
