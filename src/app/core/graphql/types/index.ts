@@ -614,7 +614,7 @@ export type Employer = {
 
 export type User = {
     __typename?: 'User';
-    id: Scalars['Int'];
+    id: Scalars['String'];
     firstName?: Maybe<Scalars['String']>;
     lastName?: Maybe<Scalars['String']>;
     email?: Maybe<Scalars['String']>;
