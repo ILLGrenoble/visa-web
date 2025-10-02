@@ -98,6 +98,7 @@ export type DetailedCloudLimit = {
     __typename?: 'DetailedCloudLimit';
     cloudClient: CloudClient;
     cloudLimit?: Maybe<CloudLimit>;
+    devicePoolUsage?: Maybe<Array<Maybe<DevicePoolUsage>>>;
     error?: Scalars['String'];
 };
 
