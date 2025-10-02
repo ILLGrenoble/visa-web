@@ -22,6 +22,10 @@
             <input type="checkbox" clrCheckbox (change)="onColumn('flavour')" [checked]="columnsState.flavour"/>
             <label>Flavour</label>
         </clr-checkbox-wrapper>
+        <clr-checkbox-wrapper *ngIf="data?.devicePools.length > 0">
+            <input type="checkbox" clrCheckbox (change)="onColumn('devices')" [checked]="columnsState.devices"/>
+            <label>Devices</label>
+        </clr-checkbox-wrapper>
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox (change)="onColumn('terminationDate')"
                    [checked]="columnsState.terminationDate"/>
@@ -98,6 +102,18 @@
                     <select formControlName="flavour" class="filter-input">
                         <option [ngValue]="null">All flavours</option>
                         <option *ngFor="let flavour of data.flavours" [ngValue]="flavour.id">{{ flavour.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div *ngIf="data?.devicePools.length > 0" class="filter-box">
+                <div class="filter-title">
+                    Device
+                </div>
+                <div class="filter-body" *ngIf="data">
+                    <select formControlName="devicePool" class="filter-input">
+                        <option [ngValue]="null">All devices</option>
+                        <option *ngFor="let devicePool of data.devicePools" [ngValue]="devicePool.id">{{ devicePool.name }}
                         </option>
                     </select>
                 </div>

@@ -1,3 +1,5 @@
+import {DevicePool} from "@core";
+
 export interface InstancesFilterState {
     filters: {
         name: string;
@@ -7,6 +9,7 @@ export interface InstancesFilterState {
         instrument: number;
         state: string;
         user: string;
+        devicePool: number;
     };
     page: number;
     descending: boolean;

@@ -198,6 +198,13 @@ export type ImageProtocol = {
     port: Scalars['Int'];
 };
 
+export type InstanceDeviceAllocation = {
+    __typename?: 'InstanceDeviceAllocation';
+    instance: Instance;
+    devicePool: DevicePool;
+    unitCount: Scalars['Int'];
+}
+
 export type Instance = {
     __typename?: 'Instance';
     id: Scalars['Int'];
@@ -222,6 +229,7 @@ export type Instance = {
     attributes: Maybe<Array<Maybe<InstanceAttribute>>>;
     cloudClient?: Maybe<CloudClient>;
     vdiProtocol: ImageProtocol;
+    deviceAllocations: Maybe<Array<Maybe<InstanceDeviceAllocation>>>;
 };
 
 export type InstanceConnection = {
@@ -491,6 +499,7 @@ export type InstanceFilterInput = {
     flavourId: Maybe<Scalars['Int']>;
     state: Maybe<Scalars['String']>;
     ownerId: Maybe<Scalars['String']>;
+    devicePoolId: Maybe<Scalars['Int']>;
 }
 
 export type ExperimentFilterInput = {

@@ -28,6 +28,7 @@ import {
     CloudDevicePipe,
     CloudDeviceAllocationPipe,
     FlavourDevicePipe,
+    InstanceDeviceAllocationPipe,
 } from './common';
 import {
     ApplicationCredentialDeleteComponent,
@@ -161,6 +162,7 @@ import {ClrSpinnerModule} from "@clr/angular";
         ExtensionRequestHandlerComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
+        InstanceDeviceAllocationPipe,
         FlavourDevicePipe,
     ],
     exports: [

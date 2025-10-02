@@ -22,7 +22,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
     private _loading = true;
 
     private _filterState: InstancesFilterState;
-    private _columnsState: InstancesColumnsState = { vdiProtocol: false, cloudClient: false, flavour: false, image: false, terminationDate: false}
+    private _columnsState: InstancesColumnsState = { vdiProtocol: false, cloudClient: false, flavour: false, image: false, terminationDate: false, devices: false}
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -100,6 +100,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
                     instrument: params.getNumber('instrument', null),
                     state: params.getString('state', null),
                     user: params.getString('user', null),
+                    devicePool: params.getNumber('devicePool', null),
                 },
                 page: params.getNumber('page', 1),
                 descending: params.getBoolean('descending', true),
@@ -138,6 +139,13 @@ export class InstancesComponent implements OnInit, OnDestroy {
                                 vdiProtocol {
                                   id
                                   name
+                                }
+                                deviceAllocations {
+                                  unitCount
+                                  devicePool {
+                                    id
+                                    name
+                                  }
                                 }
                                 terminationDate
                                 lastSeenAt
@@ -262,7 +270,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
     }
 
     private processFilters(): InstanceFilterInput {
-        const {name, id, flavour, image, instrument, state, user} = this.filterState.filters;
+        const {name, id, flavour, image, instrument, state, user, devicePool} = this.filterState.filters;
         return {
             ids: id ? [id] : null,
             nameLike: name,
@@ -271,6 +279,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
             flavourId: flavour,
             state,
             ownerId: user,
+            devicePoolId: devicePool,
         }
     }
 
