@@ -1,3 +1,7 @@
+3.5.3 10/10/2025
+================
+ * Update to webx-client 1.12.1 for improved canvas rendering.
+
 3.5.2 30/08/2025
 ================
  * Fix bug in unrestricted access not being set correctly
