@@ -54,7 +54,6 @@
               "moment-duration-format",
               "blueimp-md5",
               "file-saver",
-              "@illgrenoble/webx-client",
               "@ctrl/ngx-codemirror"
             ]
           },
