@@ -22,7 +22,7 @@
                 <clr-dg-cell>{{request.instance.id}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.name}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.owner.fullName}}</clr-dg-cell>
-                <clr-dg-cell>{{request.instance.owner.affiliation.name}}</clr-dg-cell>
+                <clr-dg-cell>{{request.instance.owner.affiliation ? request.instance.owner.affiliation.name : 'No affiliation'}}</clr-dg-cell>
                 <clr-dg-cell>{{formatImageName(request.instance.plan.image) }}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.plan.flavour.name}}</clr-dg-cell>
                 <clr-dg-cell>{{request.instance.state}}</clr-dg-cell>
