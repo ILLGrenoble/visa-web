@@ -114,6 +114,14 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                     }
                                     unitCount
                                 }
+                                roleLifetimes {
+                                  id
+                                  role {
+                                    id
+                                    name
+                                  }
+                                  lifetimeMinutes
+                                }
                                 cloudClient {
                                     id
                                     name

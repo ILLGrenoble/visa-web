@@ -39,8 +39,8 @@
                 <div class="clr-control-container form-control clr-col-md-10 clr-col-12">
                     <div class="clr-input-wrapper">
                         <div class="clr-input form-control" style="border-bottom: 0;">
-                           <span class="label" *ngFor="let deviceAllocations of deviceAllocations">
-                                {{deviceAllocations | cloudDeviceAllocation}}
+                           <span class="label" *ngFor="let deviceAllocation of deviceAllocations">
+                                {{deviceAllocation | cloudDeviceAllocation}}
                            </span>
                         </div>
                     </div>
@@ -76,6 +76,45 @@
                 </clr-combobox>
                 <clr-control-helper>Use of this flavour will be restricted to roles selected here (and the instruments above)</clr-control-helper>
             </clr-combobox-container>
+
+            <div class="section-title">Role-based instance lifetime rules</div>
+
+            <div id="lifetime-roles" formArrayName="roleLifetimes">
+                <div *ngFor="let rl of roleLifetimes.controls; let i = index" [formGroupName]="i" class="clr-row clr-align-items-center mb-2">
+                    <div class="clr-col-5">
+                        <clr-combobox-container>
+                            <label for="lifetime-role">Role</label>
+                            <clr-combobox id="lifetime-role" formControlName="role" >
+                                <clr-options>
+                                    <clr-option *clrOptionItems="let role of roles; field: 'name'" [clrValue]="role">
+                                        {{role.name}}
+                                    </clr-option>
+                                </clr-options>
+                            </clr-combobox>
+                        </clr-combobox-container>
+                    </div>
+
+                    <div class="clr-col-5">
+                        <clr-input-container>
+                            <label for="lifetime-duration">Lifetime</label>
+                            <input id="lifetime-duration" clrInput type="number" formControlName="lifetimeMinutes" min="1" />
+                        </clr-input-container>
+                    </div>
+
+                    <div class="clr-col-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger mt-3" (click)="removeRoleLifetime(i)">
+                            <clr-icon shape="trash"></clr-icon> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 button-spacer">
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addRoleLifetime()">
+                    <clr-icon shape="plus"></clr-icon> Add Rule
+                </button>
+            </div>
+
 
         </form>
         <div class="modal-footer">
