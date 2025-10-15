@@ -98,6 +98,9 @@ export class Instance {
     @JsonProperty('publicAccessRole', String)
     private _publicAccessRole: string = undefined;
 
+    @JsonProperty('lifetimeMinutes', Number)
+    private _lifetimeMinutes: number = undefined;
+
     public get id(): number {
         return this._id;
     }
@@ -347,5 +350,13 @@ export class Instance {
 
     set publicAccessRole(value: string) {
         this._publicAccessRole = value;
+    }
+
+    get lifetimeMinutes(): number {
+        return this._lifetimeMinutes;
+    }
+
+    set lifetimeMinutes(value: number) {
+        this._lifetimeMinutes = value;
     }
 }
