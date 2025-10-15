@@ -7,3 +7,4 @@ export * from './random-item.pipe';
 export * from './sanitizer.pipe';
 export * from './instance-filter.pipe';
 export * from './safe.pipe';
+export * from './lifetime-duration.pipe';

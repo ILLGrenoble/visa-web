@@ -20,6 +20,14 @@
                     </div>
                 </div>
             </button>
+            <div class="flavour-duration">
+                <div class="title">
+                    Instance duration
+                </div>
+                <div class="value">
+                    {{plan.flavour.lifetimeMinutes | lifetimeDuration}}
+                </div>
+            </div>
             <div class="flavour-details">
                 <div>
                     {{plan.flavour.name}}
