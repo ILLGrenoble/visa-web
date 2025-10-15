@@ -24,6 +24,7 @@
                 <clr-dg-column>Memory / GB</clr-dg-column>
                 <clr-dg-column>CPUs</clr-dg-column>
                 <clr-dg-column>Devices</clr-dg-column>
+                <clr-dg-column>Lifetime rules</clr-dg-column>
                 <clr-dg-column></clr-dg-column>
 
                 <clr-dg-row *ngFor="let flavour of flavours;let i = index">
@@ -41,6 +42,11 @@
                         </span>
                         <span class="label unconfigured-device-pool" *ngFor="let unconfiguredCloudDevice of unconfiguredCloudDevices(flavour)">
                             {{unconfiguredCloudDevice | cloudDeviceAllocation}} unconfigured
+                        </span>
+                    </clr-dg-cell>
+                    <clr-dg-cell>
+                        <span class="label" *ngFor="let roleLifetime of flavour.roleLifetimes">
+                            {{roleLifetime | roleLifetime}}
                         </span>
                     </clr-dg-cell>
                     <clr-dg-cell>

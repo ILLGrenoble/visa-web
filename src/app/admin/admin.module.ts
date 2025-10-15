@@ -29,6 +29,7 @@ import {
     CloudDeviceAllocationPipe,
     FlavourDevicePipe,
     InstanceDeviceAllocationPipe,
+    RoleLifetimePipe,
 } from './common';
 import {
     ApplicationCredentialDeleteComponent,
@@ -164,6 +165,7 @@ import {ClrSpinnerModule} from "@clr/angular";
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,
         FlavourDevicePipe,
+        RoleLifetimePipe,
     ],
     exports: [
         DashboardComponent,

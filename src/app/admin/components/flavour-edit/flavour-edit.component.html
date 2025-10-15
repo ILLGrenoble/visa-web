@@ -80,32 +80,34 @@
             <div class="section-title">Role-based instance lifetime rules</div>
 
             <div id="lifetime-roles" formArrayName="roleLifetimes">
-                <div *ngFor="let rl of roleLifetimes.controls; let i = index" [formGroupName]="i" class="clr-row clr-align-items-center mb-2">
-                    <div class="clr-col-5">
-                        <clr-combobox-container>
-                            <label for="lifetime-role">Role</label>
-                            <clr-combobox id="lifetime-role" formControlName="role" >
-                                <clr-options>
-                                    <clr-option *clrOptionItems="let role of roles; field: 'name'" [clrValue]="role">
-                                        {{role.name}}
-                                    </clr-option>
-                                </clr-options>
-                            </clr-combobox>
-                        </clr-combobox-container>
-                    </div>
+                <div *ngFor="let rl of roleLifetimes.controls; let i = index" [formGroupName]="i" class="role-lifetimes-row">
+<!--                    <div class="label">-->
+<!--                        <div style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center">-->
+<!--                            {{rl.get('role').value.name}}: {{rl.get('lifetimeMinutes').value}}-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <clr-combobox-container class="role-clr-container">
+                        <label for="lifetime-role">Role</label>
+                        <clr-combobox id="lifetime-role" formControlName="role" style="width: 100px;" class="clr-col-md-2">
+                            <clr-options>
+                                <clr-option *clrOptionItems="let role of availableRuleRoles; field: 'name'" [clrValue]="role">
+                                    {{role.name}}
+                                </clr-option>
+                            </clr-options>
+                        </clr-combobox>
+                    </clr-combobox-container>
 
-                    <div class="clr-col-5">
-                        <clr-input-container>
-                            <label for="lifetime-duration">Lifetime</label>
-                            <input id="lifetime-duration" clrInput type="number" formControlName="lifetimeMinutes" min="1" />
-                        </clr-input-container>
-                    </div>
+                    <clr-input-container class="role-clr-container">
+                        <label for="lifetime-duration" class="role-clr-container-label">Lifetime</label>
+                        <input id="lifetime-duration" clrInput formControlName="lifetimeText" placeholder="e.g. 2d, 12h, 1h30m, etc" class="clr-col-md-2"/>
+                        <clr-control-error *ngIf="rl.get('lifetimeText')?.hasError('invalidDuration')" style="width: 180px">
+                            Invalid duration format (use d, h, m — e.g. 2d3h30m)
+                        </clr-control-error>
+                    </clr-input-container>
 
-                    <div class="clr-col-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger mt-3" (click)="removeRoleLifetime(i)">
-                            <clr-icon shape="trash"></clr-icon> Remove
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger mt-3 role-clr-container" (click)="removeRoleLifetime(i)">
+                        <clr-icon shape="trash"></clr-icon>
+                    </button>
                 </div>
             </div>
 

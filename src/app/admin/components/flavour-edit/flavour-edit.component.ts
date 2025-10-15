@@ -13,7 +13,8 @@ import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {filter, map, takeUntil} from 'rxjs/operators';
-
+import { durationValidator } from './duration.validator';
+import {formatDuration, parseDurationString} from "../../common";
 @Component({
     selector: 'visa-admin-flavour-edit',
     templateUrl: './flavour-edit.component.html',
@@ -26,10 +27,13 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
     private _cloudFlavours: CloudFlavour[];
     private readonly _instruments: Instrument[];
     private readonly _roles: Role[];
+    private readonly _lifetimeRoles: Role[];
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<FlavourInput> = new Subject<FlavourInput>();
     private _multiCloudEnabled = false;
+
+    private readonly _defaultRole: Role = {name: 'DEFAULT (all users)', id: null, description: 'Default role', expiresAt: null};
 
     constructor(private readonly _dialogRef: MatDialogRef<FlavourEditComponent>,
                 private readonly _apollo: Apollo,
@@ -38,6 +42,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
         this._instruments = instruments;
         this._roles = roles;
+        this._lifetimeRoles = [this._defaultRole, ...roles]
 
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
@@ -85,6 +90,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
     get roles(): Role[] {
         return this._roles;
+    }
+
+    get availableRuleRoles(): Role[] {
+        return this._lifetimeRoles.filter(role => !this._form.value.roleLifetimes.map(roleLifetime => roleLifetime.role?.id).includes(role.id));
     }
 
     get memory(): number {
@@ -152,7 +161,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         });
 
         roleLifetimes.forEach(roleLifetime =>
-            this.roleLifetimes.push(this._createRoleLifetimeGroup(roleLifetime.id, roleLifetime.role, roleLifetime.lifetimeMinutes))
+            this.roleLifetimes.push(this._createRoleLifetimeGroup(roleLifetime.id, roleLifetime.role == null ? this._defaultRole : roleLifetime.role, roleLifetime.lifetimeMinutes))
         );
 
         // Initialise cloud flavours with current cloud flavour
@@ -200,7 +209,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         return this._formBuilder.group({
             id: [id],
             role: [role],
-            lifetimeMinutes: [lifetime || 0, [Validators.required, Validators.min(1)]]
+            lifetimeText: [lifetime ? formatDuration(lifetime) : '', [Validators.required, durationValidator]]
         });
     }
 
@@ -290,7 +299,8 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             memory: cloudFlavour.ram,
             cpu: cloudFlavour.cpus,
             roleLifetimes: roleLifetimes ? roleLifetimes.map(rl => {
-                return { id: rl.id, roleId: rl.role?.id, lifetimeMinutes: rl.lifetimeMinutes}
+                const {id, role, lifetimeText} = rl;
+                return { id, roleId: role?.id, lifetimeMinutes: parseDurationString(lifetimeText) };
             }) : []
         } as FlavourInput;
         this._onSave$.next(input);
