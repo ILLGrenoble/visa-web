@@ -1,3 +1,8 @@
+3.5.4 16/10/2025
+================
+ * Verify that instance exists during jupyter session: close the iframe when instance has been deleted
+ * check for null affiliation when showing extension requests
+
 3.5.3 10/10/2025
 ================
  * Update to webx-client 1.12.1 for improved canvas rendering.
