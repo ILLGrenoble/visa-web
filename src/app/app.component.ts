@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        timer(0, 600000).pipe(
+        timer(0, 120000).pipe(
             switchMap(() => this.checkForApplicationVersion()),
             map((configuration) => configuration.version),
             share(),
