@@ -6,17 +6,19 @@ import {
     Instrument,
     FlavourInput,
     CloudClient,
-    Role, CloudDevice
+    Role, CloudDeviceAllocation
 } from '../../../core/graphql';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {filter, map, takeUntil} from 'rxjs/operators';
-
+import { durationValidator } from './duration.validator';
+import {formatDuration, parseDurationString} from "../../common";
 @Component({
     selector: 'visa-admin-flavour-edit',
     templateUrl: './flavour-edit.component.html',
+    styleUrls: ['./flavour-edit.component.scss'],
 })
 export class FlavourEditComponent implements OnInit, OnDestroy {
 
@@ -25,27 +27,33 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
     private _cloudFlavours: CloudFlavour[];
     private readonly _instruments: Instrument[];
     private readonly _roles: Role[];
+    private readonly _lifetimeRoles: Role[];
     private readonly _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _onSave$: Subject<FlavourInput> = new Subject<FlavourInput>();
     private _multiCloudEnabled = false;
 
+    private readonly _defaultRole: Role = {name: 'DEFAULT (all users)', id: null, description: 'Default role', expiresAt: null};
+
     constructor(private readonly _dialogRef: MatDialogRef<FlavourEditComponent>,
                 private readonly _apollo: Apollo,
+                private readonly _formBuilder: FormBuilder,
                 @Inject(MAT_DIALOG_DATA) {flavour, instruments, roles, clone}) {
 
         this._instruments = instruments;
         this._roles = roles;
+        this._lifetimeRoles = [this._defaultRole, ...roles]
 
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
         this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
 
-        this._form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            cloudClient: new FormControl(null, Validators.required),
-            cloudFlavour: new FormControl(null, Validators.required),
-            instruments: new FormControl(null),
-            roles: new FormControl(null),
+        this._form = this._formBuilder.group({
+            name: [null, Validators.required],
+            cloudClient: [null, Validators.required],
+            cloudFlavour: [null, Validators.required],
+            instruments: [null],
+            roles: [null],
+            roleLifetimes: this._formBuilder.array([]),
         });
 
         if (flavour) {
@@ -84,6 +92,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         return this._roles;
     }
 
+    get availableRuleRoles(): Role[] {
+        return this._lifetimeRoles.filter(role => !this._form.value.roleLifetimes.map(roleLifetime => roleLifetime.role?.id).includes(role.id));
+    }
+
     get memory(): number {
         return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.ram / 1024 : 0;
     }
@@ -92,8 +104,12 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.cpus : 0;
     }
 
-    get deviceAllocations(): CloudDevice[] {
+    get deviceAllocations(): CloudDeviceAllocation[] {
         return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.deviceAllocations : [];
+    }
+
+    get roleLifetimes(): FormArray {
+        return this._form.get('roleLifetimes') as FormArray;
     }
 
     get onSave$(): Subject<FlavourInput> {
@@ -122,17 +138,31 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
         return cloudFlavour1.id === cloudFlavour2.id;
     }
 
+
+    public addRoleLifetime() {
+        this.roleLifetimes.push(this._createRoleLifetimeGroup());
+    }
+
+    public removeRoleLifetime(index: number) {
+        this.roleLifetimes.removeAt(index);
+    }
+
     private _createFormFromFlavour(flavour: Flavour): void {
         const {
             name,
             cloudClient,
             cloudFlavour,
+            roleLifetimes,
         } = flavour;
         this.form.reset({
             name,
             cloudClient,
-            cloudFlavour
+            cloudFlavour,
         });
+
+        roleLifetimes.forEach(roleLifetime =>
+            this.roleLifetimes.push(this._createRoleLifetimeGroup(roleLifetime.id, roleLifetime.role == null ? this._defaultRole : roleLifetime.role, roleLifetime.lifetimeMinutes))
+        );
 
         // Initialise cloud flavours with current cloud flavour
         this._cloudFlavours = [null, cloudFlavour];
@@ -172,6 +202,14 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             const selectedRoles = this._roles.filter(role => (flavourRoleIds.includes(role.id)));
             this.form.controls.instruments.reset(selectedInstruments);
             this.form.controls.roles.reset(selectedRoles);
+        });
+    }
+
+    private _createRoleLifetimeGroup(id?: number, role?: Role, lifetime?: number): FormGroup {
+        return this._formBuilder.group({
+            id: [id],
+            role: [role],
+            lifetimeText: [lifetime ? formatDuration(lifetime) : '', [Validators.required, durationValidator]]
         });
     }
 
@@ -251,7 +289,7 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, cloudClient, cloudFlavour, instruments, roles} = this.form.value;
+        const {name, cloudClient, cloudFlavour, instruments, roles, roleLifetimes} = this.form.value;
         const input = {
             name,
             cloudId: cloudClient.id,
@@ -260,6 +298,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
             roleIds: roles ? roles.map(role => role.id) : [],
             memory: cloudFlavour.ram,
             cpu: cloudFlavour.cpus,
+            roleLifetimes: roleLifetimes ? roleLifetimes.map(rl => {
+                const {id, role, lifetimeText} = rl;
+                return { id, roleId: role?.id, lifetimeMinutes: parseDurationString(lifetimeText) };
+            }) : []
         } as FlavourInput;
         this._onSave$.next(input);
     }

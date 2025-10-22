@@ -129,8 +129,17 @@ export type Flavour = {
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
     devices?: Maybe<Array<Maybe<FlavourDevice>>>
+    roleLifetimes?: Maybe<Array<Maybe<RoleLifetime>>>;
     cloudFlavour?: Maybe<CloudFlavour>;
     cloudClient?: Maybe<CloudClient>;
+};
+
+export type RoleLifetime = {
+    __typename?: 'RoleLifetime';
+    id: Scalars['Int'];
+    flavour: Flavour;
+    role: Maybe<Role>
+    lifetimeMinutes: Scalars['Int'];
 };
 
 export type DevicePool = {
@@ -533,17 +542,24 @@ export type FlavourInput = {
     cpu: Scalars['Int'];
     cloudId?: Maybe<Scalars['Int']>;
     computeId: Scalars['String'];
-    instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
-    roleIds: Maybe<Array<Maybe<Scalars['Int']>>>
+    instrumentIds?: Maybe<Array<Maybe<Scalars['Int']>>>
+    roleIds?: Maybe<Array<Maybe<Scalars['Int']>>>
+    roleLifetimes?: Maybe<Array<Maybe<RoleLifetimeInput>>>;
 };
 
 export type DevicePoolInput = {
     name: Scalars['String'];
-    description: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
     computeIdentifier: Scalars['String'];
     deviceType: Scalars['String'];
     totalUnits?: Scalars['Int'];
     cloudId?: Maybe<Scalars['Int']>;
+};
+
+export type RoleLifetimeInput = {
+    id?: Maybe<Scalars['Int']>;
+    roleId?: Maybe<Scalars['Int']>;
+    lifetimeMinutes: Scalars['Int'];
 };
 
 export type ImageInput = {

@@ -95,7 +95,7 @@
                         </span>
                     </div>
                     <div class="instance-text">Instance <b>{{instance.id}}</b>
-                        <span *ngIf="user?.admin"> (<b>{{instance.ipAddress}}</b>)</span> created on
+                        <span *ngIf="user?.admin && instance.ipAddress"> (<b>{{instance.ipAddress}}</b>)</span> created on
                         <b>{{instance.createdAt | date}}</b>
                         <span *ngIf="instance.expirationDate"> and due to expire on <b>{{instance.expirationDate.toString() | date}}</b></span>
                     </div>

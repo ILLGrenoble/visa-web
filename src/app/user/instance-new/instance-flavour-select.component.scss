@@ -54,6 +54,32 @@
             justify-content: center;
         }
 
+        .flavour-duration {
+            text-align: center;
+            border-top: 1px dashed $disabled-color;
+            outline: 0;
+            height: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            row-gap: 4px;
+
+            .title {
+                font-size: 9px;
+                line-height: 10px;
+                font-weight: 400;
+                height: 10px;
+                text-transform: uppercase;
+            }
+
+            .value {
+                font-size: 16px;
+                line-height: 16px;
+                height: 16px;
+                font-weight: 600;
+            }
+        }
+
         .flavour-button {
             color: inherit;
             &__detail {
@@ -90,13 +116,18 @@
         &--selected {
             border: 1px solid $primary-color;
             color: #0747a6;
-            background: #f5f9ff;
 
             .flavour-details {
                 border-top: 1px solid $primary-color;
                 color: #0747a6;
                 background: #f5f9ff;
             }
+
+            .flavour-duration {
+                border-top: 1px dashed #b1c2da;
+                color: #0747a6;
+            }
+
         }
 
         &--disabled {
@@ -111,6 +142,11 @@
                 .unavailable {
                     font-size: 8pt;
                 }
+            }
+
+            .flavour-duration {
+                border-top: 1px dashed #d0d0d0;
+                color: #d0d0d0;
             }
         }
 

@@ -43,7 +43,9 @@ import {
     TimeConversionPipe,
     TimeDurationPipe,
     SanitizerPipe,
-    InstanceFilterPipe, SafePipe
+    InstanceFilterPipe,
+    SafePipe,
+    LifetimeDurationPipe,
 } from './pipes';
 import {MatCommonModule} from '@angular/material/core';
 
@@ -159,6 +161,7 @@ export function markedOptionsFactory(): MarkedOptions {
         SanitizerPipe,
         InstanceFilterPipe,
         NotificationBadgeComponent,
+        LifetimeDurationPipe,
     ],
     declarations: [
         MembersRoleFilterPipe,
@@ -169,6 +172,7 @@ export function markedOptionsFactory(): MarkedOptions {
         TimeConversionPipe,
         SafePipe,
         InstanceFilterPipe,
+        LifetimeDurationPipe,
         AuthenticatedContainerComponent,
         LoginComponent,
         SystemNotificationComponent,

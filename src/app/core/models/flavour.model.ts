@@ -24,6 +24,9 @@ export class Flavour {
     @JsonProperty('available', Boolean)
     private _available: boolean = undefined;
 
+    @JsonProperty('lifetimeMinutes', Number)
+    private _lifetimeMinutes: number = undefined;
+
     public copy(data: Flavour): Flavour {
         this.id = data.id;
         this.name = data.name;
@@ -32,6 +35,7 @@ export class Flavour {
         this.computeId = data.computeId;
         this.devices = data.devices;
         this.available = data.available;
+        this.lifetimeMinutes = data.lifetimeMinutes;
 
         return this;
     }
@@ -90,5 +94,13 @@ export class Flavour {
 
     set available(value: boolean) {
         this._available = value;
+    }
+
+    get lifetimeMinutes(): number {
+        return this._lifetimeMinutes;
+    }
+
+    set lifetimeMinutes(value: number) {
+        this._lifetimeMinutes = value;
     }
 }
