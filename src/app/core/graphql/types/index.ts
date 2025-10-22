@@ -45,6 +45,19 @@ export type CloudFlavour = {
     cpus: Scalars['Int'];
     disk: Scalars['Int'];
     ram: Scalars['Int'];
+    deviceAllocations?: Maybe<Array<Maybe<CloudDeviceAllocation>>>
+};
+
+export type CloudDevice = {
+    __typename?: 'CloudDevice';
+    identifier: Scalars['String'];
+    type: Scalars['String'];
+};
+
+export type CloudDeviceAllocation = {
+    __typename?: 'CloudDeviceAllocation';
+    device: CloudDevice;
+    unitCount: Scalars['Int'];
 };
 
 export type CloudImage = {
@@ -85,6 +98,7 @@ export type DetailedCloudLimit = {
     __typename?: 'DetailedCloudLimit';
     cloudClient: CloudClient;
     cloudLimit?: Maybe<CloudLimit>;
+    devicePoolUsage?: Maybe<Array<Maybe<DevicePoolUsage>>>;
     error?: Scalars['String'];
 };
 
@@ -114,8 +128,27 @@ export type Flavour = {
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
+    devices?: Maybe<Array<Maybe<FlavourDevice>>>
     cloudFlavour?: Maybe<CloudFlavour>;
     cloudClient?: Maybe<CloudClient>;
+};
+
+export type DevicePool = {
+    __typename?: 'DevicePool';
+    id: Scalars['Int'];
+    name: Scalars['String'];
+    description?: Maybe<Scalars['String']>;
+    deviceType: Scalars['String'];
+    computeIdentifier: Scalars['String'];
+    totalUnits?: Scalars['Int'];
+    cloudDevice?: Maybe<CloudDevice>;
+    cloudClient?: Maybe<CloudClient>;
+};
+
+export type FlavourDevice = {
+    __typename?: 'FlavourDevice';
+    devicePool: DevicePool;
+    unitCount: Scalars['Int'];
 };
 
 export type FlavourConnection = {
@@ -165,6 +198,13 @@ export type ImageProtocol = {
     port: Scalars['Int'];
 };
 
+export type InstanceDeviceAllocation = {
+    __typename?: 'InstanceDeviceAllocation';
+    instance: Instance;
+    devicePool: DevicePool;
+    unitCount: Scalars['Int'];
+}
+
 export type Instance = {
     __typename?: 'Instance';
     id: Scalars['Int'];
@@ -189,6 +229,7 @@ export type Instance = {
     attributes: Maybe<Array<Maybe<InstanceAttribute>>>;
     cloudClient?: Maybe<CloudClient>;
     vdiProtocol: ImageProtocol;
+    deviceAllocations: Maybe<Array<Maybe<InstanceDeviceAllocation>>>;
 };
 
 export type InstanceConnection = {
@@ -308,6 +349,12 @@ export type Mutation = {
     updateFlavour: Flavour;
     /** Delete a flavour */
     deleteFlavour: Flavour;
+    /** Create a device pool */
+    createDevicePool: DevicePool;
+    /** Update a device pool */
+    updateDevicePool: DevicePool;
+    /** Delete a device pool */
+    deleteDevicePool: DevicePool;
     /** Create a plan */
     createPlan: Plan;
     /** Update a plan */
@@ -394,6 +441,8 @@ export type Query = {
     flavours: FlavourConnection;
     /** Count all flavours */
     countFlavours: Scalars['Int'];
+    /** Get all device pools */
+    devicePools: Array<DevicePool>;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
@@ -413,6 +462,8 @@ export type Query = {
     countInstancesForState: Scalars['Int'];
     /** Count all instances for a given set of states */
     countInstancesForStates?: Maybe<Array<Maybe<InstanceStateCount>>>;
+    /** Count all device units used by device pools */
+    devicePoolUsage?: Maybe<Array<Maybe<DevicePoolUsage>>>;
     /**
      * Get all instance sessions
      *    activeInstanceSessions
@@ -429,8 +480,10 @@ export type Query = {
     memory: Memory;
     /** Get images from cloud provider */
     cloudImages?: Maybe<Array<Maybe<CloudImage>>>;
-    /** Get flavours from cloud prrovider */
+    /** Get flavours from cloud provider */
     cloudFlavours?: Maybe<Array<Maybe<CloudFlavour>>>;
+    /** Get devices from cloud provider */
+    cloudDevices?: Maybe<Array<Maybe<CloudDevice>>>;
     /** Get cloud limits */
     cloudLimits?: Maybe<CloudLimit>;
     /** Get all sessions */
@@ -446,6 +499,7 @@ export type InstanceFilterInput = {
     flavourId: Maybe<Scalars['Int']>;
     state: Maybe<Scalars['String']>;
     ownerId: Maybe<Scalars['String']>;
+    devicePoolId: Maybe<Scalars['Int']>;
 }
 
 export type ExperimentFilterInput = {
@@ -481,6 +535,15 @@ export type FlavourInput = {
     computeId: Scalars['String'];
     instrumentIds: Maybe<Array<Maybe<Scalars['Int']>>>
     roleIds: Maybe<Array<Maybe<Scalars['Int']>>>
+};
+
+export type DevicePoolInput = {
+    name: Scalars['String'];
+    description: Maybe<Scalars['String']>;
+    computeIdentifier: Scalars['String'];
+    deviceType: Scalars['String'];
+    totalUnits?: Scalars['Int'];
+    cloudId?: Maybe<Scalars['Int']>;
 };
 
 export type ImageInput = {
@@ -560,7 +623,7 @@ export type Employer = {
 
 export type User = {
     __typename?: 'User';
-    id: Scalars['Int'];
+    id: Scalars['String'];
     firstName?: Maybe<Scalars['String']>;
     lastName?: Maybe<Scalars['String']>;
     email?: Maybe<Scalars['String']>;
@@ -585,6 +648,14 @@ export type NumberInstancesByFlavour = {
     id: Scalars['Int'];
     name: Scalars['String'];
     total: Scalars['Int'];
+};
+
+export type DevicePoolUsage = {
+    __typename?: 'DevicePoolUsage';
+    devicePoolId: Scalars['Int'];
+    devicePoolName: Scalars['String'];
+    totalUnits: Scalars['Int'];
+    usedUnits: Scalars['Int'];
 };
 
 export type NumberInstancesByImage = {

@@ -111,6 +111,14 @@
                             </div>
                             <div class="admin-details-list-item">
                                 <dt>
+                                    <b>Creation date</b>
+                                </dt>
+                                <dd>
+                                    {{ instance.createdAt | date:'dd-MM-yyyy HH:mm' }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
                                     <b>Termination date</b>
                                 </dt>
                                 <dd>
@@ -141,7 +149,10 @@
                                 <dt>
                                     <b>Flavour</b>
                                 </dt>
-                                <dd>{{ instance.plan.flavour.name }}</dd>
+                                <dd>
+                                    {{ instance.plan.flavour.name }}
+                                    <span *ngFor="let deviceAllocation of instance.deviceAllocations" style="margin-left: 8px;" class="label">{{deviceAllocation | instanceDeviceAllocation}}</span>
+                                </dd>
                             </div>
                             <div class="admin-details-list-item">
                                 <dt>

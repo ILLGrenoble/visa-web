@@ -1,0 +1,50 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<ng-container *ngIf="form">
+    <div mat-dialog-content>
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+            <clr-input-container>
+                <label for="name">Name</label>
+                <input clrInput id="name" formControlName="name" class="form-control"/>
+                <clr-control-error>Please enter a name</clr-control-error>
+            </clr-input-container>
+
+            <clr-input-container>
+                <label for="description">Description</label>
+                <input clrInput id="description" formControlName="description" class="form-control"/>
+                <clr-control-error>Please enter a description</clr-control-error>
+            </clr-input-container>
+
+            <clr-select-container *ngIf="multiCloudEnabled">
+                <label for="cloud">Cloud Provider</label>
+                <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
+                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
+                </select>
+                <clr-control-helper>Please select the cloud provider</clr-control-helper>
+            </clr-select-container>
+
+            <clr-select-container *ngIf="cloudDevices?.length > 0">
+                <label for="device">Cloud device</label>
+                <select clrSelect id="device" formControlName="cloudDevice" [compareWith]="compareCloudDevice">
+                    <option *ngFor="let cloudDevice of cloudDevices" [ngValue]="cloudDevice">{{ cloudDevice | cloudDevice }}</option>
+                </select>
+                <clr-control-error>Please select a cloud device</clr-control-error>
+            </clr-select-container>
+
+            <div *ngIf="cloudDevices?.length == 0" class="device-pool-edit-none-remaining">
+                There are no unconfigured cloud devices
+            </div>
+
+            <clr-input-container>
+                <label for="totalUnits">Total Units</label>
+                <input type="number" clrInput id="totalUnits" formControlName="totalUnits" class="form-control"/>
+                <clr-control-helper>Please enter the total number of units available</clr-control-helper>
+            </clr-input-container>
+
+        </form>
+        <div class="modal-footer">
+            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+            <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</ng-container>
+

@@ -72,6 +72,11 @@
                                     Flavour
                                 </ng-template>
                             </clr-dg-column>
+                            <clr-dg-column>
+                                <ng-template clrDgHideableColumn [clrDgHidden]="!columnsState.devices">
+                                    Devices
+                                </ng-template>
+                            </clr-dg-column>
                             <clr-dg-column [clrDgSortBy]="'terminationDate'">
                                 <ng-template clrDgHideableColumn [clrDgHidden]="!columnsState.terminationDate">
                                     Termination Date
@@ -106,6 +111,11 @@
                                 <clr-dg-cell>{{ instance.cloudClient.name }}</clr-dg-cell>
                                 <clr-dg-cell>{{ formatImageName(instance.plan.image) }}</clr-dg-cell>
                                 <clr-dg-cell>{{ instance.plan.flavour.name }}</clr-dg-cell>
+                                <clr-dg-cell>
+                                    <span class="label" *ngFor="let deviceAllocation of instance.deviceAllocations">
+                                        {{deviceAllocation | instanceDeviceAllocation}}
+                                    </span>
+                                </clr-dg-cell>
                                 <clr-dg-cell>{{ instance.terminationDate | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                             </clr-dg-row>
                             <clr-dg-footer>

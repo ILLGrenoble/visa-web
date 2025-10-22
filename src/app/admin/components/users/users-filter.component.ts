@@ -108,7 +108,7 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
             this.apollo.query<any>({
                 errorPolicy: 'all',
                 query: gql`
-                       query user($id: Int!) {
+                       query user($id: String!) {
                           user(id: $id) {
                             id
                             firstName
@@ -120,7 +120,7 @@ export class UsersFilterComponent implements OnInit, OnDestroy {
                 variables: {
                     id: this.state.filters.userId,
                 },
-            }).pipe(takeUntil(this.destroy$)).subscribe(({data}) => {
+            }).subscribe(({data}) => {
                 if (data) {
                     this.form.get('user').patchValue(data.user);
                 } else {

@@ -600,6 +600,10 @@ $visa-theme: mat.define-light-theme((
             background: white;
             flex: 1;
             overflow: hidden;
+
+            h3 {
+                margin: 12px 0;
+            }
         }
 
         &--fullscreen {

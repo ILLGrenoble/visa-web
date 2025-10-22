@@ -1,43 +1,107 @@
 <visa-admin-header></visa-admin-header>
 <visa-cloud-admin-header></visa-cloud-admin-header>
 
-<div class="admin-container">
-    <div class="admin-container--main">
-        <clr-datagrid id="datagrid" [clrDgLoading]="loading">
-            <clr-dg-column>Flavour Id</clr-dg-column>
-            <clr-dg-column>Name</clr-dg-column>
-            <clr-dg-column>
-                <ng-template clrDgHideableColumn [clrDgHidden]="!multiCloudEnabled">
-                    Cloud Provider
-                </ng-template>
-            </clr-dg-column>
-            <clr-dg-column>Cloud Flavour</clr-dg-column>
-            <clr-dg-column>Memory / GB</clr-dg-column>
-            <clr-dg-column>CPUs</clr-dg-column>
-            <clr-dg-column></clr-dg-column>
+<div class="flavours-overview">
+    <div class="admin-container flavours-main">
+        <div class="admin-container--main">
 
-            <clr-dg-row *ngFor="let flavour of flavours;let i = index">
-                <clr-dg-cell>{{flavour.id}}</clr-dg-cell>
-                <clr-dg-cell>{{flavour.name}}</clr-dg-cell>
-                <clr-dg-cell *ngIf="flavour.cloudClient">{{flavour.cloudClient.name}}</clr-dg-cell>
-                <clr-dg-cell *ngIf="!flavour.cloudClient"><b>Not configured</b></clr-dg-cell>
-                <clr-dg-cell>{{flavour.cloudFlavour?.name}}</clr-dg-cell>
+            <div class="flavours-header">
+                <h3 class="filters-box-title">Flavours</h3>
+                <button *ngIf="!loadingDevices && devicePools.length == 0" type="button" class="btn" (click)="onCreateDevicePool()">
+                    Add Device Pool
+                </button>
+            </div>
 
-                <clr-dg-cell>{{flavour.memory / 1024}}</clr-dg-cell>
-                <clr-dg-cell>{{flavour.cpu}}</clr-dg-cell>
-                <clr-dg-cell>
-                    <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
-                    <button (click)="onCreate(flavour)" class="btn btn-sm">Clone</button>
-                    <button (click)="onDelete(flavour)" class="btn btn-warning-outline btn-sm">Delete</button>
-                </clr-dg-cell>
-            </clr-dg-row>
+            <clr-datagrid id="datagrid" [clrDgLoading]="loadingFlavours">
+                <clr-dg-column>Id</clr-dg-column>
+                <clr-dg-column>Name</clr-dg-column>
+                <clr-dg-column>
+                    <ng-template clrDgHideableColumn [clrDgHidden]="!multiCloudEnabled">
+                        Cloud Provider
+                    </ng-template>
+                </clr-dg-column>
+                <clr-dg-column>Cloud Flavour</clr-dg-column>
+                <clr-dg-column>Memory / GB</clr-dg-column>
+                <clr-dg-column>CPUs</clr-dg-column>
+                <clr-dg-column>Device Pools</clr-dg-column>
+                <clr-dg-column></clr-dg-column>
 
-            <clr-dg-footer>
-                <clr-dg-column-toggle [hidden]="true">
-                </clr-dg-column-toggle>
-                <button class="btn btn-sm" type="button" (click)="onCreate()">New</button>
-                <button class="btn btn-sm" type="button" (click)="onRefresh()"><clr-icon shape="refresh"></clr-icon></button>
-            </clr-dg-footer>
-        </clr-datagrid>
+                <clr-dg-row *ngFor="let flavour of flavours;let i = index">
+                    <clr-dg-cell>{{flavour.id}}</clr-dg-cell>
+                    <clr-dg-cell>{{flavour.name}}</clr-dg-cell>
+                    <clr-dg-cell *ngIf="flavour.cloudClient">{{flavour.cloudClient.name}}</clr-dg-cell>
+                    <clr-dg-cell *ngIf="!flavour.cloudClient"><b>Not configured</b></clr-dg-cell>
+                    <clr-dg-cell>{{flavour.cloudFlavour?.name}}</clr-dg-cell>
+
+                    <clr-dg-cell>{{flavour.memory / 1024}}</clr-dg-cell>
+                    <clr-dg-cell>{{flavour.cpu}}</clr-dg-cell>
+                    <clr-dg-cell>
+                        <span class="label" *ngFor="let flavourDevice of flavour.devices">
+                            {{flavourDevice | flavourDevice}}
+                        </span>
+                        <span class="label unconfigured-device-pool" *ngFor="let unconfiguredCloudDevice of unconfiguredCloudDevices(flavour)">
+                            {{unconfiguredCloudDevice | cloudDeviceAllocation}} unconfigured
+                        </span>
+                    </clr-dg-cell>
+                    <clr-dg-cell>
+                        <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
+                        <button (click)="onCreate(flavour)" class="btn btn-sm">Clone</button>
+                        <button (click)="onDelete(flavour)" class="btn btn-warning-outline btn-sm">Delete</button>
+                    </clr-dg-cell>
+                </clr-dg-row>
+
+                <clr-dg-footer>
+                    <clr-dg-column-toggle [hidden]="true">
+                    </clr-dg-column-toggle>
+                    <button class="btn btn-sm" type="button" (click)="onCreate()">New</button>
+                    <button class="btn btn-sm" type="button" (click)="onRefreshFlavours()"><clr-icon shape="refresh"></clr-icon></button>
+                </clr-dg-footer>
+            </clr-datagrid>
+        </div>
+
+    </div>
+    <div *ngIf="devicePools.length != 0" class="admin-container flavours-devices">
+        <div class="admin-container--main">
+            <h3>Device Pools</h3>
+
+            <clr-datagrid id="datagrid" [clrDgLoading]="loadingDevices">
+                <clr-dg-column>Id</clr-dg-column>
+                <clr-dg-column>Name</clr-dg-column>
+                <clr-dg-column>
+                    <ng-template clrDgHideableColumn [clrDgHidden]="!multiCloudEnabled">
+                        Cloud Provider
+                    </ng-template>
+                </clr-dg-column>
+                <clr-dg-column>Cloud Device</clr-dg-column>
+                <clr-dg-column>Total Units</clr-dg-column>
+                <clr-dg-column>Allocated Units</clr-dg-column>
+                <clr-dg-column></clr-dg-column>
+
+                <clr-dg-row *ngFor="let devicePool of devicePools;let i = index">
+                    <clr-dg-cell>{{devicePool.id}}</clr-dg-cell>
+                    <clr-dg-cell>{{devicePool.name}}</clr-dg-cell>
+                    <clr-dg-cell *ngIf="devicePool.cloudClient">{{devicePool.cloudClient.name}}</clr-dg-cell>
+                    <clr-dg-cell *ngIf="!devicePool.cloudClient"><b>Not configured</b></clr-dg-cell>
+                    <clr-dg-cell>{{devicePool.cloudDevice | cloudDevice}}</clr-dg-cell>
+                    <clr-dg-cell>{{devicePool.totalUnits}}</clr-dg-cell>
+                    <clr-dg-cell>{{devicePoolUsage(devicePool)}}</clr-dg-cell>
+                    <clr-dg-cell>
+                        <button (click)="onUpdateDevicePool(devicePool)" class="btn btn-sm">Edit</button>
+                        <button (click)="onCreateDevicePool(devicePool)" class="btn btn-sm">Clone</button>
+                        <button (click)="onDeleteDevicePool(devicePool)" class="btn btn-warning-outline btn-sm">Delete</button>
+                    </clr-dg-cell>
+                </clr-dg-row>
+
+                <clr-dg-footer>
+                    <clr-dg-column-toggle [hidden]="true">
+                    </clr-dg-column-toggle>
+                    <button class="btn btn-sm" type="button" (click)="onCreateDevicePool()">New</button>
+                    <button class="btn btn-sm" type="button" (click)="onRefreshDevices()"><clr-icon shape="refresh"></clr-icon></button>
+                </clr-dg-footer>
+            </clr-datagrid>
+
+        </div>
     </div>
 </div>
+
+

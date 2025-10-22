@@ -24,7 +24,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup;
 
-    private _data: any[];
+    private _data: any;
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -75,11 +75,11 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this._form = value;
     }
 
-    public get data(): any[] {
+    public get data(): any {
         return this._data;
     }
 
-    public set data(value: any[]) {
+    public set data(value: any) {
         this._data = value;
     }
 
@@ -112,6 +112,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                 instrument: null,
                 state: null,
                 user: null,
+                devicePool: null,
             },
             page: 1,
         });
@@ -131,6 +132,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
         this.columnsState.cloudClient = false;
         this.columnsState.image = false;
         this.columnsState.flavour = false;
+        this.columnsState.devices = false;
         this.columnsState.terminationDate = false;
         this.updateColumnsLocalStorage();
     }
@@ -169,6 +171,10 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                         id
                         name
                     }
+                    devicePools {
+                        id
+                        name
+                    }
                     cloudClients {
                         id
                         name
@@ -181,6 +187,10 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
             this.loading = result.loading;
             if (result.errors) {
                 this.notifierService.notify('error', 'There was an error loading the filters');
+            }
+
+            if (this.data.devicePools.length === 0) {
+                this.columnsState.devices = false;
             }
         });
         if (this.filterState.filters.user != null) {
@@ -224,11 +234,12 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
             instrument: new FormControl(null),
             state: new FormControl(null),
             user: new FormControl(null),
+            devicePool: new FormControl(null),
         });
     }
 
     private processForm(): InstancesFilterState {
-        const {id, name, flavour, image, instrument, state, user} = this._form.value;
+        const {id, name, flavour, image, instrument, state, user, devicePool} = this._form.value;
         return {
             ...this._filterState,
             filters: {
@@ -239,6 +250,7 @@ export class InstancesFilterComponent implements OnInit, OnDestroy {
                 instrument,
                 state,
                 user: user ? user.id : null,
+                devicePool
             },
             page: 1,
         };

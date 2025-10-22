@@ -18,11 +18,7 @@
 
     .filters-box-title {
         display: inline-block;
-        margin: 0;
-        line-height: 1;
-        font-size: 15px;
         flex: 1 1;
-        font-weight: 600;
         color: #111;
     }
 
@@ -32,11 +28,9 @@
         background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
         position: relative;
         display: inline-block;
-        font-size: 13px;
-        font-weight: 600;
         white-space: nowrap;
         vertical-align: middle;
-        margin-left: 5px;
+        margin-left: 12px;
         cursor: pointer;
         user-select: none;
         background-repeat: repeat-x;
@@ -46,7 +40,6 @@
         border-radius: 0.25em;
         appearance: none;
         padding: 3px 8px;
-        line-height: 16px;
     }
 
 

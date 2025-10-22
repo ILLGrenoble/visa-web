@@ -34,6 +34,19 @@
                 <input clrInput readonly id="cpu" class="form-control" [value]="cpu">
             </clr-input-container>
 
+            <div class="clr-form-control clr-row">
+                <label for="device" class="clr-control-label clr-col-12 clr-col-md-2">Devices</label>
+                <div class="clr-control-container form-control clr-col-md-10 clr-col-12">
+                    <div class="clr-input-wrapper">
+                        <div class="clr-input form-control" style="border-bottom: 0;">
+                           <span class="label" *ngFor="let deviceAllocations of deviceAllocations">
+                                {{deviceAllocations | cloudDeviceAllocation}}
+                           </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <clr-combobox-container>
                 <label for="instruments">Instruments</label>
                 <clr-combobox clrMulti="true" id="instruments" formControlName="instruments">

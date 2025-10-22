@@ -1,8 +1,8 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
+import {FlavourDevice} from "./flavour-device.model";
 
 @JsonObject('Flavour')
 export class Flavour {
-
     @JsonProperty('id', Number, true)
     private _id: number = undefined;
 
@@ -18,12 +18,20 @@ export class Flavour {
     @JsonProperty('cpu', Number)
     private _cpu: number = undefined;
 
+    @JsonProperty('devices', [FlavourDevice], true)
+    private _devices: FlavourDevice[] = undefined;
+
+    @JsonProperty('available', Boolean)
+    private _available: boolean = undefined;
+
     public copy(data: Flavour): Flavour {
         this.id = data.id;
         this.name = data.name;
         this.memory = data.memory;
         this.cpu = data.cpu;
         this.computeId = data.computeId;
+        this.devices = data.devices;
+        this.available = data.available;
 
         return this;
     }
@@ -68,4 +76,19 @@ export class Flavour {
         this._computeId = value;
     }
 
+    get devices(): FlavourDevice[] {
+        return this._devices;
+    }
+
+    set devices(value: FlavourDevice[]) {
+        this._devices = value;
+    }
+
+    get available(): boolean {
+        return this._available;
+    }
+
+    set available(value: boolean) {
+        this._available = value;
+    }
 }

@@ -273,6 +273,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
                                 name
                             }
                         }
+                        deviceAllocations {
+                            devicePool {
+                                id
+                                name
+                            }
+                            unitCount
+                        }
                     }
                 }
                 `,

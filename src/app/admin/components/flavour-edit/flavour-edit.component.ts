@@ -6,7 +6,7 @@ import {
     Instrument,
     FlavourInput,
     CloudClient,
-    Role
+    Role, CloudDevice
 } from '../../../core/graphql';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
@@ -90,6 +90,10 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
 
     get cpu(): number {
         return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.cpus : 0;
+    }
+
+    get deviceAllocations(): CloudDevice[] {
+        return this._form.value.cloudFlavour ? this._form.value.cloudFlavour.deviceAllocations : [];
     }
 
     get onSave$(): Subject<FlavourInput> {
@@ -221,6 +225,13 @@ export class FlavourEditComponent implements OnInit, OnDestroy {
                         name
                         cpus
                         ram
+                        deviceAllocations {
+                            device {
+                                identifier
+                                type
+                            }
+                            unitCount
+                        }
                     }
                 }
             `,
