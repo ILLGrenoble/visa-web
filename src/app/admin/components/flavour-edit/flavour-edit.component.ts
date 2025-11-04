@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
     CloudFlavour,
@@ -19,6 +19,7 @@ import {formatDuration, parseDurationString} from "../../common";
     selector: 'visa-admin-flavour-edit',
     templateUrl: './flavour-edit.component.html',
     styleUrls: ['./flavour-edit.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class FlavourEditComponent implements OnInit, OnDestroy {
 

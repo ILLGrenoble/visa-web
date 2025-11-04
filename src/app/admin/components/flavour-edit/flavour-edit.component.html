@@ -81,14 +81,9 @@
 
             <div id="lifetime-roles" formArrayName="roleLifetimes">
                 <div *ngFor="let rl of roleLifetimes.controls; let i = index" [formGroupName]="i" class="role-lifetimes-row">
-<!--                    <div class="label">-->
-<!--                        <div style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center">-->
-<!--                            {{rl.get('role').value.name}}: {{rl.get('lifetimeMinutes').value}}-->
-<!--                        </div>-->
-<!--                    </div>-->
                     <clr-combobox-container class="role-clr-container">
                         <label for="lifetime-role">Role</label>
-                        <clr-combobox id="lifetime-role" formControlName="role" style="width: 100px;" class="clr-col-md-2">
+                        <clr-combobox id="lifetime-role" formControlName="role">
                             <clr-options>
                                 <clr-option *clrOptionItems="let role of availableRuleRoles; field: 'name'" [clrValue]="role">
                                     {{role.name}}
