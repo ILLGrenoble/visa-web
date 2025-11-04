@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit, Input, Output} from '@angular/core';
-import {combineLatest, BehaviorSubject, Subject} from 'rxjs';
+import {combineLatest, BehaviorSubject, Subject, window} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Protocol, Plan} from "@core";
+import {InstanceDisplayHelper, ScreenArrangement, ScreenResolution} from "./instance-display-helper";
 
 @Component({
     selector: 'visa-instance-display-select',
@@ -9,70 +10,30 @@ import {Protocol, Plan} from "@core";
     styleUrls: ['./instance-display-select.component.scss'],
 })
 export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
-    private static USER_INSTANCE_VDI_PROTOCOL_KEY = 'user.instance.vdi.protocol';
 
-    public screenResolutions = [{
-        label: 'WXGA (1280 x 720) 16:9',
-        width: 1280,
-        height: 720,
-    }, {
-        label: 'WXGA (1280 x 800) 16:10',
-        width: 1280,
-        height: 800,
-    }, {
-        label: 'SXGA (1280 x 1024) 5:4',
-        width: 1280,
-        height: 1024,
-    }, {
-        label: 'WXGA+ (1440 x 900) 16:10',
-        width: 1440,
-        height: 900,
-    }, {
-        label: 'HD+ (1600 x 900) 16:9',
-        width: 1600,
-        height: 900,
-    }, {
-        label: 'WSXGA+ (1680 x 1050) 16:10',
-        width: 1680,
-        height: 1050,
-    }, {
-        label: 'FHD (1920 x 1080) 16:9',
-        width: 1920,
-        height: 1080,
-    }, {
-        label: 'WUXGA (1920 x 1200) 16:10',
-        width: 1920,
-        height: 1200,
-    }, {
-        label: 'QHD (2560 x 1440) 16:9',
-        width: 2560,
-        height: 1440,
-    }, {
-        label: '4K UHD (3840 x 2160) 16:9',
-        width: 3840,
-        height: 2160,
-    }];
-
-    private _defaultDisplayWidth = 1920;
+    private _helper: InstanceDisplayHelper;
     private _availableVdiProtocols: Protocol[] = null;
     private _vdiProtocol$: BehaviorSubject<Protocol> = new BehaviorSubject(null);
     private _showAdvancedSettings = false;
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
-    private _arrangements: { name: string; details: string; screens: number }[] = [];
-
-    private _selectedSingleScreenResolution: BehaviorSubject<{ label: string; width: number; height: number }> =
-        new BehaviorSubject<{ label: string; width: number; height: number }>(null);
+    private _selectedSingleScreenResolution: BehaviorSubject<ScreenResolution> = new BehaviorSubject<ScreenResolution>(null);
+    private _selectedArrangement: BehaviorSubject<ScreenArrangement> = new BehaviorSubject<ScreenArrangement>(null);
 
     get availableVdiProtocols(): Protocol[] {
         return this._availableVdiProtocols;
     }
 
     @Input()
+    set helper(helper: InstanceDisplayHelper) {
+        this._helper = helper;
+    }
+
+    @Input()
     set plan(plan: Plan) {
         this._availableVdiProtocols = plan?.image.availableVdiProtocols();
-        const userPreferredProtocol = this._availableVdiProtocols?.find(protocol => protocol.name === localStorage.getItem(InstanceDisplaySelectComponent.USER_INSTANCE_VDI_PROTOCOL_KEY));
+        const userPreferredProtocol = this._availableVdiProtocols?.find(protocol => protocol.name === localStorage.getItem(InstanceDisplayHelper.USER_INSTANCE_VDI_PROTOCOL_KEY));
         if (userPreferredProtocol) {
             this._vdiProtocol$.next(userPreferredProtocol);
         } else {
@@ -88,23 +49,31 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
         this._destroy$ = value;
     }
 
-    get arrangements(): ({ name: string; details: string; screens: number })[] {
-        return this._arrangements;
+    get screenResolutions(): ScreenResolution[] {
+        return this._helper.screenResolutions;
     }
 
-    set arrangements(value: ({ name: string; details: string; screens: number })[]) {
-        this._arrangements = value;
+    get arrangements(): ScreenArrangement[] {
+        return this._helper.arrangements;
     }
 
-    public selectedArrangement: BehaviorSubject<{ screens: number; name: string; details: string; }> =
-        new BehaviorSubject<{ screens: number; name: string; details: string; }>(null);
+    get selectedArrangement(): ScreenArrangement {
+        return this._selectedArrangement.getValue();
+    }
 
-    get selectedSingleScreenResolution(): { label: string, width: number, height: number } {
+    set selectedArrangement(value: ScreenArrangement) {
+        localStorage.setItem(InstanceDisplayHelper.USER_INSTANCE_SCREEN_NUMBER_X_KEY, `${value.screens}`);
+        this._selectedArrangement.next(value);
+    }
+
+    get selectedSingleScreenResolution(): ScreenResolution{
         return this._selectedSingleScreenResolution.getValue();
     }
 
-    set selectedSingleScreenResolution(value: { label: string, width: number, height: number }) {
+    set selectedSingleScreenResolution(value: ScreenResolution) {
         this._selectedSingleScreenResolution.next(value);
+        localStorage.setItem(InstanceDisplayHelper.USER_INSTANCE_SCREEN_WIDTH_KEY, `${value.width}`);
+        localStorage.setItem(InstanceDisplayHelper.USER_INSTANCE_SCREEN_HEIGHT_KEY, `${value.height}`);
     }
 
     get vdiProtocol(): Protocol {
@@ -113,10 +82,10 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
 
     set vdiProtocol(value: Protocol) {
         this._vdiProtocol$.next(value);
-        localStorage.setItem(InstanceDisplaySelectComponent.USER_INSTANCE_VDI_PROTOCOL_KEY, value.name);
+        localStorage.setItem(InstanceDisplayHelper.USER_INSTANCE_VDI_PROTOCOL_KEY, value.name);
     }
 
-    get advancedSettingsAvailable(): boolean {
+    get vdiProtocolChoiceAvailable(): boolean {
         return this._availableVdiProtocols != null && this._availableVdiProtocols.length > 1;
     }
 
@@ -134,74 +103,32 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     }
 
     @Output()
-    public resolution: Subject<{ width: number, height: number }> = new Subject<{ width: number, height: number }>();
+    public resolution: Subject<ScreenResolution> = new Subject<ScreenResolution>();
+
+    @Output()
+    public arrangement: Subject<ScreenArrangement> = new Subject<ScreenArrangement>();
 
     public ngOnInit(): void {
-        this.arrangements = [{
-            name: 'Single screen',
-            details: 'Default screen layout',
-            screens: 1
-        }, {
-            name: 'Dual screen',
-            details: 'Recommended for remote experiments',
-            screens: 2
-        }];
+        this.selectedSingleScreenResolution = this._helper.defaultScreenResolution;
+        this.selectedArrangement = this._helper.defaultArrangement;
 
+        this._selectedSingleScreenResolution.pipe(
+            takeUntil(this._destroy$),
+            filter(selectedSingleScreenResolution => !!selectedSingleScreenResolution),
+        ).subscribe(selectedSingleScreenResolution => {
+            this.resolution.next(selectedSingleScreenResolution);
+        })
 
-        const hostScreenResolution = this.getHostScreenResolution();
-        const standardScreenResolution = this.screenResolutions.find(screenResolution => {
-            return screenResolution.height === hostScreenResolution.height && screenResolution.width === hostScreenResolution.width;
-        });
-        if (standardScreenResolution != null) {
-            this.selectedSingleScreenResolution = standardScreenResolution;
-
-        } else {
-            this.selectedSingleScreenResolution = hostScreenResolution;
-            this.screenResolutions.push(hostScreenResolution);
-            this.screenResolutions.sort((resolution1, resolution2) => {
-                if (resolution1.width > resolution2.width) {
-                    return 1;
-                }
-                if (resolution1.width < resolution2.width) {
-                    return -1;
-                }
-                return 0;
-            });
-        }
-
-        combineLatest([this.selectedArrangement, this._selectedSingleScreenResolution]).pipe(
-            takeUntil(this.destroy$),
-            filter(([selectedArrangement, selectedSingleScreenResolution]) =>
-                selectedArrangement != null && selectedSingleScreenResolution != null)
-        ).subscribe(([arrangement, singleScreenResolution]) => {
-            const singleScreenWidth = singleScreenResolution.width;
-            const singleScreenAspectRatio = singleScreenResolution.width / singleScreenResolution.height;
-
-            const displayWidth = Math.max(this._defaultDisplayWidth, singleScreenWidth);
-            const multiScreenWidth = displayWidth * arrangement.screens;
-
-            const screenResolution = {
-                width: multiScreenWidth,
-                height: (multiScreenWidth / arrangement.screens) / singleScreenAspectRatio
-            };
-            this.resolution.next(screenResolution);
-        });
-        this.selectedArrangement.next(this._arrangements[0]);
+        this._selectedArrangement.pipe(
+            takeUntil(this._destroy$),
+            filter(arrangement => !!arrangement),
+        ).subscribe(arrangement => {
+            this.arrangement.next(arrangement);
+        })
     }
 
-    public getHostScreenResolution(): {  label: string, width: number, height: number } {
-        return ((screen) => {
-            const {width, height} = screen;
-            return {
-                label: `Host (${width} x ${height})`,
-                width,
-                height,
-            };
-        })(window.screen);
-    }
-
-    public handleSelectedArrangement(arrangement: { name: string; details: string; screens: number }): void {
-        this.selectedArrangement.next(arrangement);
+    public handleSelectedArrangement(arrangement: ScreenArrangement): void {
+        this.selectedArrangement = arrangement;
     }
 
     public ngOnDestroy(): void {

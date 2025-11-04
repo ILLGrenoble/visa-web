@@ -1,9 +1,11 @@
-<div class="section-title">
-    <h3>Choose resolution</h3>
+<div class="title">
+    <h2>
+        Display Settings
+    </h2>
 </div>
 
-<div class="section-text">
-    Your screen resolution is {{getHostScreenResolution().width}} x {{getHostScreenResolution().height}}. You can modify this by selecting one of the following resolutions:
+<div class="resolution-text">
+    Choose the resolution of your display
 </div>
 
 <div class="section-element">
@@ -14,46 +16,49 @@
     </ng-select>
 </div>
 
-<clr-toggle-container clrInline *ngIf="advancedSettingsAvailable">
+<div class="section-title">
+    <h3>Choose layout</h3>
+</div>
+<div class="displays">
+    <ul>
+        <li *ngFor="let arrangement of arrangements"  (click)="handleSelectedArrangement(arrangement)">
+            <div class="display-box" [ngClass]="{'display-box--selected': selectedArrangement === arrangement}">
+                <button class="display-button">
+                    <div class="display-button__icon">
+                        <clr-icon size="48" *ngFor="let screen of [].constructor(arrangement.screens)" shape="display"></clr-icon>
+                    </div>
+                    <span class="display-button__name">{{ arrangement.name }}</span>
+                </button>
+                <div class="display-details">{{ arrangement.details }}</div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<clr-toggle-container clrInline>
     <clr-toggle-wrapper>
         <input type="checkbox" clrToggle name="experimentFree" [(ngModel)]="showAdvancedSettings"/>
         <label>Advanced display settings</label>
     </clr-toggle-wrapper>
 </clr-toggle-container>
 
-<div *ngIf="showAdvancedSettings && advancedSettingsAvailable">
-    <div class="section-title">
-        <h3>Choose layout</h3>
-    </div>
-    <div class="displays">
-        <ul>
-            <li *ngFor="let arrangement of arrangements"  (click)="handleSelectedArrangement(arrangement)">
-                <div class="display-box" [ngClass]="{'display-box--selected': (selectedArrangement | async) === arrangement}">
-                    <button class="display-button">
-                        <div class="display-button__icon">
-                            <clr-icon size="48" *ngFor="let screen of [].constructor(arrangement.screens)" shape="display"></clr-icon>
-                        </div>
-                        <span class="display-button__name">{{ arrangement.name }}</span>
-                    </button>
-                    <div class="display-details">{{ arrangement.details }}</div>
+<div *ngIf="showAdvancedSettings">
+    <div *ngIf="vdiProtocolChoiceAvailable">
+        <div class="section-title">
+            <h3>Accessing the remote desktop</h3>
+        </div>
+
+        <div class="section-text">
+            Please select the communication protocol to access the remote desktop.
+        </div>
+
+        <ng-select [(ngModel)]="vdiProtocol" [searchable]="false" [clearable]="false" class="vdi-protocol-select">
+            <ng-option *ngFor="let protocol of availableVdiProtocols" [value]="protocol">
+                <div class="protocol-details">
+                    <div class="protocol-name">{{ getProtocolName(protocol) }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>
                 </div>
-            </li>
-        </ul>
+            </ng-option>
+        </ng-select>
     </div>
 
-    <div class="section-title">
-        <h3>Accessing the remote desktop</h3>
-    </div>
-
-    <div class="section-text">
-        Please select the communication protocol to access the remote desktop.
-    </div>
-
-    <ng-select [(ngModel)]="vdiProtocol" [searchable]="false" [clearable]="false" class="vdi-protocol-select">
-        <ng-option *ngFor="let protocol of availableVdiProtocols" [value]="protocol">
-            <div class="protocol-details">
-                <div class="protocol-name">{{ getProtocolName(protocol) }}</div> <div class="protocol-description">{{getProtocolDescription(protocol) }}</div>
-            </div>
-        </ng-option>
-    </ng-select>
 </div>

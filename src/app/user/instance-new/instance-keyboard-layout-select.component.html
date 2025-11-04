@@ -1,9 +1,0 @@
-<div>
-    <div class="layout-text">
-        Please select your keyboard layout.</div>
-    <ng-select [(ngModel)]="selectedLayout"  (change)="handleSelectedLayout($event)"  [searchable]="false" [clearable]="false" class="keyboard-select">
-        <ng-option *ngFor="let layout of layouts" [value]="layout">
-            {{ layout.name }}
-        </ng-option>
-    </ng-select>
-</div>

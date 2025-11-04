@@ -3,4 +3,3 @@ export * from './instance-image-select.component';
 export * from './instance-flavour-select.component';
 export * from './instance-experiment-select.component';
 export * from './instance-display-select.component';
-export * from './instance-keyboard-layout-select.component';

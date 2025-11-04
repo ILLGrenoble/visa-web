@@ -8,7 +8,6 @@ import {
     InstanceFlavourSelectComponent,
     InstanceImageSelectComponent,
     InstanceNewComponent,
-    InstanceKeyboardLayoutSelectComponent
 } from './';
 
 @NgModule({
@@ -22,7 +21,6 @@ import {
         InstanceFlavourSelectComponent,
         InstanceDisplaySelectComponent,
         InstanceNewComponent,
-        InstanceKeyboardLayoutSelectComponent
     ],
     exports: [
         InstanceNewComponent,

@@ -5,6 +5,12 @@
     }
 }
 
+h2 {
+    margin-top: 24px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
 .section-text {
     margin: 6px 0;
 }
@@ -127,4 +133,8 @@
     .protocol-description {
         font-weight: 300;
     }
+}
+
+.resolution-text {
+    margin: 6px 0 6px 0;
 }

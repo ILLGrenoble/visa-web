@@ -132,14 +132,58 @@
                         <div class="section" *ngIf="selectedPlan && canSkipCustomisation && !customiseInstance">
                             <div class="title">
                                 <h2>
-                                    Instance settings
+                                    Instance Settings
                                 </h2>
                             </div>
                             <div class="instance-settings">
-                                <h3><b>Environment:</b> {{selectedPlan.image.description}}</h3>
-                                <h3><b>Processor:</b> {{selectedPlan.flavour.cpu}} vCPUs</h3>
-                                <h3><b>Memory:</b> {{selectedPlan.flavour.memory / 1024}} GB RAM</h3>
+                                <div class="instance-settings-container">
+                                    <div class="instance-settings-title">Environment:</div>
+                                    <div class="instance-settings-value">
+                                        {{selectedPlan.image.description}} ({{selectedPlan.image.name}})
+                                    </div>
+
+                                </div>
+                                <div class="instance-settings-container">
+                                    <div class="instance-settings-title">Processor:</div>
+                                    <div class="instance-settings-value-important">
+                                        {{selectedPlan.flavour.cpu}} vCPUs
+                                    </div>
+
+                                </div>
+                                <div class="instance-settings-container">
+                                    <div class="instance-settings-title">Memory:</div>
+                                    <div class="instance-settings-value-important">
+                                        {{selectedPlan.flavour.memory / 1024}} GB RAM
+                                    </div>
+
+                                </div>
+                                <div class="instance-settings-container">
+                                    <div class="instance-settings-title">Desktop:</div>
+                                    <div class="instance-details-display-container">
+                                        <div class="instance-details-display-screen-container">
+                                            <div *ngFor="let screen of Array(selectedScreenArrangement.screens)" class="instance-details-display-screen">
+                                                <div>
+                                                    <clr-icon size="48" shape="display"></clr-icon>
+                                                </div>
+                                                <div>
+                                                    {{selectedScreenResolution.width}} x {{selectedScreenResolution.height}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="instance-details-display-keyboard">
+                                            <div>
+                                                <clr-icon size="32" shape="keyboard"></clr-icon>
+                                            </div>
+                                            <div style="margin-top: -6px">
+                                                {{selectedKeyboardLayout.name}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
+
+
 
                             <clr-toggle-container clrInline class="customise-settings-toggle">
                                 <clr-toggle-wrapper>
@@ -168,47 +212,50 @@
                             </div>
                         </div>
 
-                        <div class="section" *ngIf="stage > 1">
-                            <div class="title">
-                                <h2>
-                                    Display Settings
-                                </h2>
-                            </div>
+                        <div class="section" *ngIf="stage > 1" [hidden]="!customiseInstance && canSkipCustomisation">
                             <div class="content">
                                 <visa-instance-display-select
+                                    [helper]="instanceDisplayHelper"
                                     (resolution)="setScreenResolution($event)"
+                                    (arrangement)="setScreenArrangement($event)"
                                     [plan]="selectedPlan"
                                     (vdiProtocol)="setVdiProtocol($event)">
                                 </visa-instance-display-select>
                             </div>
                         </div>
-                        <div class="section" *ngIf="stage > 1">
+
+                        <div class="section" *ngIf="stage > 1" [hidden]="!customiseInstance && canSkipCustomisation">
                             <div class="title">
                                 <h2>
                                     Keyboard layout
                                 </h2>
                             </div>
+
                             <div class="content">
-                                <visa-keyboard-layout-select (layout)="setKeyboardLayout($event)"></visa-keyboard-layout-select>
+                                <div>
+                                    <div class="layout-text">
+                                        Please select your keyboard layout.</div>
+                                    <ng-select [(ngModel)]="selectedKeyboardLayout" (change)="setKeyboardLayout($event)" [searchable]="false" [clearable]="false" class="keyboard-select">
+                                        <ng-option *ngFor="let layout of keyboardLayouts" [value]="layout">
+                                            {{ layout.name }}
+                                        </ng-option>
+                                    </ng-select>
+                                </div>
                             </div>
                         </div>
+
                         <div class="section" *ngIf="stage > 1">
-                            <div class="title">
-                                <h2>Finalise and create</h2>
-                            </div>
                             <div class="content">
                                 <form name="instance" [formGroup]="form">
                                     <div class="clr-row">
+
                                         <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
-                                            <div class="instance-name-title">
-                                                <h3>Choose a name</h3>
-                                                <p>
-                                                    Give your compute instance an identifying name you will remember it
-                                                    by.
-                                                </p>
+                                            <div class="title">
+                                                <h2>Finalise and create</h2>
                                             </div>
-                                        </div>
-                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
+                                            <div class="instance-name-text">
+                                                Choose a name for your compute instance
+                                            </div>
                                             <div class="clr-row clr-align-items-center">
                                                 <div class="clr-col-8">
                                                     <input formControlName="name" class="instance-name-input"
@@ -237,21 +284,16 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
-                                            <div class="instance-comments-label">
-                                                <h3>Add some notes</h3>
-                                                <p>
-                                                    You can add here some comments and notes about this compute
-                                                    resource.
-                                                </p>
+
+                                            <div class="instance-comments-text">
+                                                Add some notes
                                             </div>
-                                        </div>
-                                        <div class="clr-col-12" [hidden]="!customiseInstance && canSkipCustomisation">
+
                                             <textarea id="comments" rows="3" name="comments" class="instance-comments-input"
                                                   style="width: 100%"
                                                   formControlName="comments">
                                             </textarea>
+
                                             <div *ngIf="comments.invalid && (comments.dirty || comments.touched)" class="text-danger">
                                                 <div *ngIf="comments.errors?.['maxlength']">
                                                     Comments cannot exceed 2500 characters.
@@ -259,21 +301,13 @@
                                             </div>
                                         </div>
 
-
-                                        <div class="clr-col-12">
-                                            <div class="instance-terms-label">
-                                                <h3>Terms and conditions</h3>
-                                            </div>
+                                        <div class="clr-col-12" style="margin-top: 24px">
                                             <clr-checkbox-wrapper>
-                                                <input type="checkbox" clrCheckbox name="acceptedTerms"
-                                                       formControlName="acceptedTerms" required="false"/>
-                                                <label>I accept that I will only use this instance for data analysis
-                                                    purposes and will not engage in any illegal activities.
-                                                    Any user that I share my instance with will have complete access
-                                                    and
-                                                    permissions to my files. I agree to supervise any shared access
-                                                    and
-                                                    remove users once sharing is no longer required.</label>
+                                                <input type="checkbox" clrCheckbox name="acceptedTerms" formControlName="acceptedTerms" required="false"/>
+                                                <label>I accept that I will only use this instance for data analysis purposes and will not engage in any illegal activities.
+                                                    Any user that I share my instance with will have complete access and permissions to my files. I agree to supervise any shared access
+                                                    and remove users once sharing is no longer required.
+                                                </label>
                                             </clr-checkbox-wrapper>
                                         </div>
                                     </div>

@@ -18,13 +18,16 @@ import {
 } from '@core';
 import {Store} from '@ngrx/store';
 import {InstanceForm} from '@shared';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, config, Observable, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {InstanceExperimentSelectComponent} from './instance-experiment-select.component';
 import {MatDialog} from '@angular/material/dialog';
 import {QueryParameterBag} from '../../admin/http';
 import {NotifierService} from 'angular-notifier';
 import {AbstractControl} from "@angular/forms";
+import {InstanceDisplayHelper, ScreenArrangement, ScreenResolution} from "./instance-display-helper";
+
+type KeyboardLayout = { layout: string; name: string; selected: boolean };
 
 @Component({
     selector: 'visa-instance-new',
@@ -32,6 +35,7 @@ import {AbstractControl} from "@angular/forms";
     styleUrls: ['./instance-new.component.scss'],
 })
 export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked {
+    private static USER_INSTANCE_KEYBOARD_LAYOUT_KEY = 'user.instance.keyboard.layout';
 
     private _user$: Observable<User>;
     private _user: User;
@@ -42,6 +46,12 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     private _plans: Plan[] = null;
     private _selectedImagePlans: ImagePlans = null;
     private _selectedPlan: Plan = null;
+    private _instanceDisplayHelper: InstanceDisplayHelper = new InstanceDisplayHelper();
+    private _selectedScreenResolution: ScreenResolution = null;
+    private _selectedScreenArrangement: ScreenArrangement = null;
+
+    private _keyboardLayouts: KeyboardLayout[] = [];
+    private _selectedKeyboardLayout: KeyboardLayout = null;
 
     private _form: InstanceForm = new InstanceForm();
 
@@ -68,6 +78,10 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
         return this._plans;
     }
 
+    get instanceDisplayHelper(): InstanceDisplayHelper {
+        return this._instanceDisplayHelper;
+    }
+
     get form(): InstanceForm {
         return this._form;
     }
@@ -86,6 +100,27 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
 
     get selectedImagePlans(): ImagePlans {
         return this._selectedImagePlans;
+    }
+
+    get selectedScreenResolution(): ScreenResolution {
+        return this._selectedScreenResolution;
+    }
+
+    get selectedScreenArrangement(): ScreenArrangement {
+        return this._selectedScreenArrangement;
+    }
+
+    get selectedKeyboardLayout(): KeyboardLayout {
+        return this._selectedKeyboardLayout;
+    }
+
+    set selectedKeyboardLayout(value: KeyboardLayout) {
+        this._selectedKeyboardLayout = value;
+    }
+
+
+    get keyboardLayouts(): KeyboardLayout[] {
+        return this._keyboardLayouts;
     }
 
     get stage(): number {
@@ -182,6 +217,17 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
                 this._openDataIncluded = config.experiments.openDataIncluded;
                 this._contactEmail = config.contactEmail;
 
+                this._keyboardLayouts = config.desktop.keyboardLayouts.map(layout => ({name: layout.name.replace(' keyboard', ''), layout: layout.layout, selected: layout.selected}));
+                const localKeyboardLayout = localStorage.getItem(InstanceNewComponent.USER_INSTANCE_KEYBOARD_LAYOUT_KEY);
+                if (localKeyboardLayout != null) {
+                    const keyboardLayout = this._keyboardLayouts.find(layout => layout.layout === localKeyboardLayout);
+                    if (keyboardLayout) {
+                        this.setKeyboardLayout(keyboardLayout);
+                    }
+                } else {
+                    this.setKeyboardLayout(this._keyboardLayouts.find(layout => layout.selected));
+                }
+
                 this.route.queryParams.pipe(
                     map((params) => new QueryParameterBag(params)),
                 ).subscribe((params: QueryParameterBag) => {
@@ -201,7 +247,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
                     }
                 });
 
-                // If user has no experiments and is allowed to create instances without experiements, then skip the experiment stage
+                // If user has no experiments and is allowed to create instances without experiments, then skip the experiment stage
                 if (this._totalExperiments === 0 && this.canBeExperimentFree && !config.experiments.openDataIncluded) {
                     this.experimentFree = true;
                 }
@@ -215,6 +261,8 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
         });
 
         this.handleGenerateRandomName();
+        this._selectedScreenArrangement = this._instanceDisplayHelper.defaultArrangement;
+        this.setScreenResolution(this._instanceDisplayHelper.defaultScreenResolution);
     }
 
     public ngOnDestroy(): void {
@@ -295,16 +343,24 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
         }
     }
 
-    public setScreenResolution(resolution: { width: number; height: number }): void {
-        this.form.get('screenResolution').setValue(resolution);
+    public setScreenResolution(resolution: ScreenResolution): void {
+        this._selectedScreenResolution = resolution;
+        this.form.get('screenResolution').setValue({width: this._selectedScreenResolution.width * this._selectedScreenArrangement.screens, height: this._selectedScreenResolution.height});
+    }
+
+    public setScreenArrangement(arrangement: ScreenArrangement): void {
+        this._selectedScreenArrangement = arrangement;
+        this.form.get('screenResolution').setValue({width: this._selectedScreenResolution.width * this._selectedScreenArrangement.screens, height: this._selectedScreenResolution.height});
     }
 
     public setVdiProtocol(protocol: Protocol): void {
         this.form.get('vdiProtocol').setValue(protocol);
     }
 
-    public setKeyboardLayout(value: { layout: string; name: string, selected: boolean }): void {
+    public setKeyboardLayout(value: KeyboardLayout): void {
         if (value != null) {
+            this._selectedKeyboardLayout = value;
+            localStorage.setItem(InstanceNewComponent.USER_INSTANCE_KEYBOARD_LAYOUT_KEY, value.layout);
             this.form.get('keyboardLayout').setValue(value.layout);
         }
     }
@@ -330,4 +386,6 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
             window.open(url, '_blank');
         }
     }
+
+    protected readonly Array = Array;
 }

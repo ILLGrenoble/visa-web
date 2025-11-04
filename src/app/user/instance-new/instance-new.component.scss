@@ -206,18 +206,12 @@
             }
         }
 
-        .instance-name-title {
-            h3 {
-                font-size: 0.8rem;
-                margin: 0 0 0 0;
-            }
+        .instance-name-text {
+            margin: 6px 0 6px 0;
         }
 
-        .instance-comments-label {
-            h3 {
-                font-size: 0.8rem;
-                margin: 10px 0 0 0;
-            }
+        .instance-comments-text {
+            margin: 16px 0 6px 0;
         }
 
         .instance-terms-label {
@@ -228,9 +222,70 @@
         }
 
         .instance-settings {
-            h3 {
-                font-size: 0.8rem;
-                margin: 10px 0 0 0px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            row-gap: 8px;
+
+            .instance-settings-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: flex-start;
+                column-gap: 12px;
+
+                .instance-settings-title {
+                    font-size: 0.8rem;
+                    width: 120px;
+                    font-weight: 400;
+                }
+
+                .instance-settings-value {
+                    font-size: 0.8rem;
+                    font-weight: 200;
+                }
+
+                .instance-settings-value-important {
+                    font-size: 0.8rem;
+                    font-weight: 400;
+                }
+
+                .instance-details-display-container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: center;
+                    row-gap: 12px;
+
+                    .instance-details-display-screen-container {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        align-items: center;
+                        column-gap: 24px;
+
+                        .instance-details-display-screen {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            color: #5f5f5f;
+                            font-size: 12px;
+                        }
+                    }
+
+                    .instance-details-display-keyboard {
+                        color: #5f5f5f;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 4px 12px;
+                        font-size: 12px;
+                    }
+                }
+
             }
         }
     }
