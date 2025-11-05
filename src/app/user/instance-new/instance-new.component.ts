@@ -5,7 +5,7 @@ import {
     AccountService,
     AnalyticsService,
     ApplicationState,
-    CatalogueService, ConfigService,
+    CatalogueService, ConfigService, CustomFlavour,
     Experiment,
     HelperService,
     ImagePlans,
@@ -35,7 +35,8 @@ type KeyboardLayout = { layout: string; name: string; selected: boolean };
     styleUrls: ['./instance-new.component.scss'],
 })
 export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked {
-    private static USER_INSTANCE_KEYBOARD_LAYOUT_KEY = 'user.instance.keyboard.layout';
+    private static readonly USER_INSTANCE_KEYBOARD_LAYOUT_KEY = 'user.instance.keyboard.layout';
+    private static readonly USER_INSTANCE_EXPERIMENT_FREE = 'user.instance.experimentFree';
 
     private _user$: Observable<User>;
     private _user: User;
@@ -46,6 +47,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     private _plans: Plan[] = null;
     private _selectedImagePlans: ImagePlans = null;
     private _selectedPlan: Plan = null;
+    private _selectedLifetimeMinutes: number = null;
     private _instanceDisplayHelper: InstanceDisplayHelper = new InstanceDisplayHelper();
     private _selectedScreenResolution: ScreenResolution = null;
     private _selectedScreenArrangement: ScreenArrangement = null;
@@ -64,7 +66,6 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     private _contactEmail: string;
 
     private _errors: string[];
-
 
     get user(): User {
         return this._user;
@@ -142,6 +143,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     set experimentFree(value: boolean) {
+        localStorage.setItem(InstanceNewComponent.USER_INSTANCE_EXPERIMENT_FREE, `${value}`);
         this._experimentFree = value;
         this._selectedPlan = null;
         if (value) {
@@ -250,6 +252,9 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
                 // If user has no experiments and is allowed to create instances without experiments, then skip the experiment stage
                 if (this._totalExperiments === 0 && this.canBeExperimentFree && !config.experiments.openDataIncluded) {
                     this.experimentFree = true;
+                } else if (this.canBeExperimentFree) {
+                    const experimentFreeText = localStorage.getItem(InstanceNewComponent.USER_INSTANCE_EXPERIMENT_FREE);
+                    this.experimentFree = experimentFreeText === 'true';
                 }
             });
 
@@ -300,8 +305,9 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
         this._selectedImagePlans = value;
     }
 
-    public setSelectedPlan(value: Plan): void {
-        this._selectedPlan = value;
+    public setSelectedCustomFlavour(value: CustomFlavour): void {
+        this._selectedPlan = value?.plan;
+        this._selectedLifetimeMinutes = value ? value.lifetimeValue * value.lifetimeMinutesMultiplier : null;
     }
 
     public isValidData(): boolean {
@@ -326,6 +332,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
             instance.screenHeight = screenResolution.height;
             instance.keyboardLayout = keyboardLayout;
             instance.plan = this._selectedPlan;
+            instance.lifetimeMinutes = this._selectedLifetimeMinutes;
             instance.vdiProtocol = vdiProtocol;
             this._experimentsObservable.getValue().forEach((experiment) => instance.addExperiment(experiment));
 

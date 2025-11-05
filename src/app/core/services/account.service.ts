@@ -325,6 +325,7 @@ export class AccountService {
             experiments: instance.experiments.map((experiment) => experiment.id),
             name: instance.name,
             planId: instance.plan.id,
+            lifetimeMinutes: instance.lifetimeMinutes,
             screenHeight: instance.screenHeight,
             screenWidth: instance.screenWidth,
             keyboardLayout: instance.keyboardLayout,

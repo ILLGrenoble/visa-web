@@ -1,17 +1,17 @@
-<div *ngIf="imagePlans && imagePlans.plans.length > 0">
+<div *ngIf="customFlavours && customFlavours.length > 0">
     <div class="flavour-title">
         <h3>Choose hardware requirements</h3>
     </div>
     <div class="flavours">
-        <div *ngFor="let plan of imagePlans.plans" (click)="plan.flavour.available ? selectedPlan.next(plan) : ''" class="flavour-box" [ngClass]="{'flavour-box--selected': plan === selectedPlan.getValue(), 'flavour-box--disabled': !plan.flavour.available}">
+        <div *ngFor="let flavourConfig of customFlavours" (click)="flavourConfig.flavour.available ? setSelectedFlavourConfig(flavourConfig) : ''" class="flavour-box" [ngClass]="{'flavour-box--selected': flavourConfig === selectedCustomFlavour.getValue(), 'flavour-box--disabled': !flavourConfig.flavour.available}">
             <button class="flavour-button">
                 <div class="flavour-button__detail">
-                    {{getCpuView(plan.flavour)}}
+                    {{getCpuView(flavourConfig.flavour)}}
                 </div>
                 <div class="flavour-button__detail">
-                    {{getRamView(plan.flavour)}} memory
+                    {{getRamView(flavourConfig.flavour)}} memory
                 </div>
-                <div *ngFor="let device of plan.flavour.devices" class="flavour-button__detail">
+                <div *ngFor="let device of flavourConfig.flavour.devices" class="flavour-button__detail">
                     <div class="flavour-button__device-name">
                         {{device.devicePool.name}}
                     </div>
@@ -24,15 +24,22 @@
                 <div class="title">
                     Instance duration
                 </div>
+
                 <div class="value">
-                    {{plan.flavour.lifetimeMinutes | lifetimeDuration}}
+                    {{flavourConfig.lifetimeValue}} {{flavourConfig.lifetimeValue == 1 ? flavourConfig.lifetimeUnit : flavourConfig.lifetimeUnit + 's'}}
+                </div>
+
+                <div class="flavour-duration-slider">
+                    <clr-range-container>
+                        <input type="range" clrRange min="1" [max]="flavourConfig.lifetimeMaxValue" [(ngModel)]="flavourConfig.lifetimeValue" [disabled]="flavourConfig !== selectedCustomFlavour.getValue()"/>
+                    </clr-range-container>
                 </div>
             </div>
             <div class="flavour-details">
                 <div>
-                    {{plan.flavour.name}}
+                    {{flavourConfig.flavour.name}}
                 </div>
-                <div *ngIf="!plan.flavour.available" class="unavailable">
+                <div *ngIf="!flavourConfig.flavour.available" class="unavailable">
                     CURRENTLY UNAVAILABLE
                 </div>
             </div>

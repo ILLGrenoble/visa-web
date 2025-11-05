@@ -129,7 +129,7 @@
                             </div>
                         </div>
 
-                        <div class="section" *ngIf="selectedPlan && canSkipCustomisation && !customiseInstance">
+                        <div class="section"  *ngIf="selectedPlan && canSkipCustomisation && !customiseInstance">
                             <div class="title">
                                 <h2>
                                     Instance Settings
@@ -141,21 +141,24 @@
                                     <div class="instance-settings-value">
                                         {{selectedPlan.image.description}} ({{selectedPlan.image.name}})
                                     </div>
-
                                 </div>
                                 <div class="instance-settings-container">
                                     <div class="instance-settings-title">Processor:</div>
                                     <div class="instance-settings-value-important">
                                         {{selectedPlan.flavour.cpu}} vCPUs
                                     </div>
-
                                 </div>
                                 <div class="instance-settings-container">
                                     <div class="instance-settings-title">Memory:</div>
                                     <div class="instance-settings-value-important">
                                         {{selectedPlan.flavour.memory / 1024}} GB RAM
                                     </div>
-
+                                </div>
+                                <div class="instance-settings-container">
+                                    <div class="instance-settings-title">Duration:</div>
+                                    <div class="instance-settings-value">
+                                        {{selectedPlan.flavour.lifetimeMinutes | lifetimeDuration}}
+                                    </div>
                                 </div>
                                 <div class="instance-settings-container">
                                     <div class="instance-settings-title">Desktop:</div>
@@ -166,19 +169,18 @@
                                                     <clr-icon size="48" shape="display"></clr-icon>
                                                 </div>
                                                 <div>
-                                                    {{selectedScreenResolution.width}} x {{selectedScreenResolution.height}}
+                                                    {{selectedScreenResolution.width}}x{{selectedScreenResolution.height}}
+                                                </div>
+                                            </div>
+                                            <div class="instance-details-display-keyboard">
+                                                <div>
+                                                    <clr-icon size="32" shape="keyboard"></clr-icon>
+                                                </div>
+                                                <div>
+                                                    {{selectedKeyboardLayout.name}}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="instance-details-display-keyboard">
-                                            <div>
-                                                <clr-icon size="32" shape="keyboard"></clr-icon>
-                                            </div>
-                                            <div style="margin-top: -6px">
-                                                {{selectedKeyboardLayout.name}}
-                                            </div>
-                                        </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +210,7 @@
                             <div>
                                 <visa-instance-flavour-select
                                     [imagePlans]="selectedImagePlans"
-                                    (selectedPlan)="setSelectedPlan($event)"></visa-instance-flavour-select>
+                                    (selectedCustomFlavour)="setSelectedCustomFlavour($event)"></visa-instance-flavour-select>
                             </div>
                         </div>
 
