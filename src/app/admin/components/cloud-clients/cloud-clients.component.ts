@@ -65,6 +65,7 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                                     applicationId
                                     applicationSecret
                                     computeEndpoint
+                                    placementEndpoint
                                     imageEndpoint
                                     networkEndpoint
                                     identityEndpoint

@@ -63,6 +63,12 @@
             </clr-input-container>
 
             <clr-input-container>
+                <label for="placementEndpoint">Placement Endpoint</label>
+                <input clrInput id="placementEndpoint" formControlName="placementEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
+                <clr-control-helper *ngIf="!readonly">Please enter the Placement endpoint URL</clr-control-helper>
+            </clr-input-container>
+
+            <clr-input-container>
                 <label for="imageEndpoint">Image Endpoint</label>
                 <input clrInput id="imageEndpoint" formControlName="imageEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
                 <clr-control-helper *ngIf="!readonly">Please enter the Image endpoint URL</clr-control-helper>

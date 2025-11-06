@@ -14,6 +14,7 @@ export type OpenStackProviderConfiguration = {
     applicationId: Scalars['String'];
     applicationSecret: Scalars['String'];
     computeEndpoint: Scalars['String'];
+    placementEndpoint?: Maybe<Scalars['String']>;
     imageEndpoint: Scalars['String'];
     networkEndpoint: Scalars['String'];
     identityEndpoint: Scalars['String'];
@@ -153,6 +154,11 @@ export type DevicePool = {
     cloudDevice?: Maybe<CloudDevice>;
     cloudClient?: Maybe<CloudClient>;
 };
+
+export type CloudResourceClassPlacementArrayResponse = {
+    available: Scalars['Boolean'];
+    data: Maybe<Array<Maybe<Scalars['String']>>>;
+}
 
 export type FlavourDevice = {
     __typename?: 'FlavourDevice';
@@ -452,6 +458,8 @@ export type Query = {
     countFlavours: Scalars['Int'];
     /** Get all device pools */
     devicePools: Array<DevicePool>;
+    /** Get all cloud resource classes */
+    cloudResourceClasses: CloudResourceClassPlacementArrayResponse;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
