@@ -148,6 +148,7 @@ export type DevicePool = {
     id: Scalars['Int'];
     name: Scalars['String'];
     description?: Maybe<Scalars['String']>;
+    resourceClass?: Maybe<Scalars['String']>;
     deviceType: Scalars['String'];
     computeIdentifier: Scalars['String'];
     totalUnits?: Scalars['Int'];
@@ -155,9 +156,25 @@ export type DevicePool = {
     cloudClient?: Maybe<CloudClient>;
 };
 
-export type CloudResourceClassPlacementArrayResponse = {
+export type CloudResourceClassesResponse = {
     available: Scalars['Boolean'];
-    data: Maybe<Array<Maybe<Scalars['String']>>>;
+    resourceClasses: Maybe<Array<Maybe<Scalars['String']>>>;
+}
+
+export type HypervisorResource = {
+    resourceClass: Scalars['String'];
+    total: Scalars['Int'];
+    usage: Scalars['Int'];
+}
+
+export type Hypervisor = {
+    id: Scalars['Int'];
+    cloudId: Scalars['String'];
+    hostname: Scalars['String'];
+    state?: Maybe<Scalars['String']>;
+    status?: Maybe<Scalars['String']>;
+    cloudClientId: Scalars['Int'];
+    resources: Array<HypervisorResource>;
 }
 
 export type FlavourDevice = {
@@ -459,7 +476,9 @@ export type Query = {
     /** Get all device pools */
     devicePools: Array<DevicePool>;
     /** Get all cloud resource classes */
-    cloudResourceClasses: CloudResourceClassPlacementArrayResponse;
+    cloudResourceClasses: CloudResourceClassesResponse;
+    /** Get all hypervisors */
+    hypervisors: Array<Hypervisor>;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
@@ -561,6 +580,7 @@ export type DevicePoolInput = {
     computeIdentifier: Scalars['String'];
     deviceType: Scalars['String'];
     totalUnits?: Scalars['Int'];
+    resourceClass?: Scalars['String'];
     cloudId?: Maybe<Scalars['Int']>;
 };
 

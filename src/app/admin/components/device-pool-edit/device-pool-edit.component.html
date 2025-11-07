@@ -34,10 +34,47 @@
                 There are no unconfigured cloud devices
             </div>
 
-            <clr-input-container>
+            <clr-select-container>
+                <label for="resource-class">Resource class</label>
+                <select clrSelect id="resource-class" formControlName="resourceClass" [compareWith]="compareResourceClass">
+                    <option *ngFor="let resourceClass of customResourceClasses" [ngValue]="resourceClass">{{ resourceClass?.title }}</option>
+                </select>
+                <clr-control-helper>
+                    <span>
+                        <span *ngIf="!loadingCloudDevices && !placementAvailable">
+                            <clr-tooltip>
+                                <span clrTooltipTrigger>
+                                    <clr-icon size="24" shape="info" style="color: red;"></clr-icon>
+                                </span>
+                                <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
+                                    {{ placementConfigMessage() }}
+                                </clr-tooltip-content>
+                            </clr-tooltip>
+
+                        </span>
+                        <span *ngIf="!loadingCloudDevices &&placementAvailable && customResourceClasses.length === 1">
+                            <clr-tooltip>
+                                <span clrTooltipTrigger>
+                                    <clr-icon size="24" shape="info" style="color: red;"></clr-icon>
+                                </span>
+                                <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
+                                    {{ resourceClassConfigMessage() }}
+                                </clr-tooltip-content>
+                            </clr-tooltip>
+
+                        </span>
+                        <span>
+                            The resource class allows VISA to automatically determine the number and availability of the device
+                        </span>
+                    </span>
+                </clr-control-helper>
+            </clr-select-container>
+
+            <clr-input-container class="device-pool-total-units">
                 <label for="totalUnits">Total Units</label>
-                <input type="number" clrInput id="totalUnits" formControlName="totalUnits" class="form-control"/>
-                <clr-control-helper>Please enter the total number of units available</clr-control-helper>
+                <input type="number" clrInput id="totalUnits" formControlName="totalUnits" [placeholder]="selectedResourceClass != null ? selectedResourceClass.placeholder : ''" class="form-control"/>
+                <clr-control-helper *ngIf="selectedResourceClass == null">Please enter the total number of units available</clr-control-helper>
+                <clr-control-helper *ngIf="selectedResourceClass != null">Leave this blank if you'd like VISA to manage the available devices</clr-control-helper>
             </clr-input-container>
 
         </form>

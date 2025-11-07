@@ -89,7 +89,7 @@
                     <clr-dg-cell *ngIf="devicePool.cloudClient">{{devicePool.cloudClient.name}}</clr-dg-cell>
                     <clr-dg-cell *ngIf="!devicePool.cloudClient"><b>Not configured</b></clr-dg-cell>
                     <clr-dg-cell>{{devicePool.cloudDevice | cloudDevice}}</clr-dg-cell>
-                    <clr-dg-cell>{{devicePool.totalUnits}}</clr-dg-cell>
+                    <clr-dg-cell>{{devicePoolTotal(devicePool)}}</clr-dg-cell>
                     <clr-dg-cell>{{devicePoolUsage(devicePool)}}</clr-dg-cell>
                     <clr-dg-cell>
                         <button (click)="onUpdateDevicePool(devicePool)" class="btn btn-sm">Edit</button>

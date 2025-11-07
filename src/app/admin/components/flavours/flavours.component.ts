@@ -8,7 +8,7 @@ import {
     FlavourInput,
     Instrument,
     DevicePoolUsage,
-    Role
+    Role, Hypervisor
 } from '../../../core/graphql';
 import {FlavourDeleteComponent} from '../flavour-delete';
 import {Apollo} from 'apollo-angular';
@@ -35,6 +35,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     private _devicePools: DevicePool[] = [];
     private _devicePoolCounts: DevicePoolUsage[];
     private _instruments: Instrument[];
+    private _hypervisors: Hypervisor[];
     private _roles: Role[];
     private _loadingFlavours: boolean;
     private _loadingDevices: boolean;
@@ -107,6 +108,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                         id
                                         name
                                         description
+                                        resourceClass
                                         cloudDevice {
                                             identifier
                                             type
@@ -125,6 +127,18 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 cloudClient {
                                     id
                                     name
+                                }
+                            }
+                            hypervisors {
+                                id
+                                hostname
+                                state
+                                status
+                                cloudClientId
+                                resources {
+                                    resourceClass
+                                    total
+                                    usage
                                 }
                             }
                             instruments {
@@ -147,10 +161,11 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                     instruments: data.instruments,
                     roles: data.rolesAndGroups,
                     cloudClients: data.cloudClients,
+                    hypervisors: data.hypervisors,
                 })),
                 tap(() => this._loadingFlavours = false)
             )
-            .subscribe(({flavours, instruments, roles, cloudClients}) => {
+            .subscribe(({flavours, instruments, roles, cloudClients, hypervisors}) => {
                 this._flavours = flavours;
                 this._instruments = instruments;
                 this._roles = roles;
@@ -158,6 +173,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                     .map((flavour) => flavour.cloudClient?.id || 0)
                     .filter((value, index, array) => array.indexOf(value) === index)
                     .length > 1;
+                this._hypervisors = hypervisors;
             });
 
         this._refreshDevices$
@@ -173,6 +189,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 id
                                 name
                                 description
+                                resourceClass
                                 totalUnits
                                 cloudDevice {
                                     identifier
@@ -181,6 +198,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 cloudClient {
                                     id
                                     name
+                                    type
                                 }
                             }
                             devicePoolUsage {
@@ -310,7 +328,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
     public onCreateDevicePool(devicePool?: DevicePool): void {
         const dialogRef = this._dialog.open(DevicePoolEditComponent, {
             width: '800px',
-            data: { devicePool, clone: !!devicePool, configuredDevicePools: this._devicePools },
+            data: { devicePool, clone: !!devicePool, configuredDevicePools: this._devicePools, hypervisors: this._hypervisors },
         });
         dialogRef.componentInstance.onSave$.pipe(
             switchMap((input: DevicePoolInput) => {
@@ -345,7 +363,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
 
     public onUpdateDevicePool(devicePool: DevicePool): void {
         const dialogRef = this._dialog.open(DevicePoolEditComponent, {
-            width: '800px', data: { devicePool, configuredDevicePools: this._devicePools },
+            width: '800px', data: { devicePool, configuredDevicePools: this._devicePools, hypervisors: this._hypervisors },
         });
 
         dialogRef.componentInstance.onSave$.pipe(
@@ -413,6 +431,14 @@ export class FlavoursComponent implements OnInit, OnDestroy {
             .filter(deviceAllocation => {
                 return configuredCloudDevices.find(configuredCloudDevice => configuredCloudDevice.identifier === deviceAllocation.device.identifier && configuredCloudDevice.type === deviceAllocation.device.type) == null;
             })
+    }
+
+    public devicePoolTotal(devicePool: DevicePool): string {
+        const devicePoolCount = this._devicePoolCounts.find(devicePoolCount => devicePoolCount.devicePoolId === devicePool.id);
+        if (devicePoolCount && devicePoolCount.totalUnits >= 0) {
+            return `${devicePoolCount.totalUnits}`;
+        }
+        return 'unknown';
     }
 
     public devicePoolUsage(devicePool: DevicePool): number {

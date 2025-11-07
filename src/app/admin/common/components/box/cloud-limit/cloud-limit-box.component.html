@@ -22,7 +22,7 @@
                     <label>Memory <span class="pull-right"><b>{{ detailedCloudLimit.cloudLimit.totalRAMUsed * 1024  * 1024 | fileSize}}</b> of <b>{{ detailedCloudLimit.cloudLimit.maxTotalRAMSize * 1024  * 1024 | fileSize }}</b></span></label>
                 </li>
                 <li *ngFor="let devicePool of detailedCloudLimit.devicePoolUsage">
-                    <label>{{devicePool.devicePoolName}} <span class="pull-right"><b>{{ devicePool.usedUnits}}</b> of <b>{{ devicePool.totalUnits }}</b></span></label>
+                    <label>{{devicePool.devicePoolName}} <span class="pull-right"><b>{{ devicePool.usedUnits}}</b> of <b>{{ devicePool.totalUnits == -1 ? 'unknown' : devicePool.totalUnits }}</b></span></label>
                 </li>
             </ul>
             <ul class="admin-box-pills" *ngIf="detailedCloudLimit.error">
