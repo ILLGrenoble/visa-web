@@ -54,17 +54,20 @@ h2 {
 
         border: 1px solid $disabled-color;
         box-sizing: border-box;
-        width: 300px;
+        width: 260px;
 
         .display-details {
             text-align: center;
             border-top: 1px solid $disabled-color;
             background: #fff;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
             cursor: pointer;
             font-size: 13px;
             outline: 0;
-            padding: 10px;
+            height: 3rem;
+            padding: 0 10px;
 
         }
         &--selected {
@@ -116,7 +119,7 @@ h2 {
 }
 
 .screen-resolution-select {
-    width: 250px;
+    width: 260px;
     margin: 10px 0;
 }
 

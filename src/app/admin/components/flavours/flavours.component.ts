@@ -134,7 +134,7 @@ export class FlavoursComponent implements OnInit, OnDestroy {
                                 hostname
                                 state
                                 status
-                                cloudClientId
+                                cloudId
                                 resources {
                                     resourceClass
                                     total

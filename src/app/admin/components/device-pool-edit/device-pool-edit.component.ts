@@ -134,7 +134,7 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
         // Initialise cloud devices with current cloud device
         this._cloudDevices = [null, cloudDevice];
 
-        this._hypervisors = this._allHypervisors.filter(hypervisor => hypervisor.cloudClientId === cloudClient.id);
+        this._hypervisors = this._allHypervisors.filter(hypervisor => hypervisor.cloudId === cloudClient.id);
 
         if (resourceClass != null) {
             const total = this.getTotalForResourceClass(resourceClass);
@@ -186,7 +186,7 @@ export class DevicePoolEditComponent implements OnInit, OnDestroy {
 
     private _loadCloudDevices(cloudId: number, selectedCloudDevice?: CloudDevice): void {
         this._loadingCloudDevices = true;
-        this._hypervisors = this._allHypervisors.filter(hypervisor => hypervisor.cloudClientId === cloudId);
+        this._hypervisors = this._allHypervisors.filter(hypervisor => hypervisor.cloudId === cloudId);
 
         this._apollo.query<any>({
             query: gql`

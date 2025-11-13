@@ -46,13 +46,14 @@
             text-align: center;
             border-top: 1px solid $disabled-color;
             background: #fff;
-            display: block;
             cursor: pointer;
             font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
             outline: 0;
             height: 3rem;
-            line-height: 3rem;
-
+            padding: 0 10px;
         }
         &--selected {
             border: 1px solid $primary-color;

@@ -169,11 +169,11 @@ export type HypervisorResource = {
 
 export type Hypervisor = {
     id: Scalars['Int'];
-    cloudId: Scalars['String'];
+    computeId: Scalars['String'];
     hostname: Scalars['String'];
     state?: Maybe<Scalars['String']>;
     status?: Maybe<Scalars['String']>;
-    cloudClientId: Scalars['Int'];
+    cloudId: Scalars['Int'];
     resources: Array<HypervisorResource>;
 }
 
