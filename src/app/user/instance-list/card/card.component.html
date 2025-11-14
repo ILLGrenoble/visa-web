@@ -99,14 +99,14 @@
                         <clr-tooltip>
                             <span clrTooltipTrigger><b>{{instance.createdAt | date}}</b></span>
                             <clr-tooltip-content clrPosition="top-right" clrSize="sm" *clrIfOpen>
-                                <span>{{ instance.createdAt | date:'MMM d, y, h:mm:ss a' }}</span>
+                                <span>{{ instance.createdAt | date:'MMM d, y, h:mm a' }}</span>
                             </clr-tooltip-content>
                         </clr-tooltip>
                         <span *ngIf="instance.expirationDate"> and due to expire on
                             <clr-tooltip>
                                 <span clrTooltipTrigger><b>{{instance.expirationDate | date}}</b></span>
                                 <clr-tooltip-content clrPosition="top-right" clrSize="sm" *clrIfOpen>
-                                    <span>{{ instance.expirationDate | date:'MMM d, y, h:mm:ss a' }}</span>
+                                    <span>{{ instance.expirationDate | date:'MMM d, y, h:mm a' }}</span>
                                 </clr-tooltip-content>
                             </clr-tooltip>
 

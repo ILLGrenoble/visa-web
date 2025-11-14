@@ -1,5 +1,16 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
+import {JsonConverter, JsonCustomConvert, JsonObject, JsonProperty} from 'json2typescript';
 import {FlavourDevice} from "./flavour-device.model";
+
+@JsonConverter
+class DateConverter implements JsonCustomConvert<Date> {
+    public serialize(date: Date): any {
+        return  date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    }
+
+    public deserialize(date: any): Date {
+        return date == null ? null : new Date(date);
+    }
+}
 
 @JsonObject('Flavour')
 export class Flavour {
@@ -24,6 +35,9 @@ export class Flavour {
     @JsonProperty('available', Boolean)
     private _available: boolean = undefined;
 
+    @JsonProperty('availableAt', DateConverter)
+    private _availableAt: Date = undefined;
+
     @JsonProperty('lifetimeMinutes', Number)
     private _lifetimeMinutes: number = undefined;
 
@@ -35,6 +49,7 @@ export class Flavour {
         this.computeId = data.computeId;
         this.devices = data.devices;
         this.available = data.available;
+        this.availableAt = data.availableAt;
         this.lifetimeMinutes = data.lifetimeMinutes;
 
         return this;
@@ -94,6 +109,14 @@ export class Flavour {
 
     set available(value: boolean) {
         this._available = value;
+    }
+
+    get availableAt(): Date {
+        return this._availableAt;
+    }
+
+    set availableAt(value: Date) {
+        this._availableAt = value;
     }
 
     get lifetimeMinutes(): number {

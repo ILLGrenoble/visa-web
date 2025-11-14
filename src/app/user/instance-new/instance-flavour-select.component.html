@@ -40,7 +40,14 @@
                     {{flavourConfig.flavour.name}}
                 </div>
                 <div *ngIf="!flavourConfig.flavour.available" class="unavailable">
-                    CURRENTLY UNAVAILABLE
+                    <clr-tooltip>
+                        <span clrTooltipTrigger>
+                            Available on {{ flavourConfig.flavour.availableAt |date }}
+                        </span>
+                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                            <span>{{ flavourConfig.flavour.availableAt | date:'d MMM y, h:mm a' }}</span>
+                        </clr-tooltip-content>
+                    </clr-tooltip>
                 </div>
             </div>
         </div>
