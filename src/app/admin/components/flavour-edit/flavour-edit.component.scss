@@ -22,6 +22,11 @@
     margin-bottom:12px;
 }
 
+
+.role-clr-container input::placeholder {
+    color: #bfbfbf;
+}
+
 .role-clr-container input {
     width: 195px;
 }
