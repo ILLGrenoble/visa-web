@@ -1,3 +1,24 @@
+3.6.0 17/11/2025
+================
+ * Show whether a flavour is currently unavailable when creating an instance: show estimated availability date
+ * Update OpenStack provider configuration to allow from placement endpoint
+ * Allow for customisable instance lifetime: slide to reduce from maximum allowed
+ * Update instance creation UI:
+   * Store more previously selected values in local storage
+   * show summary including keyboard and screen layout
+ * Customisable Flavour Lifetimes:
+   * Admin can add rules for each flavour associating a lifetime to a role/group
+   * lifetimes entered in 2d, 3h, 1h30m etc format
+   * For instances with short durations, don't show the extension request until 1/4 of duration remaining
+ * GPU integration:
+   * Add device pool management to flavour UI
+   * Show device pools associated to flavours (show as unconfigured if device pool doesn't exist)
+   * Allow for automatic calculation of device usage using Resource Classes (eg obtained from Placement API of OpenStack)
+   * Allow for limit of devices to be manually set
+   * Show flavour devices when creating an instance (show number associated too if > 1)
+   * Show device usage on admin limits section
+   * Show device usage on instances list
+
 3.5.4 16/10/2025
 ================
  * Verify that instance exists during jupyter session: close the iframe when instance has been deleted
