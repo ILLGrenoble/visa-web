@@ -115,19 +115,38 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                     mutation: gql`
                             mutation CreateCloudClient($input: CloudClientInput!){
                                 createCloudClient(input: $input) {
-                                  id
-                                  name
+                                    id
+                                    name
+                                    type
+                                    serverNamePrefix
+                                    visible
+                                    openStackProviderConfiguration {
+                                        applicationId
+                                        applicationSecret
+                                        computeEndpoint
+                                        placementEndpoint
+                                        imageEndpoint
+                                        networkEndpoint
+                                        identityEndpoint
+                                        addressProvider
+                                        addressProviderUUID
+                                    }
+                                    webProviderConfiguration {
+                                        url
+                                        authToken
+                                    }
                                 }
                             }
                         `,
                     variables: {input},
                 }).pipe(
-                    takeUntil(this._destroy$)
+                    takeUntil(this._destroy$),
+                    map(({data}) => ({cloudClient: data.createCloudClient})),
                 )
             })).subscribe({
-                next: () => {
+                next: ({cloudClient}) => {
                     this._notifierService.notify('success', 'Cloud provider created');
-                    this._refresh$.next();
+                    this._cloudClients.push(cloudClient);
                     dialogRef.close();
                 },
                 error: (error) => {
@@ -158,7 +177,7 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
             })).subscribe({
                 next: () => {
                     this._notifierService.notify('success', 'Successfully deleted cloud provider');
-                    this._refresh$.next();
+                    this._cloudClients = this._cloudClients.filter(aCloudClient => aCloudClient.id !== cloudClient.id);
                 },
                 error: (error) => {
                     this._notifierService.notify('error', error);
@@ -179,17 +198,37 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
                         mutation UpdateCloudClient($id: Int!,$input: CloudClientInput!){
                             updateCloudClient(id: $id, input: $input) {
                                 id
+                                name
+                                type
+                                serverNamePrefix
+                                visible
+                                openStackProviderConfiguration {
+                                    applicationId
+                                    applicationSecret
+                                    computeEndpoint
+                                    placementEndpoint
+                                    imageEndpoint
+                                    networkEndpoint
+                                    identityEndpoint
+                                    addressProvider
+                                    addressProviderUUID
+                                }
+                                webProviderConfiguration {
+                                    url
+                                    authToken
+                                }
                             }
                         }
                         `,
                     variables: {id: cloudClient.id, input},
                 }).pipe(
-                    takeUntil(this._destroy$)
+                    takeUntil(this._destroy$),
+                    map(({data}) => ({cloudClient: data.updateCloudClient})),
                 )
             })).subscribe({
-                next: () => {
+                next: ({cloudClient}) => {
+                    this._cloudClients = this._cloudClients.map(aCloudClient => cloudClient.id === aCloudClient.id ? cloudClient : aCloudClient);
                     this._notifierService.notify('success', 'Cloud provider saved');
-                    this._refresh$.next();
                     dialogRef.close();
                 },
                 error: (error) => {
