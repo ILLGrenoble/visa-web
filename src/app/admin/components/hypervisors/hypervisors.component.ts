@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
-import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Title} from '@angular/platform-browser';
-import {Hypervisor, DevicePool, Flavour} from '../../../core/graphql';
+import {Hypervisor, DevicePool, Flavour, CloudClient} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-hypervisors',
@@ -15,11 +15,14 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<void> = new Subject();
+    private _allHypervisors: Hypervisor[] = [];
     private _hypervisors: Hypervisor[] = [];
+    private _cloudClients: CloudClient[] = [];
     private _devicePools: DevicePool[] = [];
     private _flavours: Flavour[] = [];
     private _loading: boolean;
     private _multiCloudEnabled = false;
+    private _selectedCloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _titleService: Title) {
@@ -33,6 +36,10 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
         return this._hypervisors;
     }
 
+    get cloudClients(): CloudClient[] {
+        return this._cloudClients;
+    }
+
     get devicePools(): DevicePool[] {
         return this._devicePools;
     }
@@ -44,6 +51,15 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
     get multiCloudEnabled(): boolean {
         return this._multiCloudEnabled;
     }
+
+    get selectedCloudClient(): CloudClient {
+        return this._selectedCloudClient$.value;
+    }
+
+    set selectedCloudClient(value: CloudClient) {
+        this._selectedCloudClient$.next(value);
+    }
+
 
     public ngOnInit(): void {
         this._titleService.setTitle(`Hypervisors | Cloud | Admin | VISA`);
@@ -89,6 +105,7 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
                             }
                             cloudClients {
                                 id
+                                name
                             }
                         }
                     `
@@ -97,7 +114,9 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
                 tap(() => this._loading = false)
             )
             .subscribe(({hypervisors, cloudClients, devicePools, flavours}) => {
-                this._hypervisors = hypervisors;
+                this._allHypervisors = hypervisors;
+                this._cloudClients = cloudClients;
+                this.selectedCloudClient = this._cloudClients[0];
                 this._devicePools = devicePools;
                 this._flavours = flavours;
 
@@ -106,6 +125,13 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
                     .filter((value, index, array) => array.indexOf(value) === index)
                     .length > 1;
             });
+
+        this._selectedCloudClient$.pipe(
+            takeUntil(this._destroy$),
+            filter(value => !!value),
+        ).subscribe(cloudClient => {
+            this._hypervisors = this._allHypervisors.filter(hypervisor => hypervisor.cloudId == cloudClient.id);
+        })
     }
 
     public ngOnDestroy(): void {

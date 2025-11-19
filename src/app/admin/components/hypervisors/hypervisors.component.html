@@ -8,9 +8,16 @@
     </div>
 </div>
 
-<div class="flavours-overview">
+<div *ngIf="!loading" class="flavours-overview">
     <div class="admin-container flavours-main">
         <div class="admin-container--main">
+
+            <clr-select-container *ngIf="multiCloudEnabled" style="margin-bottom: 16px; margin-top: 8px;">
+                <select clrSelect id="cloud" [(ngModel)]="selectedCloudClient">
+                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud provider' : ''}}</option>
+                </select>
+                <clr-control-helper>Please select the cloud provider</clr-control-helper>
+            </clr-select-container>
 
             <div class="hypervisors-header">
                 <h3 class="filters-box-title">Hypervisors</h3>
