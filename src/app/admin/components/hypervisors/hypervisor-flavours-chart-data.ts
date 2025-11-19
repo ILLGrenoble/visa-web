@@ -39,14 +39,13 @@ export class HypervisorFlavoursChartData {
             gridLineWidth: 0,
         },
         tooltip: {
-            enabled: false,
-            // backgroundColor: '#ffffff',
-            // style: {
-            //     fontSize: '12px',
-            // },
-            // formatter: function () {
-            //     return `<span>${this.key}<br>${this.series.name}: <b>${this.y}</b></span>`;
-            // }
+            backgroundColor: '#ffffff',
+            style: {
+                fontSize: '12px',
+            },
+            formatter: function () {
+                return `<span>${this.key}<br>${this.series.name}: <b>${this.y}</b></span>`;
+            }
         },
         plotOptions: {
             series: {
@@ -89,8 +88,8 @@ export class HypervisorFlavoursChartData {
             return {y: flavourStat.available}
         });
         this._options.series = [
-            {name: 'available', data: availableData, color: '#ffffff', dataLabels: {style: {color: this._enabled ? '#606060' : '#c0c0c0'}}},
-            {name: 'used', data: usedData, color: this._enabled ? '#606060' : '#cccccc', dataLabels: {style: {color: '#ffffff'}}},
+            {name: 'Available instances', data: availableData, color: '#ffffff', dataLabels: {style: {color: this._enabled ? '#606060' : '#c0c0c0'}}},
+            {name: 'Current instances', data: usedData, color: this._enabled ? '#808080' : '#cccccc', dataLabels: {style: {color: '#ffffff'}}},
         ]
     }
 
