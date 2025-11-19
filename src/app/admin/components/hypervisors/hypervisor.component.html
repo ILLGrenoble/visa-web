@@ -1,0 +1,30 @@
+
+<div class="hypervisor" [class]="hypervisorStateClass(hypervisor)" [ngClass]="{'hypervisor__disabled': hypervisor.status ==='disabled'}">
+    <div class="hypervisor__title">
+        {{hypervisor.hostname}}
+    </div>
+    <div class="hypervisor__content">
+        Server count: {{hypervisor.allocations.length}}
+    </div>
+    <div class="hypervisor-chart-container">
+        <div *ngIf="vcpuChartData" class="hypervisor-chart-holder">
+            <highcharts-chart [options]="vcpuChartData.options"
+                              [Highcharts]="highcharts"
+                              class="hypervisor-chart">
+            </highcharts-chart>
+        </div>
+        <div *ngIf="ramChartData" class="hypervisor-chart-holder">
+            <highcharts-chart [options]="ramChartData.options"
+                              [Highcharts]="highcharts"
+                              class="hypervisor-chart">
+            </highcharts-chart>
+        </div>
+        <div *ngFor="let chartData of customChartData" class="hypervisor-chart-holder">
+            <highcharts-chart [options]="chartData.options"
+                              [Highcharts]="highcharts"
+                              class="hypervisor-chart">
+            </highcharts-chart>
+        </div>
+    </div>
+</div>
+

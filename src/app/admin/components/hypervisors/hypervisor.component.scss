@@ -1,0 +1,90 @@
+.hypervisor {
+    width: 320px;
+    min-height: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid #d5d5d5;
+    color: #606060;
+
+    &__title {
+        font-weight: 400;
+        font-size: 12pt;
+        line-height: 30px;
+    }
+
+    &__content {
+        font-weight: 300;
+        font-size: 11pt;
+        line-height: 30px;
+    }
+
+    &__disabled {
+        color: #c0c0c0;
+    }
+}
+
+.hypervisor__up_enabled {
+    border-top-width: 2px;
+    border-top-color: #00a65a;
+}
+
+.hypervisor__up_disabled {
+    border-top-width: 2px;
+    border-top-color: #81c389;
+    border-bottom-color: #f4f4f4;
+    border-left-color: #f4f4f4;
+    border-right-color: #f4f4f4;
+}
+
+.hypervisor__down_enabled {
+    border-top-width: 2px;
+    border-top-color: #dd4b39;
+}
+
+.hypervisor__down_disabled {
+    border-top-width: 2px;
+    border-color: #e58989;
+    border-bottom-color: #f4f4f4;
+    border-left-color: #f4f4f4;
+    border-right-color: #f4f4f4;
+}
+
+.hypervisor-chart-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.hypervisor-chart-holder {
+    width: 140px;
+}
+
+.hypervisor-chart {
+    display: block;
+    height: 140px;
+
+    .chart-title-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 9pt;
+        color: #606060;
+
+        &__disabled {
+            color: #c0c0c0;
+        }
+
+        .chart-title-main {
+            font-weight: 500;
+            text-align: center;
+        }
+    }
+}
+
+

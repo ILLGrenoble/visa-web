@@ -81,6 +81,8 @@ import {
     UserGroupDeleteComponent,
     ExtensionRequestsComponent,
     ExtensionRequestHandlerComponent,
+    HypervisorsComponent,
+    HypervisorComponent,
 } from './components';
 import {ClrSpinnerModule} from "@clr/angular";
 
@@ -161,6 +163,8 @@ import {ClrSpinnerModule} from "@clr/angular";
         ApplicationCredentialUpdateComponent,
         ExtensionRequestsComponent,
         ExtensionRequestHandlerComponent,
+        HypervisorsComponent,
+        HypervisorComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,

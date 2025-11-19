@@ -16,7 +16,7 @@ import {
     UserComponent,
     ExtensionRequestsComponent,
     instanceActivate,
-    userActivate,
+    userActivate, HypervisorsComponent,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -46,6 +46,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'cloud/providers', component: CloudClientsComponent,
+            },
+            {
+                path: 'cloud/hypervisors', component: HypervisorsComponent,
             },
             {
                 path: 'cloud/images', component: ImagesComponent,

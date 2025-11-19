@@ -1,0 +1,41 @@
+.hypervisors-overview {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.hypervisors-main {
+    margin: 0;
+}
+
+.hypervisors-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hypervisors-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.hypervisors-spinner {
+    height: 150px;
+    top: 16px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 999999;
+}
+
+.hypervisors-content {
+    //margin: 16px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    column-gap: 16px;
+    row-gap: 16px;
+}

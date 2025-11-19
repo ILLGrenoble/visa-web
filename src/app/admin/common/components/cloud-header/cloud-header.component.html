@@ -6,6 +6,10 @@
                     <clr-icon shape="rack-server" class="is-solid"></clr-icon>
                     Providers
                 </a>
+                <a *ngIf="hypervisorsAvailable" class="admin-tab" routerLink="/admin/cloud/hypervisors" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="host" class="is-solid"></clr-icon>
+                    Hypervisors
+                </a>
                 <a class="admin-tab" routerLink="/admin/cloud/images" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="image" class="is-solid"></clr-icon>
                     Images

@@ -167,6 +167,10 @@ export type HypervisorResource = {
     usage: Scalars['Int'];
 }
 
+export type HypervisorAllocation = {
+    serverComputeId: Scalars['String'];
+}
+
 export type Hypervisor = {
     id: Scalars['Int'];
     computeId: Scalars['String'];
@@ -175,6 +179,7 @@ export type Hypervisor = {
     status?: Maybe<Scalars['String']>;
     cloudId: Scalars['Int'];
     resources: Array<HypervisorResource>;
+    allocations: Array<HypervisorAllocation>;
 }
 
 export type FlavourDevice = {
@@ -403,6 +408,8 @@ export type Mutation = {
     deleteInstance: Message;
     /** Update an instance termination date */
     updateInstanceTerminationDate: Message;
+    /** Determine if hypervisors are available */
+    hypervisorsAvailable: boolean;
 };
 
 
