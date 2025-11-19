@@ -39,13 +39,11 @@ export class HypervisorFlavoursChartData {
             gridLineWidth: 0,
         },
         tooltip: {
+            shared: true,
             backgroundColor: '#ffffff',
             style: {
                 fontSize: '12px',
             },
-            formatter: function () {
-                return `<span>${this.key}<br>${this.series.name}: <b>${this.y}</b></span>`;
-            }
         },
         plotOptions: {
             series: {
@@ -78,7 +76,7 @@ export class HypervisorFlavoursChartData {
         return this._options;
     }
 
-    constructor(private flavourStats: FlavourStats[], private _enabled: boolean) {
+    constructor(flavourStats: FlavourStats[], private _enabled: boolean) {
         this._options.xAxis.categories = flavourStats.map(flavourStat => flavourStat.flavour.name);
         this._options.xAxis.labels.style.color = this._enabled ? '#606060' : '#c0c0c0';
         const usedData = flavourStats.map(flavourStat => {
