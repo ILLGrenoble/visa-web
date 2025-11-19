@@ -1,123 +1,12 @@
 import {Component, Input, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import {Hypervisor, HypervisorResource, DevicePool} from '../../../core/graphql';
+import {Hypervisor, HypervisorResource, DevicePool, Flavour} from '../../../core/graphql';
 import * as Highcharts from "highcharts";
-
-const hex2rgb = (hex) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-
-    return { r, g, b };
-}
-
-const componentToHex = (c) => {
-    const hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-const rgbToHex = (r, g, b) => {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-export class HypervisorChartData {
-
-
-    private _options: any = {
-        chart: {
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false,
-            type: 'pie',
-        },
-        title: {
-            text: '',
-        },
-        subtitle: {
-            text: this.getSubtitle(),
-            floating: true,
-            useHTML: true,
-            verticalAlign: 'middle',
-            y: 12
-        },
-        plotOptions: {
-            series: {
-                borderRadius: 0,
-                allowPointSelect: true,
-                cursor: 'pointer',
-                showInLegend: false,
-            },
-        },
-        credits: {
-            enabled: false,
-        },
-        series: [{
-            type: 'pie',
-            colorByPoint: true,
-            innerSize: '75%',
-            borderColor: '#cccccc',
-            dataLabels: {
-                enabled: false
-            },
-            data: [],
-        }],
-    }
-
-    get options(): any {
-        return this._options;
-    }
-
-    constructor(private _resource: string, private _total: number, private _used: number, private _enabled: boolean) {
-        this._options.series[0].data = [
-            { name: 'used', y: Math.floor(this._used), color: this.getSeverityColour(this._used / this._total)},
-            { name: 'available', y: Math.floor(this._total - this._used), color: '#ffffff'},
-        ]
-        this._options.series[0].borderColor = this._enabled ? '#cccccc' : '#dddddd';
-    }
-
-    private getSubtitle(): string {
-        const extraStyle = this._enabled ? '' : 'chart-title-container__disabled';
-        return `
-            <div class="chart-title-container ${extraStyle}">
-              <div class="chart-title-main">${this._resource}</div>
-              <div class="chart-title-sub">${Math.floor(this._used)} / ${Math.floor(this._total)}</div>
-            </div>
-        `;
-    }
-
-    private getSeverityColour(value: number): string {
-        if (!this._enabled) {
-            return '#cccccc';
-        }
-
-        value = Math.max(0.0, Math.min(value, 1.0));
-
-        const colours = [
-            hex2rgb('#00a65a'),
-            hex2rgb('#00a65a'),
-            hex2rgb('#00a65a'),
-            hex2rgb('#ffcc00'),
-            hex2rgb('#ff9900'),
-            hex2rgb('#dd4b39'),
-        ]
-
-        const i1 = Math.floor((colours.length - 1) * value);
-        const i2 = Math.ceil((colours.length - 1) * value);
-
-        const colourStep = 1.0 / (colours.length - 1);
-        const diff = value - i1 * colourStep;
-
-        const colour = {
-            r: Math.floor(colours[i1].r + diff * (colours[i2].r - colours[i1].r)),
-            g: Math.floor(colours[i1].g + diff * (colours[i2].g - colours[i1].g)),
-            b: Math.floor(colours[i1].b + diff * (colours[i2].b - colours[i1].b)),
-        }
-
-        return rgbToHex(colour.r, colour.g, colour.b);
-    }
-
-}
+import {map, tap} from "rxjs/operators";
+import gql from "graphql-tag";
+import {HypervisorResourceChartData} from "./hypervisor-resource-chart-data";
+import {FlavourStats, HypervisorFlavoursChartData} from "./hypervisor-flavours-chart-data";
 
 @Component({
     selector: 'visa-admin-hypervisor',
@@ -131,11 +20,17 @@ export class HypervisorComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _hypervisor: Hypervisor;
     private _devicePools: DevicePool[];
+    private _flavours: Flavour[];
 
-    private _vcpuChartData: HypervisorChartData;
-    private _ramChartData: HypervisorChartData;
-    private _customChartData: HypervisorChartData[];
+    private _instanceCount: number;
+
+    private _vcpuChartData: HypervisorResourceChartData;
+    private _ramChartData: HypervisorResourceChartData;
+    private _customChartData: HypervisorResourceChartData[];
+    private _flavoursChartData: HypervisorFlavoursChartData;
+
     private _highcharts: typeof Highcharts = Highcharts;
+
 
     constructor(private readonly _apollo: Apollo) {
     }
@@ -157,16 +52,30 @@ export class HypervisorComponent implements OnInit, OnDestroy {
         this._devicePools = value;
     }
 
-    get vcpuChartData(): HypervisorChartData {
+    @Input()
+    set flavours(value: Flavour[]) {
+        this._flavours = value;
+    }
+
+
+    get instanceCount(): number {
+        return this._instanceCount;
+    }
+
+    get vcpuChartData(): HypervisorResourceChartData {
         return this._vcpuChartData;
     }
 
-    get ramChartData(): HypervisorChartData {
+    get ramChartData(): HypervisorResourceChartData {
         return this._ramChartData;
     }
 
-    get customChartData(): HypervisorChartData[] {
+    get customChartData(): HypervisorResourceChartData[] {
         return this._customChartData;
+    }
+
+    get flavoursChartData(): HypervisorFlavoursChartData {
+        return this._flavoursChartData;
     }
 
     get highcharts(): typeof Highcharts {
@@ -177,6 +86,7 @@ export class HypervisorComponent implements OnInit, OnDestroy {
         const cpuData = this._getResourceValue(this._hypervisor.resources, 'VCPU');
         const ramData = this._getResourceValue(this._hypervisor.resources, 'MEMORY_MB');
         const deviceResourceClasses = this._devicePools.map(devicePool => devicePool.resourceClass).filter(value => !!value);
+        const hypervisorResourceClasses = this._hypervisor.resources.map(resource => resource.resourceClass);
         const customResources = this._hypervisor.resources
             .filter(resource => !['VCPU', 'MEMORY_MB', 'DISK_GB'].includes(resource.resourceClass))
             .filter(resource => deviceResourceClasses.includes(resource.resourceClass));
@@ -184,47 +94,75 @@ export class HypervisorComponent implements OnInit, OnDestroy {
 
         this._customChartData = customResources.map(resource => {
             const device = this._devicePools.find(device => device.resourceClass === resource.resourceClass);
-            return new HypervisorChartData(device.name, resource.total, resource.usage, hypervisorEnabled);
+            return new HypervisorResourceChartData(device.name, resource.total, resource.usage, hypervisorEnabled);
         })
-        this._vcpuChartData = cpuData ? new HypervisorChartData('vCPU', cpuData.total, cpuData.usage, hypervisorEnabled) : null;
-        this._ramChartData = ramData ? new HypervisorChartData('RAM GB', ramData.total / 1024, ramData.usage / 1024, hypervisorEnabled) : null;
+        this._vcpuChartData = cpuData ? new HypervisorResourceChartData('vCPU', cpuData.total, cpuData.usage, hypervisorEnabled) : null;
+        this._ramChartData = ramData ? new HypervisorResourceChartData('RAM GB', ramData.total / 1024, ramData.usage / 1024, hypervisorEnabled) : null;
+
+        this._apollo.query<any>({
+            query: gql`
+                query hypervisor($hypervisorId: Int!) {
+                    hypervisor(id: $hypervisorId) {
+                        id
+                        allocations {
+                            serverComputeId
+                            instance {
+                                id
+                                name
+                                plan {
+                                    flavour {
+                                        id
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: { hypervisorId: this._hypervisor.id },
+        }).pipe(
+                map(({data}) => ({hypervisor: data.hypervisor})),
+                tap(() => this._loading = false)
+            )
+            .subscribe(({hypervisor}) => {
+                this._hypervisor.allocations = hypervisor.allocations;
+                this._instanceCount = hypervisor.allocations?.reduce((acc, current) => {
+                    acc = acc + (current.instance != null ? 1 : 0);
+                    return acc;
+                }, 0);
+
+                const flavourData: FlavourStats[] = cpuData ? this._flavours.map(flavour => {
+                    const instanceCount = hypervisor.allocations
+                        .filter(allocation => allocation.instance != null)
+                        .filter(allocation => allocation.instance.plan.flavour.id === flavour.id)
+                        .length;
+
+                    const ramUnitsAvailable = Math.floor((ramData.total - ramData.usage) / flavour.memory);
+                    const cpuUnitsAvailable = Math.floor((cpuData.total - cpuData.usage) / flavour.cpu);
+                    const customUnitsAvailable = flavour.devices
+                        .filter(device => device.devicePool.resourceClass != null)
+                        .map(device => {
+                            if (hypervisorResourceClasses.includes(device.devicePool.resourceClass)) {
+                                const resourceData = this._getResourceValue(this._hypervisor.resources, device.devicePool.resourceClass);
+                                return Math.floor(resourceData.total - resourceData.usage) / device.unitCount;
+
+                            } else {
+                                return 0;
+                            }
+                        });
 
 
-        // this._apollo.query<any>({
-        //     query: gql`
-        //         query hypervisors {
-        //             hypervisors {
-        //                 id
-        //                 computeId
-        //                 hostname
-        //                 state
-        //                 status
-        //                 cloudId
-        //                 resources {
-        //                     resourceClass
-        //                     total
-        //                     usage
-        //                 }
-        //                 allocations {
-        //                     serverComputeId
-        //                 }
-        //             }
-        //             devicePools {
-        //                 name
-        //                 resourceClass
-        //             }
-        //             cloudClients {
-        //                 id
-        //             }
-        //         }
-        //     `
-        //     }).pipe(
-        //         map(({data}) => ({hypervisors: data.hypervisors, cloudClients: data.cloudClients, devicePools: data.devicePools})),
-        //         tap(() => this._loading = false)
-        //     )
-        //     .subscribe(({hypervisors, cloudClients, devicePools}) => {
-        //
-        //     });
+                    const unitsAvailable = Math.min(cpuUnitsAvailable, ramUnitsAvailable, ...customUnitsAvailable);
+                    return {
+                        flavour,
+                        used: instanceCount,
+                        available: unitsAvailable,
+                    };
+                }) : null;
+
+                this._flavoursChartData = flavourData ? new HypervisorFlavoursChartData(flavourData, hypervisorEnabled) : null;
+            });
     }
 
     public hypervisorStateClass(hypervisor: Hypervisor) {

@@ -17,7 +17,11 @@
             </div>
 
             <div class="hypervisors-content">
-                <visa-admin-hypervisor *ngFor="let hypervisor of hypervisors" [hypervisor]="hypervisor" [devicePools]="devicePools"></visa-admin-hypervisor>
+                <visa-admin-hypervisor *ngFor="let hypervisor of hypervisors"
+                                       [hypervisor]="hypervisor"
+                                       [devicePools]="devicePools"
+                                       [flavours]="flavours">
+                </visa-admin-hypervisor>
             </div>
         </div>
     </div>

@@ -1,5 +1,4 @@
 .hypervisor {
-    width: 320px;
     min-height: 300px;
     height: 100%;
     display: flex;
@@ -16,9 +15,12 @@
     }
 
     &__content {
-        font-weight: 300;
-        font-size: 11pt;
-        line-height: 30px;
+        width: 640px;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: flex-start;
     }
 
     &__disabled {
@@ -52,7 +54,21 @@
     border-right-color: #f4f4f4;
 }
 
-.hypervisor-chart-container {
+.hypervisor-resources {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+
+    &__title {
+        font-size: 14px;
+        font-weight: 500;
+    }
+}
+
+.hypervisor-resource-chart-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -60,11 +76,11 @@
     flex-wrap: wrap;
 }
 
-.hypervisor-chart-holder {
+.hypervisor-resource-chart-holder {
     width: 140px;
 }
 
-.hypervisor-chart {
+.hypervisor-resource-chart {
     display: block;
     height: 140px;
 
@@ -75,6 +91,7 @@
         align-items: center;
         font-size: 9pt;
         color: #606060;
+        z-index: 0;
 
         &__disabled {
             color: #c0c0c0;
@@ -87,4 +104,25 @@
     }
 }
 
+.hypervisor-flavours {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+
+    &__title {
+        font-size: 14px;
+        font-weight: 500;
+    }
+}
+
+.hypervisor-flavours-chart-holder {
+    width: 300px;
+}
+
+.hypervisor-flavours-chart {
+    display: block;
+    height: 220px;
+}
 

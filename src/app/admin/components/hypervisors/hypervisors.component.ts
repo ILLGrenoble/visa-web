@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Title} from '@angular/platform-browser';
-import {Hypervisor, DevicePool} from '../../../core/graphql';
+import {Hypervisor, DevicePool, Flavour} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-hypervisors',
@@ -17,6 +17,7 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
     private _refresh$: Subject<void> = new Subject();
     private _hypervisors: Hypervisor[] = [];
     private _devicePools: DevicePool[] = [];
+    private _flavours: Flavour[] = [];
     private _loading: boolean;
     private _multiCloudEnabled = false;
 
@@ -34,6 +35,10 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
 
     get devicePools(): DevicePool[] {
         return this._devicePools;
+    }
+
+    get flavours(): Flavour[] {
+        return this._flavours;
     }
 
     get multiCloudEnabled(): boolean {
@@ -63,13 +68,24 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
                                     total
                                     usage
                                 }
-                                allocations {
-                                    serverComputeId
-                                }
                             }
                             devicePools {
                                 name
                                 resourceClass
+                            }
+                            flavours {
+                                id
+                                name
+                                memory
+                                cpu
+                                devices {
+                                    devicePool {
+                                        id
+                                        name
+                                        resourceClass
+                                    }
+                                    unitCount
+                                }
                             }
                             cloudClients {
                                 id
@@ -77,12 +93,13 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
                         }
                     `
                 })),
-                map(({data}) => ({hypervisors: data.hypervisors, cloudClients: data.cloudClients, devicePools: data.devicePools})),
+                map(({data}) => ({hypervisors: data.hypervisors, cloudClients: data.cloudClients, devicePools: data.devicePools, flavours: data.flavours})),
                 tap(() => this._loading = false)
             )
-            .subscribe(({hypervisors, cloudClients, devicePools}) => {
+            .subscribe(({hypervisors, cloudClients, devicePools, flavours}) => {
                 this._hypervisors = hypervisors;
                 this._devicePools = devicePools;
+                this._flavours = flavours;
 
                 this._multiCloudEnabled = cloudClients.length > 1 || hypervisors
                     .map((hypervisors) => hypervisors.cloudId || 0)
