@@ -129,6 +129,7 @@ export type Flavour = {
     memory: Scalars['Int'];
     cpu: Scalars['Int'];
     computeId: Scalars['String'];
+    cloudId: Maybe<Scalars['Int']>;
     devices?: Maybe<Array<Maybe<FlavourDevice>>>
     roleLifetimes?: Maybe<Array<Maybe<RoleLifetime>>>;
     cloudFlavour?: Maybe<CloudFlavour>;
@@ -182,6 +183,18 @@ export type Hypervisor = {
     allocations: Array<HypervisorAllocation>;
 }
 
+export type FlavourAvailability = {
+    date: Scalars['String'];
+    confidence: Scalars['String'];
+    units: Maybe<Scalars['Int']>;
+};
+
+export type FlavourAvailabilitiesFuture = {
+    flavour: Flavour;
+    confidence: Scalars['String'];
+    availabilities: Array<FlavourAvailability>;
+};
+
 export type FlavourDevice = {
     __typename?: 'FlavourDevice';
     devicePool: DevicePool;
@@ -219,6 +232,7 @@ export type Image = {
     secondaryVdiProtocol?: Maybe<ImageProtocol>;
     bootCommand: Scalars['String'];
     cloudClient?: Maybe<CloudClient>;
+    cloudId: Maybe<Scalars['Int']>;
     autoAcceptExtensionRequest: Maybe<Scalars['String']>;
 };
 
@@ -486,6 +500,8 @@ export type Query = {
     cloudResourceClasses: CloudResourceClassesResponse;
     /** Get all hypervisors */
     hypervisors: Array<Hypervisor>;
+    /** Get all flavour availabilities futures */
+    flavourAvailabilitiesFutures: Array<FlavourAvailabilitiesFuture>;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
@@ -737,7 +753,7 @@ export type SecurityGroup = {
     __typename?: 'SecurityGroup';
     id: Scalars['Int'];
     name: Scalars['String'];
-    cloudId: Scalars['Int'];
+    cloudId: Maybe<Scalars['Int']>;
     cloudClient?: Maybe<CloudClient>;
 };
 

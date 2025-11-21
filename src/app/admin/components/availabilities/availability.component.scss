@@ -1,0 +1,64 @@
+.availability {
+    height: 180px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: 1px solid #d5d5d5;
+    color: #606060;
+}
+
+.availability-details {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    &__title {
+        width: 100%;
+        text-align: center;
+        font-weight: 500;
+        font-size: 12pt;
+        line-height: 30px;
+    }
+
+
+    &__info {
+        width: 100%;
+        font-size: 10pt;
+        padding: 8px;
+    }
+}
+
+.flavour-detail-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 12px;
+    font-size: 10pt;
+
+    &__device {
+        margin-top: 12px;
+    }
+
+    .flavour-detail-title {
+        width: 70px;
+        font-weight: 500;
+        text-align: right;
+    }
+
+    .flavour-detail-value {
+    }
+}
+
+.availability-chart-holder {
+    width: 100%;
+}
+
+.availability-chart {
+    display: block;
+    height: 175px;
+}

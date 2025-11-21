@@ -15,8 +15,10 @@ import {
     SessionsComponent,
     UserComponent,
     ExtensionRequestsComponent,
+    HypervisorsComponent,
+    AvailabilitiesComponent,
     instanceActivate,
-    userActivate, HypervisorsComponent,
+    userActivate,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -37,6 +39,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'compute/sessions', component: SessionsComponent,
+            },
+            {
+                path: 'compute/availabilities', component: AvailabilitiesComponent,
             },
             {
                 path: 'compute/extension_requests', component: ExtensionRequestsComponent,

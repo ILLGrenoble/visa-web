@@ -1,0 +1,43 @@
+.availabilities-overview {
+}
+
+.availabilities-main {
+    margin: 0;
+}
+
+.availabilities-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.availabilities-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.availabilities-spinner {
+    height: 150px;
+    top: 16px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 999999;
+}
+
+.availabilities-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    row-gap: 16px;
+
+    &__button {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+    }
+}

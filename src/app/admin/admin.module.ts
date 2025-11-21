@@ -83,6 +83,8 @@ import {
     ExtensionRequestHandlerComponent,
     HypervisorsComponent,
     HypervisorComponent,
+    AvailabilitiesComponent,
+    AvailabilityComponent,
 } from './components';
 import {ClrSpinnerModule} from "@clr/angular";
 
@@ -165,6 +167,8 @@ import {ClrSpinnerModule} from "@clr/angular";
         ExtensionRequestHandlerComponent,
         HypervisorsComponent,
         HypervisorComponent,
+        AvailabilitiesComponent,
+        AvailabilityComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,

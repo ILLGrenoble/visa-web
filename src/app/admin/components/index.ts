@@ -46,3 +46,4 @@ export * from './application-credential-update';
 export * from './extension-requests';
 export * from './extension-request-handler';
 export * from './hypervisors';
+export * from './availabilities';

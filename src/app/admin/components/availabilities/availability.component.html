@@ -1,0 +1,42 @@
+
+<div class="availability">
+    <div class="availability-details">
+        <div class="availability-details__title">
+            {{flavour.name}}
+        </div>
+        <div class="availability-details__info">
+            <div class="flavour-detail-container">
+                <div class="flavour-detail-title">
+                    Processor:
+                </div>
+                <div class="flavour-detail-value">
+                    {{flavour.cpu}} CPU
+                </div>
+            </div>
+            <div class="flavour-detail-container">
+                <div class="flavour-detail-title">
+                    Memory:
+                </div>
+                <div class="flavour-detail-value">
+                    {{flavour.memory / 1024}} GB RAM
+                </div>
+            </div>
+            <div *ngFor="let flavourDevice of flavour.devices" class="flavour-detail-container flavour-detail-container__device">
+                <div class="flavour-detail-title">
+                </div>
+                <div class="flavour-detail-value">
+                    {{flavourDevice | flavourDevice}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="availability-chart-holder">
+        <highcharts-chart [options]="chartData.options"
+                          [Highcharts]="highcharts"
+                          [callbackFunction]="chartCallback"
+                          class="availability-chart">
+        </highcharts-chart>
+    </div>
+</div>
+

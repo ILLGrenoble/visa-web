@@ -1,0 +1,36 @@
+<visa-admin-header></visa-admin-header>
+<visa-compute-admin-header></visa-compute-admin-header>
+
+
+<div class="availabilities-spinner-outer" [hidden]="!loading">
+    <div class="availabilities-spinner">
+        <clr-spinner></clr-spinner>
+    </div>
+</div>
+
+<div *ngIf="!loading" class="availabilities-overview">
+    <div class="admin-container flavours-main">
+        <div class="admin-container--main">
+
+            <clr-select-container *ngIf="multiCloudEnabled" style="margin-bottom: 16px; margin-top: 8px;">
+                <select clrSelect id="cloud" [(ngModel)]="selectedCloudClient">
+                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud provider' : ''}}</option>
+                </select>
+                <clr-control-helper>Please select the cloud provider</clr-control-helper>
+            </clr-select-container>
+
+            <div class="availabilities-header">
+                <h3 class="filters-box-title">Flavour Availabilities</h3>
+                <button type="button" class="btn btn-outline" [disabled]="resetDisabled" (click)="resetCharts()">Reset charts</button>
+            </div>
+
+            <div class="availabilities-content">
+                <visa-admin-availability *ngFor="let availability of availabilities"
+                                        [availability]="availability"
+                                        [axisData]="axisData$"
+                                        [reset]="resetCharts$">
+                </visa-admin-availability>
+            </div>
+        </div>
+    </div>
+</div>
