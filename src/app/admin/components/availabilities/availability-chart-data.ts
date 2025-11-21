@@ -33,7 +33,7 @@ export class AvailabilityChartData {
                 month: '%b %Y',
                 year: '%Y'
             },
-            tickPixelInterval: 150,
+            tickPixelInterval: 200,
             labels: {
                 style: {
                     fontSize: 12,
