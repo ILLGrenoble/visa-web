@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Title} from '@angular/platform-browser';
-import {Hypervisor, DevicePool, Flavour, CloudClient, FlavourAvailabilitiesFuture} from '../../../core/graphql';
+import {CloudClient, FlavourAvailabilitiesFuture} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-availabilities',
@@ -97,7 +97,8 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
                                 availabilities {
                                     date
                                     confidence
-                                    units
+                                    availableUnits
+                                    totalUnits
                                 }
                             }
                             cloudClients {

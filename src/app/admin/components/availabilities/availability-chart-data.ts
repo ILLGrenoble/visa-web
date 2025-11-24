@@ -63,7 +63,14 @@ export class AvailabilityChartData {
             tickColor: '#a0a0a0',
         },
         tooltip: {
-            // enabled: false,
+            shared: true,
+            formatter: function () {
+                const totalData = this.points[0];
+                const availableData = this.points[1];
+                const details = `<span style="color:${availableData.color}">\u25CF</span> Available instances: <b>${availableData.y}</b> / ${totalData.y}`;
+
+                return `<span style="font-size: 0.8em;">${availableData.series.name}</span><br/>${details}`;
+            },
         },
         plotOptions: {
             series: {
@@ -86,19 +93,24 @@ export class AvailabilityChartData {
     }
 
     constructor(flavour: Flavour, availabilities: FlavourAvailability[], private _axisData$: BehaviorSubject<{min: number, max: number}>) {
-        const data = availabilities.map(availability => {
-            return { x: Date.parse(availability.date), y: availability.units };
+        const availableData = availabilities.map(availability => {
+            return { x: Date.parse(availability.date), y: availability.availableUnits };
+        });
+        const totalData = availabilities.map(availability => {
+            return { x: Date.parse(availability.date), y: availability.totalUnits };
         });
 
-        const xMin = Math.min(...data.map(p => p.x));
-        const xMax = Math.max(...data.map(p => p.x)) + 24 * 60 * 60 * 1000;
-        const yMax = Math.max(...data.map(p => p.y)) * 1.1;
+        const xMin = Math.min(...availableData.map(p => p.x));
+        const xMax = Math.max(...availableData.map(p => p.x)) + 24 * 60 * 60 * 1000;
+        const yMax = Math.max(...totalData.map(p => p.y)) * 1.1;
         this._options.xAxis = {...this._options.xAxis, min: xMin, max: xMax};
         this._options.yAxis = {...this._options.yAxis, min: 0, max: yMax};
 
-        data.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].units})
+        availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits})
+        totalData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].totalUnits})
         this._options.series = [
-            {name: flavour.name, data: data },
+            {name: flavour.name, data: totalData, color: '#b0b0ff', fillColor: '#fcfcff', lineWidth: 1, dashStyle: 'LongDash'},
+            {name: flavour.name, data: availableData, color: '#00a65a', fillColor: '#edfbf1' },
         ];
 
     }

@@ -186,7 +186,8 @@ export type Hypervisor = {
 export type FlavourAvailability = {
     date: Scalars['String'];
     confidence: Scalars['String'];
-    units: Maybe<Scalars['Int']>;
+    availableUnits: Maybe<Scalars['Int']>;
+    totalUnits: Maybe<Scalars['Int']>;
 };
 
 export type FlavourAvailabilitiesFuture = {
