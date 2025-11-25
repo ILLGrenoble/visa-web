@@ -66,7 +66,7 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this._titleService.setTitle(`Availabilities | Cloud | Admin | VISA`);
+        this._titleService.setTitle(`Availabilities | Compute | Admin | VISA`);
         this._refresh$
             .pipe(
                 startWith(0),
