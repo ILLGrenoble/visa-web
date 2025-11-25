@@ -24,10 +24,12 @@
             </div>
 
             <div class="hypervisors-content">
-                <visa-admin-hypervisor *ngFor="let hypervisor of hypervisors"
+                <visa-admin-hypervisor *ngFor="let hypervisor of hypervisors; index as index"
                                        [hypervisor]="hypervisor"
+                                       [index]="index"
                                        [devicePools]="devicePools"
-                                       [flavours]="flavours">
+                                       [flavours]="flavours"
+                                       [selectedHypervisor$]="selectedHypervisor$">
                 </visa-admin-hypervisor>
             </div>
         </div>

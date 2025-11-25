@@ -30,12 +30,10 @@
 }
 
 .hypervisors-content {
-    //margin: 16px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    column-gap: 16px;
+    justify-content: flex-start;
+    align-items: flex-start;
     row-gap: 16px;
 }

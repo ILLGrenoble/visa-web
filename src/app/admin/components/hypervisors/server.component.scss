@@ -1,0 +1,80 @@
+.server {
+    width: 240px;
+    border: 1px solid #dfdfdf;
+    font-weight: 400;
+    font-size: 10pt;
+    color: #666;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: center;
+    cursor: pointer;
+
+    .server-header {
+        color: #0747a6;
+        font-weight: 500;
+        text-align: center;
+        border-bottom: 1px solid #dfdfdf;
+        padding: 12px 8px;
+        background-color: #f5f9ff;
+        width: 100%;
+
+        .server-name {
+            width: 100%;
+            margin-bottom: 2px;
+        }
+
+        .server-info {
+            width: 100%;
+            text-align: center;
+            font-size: 8pt;
+            line-height: 15px;
+            font-weight: 400;
+        }
+    }
+
+    .server-image {
+        text-align: center;
+        border-bottom: 1px solid #dfdfdf;
+        padding: 12px 8px;
+        width: 100%;
+    }
+
+
+    .server-flavour-details {
+        width: 100%;
+        border-bottom: 1px solid #dfdfdf;
+        text-align: center;
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        flex-grow: 2;
+    }
+
+    .server-flavour-title {
+        font-weight: 500;
+        text-align: center;
+        padding: 4px 8px;
+        width: 100%;
+        background-color: #fbfbfb;
+        font-size: 8pt;
+    }
+}
+
+.server__active {
+    border-top-width: 2px;
+    border-top-color: #00a65a;
+}
+
+.server__unready {
+    border-top-width: 2px;
+    border-top-color: #d56f08;
+}
+
+.server__error {
+    border-top-width: 2px;
+    border-top-color: #dd4b39;
+}

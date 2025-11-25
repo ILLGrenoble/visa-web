@@ -1,54 +1,75 @@
+<div class="hypervisor-container">
+    <div #hyperv class="hypervisor" [class]="hypervisorStateClass(hypervisor)" [ngClass]="{'hypervisor__disabled': hypervisor.status ==='disabled', 'hypervisor__down': hypervisor.state ==='down', 'hypervisor__selected': isSelected}" (click)="onClick()">
+        <div class="hypervisor__title">
+            {{hypervisor.hostname}}
+        </div>
+        <div class="hypervisor__content">
 
-<div class="hypervisor" [class]="hypervisorStateClass(hypervisor)" [ngClass]="{'hypervisor__disabled': hypervisor.status ==='disabled'}">
-    <div class="hypervisor__title">
-        {{hypervisor.hostname}}
+            <div class="hypervisor-resources">
+                <div class="hypervisor-resources__title">
+                    All resources:
+                </div>
+                <div class="hypervisor-resource-chart-container">
+                    <div *ngIf="vcpuChartData" class="hypervisor-resource-chart-holder">
+                        <highcharts-chart [options]="vcpuChartData.options"
+                                          [Highcharts]="highcharts"
+                                          class="hypervisor-resource-chart">
+                        </highcharts-chart>
+                    </div>
+                    <div *ngIf="ramChartData" class="hypervisor-resource-chart-holder">
+                        <highcharts-chart [options]="ramChartData.options"
+                                          [Highcharts]="highcharts"
+                                          class="hypervisor-resource-chart">
+                        </highcharts-chart>
+                    </div>
+                    <div *ngFor="let chartData of customChartData" class="hypervisor-resource-chart-holder">
+                        <highcharts-chart [options]="chartData.options"
+                                          [Highcharts]="highcharts"
+                                          class="hypervisor-resource-chart">
+                        </highcharts-chart>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hypervisor-flavours">
+                <div class="hypervisor-flavours__title">
+                    Resource usage:
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center; column-gap: 12px">
+                    <div>
+                        Server count: {{hypervisor.allocations?.length}}
+                    </div>
+                    <div>
+                        Instance count: {{instanceCount}}
+                    </div>
+                </div>
+                <div *ngIf="flavoursChartData" class="hypervisor-flavours-chart-holder">
+                    <highcharts-chart [options]="flavoursChartData.options"
+                                      [Highcharts]="highcharts"
+                                      class="hypervisor-flavours-chart">
+                    </highcharts-chart>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="hypervisor__content">
 
-        <div class="hypervisor-resources">
-            <div class="hypervisor-resources__title">
-                All resources:
-            </div>
-            <div class="hypervisor-resource-chart-container">
-                <div *ngIf="vcpuChartData" class="hypervisor-resource-chart-holder">
-                    <highcharts-chart [options]="vcpuChartData.options"
-                                      [Highcharts]="highcharts"
-                                      class="hypervisor-resource-chart">
-                    </highcharts-chart>
-                </div>
-                <div *ngIf="ramChartData" class="hypervisor-resource-chart-holder">
-                    <highcharts-chart [options]="ramChartData.options"
-                                      [Highcharts]="highcharts"
-                                      class="hypervisor-resource-chart">
-                    </highcharts-chart>
-                </div>
-                <div *ngFor="let chartData of customChartData" class="hypervisor-resource-chart-holder">
-                    <highcharts-chart [options]="chartData.options"
-                                      [Highcharts]="highcharts"
-                                      class="hypervisor-resource-chart">
-                    </highcharts-chart>
-                </div>
-            </div>
-        </div>
+    <div *ngIf="isSelected" class="hypervisor-instances-connect">
+        <div class="hypervisor-instances-connect-left"></div>
+        <div class="hypervisor-instances-connect-center"></div>
+        <div class="hypervisor-instances-connect-right"></div>
+    </div>
 
-        <div class="hypervisor-flavours">
-            <div class="hypervisor-flavours__title">
-                Resource usage:
+    <div #hypervinstances class="hypervisor-instances">
+        <div class="hypervisor-instances-content">
+            <div *ngIf="instanceCount == 0" class="hypervisor-instances-unknown">
+                No known instances on this hypervisor
             </div>
-            <div style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center; column-gap: 12px">
-                <div>
-                    Server count: {{hypervisor.allocations?.length}}
-                </div>
-                <div>
-                    Instance count: {{instanceCount}}
-                </div>
-            </div>
-            <div *ngIf="flavoursChartData" class="hypervisor-flavours-chart-holder">
-                <highcharts-chart [options]="flavoursChartData.options"
-                                  [Highcharts]="highcharts"
-                                  class="hypervisor-flavours-chart">
-                </highcharts-chart>
-            </div>
+            <visa-admin-server *ngFor="let instance of instances" [instance]="instance"></visa-admin-server>
         </div>
+    </div>
+
+</div>
+
+<div #hypervspacer class="hypervisor-instances-spacer">
 </div>
 

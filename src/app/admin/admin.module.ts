@@ -83,6 +83,7 @@ import {
     ExtensionRequestHandlerComponent,
     HypervisorsComponent,
     HypervisorComponent,
+    ServerComponent,
     AvailabilitiesComponent,
     AvailabilityComponent,
 } from './components';
@@ -167,6 +168,7 @@ import {ClrSpinnerModule} from "@clr/angular";
         ExtensionRequestHandlerComponent,
         HypervisorsComponent,
         HypervisorComponent,
+        ServerComponent,
         AvailabilitiesComponent,
         AvailabilityComponent,
         CloudDevicePipe,

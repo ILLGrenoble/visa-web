@@ -353,6 +353,7 @@ export enum InstanceState {
     Building = 'BUILDING',
     Starting = 'STARTING',
     Active = 'ACTIVE',
+    PartiallyActive = 'PARTIALLY_ACTIVE',
     Stopping = 'STOPPING',
     Stopped = 'STOPPED',
     Rebooting = 'REBOOTING',

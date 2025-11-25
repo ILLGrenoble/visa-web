@@ -1,0 +1,37 @@
+<div class="server" [class]="instanceStateClass()" (click)="onClick()">
+    <div class="server-header">
+        <div class="server-name">
+            {{ instance.name }} ({{instance.id}})
+        </div>
+        <div class="server-info">
+            {{ instance.owner.fullName }}
+        </div>
+        <div class="server-info">
+            {{ instance.createdAt | date:'dd/MM/yyyy'}} - {{ instance.terminationDate | date:'dd/MM/yyyy'}}
+        </div>
+        <div class="server-info">
+            {{ instance.state }}
+        </div>
+    </div>
+
+    <div class="server-image">
+        {{ instance.plan.image.name }} ({{ instance.plan.image.version }})
+    </div>
+    <div class="server-flavour-details">
+        <div>
+            <div>
+                {{ instance.plan.flavour.memory / 1024 }} GB RAM
+            </div>
+            <div>
+                {{ instance.plan.flavour.cpu }} vCPU
+            </div>
+            <div *ngFor="let device of instance.plan.flavour.devices">
+                {{ device | flavourDevice }}
+            </div>
+        </div>
+    </div>
+    <div class="server-flavour-title">
+        {{ instance.plan.flavour.name }}
+    </div>
+
+</div>

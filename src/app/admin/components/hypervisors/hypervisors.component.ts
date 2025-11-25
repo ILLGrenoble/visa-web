@@ -23,6 +23,7 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _multiCloudEnabled = false;
     private _selectedCloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
+    private _selectedHypervisor$: BehaviorSubject<Hypervisor> = new BehaviorSubject<Hypervisor>(null);
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _titleService: Title) {
@@ -60,6 +61,9 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
         this._selectedCloudClient$.next(value);
     }
 
+    get selectedHypervisor$(): BehaviorSubject<Hypervisor> {
+        return this._selectedHypervisor$;
+    }
 
     public ngOnInit(): void {
         this._titleService.setTitle(`Hypervisors | Cloud | Admin | VISA`);

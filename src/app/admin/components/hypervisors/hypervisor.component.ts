@@ -1,9 +1,19 @@
-import {Component, Input, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
-import {Subject} from 'rxjs';
+import {
+    AfterViewChecked,
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import {BehaviorSubject, fromEvent, Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import {Hypervisor, HypervisorResource, DevicePool, Flavour} from '../../../core/graphql';
+import {Hypervisor, HypervisorResource, DevicePool, Flavour, Instance} from '../../../core/graphql';
 import * as Highcharts from "highcharts";
-import {map, tap} from "rxjs/operators";
+import {filter, map, takeUntil, tap} from "rxjs/operators";
 import gql from "graphql-tag";
 import {HypervisorResourceChartData} from "./hypervisor-resource-chart-data";
 import {FlavourStats, HypervisorFlavoursChartData} from "./hypervisor-flavours-chart-data";
@@ -14,15 +24,20 @@ import {FlavourStats, HypervisorFlavoursChartData} from "./hypervisor-flavours-c
     styleUrls: ['./hypervisor.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class HypervisorComponent implements OnInit, OnDestroy {
+export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _loading: boolean;
     private _hypervisor: Hypervisor;
+    private _index: number = 0;
     private _devicePools: DevicePool[];
     private _flavours: Flavour[];
+    private _selectedHypervisor$: BehaviorSubject<Hypervisor>;
+    private _selectedHypervisor: Hypervisor;
+    private _isSelected: boolean = false;
 
     private _instanceCount: number;
+    private _instances: Instance[] = [];
 
     private _vcpuChartData: HypervisorResourceChartData;
     private _ramChartData: HypervisorResourceChartData;
@@ -31,9 +46,14 @@ export class HypervisorComponent implements OnInit, OnDestroy {
 
     private _highcharts: typeof Highcharts = Highcharts;
 
+    @ViewChild('hyperv') _hypervisorElement: ElementRef;
+    @ViewChild('hypervinstances') _instancesElement: ElementRef;
+    @ViewChild('hypervspacer') _spacerElement: ElementRef;
 
-    constructor(private readonly _apollo: Apollo) {
+    constructor(private readonly _apollo: Apollo,
+                private _el: ElementRef) {
     }
+
     get loading(): boolean {
         return this._loading;
     }
@@ -48,6 +68,11 @@ export class HypervisorComponent implements OnInit, OnDestroy {
     }
 
     @Input()
+    set index(index: number) {
+        this._index = index;
+    }
+
+    @Input()
     set devicePools(value: DevicePool[]) {
         this._devicePools = value;
     }
@@ -57,9 +82,25 @@ export class HypervisorComponent implements OnInit, OnDestroy {
         this._flavours = value;
     }
 
+    @Input()
+    set selectedHypervisor$(value: BehaviorSubject<Hypervisor>) {
+        this._selectedHypervisor$ = value;
+    }
+
+    get selectedHypervisor(): Hypervisor {
+        return this._selectedHypervisor;
+    }
+
+    get isSelected(): boolean {
+        return this._isSelected;
+    }
 
     get instanceCount(): number {
         return this._instanceCount;
+    }
+
+    get instances(): Instance[] {
+        return this._instances;
     }
 
     get vcpuChartData(): HypervisorResourceChartData {
@@ -109,10 +150,30 @@ export class HypervisorComponent implements OnInit, OnDestroy {
                             instance {
                                 id
                                 name
+                                createdAt
+                                terminationDate
+                                state
+                                owner {
+                                    fullName
+                                }
                                 plan {
+                                    image {
+                                        id
+                                        name
+                                        version
+                                    }
                                     flavour {
                                         id
                                         name
+                                        memory
+                                        cpu
+                                        devices {
+                                            devicePool {
+                                                id
+                                                name
+                                            }
+                                            unitCount
+                                        }
                                     }
                                 }
                             }
@@ -122,6 +183,7 @@ export class HypervisorComponent implements OnInit, OnDestroy {
             `,
             variables: { hypervisorId: this._hypervisor.id },
         }).pipe(
+                takeUntil(this._destroy$),
                 map(({data}) => ({hypervisor: data.hypervisor})),
                 tap(() => this._loading = false)
             )
@@ -131,6 +193,8 @@ export class HypervisorComponent implements OnInit, OnDestroy {
                     acc = acc + (current.instance != null ? 1 : 0);
                     return acc;
                 }, 0);
+                this._instances = hypervisor.allocations?.map(allocation => allocation.instance).filter(instance => !!instance);
+                this._instances.sort((i1, i2) => i1.id - i2.id);
 
                 const flavourData: FlavourStats[] = cpuData ? this._flavours.map(flavour => {
                     const instanceCount = hypervisor.allocations
@@ -163,15 +227,71 @@ export class HypervisorComponent implements OnInit, OnDestroy {
 
                 this._flavoursChartData = flavourData ? new HypervisorFlavoursChartData(flavourData, hypervisorEnabled) : null;
             });
+
+        this._selectedHypervisor$.pipe(
+        ).subscribe(hypervisor => {
+            this._selectedHypervisor = hypervisor;
+            if (this._selectedHypervisor == this._hypervisor) {
+                this._instancesElement.nativeElement.style.display = 'block';
+                this._spacerElement.nativeElement.style.display = 'block';
+                this._isSelected = true;
+            } else if (this._instancesElement) {
+                this._instancesElement.nativeElement.style.display = 'none';
+                this._spacerElement.nativeElement.style.display = 'none';
+                this._isSelected = false;
+            }
+        });
+
+        fromEvent(window, 'resize')
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((event: Event) => {
+                this.updateInstancesElement();
+            });
+    }
+
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
+    }
+
+    public ngAfterViewInit() {
+        this.updateInstancesElement();
+    }
+
+    public ngAfterViewChecked() {
+        this.updateInstancesElement();
     }
 
     public hypervisorStateClass(hypervisor: Hypervisor) {
         return `hypervisor__${hypervisor.state}_${hypervisor.status}`;
     }
 
-    public ngOnDestroy(): void {
-        this._destroy$.next(true);
-        this._destroy$.unsubscribe();
+    public onClick(): void {
+        if (this._hypervisor.state !== 'down') {
+            if (this._selectedHypervisor == this._hypervisor) {
+                this._selectedHypervisor$.next(null);
+
+            } else {
+                this._selectedHypervisor$.next(this._hypervisor);
+            }
+        }
+    }
+
+    private updateInstancesElement(): void {
+        const parentWidth = this._el.nativeElement.parentElement.clientWidth;
+        const width = this._el.nativeElement.clientWidth;
+        const height = this._hypervisorElement.nativeElement.clientHeight;
+
+        const columns = Math.floor(parentWidth / width);
+        const column = this._index % columns;
+
+        this._instancesElement.nativeElement.style.top = `${(height + 21)}px`;
+        this._instancesElement.nativeElement.style.left = `-${(column * width)}px`;
+        this._instancesElement.nativeElement.style.width = `${(columns * width) - 16}px`;
+
+        const instancesHeight = this._instancesElement.nativeElement.clientHeight;
+        this._spacerElement.nativeElement.style.height = `${(instancesHeight + 1)}px`;
+
     }
 
     private _getResourceValue(resources: HypervisorResource[], resourceClass: string) {
