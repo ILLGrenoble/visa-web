@@ -45,7 +45,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
     constructor(tunnel: WebXTunnel) {
         super();
-        this._client = new WebXClient(tunnel);
+        this._client = new WebXClient(tunnel, {display: {backgroundColor: '#272a31'}});
 
         this.setClientAdapter(new WebXClientAdapter(this._client));
     }
