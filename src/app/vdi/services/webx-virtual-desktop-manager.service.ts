@@ -2,7 +2,17 @@ import {ConnectionParameters, VirtualDesktopManager} from './virtual-desktop-man
 import {WebXClientAdapter } from './webx-virtual-desktop-adapters';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
-import {WebXClient, WebXDisplay, WebXStatsHandler, WebXTunnel, WebXMessage, WebXScreenInstruction, WebXScreenMessage, WebXConnectionStatus} from '@illgrenoble/webx-client';
+import {
+    WebXClient,
+    WebXDisplay,
+    WebXStatsHandler,
+    WebXTunnel,
+    WebXMessage,
+    WebXScreenInstruction,
+    WebXScreenMessage,
+    WebXConnectionStatus,
+    WebXKeyboardCombinationHandler
+} from '@illgrenoble/webx-client';
 
 class StatsHandler extends WebXStatsHandler {
 
@@ -202,6 +212,11 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
             .subscribe(this.onDataReceived);
 
         this._client.registerTracer('stats', this._statsHandler);
+        this._client.registerTracer('filter-toggle', new WebXKeyboardCombinationHandler([65362, 65362, 65362, 65364, 65364, 65364, 65361, 65363, 65361, 65363, 65506, 65506, 65506, 65293], () => {
+            const display = this._client.display;
+            display.filter = display.filter ? null : 'crt';
+        }));
+
         this._client.clipboardHandler = (clipboardContent: string) => {
             this.onRemoteClipboardData.next({ content: clipboardContent, event: 'received'});
         };
@@ -215,6 +230,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
         this._statsInterrupt$.next(true);
         this._client.unregisterTracer('stats');
+        this._client.unregisterTracer('filter-toggle');
         this._client.clipboardHandler = (clipboardContent: string) => {};
 
         window.removeEventListener('resize', this._resizeHandler);
