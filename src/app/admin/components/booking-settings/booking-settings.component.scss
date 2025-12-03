@@ -1,0 +1,77 @@
+.booking-settings-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.booking-settings-spinner {
+    height: 150px;
+    top: 16px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 999999;
+}
+.booking-settings-section {
+    margin-top: 24px;
+    color: #555;
+
+    &__title {
+        color: #444;
+        font-size: 1.5em;
+    }
+
+    &__details {
+        margin-top:8px;
+    }
+}
+
+.clr-control-label {
+    font-size: 1.0em;
+    color: #555;
+    font-weight: 400;
+}
+
+.booking-settings-flavours {
+    margin-left: 20px;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    clr-input-container label {
+        font-size: 0.9em;
+        width: 300px;
+        max-width: 300px;
+    }
+    clr-combobox-container label {
+        font-size: 0.9em;
+        width: 300px;
+        max-width: 300px;
+    }
+    .clr-control-container {
+        width: 400px;
+    }
+
+    .booking-settings-flavours-flavour {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.booking-settings-delete-role-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.booking-settings-configure-role-button {
+    margin-left: 21px;
+    margin-top: 24px;
+}
+
+.vertical-label {
+    display: inline-block;
+    //width: 250px;
+}

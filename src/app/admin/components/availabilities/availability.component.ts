@@ -23,7 +23,7 @@ export class AvailabilityComponent implements OnInit {
     private chart: Highcharts.Chart;
 
     chartCallback = (chart) => {
-        this.chart = chart; // keep reference
+        this.chart = chart;
     };
 
     constructor() {

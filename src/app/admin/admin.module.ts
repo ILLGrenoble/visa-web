@@ -30,6 +30,7 @@ import {
     FlavourDevicePipe,
     InstanceDeviceAllocationPipe,
     RoleLifetimePipe,
+    BookingHeaderComponent,
 } from './common';
 import {
     ApplicationCredentialDeleteComponent,
@@ -86,6 +87,7 @@ import {
     ServerComponent,
     AvailabilitiesComponent,
     AvailabilityComponent,
+    BookingSettingsComponent,
 } from './components';
 import {ClrSpinnerModule} from "@clr/angular";
 
@@ -103,6 +105,7 @@ import {ClrSpinnerModule} from "@clr/angular";
         CloudHeaderComponent,
         SettingsHeaderComponent,
         ComputeHeaderComponent,
+        BookingHeaderComponent,
         InstanceComponent,
         ImagesComponent,
         ImageEditComponent,
@@ -171,6 +174,7 @@ import {ClrSpinnerModule} from "@clr/angular";
         ServerComponent,
         AvailabilitiesComponent,
         AvailabilityComponent,
+        BookingSettingsComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,

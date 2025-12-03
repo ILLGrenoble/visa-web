@@ -1,6 +1,8 @@
 import {Routes} from '@angular/router';
 import {AuthenticatedContainerComponent} from '@shared';
 import {
+    instanceActivate,
+    userActivate,
     DashboardComponent,
     FlavoursComponent,
     ImagesComponent,
@@ -17,8 +19,7 @@ import {
     ExtensionRequestsComponent,
     HypervisorsComponent,
     AvailabilitiesComponent,
-    instanceActivate,
-    userActivate,
+    BookingSettingsComponent,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -39,9 +40,6 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'compute/sessions', component: SessionsComponent,
-            },
-            {
-                path: 'compute/availabilities', component: AvailabilitiesComponent,
             },
             {
                 path: 'compute/extension_requests', component: ExtensionRequestsComponent,
@@ -66,6 +64,12 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'cloud/security_groups', component: SecurityGroupsOverviewComponent,
+            },
+            {
+                path: 'booking/settings', component: BookingSettingsComponent,
+            },
+            {
+                path: 'booking/availabilities', component: AvailabilitiesComponent,
             },
             {
                 path: 'users', component: UsersComponent,

@@ -18,6 +18,10 @@
                     <clr-icon shape="cloud" class="is-solid"></clr-icon>
                     Cloud
                 </a>
+                <a href="" class="admin-tab" routerLink="/admin/booking/settings" [ngClass]="{'admin-tab--selected': routeStartsWith('/admin/booking')}">
+                    <clr-icon shape="star" class="is-solid"></clr-icon>
+                    Booking
+                </a>
                 <a href="" class="admin-tab" routerLink="/admin/users" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="users" class="is-solid"></clr-icon>
                     Users

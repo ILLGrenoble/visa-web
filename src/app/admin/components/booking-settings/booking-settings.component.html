@@ -1,0 +1,185 @@
+<visa-admin-header></visa-admin-header>
+<visa-booking-admin-header></visa-booking-admin-header>
+
+<div class="booking-settings-spinner-outer" [hidden]="!loading">
+    <div class="booking-settings-spinner">
+        <clr-spinner></clr-spinner>
+    </div>
+</div>
+
+<clr-modal [(clrModalOpen)]="showSaveBeforeCloudClientChangeModal" [clrModalClosable]="false">
+    <h3 class="modal-title">Save changes before changing cloud provider?</h3>
+    <div class="modal-body">
+        <p>You have unsaved changes.</p>
+        <p>Would you like to save them before changing cloud provider?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" (click)="continueWithoutSaveOnCloudClientChange()" class="btn btn-outline-warning">Continue without saving</button>
+        <button type="button" (click)="saveOnCloudClientChange()" class="btn btn-primary">Save</button>
+    </div>
+</clr-modal>
+
+<div [hidden]="loading" class="admin-container">
+    <div class="admin-container--main">
+        <h3>Booking Settings</h3>
+
+        <div *ngIf="multiCloudEnabled" class="booking-settings-section">
+            <clr-select-container style="margin-bottom: 16px; margin-top: 8px;">
+                <label for="cloud" class="clr-control-label clr-col-12 clr-col-md-2">Cloud Provider</label>
+                <select clrSelect id="cloud" [compareWith]="compareCloudClient" [(ngModel)]="selectedCloudClient" (change)="onCloudChange($event)">
+                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient? cloudClient.name + ' cloud provider' : ''}}</option>
+                </select>
+            </clr-select-container>
+        </div>
+
+        <form clrForm [formGroup]="form" clrLayout="horizontal">
+
+            <div class="booking-settings-section">
+                <div class="booking-settings-section__title">
+                    General Settings
+                </div>
+                <div class="booking-settings-section__details">
+                    The following settings provide global configuration of the booking system in VISA
+                </div>
+
+                <clr-input-container>
+                    <label for="enabled">Enabled</label>
+                    <input type="checkbox" clrInput clrToggle id="enabled" formControlName="enabled"/>
+                </clr-input-container>
+
+                <div *ngIf="bookingEnabled">
+
+                    <clr-combobox-container>
+                        <label for="roles">Available to following roles and groups</label>
+                        <clr-combobox clrMulti="true" id="roles" formControlName="roles">
+                            <ng-container *clrOptionSelected="let selected">
+                                {{selected?.name}}
+                            </ng-container>
+                            <clr-options>
+                                <clr-option *clrOptionItems="let role of roles;" [clrValue]="role">
+                                    {{role.name}}
+                                </clr-option>
+                            </clr-options>
+                        </clr-combobox>
+                        <clr-control-helper>Specify roles or groups that can make instance reservations (anyone can make reservations if none selected here)</clr-control-helper>
+                    </clr-combobox-container>
+
+                    <clr-combobox-container>
+                        <label for="flavours">Flavours that can be reserved</label>
+                        <clr-combobox clrMulti="true" id="flavour" formControlName="flavours">
+                            <ng-container *clrOptionSelected="let selected">
+                                {{selected?.name}}
+                            </ng-container>
+                            <clr-options>
+                                <clr-option *clrOptionItems="let flavour of flavours;" [clrValue]="flavour">
+                                    {{flavour.name}}
+                                </clr-option>
+                            </clr-options>
+                        </clr-combobox>
+                        <clr-control-helper>Specify flavours that can be reserved (all flavours available for reservation if none selected here)</clr-control-helper>
+                    </clr-combobox-container>
+
+                    <clr-input-container>
+                        <label for="maxInstances">Maximum number of instances that can be reserved</label>
+                        <input type="number" clrInput id="maxInstances" formControlName="maxInstances" class="form-control"/>
+                        <clr-control-helper>You can specify many instances users can reserve (limited only by available resources if no value entered)</clr-control-helper>
+                    </clr-input-container>
+
+                    <clr-input-container>
+                        <label for="maxAdvanceDays">Maximum number days in advance</label>
+                        <input type="number" clrInput id="maxDaysInAdvance" formControlName="maxDaysInAdvance" class="form-control"/>
+                        <clr-control-helper>You can specify how far in advance a reservation can be made (unlimited if no value entered)</clr-control-helper>
+                    </clr-input-container>
+
+                    <clr-input-container>
+                        <label for="maxDaysReservation">Maximum reservation period in days</label>
+                        <input type="number" clrInput id="maxDaysReservation" formControlName="maxDaysReservation" class="form-control"/>
+                        <clr-control-helper>You can specify a maximum number of days that a resource can be reserved for (unlimited if no value entered)</clr-control-helper>
+                    </clr-input-container>
+
+
+                </div>
+
+            </div>
+
+            <div *ngIf="bookingEnabled">
+                <div class="booking-settings-section">
+                    <div class="booking-settings-section__title">
+                        Flavour Settings
+                    </div>
+                    <div class="booking-settings-section__details">
+                        The following settings are used to enhance the general settings by providing specific configurations for each flavour. If a flavour isn't configured here then the general settings above will apply to it.
+                    </div>
+
+                    <div formArrayName="flavoursSettings">
+                        <ng-container *ngFor="let flavourControl of flavoursFormArray.controls; let i = index">
+                            <div [formGroupName]="i" class="booking-settings-flavours">
+                                <div>
+                                </div>
+
+                                <clr-combobox-container class="vertical-label">
+                                    <label for="flavour">Flavour</label>
+                                    <clr-combobox id="flavour" formControlName="flavour">
+                                        <clr-options>
+                                            <clr-option *clrOptionItems="let flavour of flavours; field: 'name'" [clrValue]="flavour">
+                                                {{flavour.name}}
+                                            </clr-option>
+                                        </clr-options>
+                                    </clr-combobox>
+                                </clr-combobox-container>
+
+                                <div formArrayName="roles">
+                                    <ng-container *ngFor="let roleControl of flavourControl.get('roles').controls; let j = index">
+                                        <div [formGroupName]="j" class="booking-settings-flavours">
+                                            <clr-combobox-container class="vertical-label">
+                                                <label for="flavourRole">Role</label>
+                                                <clr-combobox id="flavourRole" formControlName="role">
+                                                    <clr-options>
+                                                        <clr-option *clrOptionItems="let role of roles; field: 'name'" [clrValue]="role">
+                                                            {{role.name}}
+                                                        </clr-option>
+                                                    </clr-options>
+                                                </clr-combobox>
+                                            </clr-combobox-container>
+
+                                            <clr-input-container class="vertical-label">
+                                                <label for="flavourMaxInstances">Maximum number of instances</label>
+                                                <input id="flavourMaxInstances" clrInput formControlName="maxInstances" />
+                                                <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
+                                            </clr-input-container>
+
+                                            <clr-input-container class="vertical-label">
+                                                <label for="flavourMaxDaysReservation">Maximum reservation period in days</label>
+                                                <input id="flavourMaxDaysReservation" clrInput formControlName="maxDaysReservation" />
+                                                <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
+                                            </clr-input-container>
+
+                                            <div class="booking-settings-delete-role-button">
+                                                <button (click)="deleteRoleSettings(flavourControl, i, j)" class="btn btn-sm btn-warning-outline">Delete</button>
+                                            </div>
+                                        </div>
+
+                                    </ng-container>
+                                    <div class="booking-settings-configure-role-button">
+                                        <button (click)="addRoleSettings(flavourControl)" class="btn btn-sm btn-outline">Configure another role</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </div>
+
+                    <div class="booking-settings-section">
+                        <button (click)="addFlavourSettings()" class="btn btn-outline">Configure A Flavour</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="booking-settings-section">
+                <button (click)="saveSettings()" [disabled]="form.invalid || form.pristine" class="btn btn-primary">Save settings</button>
+            </div>
+        </form>
+
+    </div>
+</div>
