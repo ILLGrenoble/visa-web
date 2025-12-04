@@ -16,7 +16,6 @@ import {
 import {Role, Flavour, CloudClient, BookingFlavourRoleConfiguration} from "../../../core/graphql";
 import gql from "graphql-tag";
 import {map, takeUntil, tap} from "rxjs/operators";
-import {id} from "@cds/core/internal";
 
 
 @Component({
@@ -31,7 +30,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup = new FormGroup({
         enabled: new FormControl(false, Validators.required),
-        maxInstances: new FormControl(null),
+        maxInstancesPerReservation: new FormControl(null),
         maxDaysInAdvance: new FormControl(null),
         maxDaysReservation: new FormControl(null),
         roles: new FormControl([]),
@@ -228,26 +227,71 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     }
 
     protected saveSettings(): void {
-        const {enabled, maxInstances, maxDaysInAdvance, maxDaysReservation, roles, flavours, flavoursSettings} = this._form.value;
+        const {enabled, maxInstancesPerReservation, maxDaysInAdvance, maxDaysReservation, roles, flavours, flavoursSettings} = this._form.value;
 
         const flavourRoleConfigurations = flavoursSettings.flatMap(flavourSettings => {
             const {flavour, roles} = flavourSettings;
             return roles.map(roleSettings => {
-                const {id, role, maxInstances, maxDaysReservation} = roleSettings;
-                return {id, flavourId: flavour.id, roleId: role.id, maxInstances, maxDaysReservation};
+                const {role, maxInstancesPerReservation, maxDaysReservation} = roleSettings;
+                return {flavourId: flavour.id, roleId: role.id, maxInstancesPerReservation, maxDaysReservation};
             })
         });
 
-        const data = {
+        const input = {
             cloudId: this._selectedCloudClient.id,
             enabled,
-            maxInstances,
+            maxInstancesPerReservation,
             maxDaysInAdvance,
             maxDaysReservation,
             roleIds: roles.map(role => role.id),
             flavourIds: flavours.map(flavour => flavour.id),
             flavourRoleConfigurations
         }
+
+        this._apollo.mutate<any>({
+            mutation: gql`
+                mutation createOrUpdateBookingConfiguration($input: BookingConfigurationInput!){
+                    createOrUpdateBookingConfiguration(input: $input) {
+                        enabled
+                        maxInstancesPerReservation
+                        maxDaysInAdvance
+                        maxDaysReservation
+                        cloudId
+                        flavours {
+                            id
+                            name
+                        }
+                        roles {
+                            id
+                            name
+                        }
+                        flavourRoleConfigurations {
+                            flavour {
+                                id
+                                name
+                            }
+                            role {
+                                id
+                                name
+                            }
+                            maxInstancesPerReservation
+                            maxDaysReservation
+                        }
+                    }
+                }
+            `,
+            variables: {input},
+        }).pipe(
+            takeUntil(this._destroy$),
+            map(({data}) => data),
+        ).subscribe({
+            next: ({bookingConfigurationForCloudClient}) => {
+                this._notifierService.notify('success', 'Booking settings updated');
+            },
+            error: (error) => {
+                this._notifierService.notify('error', error);
+            }
+        });
     }
 
     private _loadSettings(): void {
@@ -323,7 +367,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
                 this._form.reset({
                     enabled: bookingConfiguration.enabled,
-                    maxInstances: bookingConfiguration.maxInstances,
+                    maxInstancesPerReservation: bookingConfiguration.maxInstancesPerReservation,
                     maxDaysInAdvance: bookingConfiguration.maxDaysInAdvance,
                     maxDaysReservation: bookingConfiguration.maxDaysReservation,
                     roles: bookingConfiguration.roles,
@@ -341,7 +385,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         } else {
             this._form.reset({
                 enabled: true,
-                maxInstances: null,
+                maxInstancesPerReservation: null,
                 maxDaysInAdvance: null,
                 maxDaysReservation: null,
                 roles: [],
@@ -351,17 +395,17 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    private _createFlavourSettingsGroup(flavour?: Flavour, role?: Role, maxInstances?: number, maxDaysReservation?: number): FormGroup {
+    private _createFlavourSettingsGroup(flavour?: Flavour, role?: Role, maxInstancesPerReservation?: number, maxDaysReservation?: number): FormGroup {
         return this._formBuilder.group({
             flavour: [flavour, [Validators.required, (control) => this._flavourRoleConfigFlavourValidator(control)]],
-            roles: this._formBuilder.array([this._createFlavourRoleSettingsGroup(role, maxInstances, maxDaysReservation)], (control) => this._flavourRolesValidator(control)),
+            roles: this._formBuilder.array([this._createFlavourRoleSettingsGroup(role, maxInstancesPerReservation, maxDaysReservation)], (control) => this._flavourRolesValidator(control)),
         });
     }
 
-    private _createFlavourRoleSettingsGroup(role?: Role, maxInstances?: number, maxDaysReservation?: number): FormGroup {
+    private _createFlavourRoleSettingsGroup(role?: Role, maxInstancesPerReservation?: number, maxDaysReservation?: number): FormGroup {
         return this._formBuilder.group({
             role: [role, [Validators.required, (control) => this._flavourRoleConfigRoleValidator(control)]],
-            maxInstances: [maxInstances],
+            maxInstancesPerReservation: [maxInstancesPerReservation],
             maxDaysReservation: [maxDaysReservation],
         });
     }
@@ -422,6 +466,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
     private _revalidateForm(control: AbstractControl): void {
         control.updateValueAndValidity({ onlySelf: true, emitEvent: true });
+        control.markAsTouched({ onlySelf: true });
 
         if (control instanceof FormGroup) {
             Object.values(control.controls).forEach(c => this._revalidateForm(c));

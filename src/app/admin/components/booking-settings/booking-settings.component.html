@@ -80,8 +80,8 @@
                     </clr-combobox-container>
 
                     <clr-input-container>
-                        <label for="maxInstances">Maximum number of instances that can be reserved</label>
-                        <input type="number" clrInput id="maxInstances" formControlName="maxInstances" class="form-control"/>
+                        <label for="maxInstancesPerReservation">Maximum number of instances that can be reserved</label>
+                        <input type="number" clrInput id="maxInstancesPerReservation" formControlName="maxInstancesPerReservation" class="form-control"/>
                         <clr-control-helper>You can specify many instances users can reserve in each booking (limited only by available resources if no value entered)</clr-control-helper>
                     </clr-input-container>
 
@@ -152,7 +152,7 @@
 
                                                 <clr-input-container class="vertical-label">
                                                     <label for="flavourMaxInstances">Maximum number of instances</label>
-                                                    <input id="flavourMaxInstances" clrInput formControlName="maxInstances" />
+                                                    <input id="flavourMaxInstances" clrInput formControlName="maxInstancesPerReservation" />
                                                     <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
                                                 </clr-input-container>
 

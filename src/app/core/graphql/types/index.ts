@@ -406,6 +406,24 @@ export type BookingConfiguration = {
     flavourRoleConfigurations: Array<BookingFlavourRoleConfiguration>;
 };
 
+export type BookingFlavourRoleConfigurationInput = {
+    flavourId: Flavour;
+    roleId?: Maybe<Scalars['Int']>;
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+}
+
+export type BookingConfigurationInput = {
+    enabled: Scalars['Boolean'];
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysInAdvance?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+    cloudId: Scalars['Int'];
+    flavourIds: Array<Scalars['Int']>;
+    roleIds: Array<Scalars['Int']>;
+    flavourRoleConfigurations: Array<BookingFlavourRoleConfigurationInput>;
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /** Create an image */
@@ -426,6 +444,8 @@ export type Mutation = {
     updateDevicePool: DevicePool;
     /** Delete a device pool */
     deleteDevicePool: DevicePool;
+    /** Create or update booking configuration */
+    createOrUpdateBookingConfiguration: BookingConfiguration;
     /** Create a plan */
     createPlan: Plan;
     /** Update a plan */
