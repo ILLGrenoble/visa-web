@@ -1,13 +1,21 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Role, Flavour, DevicePoolInput, CloudClient} from "../../../core/graphql";
+import {
+    AbstractControl,
+    FormArray,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    Validators
+} from "@angular/forms";
+import {Role, Flavour, CloudClient, BookingFlavourRoleConfiguration} from "../../../core/graphql";
 import gql from "graphql-tag";
-import {delay, map, takeUntil, tap} from "rxjs/operators";
+import {map, takeUntil, tap} from "rxjs/operators";
 import {id} from "@cds/core/internal";
 
 
@@ -22,18 +30,20 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     private _loading: boolean;
 
     private _form: FormGroup = new FormGroup({
-        enabled: new FormControl(true, Validators.required),
+        enabled: new FormControl(false, Validators.required),
         maxInstances: new FormControl(null),
         maxDaysInAdvance: new FormControl(null),
         maxDaysReservation: new FormControl(null),
         roles: new FormControl([]),
         flavours: new FormControl([]),
-        flavoursSettings: this._formBuilder.array([]),
+        flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
     });
 
     private _roles: Role[];
+    private _rolesForFlavourConfig: Role[] = [];
     private _allFlavours: Flavour[];
     private _flavours: Flavour[];
+    private _flavoursForConfig: Flavour[] = [];
     private _cloudClients: CloudClient[] = [];
     private _multiCloudEnabled = false;
     private _previousSelectedCloudClient: CloudClient;
@@ -42,7 +52,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
-                private readonly _dialog: MatDialog,
                 private readonly _formBuilder: FormBuilder,
                 private readonly _titleService: Title) {
     }
@@ -67,8 +76,16 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         return this._roles;
     }
 
+    get rolesForFlavourConfig(): Role[] {
+        return this._rolesForFlavourConfig;
+    }
+
     get flavours(): Flavour[] {
         return this._flavours;
+    }
+
+    get flavoursForConfig(): Flavour[] {
+        return this._flavoursForConfig;
     }
 
     get bookingEnabled(): boolean {
@@ -124,13 +141,22 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         ).subscribe(({flavours, roles, cloudClients}) => {
             this._allFlavours = flavours;
             this._roles = roles;
+            this._updateRolesForFlavourConfig();
             this._cloudClients = cloudClients;
             this._multiCloudEnabled = cloudClients.length > 1;
 
-            if (this._form.value.cloudClient == null) {
-                this._selectedCloudClient = cloudClients[0];
-            }
+            this._selectedCloudClient = cloudClients[0];
             this._loadSettings();
+        });
+
+        this._form.get('roles').valueChanges.subscribe(() => {
+            this._updateRolesForFlavourConfig();
+            this._revalidateForm(this.flavoursFormArray);
+        });
+
+        this._form.get('flavours').valueChanges.subscribe(() => {
+            this._updateFlavoursForConfig();
+            this._revalidateForm(this.flavoursFormArray);
         });
     }
 
@@ -166,6 +192,20 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         return cloudClient1.id === cloudClient2.id;
     }
 
+    protected compareRole(role1: Role, role2: Role): boolean {
+        if (role1 == null || role2 == null) {
+            return false;
+        }
+        return role1.id === role2.id;
+    }
+
+    protected compareFlavour(flavour1: Flavour, flavour2: Flavour): boolean {
+        if (flavour1 == null || flavour2 == null) {
+            return false;
+        }
+        return flavour1.id === flavour2.id;
+    }
+
     protected onCloudChange(): void {
         if (this._form.dirty && this._selectedCloudClient !== this._previousSelectedCloudClient) {
             this._showSaveBeforeCloudClientChangeModal = true;
@@ -190,7 +230,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     protected saveSettings(): void {
         const {enabled, maxInstances, maxDaysInAdvance, maxDaysReservation, roles, flavours, flavoursSettings} = this._form.value;
 
-        const flavourRoleSettings = flavoursSettings.flatMap(flavourSettings => {
+        const flavourRoleConfigurations = flavoursSettings.flatMap(flavourSettings => {
             const {flavour, roles} = flavourSettings;
             return roles.map(roleSettings => {
                 const {id, role, maxInstances, maxDaysReservation} = roleSettings;
@@ -206,7 +246,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             maxDaysReservation,
             roleIds: roles.map(role => role.id),
             flavourIds: flavours.map(flavour => flavour.id),
-            flavourRoleSettings
+            flavourRoleConfigurations
         }
     }
 
@@ -216,37 +256,86 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         if (this._selectedCloudClient) {
             this._apollo.query<any>({
                 query: gql`
-                query bookingSettings {
-                    flavours {
-                        id
-                        name
-                        cloudId
+                    query bookingSettings($cloudClientId: Int!) {
+                        bookingConfigurationForCloudClient(cloudClientId: $cloudClientId) {
+                            enabled
+                            maxInstancesPerReservation
+                            maxDaysInAdvance
+                            maxDaysReservation
+                            cloudId
+                            flavours {
+                                id
+                                name
+                            }
+                            roles {
+                                id
+                                name
+                            }
+                            flavourRoleConfigurations {
+                                flavour {
+                                    id
+                                    name
+                                }
+                                role {
+                                    id
+                                    name
+                                }
+                                maxInstancesPerReservation
+                                maxDaysReservation
+                            }
+                        }
                     }
-                    roles {
-                        id
-                        name
-                    }
-                    cloudClients {
-                        id
-                        name
-                    }
-                }
             `,
+                variables: {
+                    cloudClientId: this._selectedCloudClient.id,
+                }
             }).pipe(
                 takeUntil(this._destroy$),
                 map(({data}) => data),
                 tap(() => this._loading = false)
-            ).subscribe(({flavours, roles, cloudClients}) => {
-                this._form.reset({
-                    enabled: true,
-                    maxInstances: null,
+            ).subscribe(({bookingConfigurationForCloudClient}) => {
+                const bookingConfiguration = {
+                    enabled: false,
+                    maxInstancesPerReservation: null,
                     maxDaysInAdvance: null,
                     maxDaysReservation: null,
                     roles: [],
                     flavours: [],
-                    flavoursSettings: this._formBuilder.array([]),
+                    flavourRoleConfigurations: [],
+                    ...bookingConfigurationForCloudClient,
+                }
+
+                const flavoursSettings = bookingConfiguration.flavourRoleConfigurations.reduce((acc: FormGroup[], current: BookingFlavourRoleConfiguration) => {
+                    const {flavour, role, maxInstancesPerReservation, maxDaysReservation} = current;
+
+                    let flavourSettingsGroup = acc.find(formGroup => formGroup.value.flavour.id === flavour.id);
+                    if (flavourSettingsGroup == null) {
+                        flavourSettingsGroup = this._createFlavourSettingsGroup(flavour, role, maxInstancesPerReservation, maxDaysReservation);
+                        acc.push(flavourSettingsGroup);
+
+                    } else {
+                        const rolesArray = flavourSettingsGroup.get('roles') as FormArray;
+                        rolesArray.push(this._createFlavourRoleSettingsGroup(role, maxInstancesPerReservation, maxDaysReservation));
+                    }
+                    return acc;
+
+                }, []);
+
+                this._form.reset({
+                    enabled: bookingConfiguration.enabled,
+                    maxInstances: bookingConfiguration.maxInstances,
+                    maxDaysInAdvance: bookingConfiguration.maxDaysInAdvance,
+                    maxDaysReservation: bookingConfiguration.maxDaysReservation,
+                    roles: bookingConfiguration.roles,
+                    flavours: bookingConfiguration.flavours,
                 });
 
+                flavoursSettings.forEach(flavourSetting => {
+                    this.flavoursFormArray.push(flavourSetting);
+                });
+
+                this._updateRolesForFlavourConfig();
+                this._updateFlavoursForConfig();
             });
 
         } else {
@@ -257,26 +346,90 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                 maxDaysReservation: null,
                 roles: [],
                 flavours: [],
-                flavoursSettings: this._formBuilder.array([]),
+                flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
             });
         }
     }
 
-    private _createFlavourSettingsGroup(flavour?: Flavour): FormGroup {
+    private _createFlavourSettingsGroup(flavour?: Flavour, role?: Role, maxInstances?: number, maxDaysReservation?: number): FormGroup {
         return this._formBuilder.group({
-            flavour: [flavour, [Validators.required]],
-            roles: this._formBuilder.array([this._createFlavourRoleSettingsGroup()]),
+            flavour: [flavour, [Validators.required, (control) => this._flavourRoleConfigFlavourValidator(control)]],
+            roles: this._formBuilder.array([this._createFlavourRoleSettingsGroup(role, maxInstances, maxDaysReservation)], (control) => this._flavourRolesValidator(control)),
         });
     }
 
-    private _createFlavourRoleSettingsGroup(id?: number, role?: Role): FormGroup {
+    private _createFlavourRoleSettingsGroup(role?: Role, maxInstances?: number, maxDaysReservation?: number): FormGroup {
         return this._formBuilder.group({
-            id: [id],
-            role: [role, [Validators.required]],
-            maxInstances: [],
-            maxDaysReservation: [],
+            role: [role, [Validators.required, (control) => this._flavourRoleConfigRoleValidator(control)]],
+            maxInstances: [maxInstances],
+            maxDaysReservation: [maxDaysReservation],
         });
     }
 
+    private _updateRolesForFlavourConfig(): void {
+        const selectedRoles = this._form.value.roles as Role[];
+        if (selectedRoles.length == 0) {
+            this._rolesForFlavourConfig = [null, {id: 0, name: 'ALL', description: '', expiresAt: null}, ...this._roles];
+        } else {
+            this._rolesForFlavourConfig = [null, ...selectedRoles];
+        }
+    }
+
+    private _updateFlavoursForConfig(): void {
+        const selectedFlavours = this._form.value.flavours as Flavour[];
+        if (selectedFlavours.length == 0) {
+            this._flavoursForConfig = [null, ...this._flavours];
+        } else {
+            this._flavoursForConfig = [null, ...selectedFlavours];
+        }
+    }
+
+    private _flavourRoleConfigFlavourValidator(control: AbstractControl): ValidationErrors | null {
+        const flavour = control.value as Flavour;
+        if (flavour == null) {
+            return {flavourIsNull: true};
+        }
+        return this._flavoursForConfig.filter(flavour => !!flavour).map(flavour => flavour.id).includes(flavour?.id) ? null : {flavourUnavailable: true};
+    }
+
+    private _flavourRoleConfigRoleValidator(control: AbstractControl): ValidationErrors | null {
+        const role = control.value as Role;
+        if (role == null) {
+            return {roleIsNull: true};
+        }
+        return this._rolesForFlavourConfig.filter(role => !!role).map(role => role.id).includes(role?.id) ? null : {roleUnavailable: true};
+    }
+
+    private _flavoursValidator(control: AbstractControl): ValidationErrors | null {
+        const array = control as FormArray;
+
+        const flavourIds = array.controls.map(control => control.get('flavour')?.value)
+            .filter(flavour => !!flavour)
+            .map(flavour => flavour.id);
+        const hasDuplicates = new Set(flavourIds).size !== flavourIds.length;
+        return hasDuplicates ? {duplicatedFlavours: true} : null;
+    }
+
+    private _flavourRolesValidator(control: AbstractControl): ValidationErrors | null {
+        const array = control as FormArray;
+
+        const roleIds = array.controls.map(control => control.get('role')?.value)
+            .filter(role => !!role)
+            .map(role => role.id);
+        const hasDuplicates = new Set(roleIds).size !== roleIds.length;
+        return hasDuplicates ? {duplicatedRoles: true} : null;
+    }
+
+    private _revalidateForm(control: AbstractControl): void {
+        control.updateValueAndValidity({ onlySelf: true, emitEvent: true });
+
+        if (control instanceof FormGroup) {
+            Object.values(control.controls).forEach(c => this._revalidateForm(c));
+        }
+
+        if (control instanceof FormArray) {
+            control.controls.forEach(c => this._revalidateForm(c));
+        }
+    }
 
 }

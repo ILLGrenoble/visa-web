@@ -48,6 +48,11 @@
         width: 300px;
         max-width: 300px;
     }
+    clr-select-container label {
+        font-size: 0.9em;
+        width: 300px;
+        max-width: 300px;
+    }
     .clr-control-container {
         width: 400px;
     }
@@ -58,6 +63,12 @@
         align-items: center;
         justify-content: space-between;
     }
+}
+
+.booking-settings-flavours-error {
+    color: #c21d00;
+    font-size: 0.9em;
+    margin-left: 20px;
 }
 
 .booking-settings-delete-role-button {

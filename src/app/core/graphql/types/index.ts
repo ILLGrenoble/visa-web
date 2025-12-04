@@ -388,6 +388,24 @@ export type Message = {
     message: Scalars['String'];
 };
 
+export type BookingFlavourRoleConfiguration = {
+    flavour: Flavour;
+    role?: Maybe<Role>;
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+}
+
+export type BookingConfiguration = {
+    enabled: Scalars['Boolean'];
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysInAdvance?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+    cloudId: Scalars['Int'];
+    flavours: Array<Flavour>;
+    roles: Array<Role>;
+    flavourRoleConfigurations: Array<BookingFlavourRoleConfiguration>;
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /** Create an image */
@@ -424,8 +442,6 @@ export type Mutation = {
     deleteInstance: Message;
     /** Update an instance termination date */
     updateInstanceTerminationDate: Message;
-    /** Determine if hypervisors are available */
-    hypervisorsAvailable: boolean;
 };
 
 
@@ -500,10 +516,14 @@ export type Query = {
     devicePools: Array<DevicePool>;
     /** Get all cloud resource classes */
     cloudResourceClasses: CloudResourceClassesResponse;
+    /** Determine if hypervisors are available */
+    hypervisorsAvailable: boolean;
     /** Get all hypervisors */
     hypervisors: Array<Hypervisor>;
     /** Get all flavour availabilities futures */
     flavourAvailabilitiesFutures: Array<FlavourAvailabilitiesFuture>;
+    /** Get booking configuration for a cloud client*/
+    bookingConfigurationForCloudClient: BookingConfiguration;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */

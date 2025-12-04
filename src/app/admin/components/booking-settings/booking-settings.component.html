@@ -82,7 +82,7 @@
                     <clr-input-container>
                         <label for="maxInstances">Maximum number of instances that can be reserved</label>
                         <input type="number" clrInput id="maxInstances" formControlName="maxInstances" class="form-control"/>
-                        <clr-control-helper>You can specify many instances users can reserve (limited only by available resources if no value entered)</clr-control-helper>
+                        <clr-control-helper>You can specify many instances users can reserve in each booking (limited only by available resources if no value entered)</clr-control-helper>
                     </clr-input-container>
 
                     <clr-input-container>
@@ -116,56 +116,74 @@
                             <div [formGroupName]="i" class="booking-settings-flavours">
                                 <div>
                                 </div>
-
-                                <clr-combobox-container class="vertical-label">
+                                <clr-select-container class="vertical-label">
                                     <label for="flavour">Flavour</label>
-                                    <clr-combobox id="flavour" formControlName="flavour">
-                                        <clr-options>
-                                            <clr-option *clrOptionItems="let flavour of flavours; field: 'name'" [clrValue]="flavour">
-                                                {{flavour.name}}
-                                            </clr-option>
-                                        </clr-options>
-                                    </clr-combobox>
-                                </clr-combobox-container>
+                                    <select clrSelect id="flavour" formControlName="flavour" [compareWith]="compareFlavour">
+                                        <option *ngFor="let flavour of flavoursForConfig" [ngValue]="flavour">
+                                            {{flavour?.name}}
+                                        </option>
+                                    </select>
+                                    <clr-control-error *ngIf="flavourControl.get('flavour')?.errors?.flavourIsNull">
+                                        Flavour must be specified
+                                    </clr-control-error>
+                                    <clr-control-error *ngIf="flavourControl.get('flavour')?.errors?.flavourUnavailable">
+                                        Configured flavour is unavailable in the general settings
+                                    </clr-control-error>
+                                </clr-select-container>
 
                                 <div formArrayName="roles">
                                     <ng-container *ngFor="let roleControl of flavourControl.get('roles').controls; let j = index">
-                                        <div [formGroupName]="j" class="booking-settings-flavours">
-                                            <clr-combobox-container class="vertical-label">
-                                                <label for="flavourRole">Role</label>
-                                                <clr-combobox id="flavourRole" formControlName="role">
-                                                    <clr-options>
-                                                        <clr-option *clrOptionItems="let role of roles; field: 'name'" [clrValue]="role">
-                                                            {{role.name}}
-                                                        </clr-option>
-                                                    </clr-options>
-                                                </clr-combobox>
-                                            </clr-combobox-container>
+                                        <div [formGroupName]="j">
+                                            <div class="booking-settings-flavours">
+                                                <clr-select-container class="vertical-label">
+                                                    <label for="flavourRole">Role</label>
+                                                    <select clrSelect id="flavourRole" formControlName="role" [compareWith]="compareRole">
+                                                        <option *ngFor="let role of rolesForFlavourConfig" [ngValue]="role">
+                                                            {{role?.name}}
+                                                        </option>
+                                                    </select>
+                                                    <clr-control-error *ngIf="roleControl.get('role')?.errors?.roleIsNull">
+                                                        Role must be specified
+                                                    </clr-control-error>
+                                                    <clr-control-error *ngIf="roleControl.get('role')?.errors?.roleUnavailable">
+                                                        Configured role is unavailable in the general settings
+                                                    </clr-control-error>
+                                                </clr-select-container>
 
-                                            <clr-input-container class="vertical-label">
-                                                <label for="flavourMaxInstances">Maximum number of instances</label>
-                                                <input id="flavourMaxInstances" clrInput formControlName="maxInstances" />
-                                                <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
-                                            </clr-input-container>
+                                                <clr-input-container class="vertical-label">
+                                                    <label for="flavourMaxInstances">Maximum number of instances</label>
+                                                    <input id="flavourMaxInstances" clrInput formControlName="maxInstances" />
+                                                    <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
+                                                </clr-input-container>
 
-                                            <clr-input-container class="vertical-label">
-                                                <label for="flavourMaxDaysReservation">Maximum reservation period in days</label>
-                                                <input id="flavourMaxDaysReservation" clrInput formControlName="maxDaysReservation" />
-                                                <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
-                                            </clr-input-container>
+                                                <clr-input-container class="vertical-label">
+                                                    <label for="flavourMaxDaysReservation">Maximum reservation period in days</label>
+                                                    <input id="flavourMaxDaysReservation" clrInput formControlName="maxDaysReservation" />
+                                                    <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
+                                                </clr-input-container>
 
-                                            <div class="booking-settings-delete-role-button">
-                                                <button (click)="deleteRoleSettings(flavourControl, i, j)" class="btn btn-sm btn-warning-outline">Delete</button>
+                                                <div class="booking-settings-delete-role-button">
+                                                    <button (click)="deleteRoleSettings(flavourControl, i, j)" class="btn btn-sm btn-warning-outline">Delete</button>
+                                                </div>
                                             </div>
                                         </div>
 
                                     </ng-container>
+
+                                    <div *ngIf="flavourControl.get('roles').errors?.duplicatedRoles" class="booking-settings-flavours-error">
+                                        Duplicate roles are not allowed.
+                                    </div>
+
                                     <div class="booking-settings-configure-role-button">
                                         <button (click)="addRoleSettings(flavourControl)" class="btn btn-sm btn-outline">Configure another role</button>
                                     </div>
                                 </div>
                             </div>
                         </ng-container>
+
+                        <div *ngIf="flavoursFormArray.errors?.duplicatedFlavours" class="booking-settings-flavours-error">
+                            Duplicate flavours are not allowed.
+                        </div>
 
                     </div>
 
