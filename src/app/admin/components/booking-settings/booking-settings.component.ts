@@ -13,7 +13,13 @@ import {
     ValidationErrors,
     Validators
 } from "@angular/forms";
-import {Role, Flavour, CloudClient, BookingFlavourRoleConfiguration} from "../../../core/graphql";
+import {
+    Role,
+    Flavour,
+    CloudClient,
+    BookingFlavourRoleConfiguration,
+     BookingConfiguration
+} from "../../../core/graphql";
 import gql from "graphql-tag";
 import {map, takeUntil, tap} from "rxjs/operators";
 
@@ -38,6 +44,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
     });
 
+    private _allUserRole = {id: null, name: 'ALL USERS', description: '', expiresAt: null};
     private _roles: Role[];
     private _rolesForFlavourConfig: Role[] = [];
     private _allFlavours: Flavour[];
@@ -182,6 +189,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         if (rolesArray.length == 0) {
             this.flavoursFormArray.removeAt(flavoursArrayIndex);
         }
+        this._form.markAsDirty();
     }
 
     protected compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
@@ -233,18 +241,23 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             const {flavour, roles} = flavourSettings;
             return roles.map(roleSettings => {
                 const {role, maxInstancesPerReservation, maxDaysReservation} = roleSettings;
-                return {flavourId: flavour.id, roleId: role.id, maxInstancesPerReservation, maxDaysReservation};
+                return {
+                    flavourId: flavour.id,
+                    roleId: role.id,
+                    maxInstancesPerReservation: maxInstancesPerReservation ? maxInstancesPerReservation : null,
+                    maxDaysReservation: maxDaysReservation ? maxDaysReservation : null,
+                };
             })
         });
 
         const input = {
             cloudId: this._selectedCloudClient.id,
             enabled,
-            maxInstancesPerReservation,
-            maxDaysInAdvance,
-            maxDaysReservation,
-            roleIds: roles.map(role => role.id),
-            flavourIds: flavours.map(flavour => flavour.id),
+            maxInstancesPerReservation: maxInstancesPerReservation ? maxInstancesPerReservation : null,
+            maxDaysInAdvance : maxDaysInAdvance ? maxDaysInAdvance : null,
+            maxDaysReservation : maxDaysReservation ? maxDaysReservation : null,
+            roleIds: (roles || []).map(role => role.id),
+            flavourIds: (flavours || []).map(flavour => flavour.id),
             flavourRoleConfigurations
         }
 
@@ -285,7 +298,8 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             takeUntil(this._destroy$),
             map(({data}) => data),
         ).subscribe({
-            next: ({bookingConfigurationForCloudClient}) => {
+            next: ({createOrUpdateBookingConfiguration}) => {
+                this._resetForm(createOrUpdateBookingConfiguration);
                 this._notifierService.notify('success', 'Booking settings updated');
             },
             error: (error) => {
@@ -338,61 +352,60 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                 map(({data}) => data),
                 tap(() => this._loading = false)
             ).subscribe(({bookingConfigurationForCloudClient}) => {
-                const bookingConfiguration = {
-                    enabled: false,
-                    maxInstancesPerReservation: null,
-                    maxDaysInAdvance: null,
-                    maxDaysReservation: null,
-                    roles: [],
-                    flavours: [],
-                    flavourRoleConfigurations: [],
-                    ...bookingConfigurationForCloudClient,
-                }
-
-                const flavoursSettings = bookingConfiguration.flavourRoleConfigurations.reduce((acc: FormGroup[], current: BookingFlavourRoleConfiguration) => {
-                    const {flavour, role, maxInstancesPerReservation, maxDaysReservation} = current;
-
-                    let flavourSettingsGroup = acc.find(formGroup => formGroup.value.flavour.id === flavour.id);
-                    if (flavourSettingsGroup == null) {
-                        flavourSettingsGroup = this._createFlavourSettingsGroup(flavour, role, maxInstancesPerReservation, maxDaysReservation);
-                        acc.push(flavourSettingsGroup);
-
-                    } else {
-                        const rolesArray = flavourSettingsGroup.get('roles') as FormArray;
-                        rolesArray.push(this._createFlavourRoleSettingsGroup(role, maxInstancesPerReservation, maxDaysReservation));
-                    }
-                    return acc;
-
-                }, []);
-
-                this._form.reset({
-                    enabled: bookingConfiguration.enabled,
-                    maxInstancesPerReservation: bookingConfiguration.maxInstancesPerReservation,
-                    maxDaysInAdvance: bookingConfiguration.maxDaysInAdvance,
-                    maxDaysReservation: bookingConfiguration.maxDaysReservation,
-                    roles: bookingConfiguration.roles,
-                    flavours: bookingConfiguration.flavours,
-                });
-
-                flavoursSettings.forEach(flavourSetting => {
-                    this.flavoursFormArray.push(flavourSetting);
-                });
-
-                this._updateRolesForFlavourConfig();
-                this._updateFlavoursForConfig();
+                this._resetForm(bookingConfigurationForCloudClient);
             });
 
         } else {
-            this._form.reset({
-                enabled: true,
-                maxInstancesPerReservation: null,
-                maxDaysInAdvance: null,
-                maxDaysReservation: null,
-                roles: [],
-                flavours: [],
-                flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
-            });
+            this._resetForm(null);
         }
+    }
+
+    private _resetForm(bookingConfiguration: BookingConfiguration) {
+        bookingConfiguration = {
+            enabled: false,
+            maxInstancesPerReservation: null,
+            maxDaysInAdvance: null,
+            maxDaysReservation: null,
+            roles: [],
+            flavours: [],
+            flavourRoleConfigurations: [],
+            ...bookingConfiguration,
+        }
+
+        const flavoursSettings = bookingConfiguration.flavourRoleConfigurations.reduce((acc: FormGroup[], current: BookingFlavourRoleConfiguration) => {
+            const {flavour, role, maxInstancesPerReservation, maxDaysReservation} = current;
+
+            let flavourSettingsGroup = acc.find(formGroup => formGroup.value.flavour.id === flavour.id);
+            if (flavourSettingsGroup == null) {
+                flavourSettingsGroup = this._createFlavourSettingsGroup(flavour, role, maxInstancesPerReservation, maxDaysReservation);
+                acc.push(flavourSettingsGroup);
+
+            } else {
+                const rolesArray = flavourSettingsGroup.get('roles') as FormArray;
+                rolesArray.push(this._createFlavourRoleSettingsGroup(role == null ? this._allUserRole : role, maxInstancesPerReservation, maxDaysReservation));
+            }
+            return acc;
+
+        }, []);
+
+        this._form.reset({
+            enabled: bookingConfiguration.enabled,
+            maxInstancesPerReservation: bookingConfiguration.maxInstancesPerReservation,
+            maxDaysInAdvance: bookingConfiguration.maxDaysInAdvance,
+            maxDaysReservation: bookingConfiguration.maxDaysReservation,
+            roles: bookingConfiguration.roles,
+            flavours: bookingConfiguration.flavours,
+            flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
+        });
+        this.flavoursFormArray.clear();
+
+        flavoursSettings.forEach(flavourSetting => {
+            this.flavoursFormArray.push(flavourSetting);
+        });
+
+        this._updateRolesForFlavourConfig();
+        this._updateFlavoursForConfig();
+
     }
 
     private _createFlavourSettingsGroup(flavour?: Flavour, role?: Role, maxInstancesPerReservation?: number, maxDaysReservation?: number): FormGroup {
@@ -411,16 +424,16 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     }
 
     private _updateRolesForFlavourConfig(): void {
-        const selectedRoles = this._form.value.roles as Role[];
+        const selectedRoles = this._form.get('roles').value || [] as Role[];
         if (selectedRoles.length == 0) {
-            this._rolesForFlavourConfig = [null, {id: 0, name: 'ALL', description: '', expiresAt: null}, ...this._roles];
+            this._rolesForFlavourConfig = [null, this._allUserRole, ...this._roles];
         } else {
             this._rolesForFlavourConfig = [null, ...selectedRoles];
         }
     }
 
     private _updateFlavoursForConfig(): void {
-        const selectedFlavours = this._form.value.flavours as Flavour[];
+        const selectedFlavours = this._form.get('flavours').value || [] as Flavour[];
         if (selectedFlavours.length == 0) {
             this._flavoursForConfig = [null, ...this._flavours];
         } else {
