@@ -20,6 +20,7 @@ import {
     InstrumentService,
     NotificationService,
     ObjectMapperService,
+    BookingService,
 } from './services';
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {InMemoryCache} from '@apollo/client/core';
@@ -59,6 +60,7 @@ import {InMemoryCache} from '@apollo/client/core';
         EventsGateway,
         NotificationService,
         DocumentationService,
+        BookingService,
         {
             provide: APP_INITIALIZER,
             useFactory: configServiceInitializerFactory,

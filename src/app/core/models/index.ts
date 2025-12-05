@@ -29,4 +29,5 @@ export * from './personal-access-token.model';
 export * from './device-pool.model';
 export * from './flavour-device.model';
 export * from './custom-flavour.model';
+export * from './booking-flavour-configuration.model';
 

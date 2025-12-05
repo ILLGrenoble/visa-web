@@ -110,6 +110,9 @@
                     <div class="booking-settings-section__details">
                         The following settings are used to enhance the general settings by providing specific configurations for each flavour. If a flavour isn't configured here then the general settings above will apply to it.
                     </div>
+                    <div class="booking-settings-section__details">
+                        For configured flavours below, only the roles specified will have access to it.
+                    </div>
 
                     <div formArrayName="flavoursSettings">
                         <ng-container *ngFor="let flavourControl of flavoursFormArray.controls; let i = index">
