@@ -1,6 +1,6 @@
-import {BookingFlavourConfiguration, User} from '../models';
+import {BookingUserConfiguration, User} from '../models';
 
 export interface AccountState {
     user: User;
-    bookingConfig: BookingFlavourConfiguration[];
+    bookingConfig: BookingUserConfiguration;
 }

@@ -4,7 +4,7 @@ import {AccountState, ApplicationState} from '../state';
 
 export const initialAccountState: AccountState = {
     user: null,
-    bookingConfig: [],
+    bookingConfig: null,
 };
 
 const reducer = createReducer(
@@ -13,7 +13,7 @@ const reducer = createReducer(
         return {...state, user, bookingConfig};
     }),
     on(AccountActions.loadAccount, () => initialAccountState),
-    on(AccountActions.clearAccount, (state) => ({...state, user: null, bookingConfig: []})),
+    on(AccountActions.clearAccount, (state) => ({...state, user: null, bookingConfig: null})),
 );
 
 export function accountReducer(state, action): AccountState {

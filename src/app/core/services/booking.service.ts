@@ -3,9 +3,7 @@ import {Injectable} from '@angular/core';
 import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {
-    BookingFlavourConfiguration,
-} from '../models';
+import {BookingUserConfiguration} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
 import {Response} from "./visa-response";
 
@@ -15,13 +13,13 @@ export class BookingService {
                 private objectMapper: ObjectMapperService) {
     }
 
-    public getConfig(): Observable<BookingFlavourConfiguration[]> {
+    public getConfig(): Observable<BookingUserConfiguration> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings/config`;
-        return this.http.get<Response<BookingFlavourConfiguration[]>>(url)
+        return this.http.get<Response<BookingUserConfiguration>>(url)
             .pipe(map((result) => {
                 const data = result.data;
-                return data.map(element => this.objectMapper.deserialize(element, BookingFlavourConfiguration))
+                return this.objectMapper.deserialize(data, BookingUserConfiguration);
             }));
     }
 
