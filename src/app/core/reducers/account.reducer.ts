@@ -24,3 +24,8 @@ export const selectLoggedInUser = createSelector(
     (state: ApplicationState) => state.account,
     (state: AccountState) => state.user,
 );
+
+export const selectUserBookingConfiguration = createSelector(
+    (state: ApplicationState) => state.account,
+    (state: AccountState) => state.bookingConfig,
+);

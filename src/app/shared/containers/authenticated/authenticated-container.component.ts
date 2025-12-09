@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     ApplicationState,
-    AuthenticationService, EventsGateway, GatewayEventSubscriber, NotificationPayload,
+    AuthenticationService, BookingUserConfiguration, EventsGateway, GatewayEventSubscriber, NotificationPayload,
     NotificationService,
-    selectLoggedInUser,
+    selectLoggedInUser, selectUserBookingConfiguration,
     SystemNotification,
     User,
 } from '@core';
@@ -23,6 +23,7 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
 
     private static DISMISSED_NOTIFICATIONS = 'authenticated.dismissed.notifications';
     public user$: Observable<User>;
+    public bookingConfig$: Observable<BookingUserConfiguration>;
     public systemNotifications: SystemNotification[] = [];
     public dismissedSystemNotifications: Array<number> = new Array<number>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
@@ -33,6 +34,7 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
                 store: Store<ApplicationState>,
                 private eventsGateway: EventsGateway) {
         this.user$ = store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1));
+        this.bookingConfig$ = store.select(selectUserBookingConfiguration).pipe(filter(bookingConfig => !!bookingConfig), take(1));
     }
 
     public ngOnInit(): void {

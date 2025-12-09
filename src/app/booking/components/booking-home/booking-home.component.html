@@ -1,0 +1,49 @@
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="title">
+            <h1>Instance reservations</h1>
+        </div>
+        <div class="actions">
+            <button class="btn btn-primary" [routerLink]="['/bookings/new']">Make a new booking</button>
+        </div>
+    </div>
+</div>
+
+<div class="content-small-container" [hidden]="bookings.length > 0">
+    <div class="information-panel">
+        <h4 class="information-panel-title">
+            What are Instance Reservations?
+        </h4>
+        <div class="information-panel-body">
+            <div>
+                Instance reservations allow you to foresee your data analysis needs in advance and request the required resources ahead of time.
+            </div>
+            <div>
+                You can reserve multiple instances with different resources (CPU, RAM, GPU, etc) for a given period of time and VISA will ensure that these are available when you need them.
+            </div>
+            <div>
+                The instances that you reserve are created using tokens that will be assigned to you once your reservation is accepted. Tokens are valid for the dates of your reservation.
+            </div>
+            <div>
+                You are free to distribute the tokens to your team or other people you are working with so that they can take advantage of the resources during the reservation period.
+            </div>
+        </div>
+    </div>
+    <div class="blankslate">
+        <div class="title">
+            <img src="/assets/images/booking-instance.png" alt="booking"/>
+            <h3>Looks like you don't have any instance reservations</h3>
+        </div>
+        <div class="description">
+            <p>Why not create one?</p>
+        </div>
+        <div class="actions">
+            <button class="btn btn-sm btn-primary" [routerLink]="['/bookings/new']">Make a new booking
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="bookings.length > 0">
+    <visa-booking-list [bookings]="bookings"></visa-booking-list>
+</div>
