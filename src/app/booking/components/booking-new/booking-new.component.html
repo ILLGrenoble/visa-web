@@ -6,6 +6,30 @@
     </div>
 </div>
 
+
+<clr-modal [(clrModalOpen)]="showSubmitModal" [clrModalClosable]="false">
+    <h3 class="modal-title">Processing reservation request</h3>
+    <div class="modal-body">
+        <div class="booking-new-spinner-outer" [hidden]="!sendingRequest">
+            <div>
+                <clr-spinner clrInline></clr-spinner>
+                <span style="margin-left: 24px; color: #666;">Your reservation request is being sent...</span>
+            </div>
+        </div>
+
+        <div *ngIf="requestErrors" class="booking-new-modal-fail">
+            The request was not successful:
+            <div *ngFor="let error of requestErrors" class="booking-new-modal-fail-error">
+                {{error}}
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer" *ngIf="!sendingRequest">
+        <button type="button" (click)="closeSubmitModal()" class="btn btn-outline">Continue</button>
+    </div>
+</clr-modal>
+
 <form clrForm [formGroup]="form" clrLayout="horizontal">
     <div class="content-container">
         <div class="content-area">

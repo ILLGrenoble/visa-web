@@ -2,7 +2,7 @@ import {SharedModule} from '@shared';
 import {NgModule} from '@angular/core';
 import {ROUTING} from './booking.routing';
 import {BookingHomeComponent, BookingListComponent, BookingNewComponent} from './components';
-import {ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule} from "@clr/angular";
+import {ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule, ClrModalModule, ClrSpinnerModule} from "@clr/angular";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgIf} from "@angular/common";
 
@@ -14,7 +14,9 @@ import {NgIf} from "@angular/common";
         ClrCommonFormsModule,
         ClrInputModule,
         ReactiveFormsModule,
-        NgIf
+        NgIf,
+        ClrModalModule,
+        ClrSpinnerModule
     ],
     declarations: [
         BookingHomeComponent,

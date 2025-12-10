@@ -8,9 +8,18 @@ import {
     ValidatorFn,
     Validators
 } from "@angular/forms";
-import {ApplicationState, BookingUserConfiguration, Flavour, selectUserBookingConfiguration} from "../../../core";
+import {
+    ApplicationState,
+    BookingRequestInput,
+    BookingService,
+    BookingUserConfiguration,
+    Flavour,
+    selectUserBookingConfiguration
+} from "../../../core";
 import {filter, take} from "rxjs/operators";
 import {Store} from "@ngrx/store";
+import {NotifierService} from "angular-notifier";
+import {Router} from "@angular/router";
 
 const toDateString = (date: Date): string => {
     const d = date.getDate().toString().padStart(2, '0');
@@ -48,6 +57,10 @@ export class BookingNewComponent implements OnInit {
     private _flavours: Flavour[];
 
     private _minStartDate = toDateString(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
+
+    private _showSubmitModal = false;
+    private _sendingRequest = false;
+    private _requestErrors: string[] = null;
 
     get form(): FormGroup {
         return this._form;
@@ -104,8 +117,27 @@ export class BookingNewComponent implements OnInit {
         return this._flavours;
     }
 
+    get showSubmitModal(): boolean {
+        return this._showSubmitModal;
+    }
+
+    set showSubmitModal(value: boolean) {
+        this._showSubmitModal = value;
+    }
+
+    get sendingRequest(): boolean {
+        return this._sendingRequest;
+    }
+
+    get requestErrors(): string[] {
+        return this._requestErrors;
+    }
+
     constructor(private _formBuilder: FormBuilder,
-                private _store: Store<ApplicationState>) {
+                private _store: Store<ApplicationState>,
+                private _notifierService: NotifierService,
+                private _router: Router,
+                private _bookingService: BookingService) {
     }
 
     ngOnInit(): void {
@@ -173,7 +205,44 @@ export class BookingNewComponent implements OnInit {
     }
 
     protected createBookingRequest(): void {
+        this._showSubmitModal = true;
+        this._sendingRequest = true;
 
+        const {comments, flavourRequests} = this._form.value;
+
+        const flavourRequestInputs = flavourRequests.map(flavourRequest => {
+            const {flavour, quantity} = flavourRequest;
+            return {flavourId: flavour.id, quantity};
+        });
+
+        const input: BookingRequestInput = {
+            startDate: toDateString(this._startDate),
+            endDate: toDateString(this._endDate),
+            comments,
+            flavourRequests: flavourRequestInputs,
+        }
+
+        this._bookingService.sendBookingRequest(input).subscribe({
+            next: ({data, errors}) => {
+                this._sendingRequest = false;
+                if (errors) {
+                    this._requestErrors = errors;
+                } else {
+                    this._notifierService.notify('success', 'Instance reservation request submitted');
+                    this._router.navigate(['bookings'], {replaceUrl: true});
+
+                }
+            },
+            error: error => {
+                this._sendingRequest = false;
+                this._requestErrors = [`Failed to send booking request: ${error.message}`];
+            }
+        })
+
+    }
+
+    protected closeSubmitModal(): void {
+        this._showSubmitModal = false;
     }
 
     protected getCpuView(flavour: Flavour): string {

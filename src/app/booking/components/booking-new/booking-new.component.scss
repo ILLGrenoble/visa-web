@@ -1,3 +1,11 @@
+.booking-new-spinner-outer {
+    margin-top: 20px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .clr-control-label {
     font-size: 1.0em;
@@ -200,5 +208,15 @@
             margin-bottom: 2px !important;
         }
 
+    }
+}
+
+.booking-new-modal-fail {
+    margin-top: 24px;
+    color: #444;
+
+    .booking-new-modal-fail-error {
+        margin-left: 16px;
+        color: #ed4e31;
     }
 }

@@ -3,9 +3,21 @@ import {Injectable} from '@angular/core';
 import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {BookingUserConfiguration} from '../models';
+import {BookingRequest, BookingUserConfiguration} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
 import {Response} from "./visa-response";
+
+export type BookingFlavourRequestInput = {
+    flavourId: number;
+    quantity: number;
+}
+
+export type BookingRequestInput = {
+    startDate: string;
+    endDate: string;
+    comments: string;
+    flavourRequests: BookingFlavourRequestInput[];
+}
 
 @Injectable()
 export class BookingService {
@@ -21,6 +33,19 @@ export class BookingService {
                 const data = result.data;
                 return this.objectMapper.deserialize(data, BookingUserConfiguration);
             }));
+    }
+
+    public sendBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings`;
+        return this.http.post<Response<BookingRequest>>(url, input)
+            .pipe(map((result) => {
+                if (result.data) {
+                    return {data: this.objectMapper.deserialize(result.data, BookingRequest)}
+                }
+                return {errors: result.errors}
+            }));
+
     }
 
 }
