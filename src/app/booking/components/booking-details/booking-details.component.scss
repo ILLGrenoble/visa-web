@@ -1,0 +1,217 @@
+
+$primary-color: #0747a6;
+$disabled-color: #dfdfdf;
+
+.booking-details-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 125px;
+    width: 100%;
+}
+
+.booking-details-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: flex-start;
+    color: #444;
+    margin-top: 24px;
+}
+
+.booking-details-header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: flex-start;
+}
+
+
+.booking-details-details {
+    flex-grow: 1;
+    flex-basis: 0;
+
+    .booking-details-name {
+        margin-top: 4px;
+        font-weight: 500;
+        font-size: 24px;
+    }
+
+    .booking-details-dates {
+        color: #0747a6;
+        margin-top: 16px;
+        font-weight: 400;
+        font-size: 24px;
+    }
+
+    .booking-details-created-at {
+        font-weight: 300;
+        font-size: 11px;
+    }
+
+    .booking-details-status {
+        margin-top: 10px;
+        font-weight: 400;
+        font-size: 15px;
+    }
+
+}
+
+.booking-details-history {
+    flex-grow: 1;
+    flex-basis: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+
+    .booking-details-history-title {
+        text-align: right;
+        font-size: 16px;
+    }
+
+
+    .booking-details-history-element {
+        margin-top: 4px;
+
+        .booking-details-history-title {
+            font-size: 11px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+            line-height: 14px;
+        }
+
+        .booking-details-history-comment {
+            font-size: 14px;
+        }
+    }
+}
+
+.booking-card-status-info {
+    margin-top: 32px;
+}
+
+.booking-details-resources {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .booking-details-resources-title {
+        margin-top: 24px;
+        font-size: 20px;
+    }
+}
+
+
+.booking-details-flavours {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    column-gap: 20px;
+    margin-top: 12px;
+
+    .flavour-box {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        width: 285px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+        color: #666;
+        border: 1px solid $primary-color;
+
+        .flavour-name {
+            text-align: center;
+            font-size: 13px;
+            outline: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 1px solid $primary-color;
+            color: #0747a6;
+            background: #f5f9ff;
+            padding: 10px 0;
+            height: 3rem;
+        }
+
+        .flavour-description {
+            flex-grow: 1;
+            background: #fff;
+            outline: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px 0;
+            color: #0747a6;
+
+            &__detail {
+                font-size: 14px;
+                font-weight: 500;
+                display: block;
+                margin: 0;
+            }
+
+            &__device-name {
+            }
+
+            &__device-description {
+                font-size: 8pt;
+                line-height: 10px;
+                font-weight: 400;
+                height: 10px;
+            }
+        }
+
+        .flavour-quantity {
+            border-top: 1px solid $primary-color;
+            background: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px 0;
+            color: #0747a6;
+            height: 3rem;
+
+            &__label {
+                font-size: 8pt;
+                line-height: 10px;
+                font-weight: 400;
+                height: 10px;
+            }
+        }
+    }
+}
+
+
+.booking-details-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .booking-details-actions-title {
+        margin-top: 24px;
+        font-size: 20px;
+    }
+
+    .booking-details-actions-buttons {
+        margin-top: 12px;
+    }
+}
+
+.booking-details-delete-modal {
+    margin-top: 20px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #444;
+}

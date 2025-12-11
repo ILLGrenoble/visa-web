@@ -115,6 +115,9 @@ export class BookingRequest {
     @JsonProperty('id', Number, true)
     private _id: number = undefined;
 
+    @JsonProperty('uid', String)
+    private _uid: string = undefined;
+
     @JsonProperty('name', String)
     private _name: string = undefined;
 
@@ -146,6 +149,14 @@ export class BookingRequest {
 
     set id(value: number) {
         this._id = value;
+    }
+
+    get uid(): string {
+        return this._uid;
+    }
+
+    set uid(value: string) {
+        this._uid = value;
     }
 
     get name(): string {

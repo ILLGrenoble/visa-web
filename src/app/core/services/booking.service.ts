@@ -47,6 +47,28 @@ export class BookingService {
             );
     }
 
+    public getBookingRequest(uid: string): Observable<BookingRequest> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/${uid}`;
+        return this.http.get<Response<BookingRequest>>(url)
+            .pipe(
+                map(({data}) => {
+                    return this.objectMapper.deserialize(data, BookingRequest);
+                })
+            );
+    }
+
+    public deleteBookingRequest(uid: string): Observable<BookingRequest> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/${uid}`;
+        return this.http.delete<Response<BookingRequest>>(url)
+            .pipe(
+                map(({data}) => {
+                    return this.objectMapper.deserialize(data, BookingRequest);
+                })
+            );
+    }
+
     public sendBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings`;

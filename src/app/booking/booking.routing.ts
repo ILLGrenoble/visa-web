@@ -1,6 +1,6 @@
 import {RouterModule, Routes} from '@angular/router';
 import {AuthenticatedContainerComponent} from '@shared';
-import {BookingHomeComponent, BookingNewComponent} from './components';
+import {BookingDetailsComponent, BookingHomeComponent, BookingNewComponent} from './components';
 
 export const ROUTES: Routes = [
     {
@@ -14,6 +14,10 @@ export const ROUTES: Routes = [
             {
                 path: 'new',
                 component: BookingNewComponent
+            },
+            {
+                path: ':uid',
+                component: BookingDetailsComponent
             },
         ]
     }
