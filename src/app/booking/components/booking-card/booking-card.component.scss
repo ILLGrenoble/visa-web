@@ -1,0 +1,142 @@
+
+$primary-color: #0747a6;
+$disabled-color: #dfdfdf;
+
+.booking-card-container {
+    margin-top: 36px;
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    cursor: pointer;
+
+    &:hover {
+        border: 1px solid #ddd;
+        background: #fefefe;
+    }
+}
+
+.booking-card-details {
+    flex-grow: 1;
+    flex-basis: 0;
+    text-align: center;
+
+    .booking-card-name {
+        margin-top: 4px;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .booking-card-dates {
+        color: #0747a6;
+        margin-top: 16px;
+        font-weight: 500;
+        font-size: 17px;
+    }
+
+    .booking-card-created-at {
+        font-weight: 300;
+        font-size: 11px;
+    }
+
+    .booking-card-status {
+        margin-top: 10px;
+        font-weight: 400;
+        font-size: 15px;
+        color: #444;
+    }
+
+}
+
+
+
+.booking-card-flavours {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+    flex-basis: 0;
+
+    .flavour-box {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: center;
+        color: #666;
+        border: 1px solid $primary-color;
+        width: 100%;
+
+        .flavour-name {
+            text-align: center;
+            font-size: 13px;
+            outline: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid $primary-color;
+            color: #0747a6;
+            background: #f5f9ff;
+            flex-grow: 1;
+            flex-basis: 0;
+            padding: 10px 0;
+        }
+
+        .flavour-description {
+            border-right: 1px solid $primary-color;
+            background: #fff;
+            outline: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-grow: 2;
+            flex-basis: 0;
+            padding: 10px 0;
+            color: #0747a6;
+
+            &__detail {
+                font-size: 14px;
+                font-weight: 500;
+                display: block;
+                margin: 0;
+            }
+
+            &__device-name {
+            }
+
+            &__device-description {
+                font-size: 8pt;
+                line-height: 10px;
+                font-weight: 400;
+                height: 10px;
+            }
+        }
+
+        .flavour-quantity {
+            background: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            outline: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            flex-basis: 0;
+            padding: 10px 0;
+            color: #0747a6;
+
+            &__label {
+                font-size: 8pt;
+                line-height: 10px;
+                font-weight: 400;
+                height: 10px;
+            }
+        }
+    }
+}

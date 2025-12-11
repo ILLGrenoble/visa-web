@@ -115,6 +115,9 @@ export class BookingRequest {
     @JsonProperty('id', Number, true)
     private _id: number = undefined;
 
+    @JsonProperty('name', String)
+    private _name: string = undefined;
+
     @JsonProperty('createdAt', DateConverter)
     private _createdAt: Date = undefined;
 
@@ -143,6 +146,14 @@ export class BookingRequest {
 
     set id(value: number) {
         this._id = value;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    set name(value: string) {
+        this._name = value;
     }
 
     get createdAt(): Date {

@@ -1,0 +1,54 @@
+<div class="booking-card-container">
+
+    <div class="booking-card-details">
+        <div class="booking-card-name">
+            {{ booking.name }}
+        </div>
+        <div class="booking-card-dates">
+            {{ booking.startDate | date:'dd MMM y' }} - {{ booking.endDate | date:'dd MMM y' }}
+        </div>
+        <div class="booking-card-created-at">
+            Created on {{booking.createdAt | date:'dd MMMM y HH:mm' }}
+        </div>
+        <div class="booking-card-status">
+            <div>
+                {{bookingStatus}}
+            </div>
+        </div>
+    </div>
+
+    <div class="booking-card-flavours">
+        <div *ngFor="let flavourRequest of booking.flavours" class="flavour-box">
+            <div class="flavour-name">
+                <div>
+                    {{flavourRequest.flavour.name}}
+                </div>
+            </div>
+            <div class="flavour-description">
+                <div class="flavour-description__detail">
+                    {{getCpuView(flavourRequest.flavour)}}
+                </div>
+                <div class="flavour-description__detail">
+                    {{getRamView(flavourRequest.flavour)}} memory
+                </div>
+                <div *ngFor="let device of flavourRequest.flavour.devices" class="flavour-description__detail">
+                    <div class="flavour-description__device-name">
+                        {{device.devicePool.name}}
+                    </div>
+                    <div *ngIf="device.devicePool.description" class="flavour-description__device-description">
+                        {{device.devicePool.description}}
+                    </div>
+                </div>
+            </div>
+            <div class="flavour-quantity">
+                <div class="flavour-quantity__label">
+                    Quantity
+                </div>
+                <div>
+                    {{flavourRequest.quantity}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -48,6 +48,7 @@ export class BookingNewComponent implements OnInit {
         startDate: new FormControl(null, Validators.required),
         endDate: new FormControl({value: null, disabled: true}, Validators.required),
         flavourRequests: this._formBuilder.array([], [Validators.required, minLengthArray(1)]),
+        name: new FormControl(null, Validators.required),
         comments: new FormControl(null, Validators.required),
     });
     private _startDate: Date;
@@ -207,8 +208,9 @@ export class BookingNewComponent implements OnInit {
     protected createBookingRequest(): void {
         this._showSubmitModal = true;
         this._sendingRequest = true;
+        this._requestErrors = null;
 
-        const {comments, flavourRequests} = this._form.value;
+        const {name, comments, flavourRequests} = this._form.value;
 
         const flavourRequestInputs = flavourRequests.map(flavourRequest => {
             const {flavour, quantity} = flavourRequest;
@@ -218,6 +220,7 @@ export class BookingNewComponent implements OnInit {
         const input: BookingRequestInput = {
             startDate: toDateString(this._startDate),
             endDate: toDateString(this._endDate),
+            name,
             comments,
             flavourRequests: flavourRequestInputs,
         }

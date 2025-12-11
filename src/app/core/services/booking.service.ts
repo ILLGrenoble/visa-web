@@ -15,6 +15,7 @@ export type BookingFlavourRequestInput = {
 export type BookingRequestInput = {
     startDate: string;
     endDate: string;
+    name: string;
     comments: string;
     flavourRequests: BookingFlavourRequestInput[];
 }
@@ -33,6 +34,17 @@ export class BookingService {
                 const data = result.data;
                 return this.objectMapper.deserialize(data, BookingUserConfiguration);
             }));
+    }
+
+    public getBookingRequests(): Observable<BookingRequest[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings`;
+        return this.http.get<Response<BookingRequest[]>>(url)
+            .pipe(
+                map(({data}) => {
+                    return data.map(element => this.objectMapper.deserialize(element, BookingRequest))
+                })
+            );
     }
 
     public sendBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {

@@ -9,6 +9,12 @@
     </div>
 </div>
 
+<div class="content-small-container" [hidden]="!loading">
+    <div class="booking-home-spinner">
+        <clr-spinner></clr-spinner>
+    </div>
+</div>
+
 <div class="content-small-container" [hidden]="bookings.length > 0">
     <div class="information-panel">
         <h4 class="information-panel-title">
@@ -44,6 +50,6 @@
     </div>
 </div>
 
-<div *ngIf="bookings.length > 0">
+<div *ngIf="bookings.length > 0" class="content-small-container">
     <visa-booking-list [bookings]="bookings"></visa-booking-list>
 </div>
