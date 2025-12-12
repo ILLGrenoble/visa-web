@@ -68,7 +68,6 @@
         justify-content: space-between;
         text-align: center;
         color: #666;
-        border: 1px solid $disabled-color;
         box-sizing: border-box;
         width: 260px;
         cursor: pointer;
@@ -79,8 +78,11 @@
 
         .flavour-details {
             text-align: center;
-            border-top: 1px solid $disabled-color;
+            border-left: 1px solid $disabled-color;
+            border-right: 1px solid $disabled-color;
+            border-bottom: 1px solid $disabled-color;
             font-size: 13px;
+            font-weight: 400;
             outline: 0;
             height: 3rem;
             display: flex;
@@ -90,6 +92,8 @@
 
         .flavour-button {
             color: inherit;
+            border: 1px solid $disabled-color;
+
             &__detail {
                 font-size: 16px;
                 font-weight: 600;
@@ -112,7 +116,6 @@
             background: #fff;
             width: 100%;
             outline: 0;
-            border: none;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -120,41 +123,82 @@
             padding: 20px 0;
         }
 
+
+        .flavour-availability {
+            height: 2.0rem;
+            border-left: 1px solid $disabled-color;
+            border-right: 1px solid $disabled-color;
+            border-bottom: 1px solid $disabled-color;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+
         &--selected {
-            border: 1px solid $primary-color;
             color: #0747a6;
 
+            .flavour-button {
+                border: 1px solid $primary-color;
+            }
+
             .flavour-details {
-                border-top: 1px solid $primary-color;
+                border-left: 1px solid $primary-color;
+                border-right: 1px solid $primary-color;
+                border-bottom: 1px solid $primary-color;
                 color: #0747a6;
                 background: #f5f9ff;
             }
+
+            .flavour-availability {
+                border-left: 1px solid $primary-color;
+                border-right: 1px solid $primary-color;
+                border-bottom: 1px solid $primary-color;
+            }
+
         }
 
         &--disabled {
-            border: 1px solid #d0d0d0;
             color: #d0d0d0;
             cursor: default;
 
+            .flavour-button {
+                border: 1px solid #d0d0d0;
+            }
+
             .flavour-details {
-                border-top: 1px solid #d0d0d0;
-                color: #d0d0d0;
+                border-left: 1px solid #d0d0d0;
+                border-right: 1px solid #d0d0d0;
+                border-bottom: 1px solid #d0d0d0;
+            }
 
-                .unavailable {
-
-                    .unavailable-text {
-                        color: #94add3;
-                        line-height: 12pt;
-                    }
-                    .unavailable-text-main {
-                        font-weight: 500;
-                    }
-                    .unavailable-text-sub {
-                        font-size: 8pt;
-                    }
-                }
+            .flavour-availability {
+                border-left: 1px solid #d0d0d0;
+                border-right: 1px solid #d0d0d0;
+                border-bottom: 1px solid #d0d0d0;
             }
         }
+
+        .flavour-unavailable {
+            height: 2rem;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .unavailable-text {
+                color: #d39494;
+                line-height: 12pt;
+            }
+            .unavailable-text-main {
+                font-weight: 500;
+            }
+            .unavailable-text-sub {
+                font-size: 9pt;
+            }
+        }
+
 
     }
 }

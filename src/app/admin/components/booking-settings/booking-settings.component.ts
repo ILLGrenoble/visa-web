@@ -376,13 +376,14 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             const {flavour, role, maxInstancesPerReservation, maxDaysReservation} = current;
 
             let flavourSettingsGroup = acc.find(formGroup => formGroup.value.flavour.id === flavour.id);
+            const flavourRole = role == null ? this._allUserRole : role;
             if (flavourSettingsGroup == null) {
-                flavourSettingsGroup = this._createFlavourSettingsGroup(flavour, role, maxInstancesPerReservation, maxDaysReservation);
+                flavourSettingsGroup = this._createFlavourSettingsGroup(flavour, flavourRole, maxInstancesPerReservation, maxDaysReservation);
                 acc.push(flavourSettingsGroup);
 
             } else {
                 const rolesArray = flavourSettingsGroup.get('roles') as FormArray;
-                rolesArray.push(this._createFlavourRoleSettingsGroup(role == null ? this._allUserRole : role, maxInstancesPerReservation, maxDaysReservation));
+                rolesArray.push(this._createFlavourRoleSettingsGroup(flavourRole, maxInstancesPerReservation, maxDaysReservation));
             }
             return acc;
 

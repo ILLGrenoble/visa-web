@@ -106,15 +106,15 @@
                         </div>
 
                         <div class="flavours">
-                            <div *ngFor="let flavour of flavours" (click)="selectFlavour(flavour)" class="flavour-box" [ngClass]="{'flavour-box--selected': isFlavourSelected(flavour), 'flavour-box--disabled': !isFlavourAvailable(flavour)}">
+                            <div *ngFor="let flavourLimit of flavourLimits" (click)="toggleSelectFlavour(flavourLimit)" class="flavour-box" [ngClass]="{'flavour-box--selected': isFlavourSelected(flavourLimit.flavour), 'flavour-box--disabled': !flavourLimit.available}">
                                 <button class="flavour-button">
                                     <div class="flavour-button__detail">
-                                        {{getCpuView(flavour)}}
+                                        {{getCpuView(flavourLimit.flavour)}}
                                     </div>
                                     <div class="flavour-button__detail">
-                                        {{getRamView(flavour)}} memory
+                                        {{getRamView(flavourLimit.flavour)}} memory
                                     </div>
-                                    <div *ngFor="let device of flavour.devices" class="flavour-button__detail">
+                                    <div *ngFor="let device of flavourLimit.flavour.devices" class="flavour-button__detail">
                                         <div class="flavour-button__device-name">
                                             {{device.devicePool.name}}
                                         </div>
@@ -125,13 +125,18 @@
                                 </button>
                                 <div class="flavour-details">
                                     <div>
-                                        {{flavour.name}}
+                                        {{flavourLimit.flavour.name}}
                                     </div>
-                                    <div *ngIf="!flavour.available" class="unavailable">
-                                        <div class="unavailable-text">
-                                            <div class="unavailable-text-main">
-                                                UNAVAILABLE
-                                            </div>
+                                </div>
+                                <div class="flavour-availability">
+                                    <div>
+                                        {{flavourLimit.maxInstances}} instance{{flavourLimit.maxInstances > 1 ? 's' : ''}} available
+                                    </div>
+                                </div>
+                                <div class="flavour-unavailable">
+                                    <div *ngIf="!flavourLimit.available" class="unavailable-text">
+                                        <div class="unavailable-text-sub">
+                                            {{flavourLimit.message}}
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +148,7 @@
                         <div class="clr-row">
                             <div class="clr-col-12">
                                 <div class="title">
-                                    <h2>
+                                    <h2 style="margin-top: 0;">
                                         Number of instances
                                     </h2>
                                 </div>
@@ -166,8 +171,8 @@
                                         </div>
                                         <div class="clr-col-10">
                                             <clr-input-container class="vertical-label">
-                                                <label for="quantity">Quantity</label>
-                                                <input id="quantity" clrInput formControlName="quantity" type="number" min="1"/>
+                                                <label for="quantity" class="clr-col-md-12">Quantity ({{getMaxInstancesForFlavour(flavourRequest.get('flavour').value)}} max)</label>
+                                                    <input style="width: 150px;" id="quantity" clrInput formControlName="quantity" type="number" min="1" [max]="getMaxInstancesForFlavour(flavourRequest.get('flavour').value)" class="clr-col-md-12"/>
                                             </clr-input-container>
                                         </div>
                                     </div>

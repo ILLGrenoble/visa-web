@@ -32,5 +32,5 @@ export * from './custom-flavour.model';
 export * from './booking-flavour-configuration.model';
 export * from './booking-user-configuration.model';
 export * from './booking-request.model';
-export * from './booking-flavour-request.model';
+export * from './flavour-availabilities-future.model';
 

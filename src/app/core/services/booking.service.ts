@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {BookingRequest, BookingUserConfiguration} from '../models';
+import {BookingRequest, BookingUserConfiguration, FlavourAvailabilitiesFuture} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
 import {Response} from "./visa-response";
 
@@ -80,6 +80,17 @@ export class BookingService {
                 return {errors: result.errors}
             }));
 
+    }
+
+    public getFlavourAvailabilities(startDate: string, endDate: string): Observable<FlavourAvailabilitiesFuture[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/flavours/availabilities`;
+        return this.http.get<Response<FlavourAvailabilitiesFuture[]>>(url, {params: {startDate}})
+            .pipe(
+                map(({data}) => {
+                    return data.map(element => this.objectMapper.deserialize(element, FlavourAvailabilitiesFuture))
+                })
+            );
     }
 
 }

@@ -9,19 +9,23 @@ import {
     Validators
 } from "@angular/forms";
 import {
-    ApplicationState,
+    ApplicationState, BookingFlavourConfiguration,
     BookingRequestInput,
     BookingService,
     BookingUserConfiguration,
-    Flavour,
+    Flavour, FlavourAvailabilitiesFuture, FlavourAvailability,
     selectUserBookingConfiguration
 } from "../../../core";
-import {filter, take} from "rxjs/operators";
+import {combineLatestWith, filter, take, takeUntil} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {NotifierService} from "angular-notifier";
 import {Router} from "@angular/router";
+import {BehaviorSubject, Subject} from "rxjs";
 
 const toDateString = (date: Date): string => {
+    if (date == null) {
+        return null;
+    }
     const d = date.getDate().toString().padStart(2, '0');
     const m = (date.getMonth() + 1).toString().padStart(2, '0');
     const y = date.getFullYear();
@@ -37,6 +41,15 @@ const minLengthArray = (min: number): ValidatorFn => {
     };
 }
 
+type BookingFlavourLimit = {
+    flavour: Flavour;
+    maxInstances: number;
+    maxDaysInAdvance: number;
+    maxReservationDays: number;
+    available: boolean;
+    message?: string;
+}
+
 @Component({
     selector: 'visa-booking-new',
     templateUrl: './booking-new.component.html',
@@ -44,6 +57,7 @@ const minLengthArray = (min: number): ValidatorFn => {
 })
 export class BookingNewComponent implements OnInit {
 
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _form: FormGroup = new FormGroup({
         startDate: new FormControl(null, Validators.required),
         endDate: new FormControl({value: null, disabled: true}, Validators.required),
@@ -51,13 +65,16 @@ export class BookingNewComponent implements OnInit {
         name: new FormControl(null, Validators.required),
         comments: new FormControl(null, Validators.required),
     });
-    private _startDate: Date;
-    private _endDate: Date;
+    private _startDate: BehaviorSubject<Date> = new BehaviorSubject(null);
+    private _endDate: BehaviorSubject<Date> = new BehaviorSubject(null);
 
     private _bookingConfig: BookingUserConfiguration;
     private _flavours: Flavour[];
+    private _flavourAvailabilitiesFutures: FlavourAvailabilitiesFuture[];
+    private _bookingFlavourLimits: BookingFlavourLimit[] = [];
 
     private _minStartDate = toDateString(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
+    private _maxStartDateFromConfig: Date;
 
     private _showSubmitModal = false;
     private _sendingRequest = false;
@@ -76,7 +93,16 @@ export class BookingNewComponent implements OnInit {
     }
 
     get maxStartDate(): string {
-        return this.endDate ? this.endDate.toISOString() : null;
+        if (this._maxStartDateFromConfig) {
+            if (this.endDate && this.endDate.getTime() < this._maxStartDateFromConfig.getTime()) {
+                return toDateString(this.endDate);
+            } else {
+                return toDateString(this._maxStartDateFromConfig);
+            }
+
+        } else {
+            return this.endDate ? this.endDate.toISOString() : null;
+        }
     }
 
     get minEndDate(): string {
@@ -84,23 +110,27 @@ export class BookingNewComponent implements OnInit {
     }
 
     get startDate(): Date {
-        return this._startDate;
+        return this._startDate.value;
     }
 
     set startDate(value: Date) {
-        this._startDate = value;
+        this._startDate.next(value);
     }
 
     get endDate(): Date {
-        return this._endDate;
+        return this._endDate.value;
     }
 
     set endDate(value: Date) {
-        this._endDate = value;
+        this._endDate.next(value);
+    }
+
+    get flavourLimits(): BookingFlavourLimit[] {
+        return this._bookingFlavourLimits;
     }
 
     get datesValid(): boolean {
-        return this._startDate != null && this._endDate != null;
+        return this.startDate != null && this.endDate != null;
     }
 
     get flavourQuantitiesValid(): boolean {
@@ -109,13 +139,16 @@ export class BookingNewComponent implements OnInit {
 
     get reservationDurationDays(): number {
         if (this.datesValid) {
-            return 1 + Math.floor((this._endDate.getTime() - this._startDate.getTime()) / (24 * 60 * 60 * 1000));
+            return 1 + Math.floor((this.endDate.getTime() - this.startDate.getTime()) / (24 * 60 * 60 * 1000));
         }
         return 0;
     }
 
-    get flavours(): Flavour[] {
-        return this._flavours;
+    get reservationDaysInAdvance(): number {
+        if (this.startDate != null) {
+            return 1 + Math.floor((this.startDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+        }
+        return 0;
     }
 
     get showSubmitModal(): boolean {
@@ -152,57 +185,49 @@ export class BookingNewComponent implements OnInit {
                 if (f1.cpu < f2.cpu) return -1;
                 return f1.memory - f2.memory;
             });
-        });
 
-        this._form.get('startDate').valueChanges.subscribe((value) => {
-            if (value == null) {
-                this._form.get('endDate').disable();
-            } else {
-                this._form.get('endDate').enable();
+            // Get a rough max start date for the reservation
+            const maxStartDateFromConfig = bookingConfig.flavourConfiguration.reduce((acc: number, curr: BookingFlavourConfiguration) => {
+                return acc == null ? curr.maxDaysInAdvance : curr.maxDaysInAdvance == null ? acc : Math.max(curr.maxDaysInAdvance, acc);
+            }, null);
+            if (maxStartDateFromConfig) {
+                this._maxStartDateFromConfig = new Date(new Date().getTime() + maxStartDateFromConfig * 24 * 60 * 60 * 1000);
             }
         });
+
+        this._startDate.pipe(
+            filter(startDate => !!startDate),
+            combineLatestWith(this._endDate),
+            takeUntil(this._destroy$),
+        ).subscribe(([startDate, endDate]) => {
+            startDate == null ? this._form.get('endDate').disable() : this._form.get('endDate').enable();
+
+            if (startDate && endDate) {
+                this._bookingService.getFlavourAvailabilities(toDateString(startDate), toDateString(endDate)).subscribe((flavourAvailabilitiesFutures) => {
+                    this._flavourAvailabilitiesFutures = flavourAvailabilitiesFutures;
+                    this._updateFlavourLimits();
+                })
+            }
+        });
+
     }
 
-    protected selectFlavour(flavour: Flavour): void {
+    protected toggleSelectFlavour(flavourLimit: BookingFlavourLimit): void {
+        if (!flavourLimit.available) {
+            return;
+        }
+        const flavour = flavourLimit.flavour;
         if (!this.isFlavourSelected(flavour)) {
-            const flavourGroup = this._createFlavourRequestFormGroup(flavour);
-            this.flavourRequestsFormArray.push(flavourGroup);
-
-            const sorted = this.flavourRequestsFormArray.controls
-                .map(c => c as FormGroup)
-                .sort((c1: FormGroup, c2: FormGroup) => {
-                    const f1 = c1.value.flavour;
-                    const f2 = c2.value.flavour;
-                    if (f1.cpu > f2.cpu) return 1;
-                    if (f1.cpu < f2.cpu) return -1;
-                    return f1.memory - f2.memory;
-                });
-
-            this.flavourRequestsFormArray.clear();
-            sorted.forEach(c => this.flavourRequestsFormArray.push(c))
-            this.flavourRequestsFormArray.markAsDirty();
+            this._selectFlavour(flavour);
 
         } else {
-            const index = this.flavourRequestsFormArray.controls.findIndex((group: AbstractControl) => {
-                const formFlavour = group.get('flavour')?.value as Flavour;
-                return formFlavour?.id === flavour.id;
-            });
-
-            if (index !== -1) {
-                this.flavourRequestsFormArray.removeAt(index);
-                this.flavourRequestsFormArray.markAsDirty();
-            }
+            this._unselectFlavour(flavour);
         }
     }
 
     protected isFlavourSelected(flavour: Flavour): boolean {
         const {flavourRequests} = this._form.value;
         return flavourRequests.find(flavourRequest => flavourRequest.flavour === flavour);
-    }
-
-    protected isFlavourAvailable(flavour: Flavour): boolean {
-        // TODO
-        return true;
     }
 
     protected createBookingRequest(): void {
@@ -218,8 +243,8 @@ export class BookingNewComponent implements OnInit {
         });
 
         const input: BookingRequestInput = {
-            startDate: toDateString(this._startDate),
-            endDate: toDateString(this._endDate),
+            startDate: toDateString(this.startDate),
+            endDate: toDateString(this.endDate),
             name,
             comments,
             flavourRequests: flavourRequestInputs,
@@ -256,10 +281,80 @@ export class BookingNewComponent implements OnInit {
         return (Math.round(flavour.memory / 1024 * 10) / 10) + 'GB';
     }
 
+    protected getMaxInstancesForFlavour(flavour: Flavour): number {
+        return this._bookingFlavourLimits.find(limit => limit.flavour.id === flavour.id)?.maxInstances;
+    }
+
     private _createFlavourRequestFormGroup(flavour: Flavour): FormGroup {
         return this._formBuilder.group({
             flavour: [flavour, [Validators.required]],
             quantity: [null, [Validators.required]],
         });
+    }
+
+    private _selectFlavour(flavour: Flavour): void {
+        const flavourGroup = this._createFlavourRequestFormGroup(flavour);
+        this.flavourRequestsFormArray.push(flavourGroup);
+
+        const sorted = this.flavourRequestsFormArray.controls
+            .map(c => c as FormGroup)
+            .sort((c1: FormGroup, c2: FormGroup) => {
+                const f1 = c1.value.flavour;
+                const f2 = c2.value.flavour;
+                if (f1.cpu > f2.cpu) return 1;
+                if (f1.cpu < f2.cpu) return -1;
+                return f1.memory - f2.memory;
+            });
+
+        this.flavourRequestsFormArray.clear();
+        sorted.forEach(c => this.flavourRequestsFormArray.push(c))
+        this.flavourRequestsFormArray.markAsDirty();
+    }
+
+    private _unselectFlavour(flavour: Flavour): void {
+        const index = this.flavourRequestsFormArray.controls.findIndex((group: AbstractControl) => {
+            const formFlavour = group.get('flavour')?.value as Flavour;
+            return formFlavour?.id === flavour.id;
+        });
+
+        if (index !== -1) {
+            this.flavourRequestsFormArray.removeAt(index);
+            this.flavourRequestsFormArray.markAsDirty();
+        }
+    }
+
+    private _updateFlavourLimits(): void {
+        this._bookingFlavourLimits = this._flavours.map(flavour => {
+            const config = this._bookingConfig.flavourConfiguration.find(config => config.flavour.id === flavour.id);
+            const flavourAvailabilitiesFuture = this._flavourAvailabilitiesFutures.find(availabilities => availabilities.flavour.id === flavour.id);
+            const availabilities = flavourAvailabilitiesFuture == null ? [] : flavourAvailabilitiesFuture.availabilities;
+            let {maxInstances, maxDaysInAdvance, maxReservationDays} = config;
+            maxInstances = availabilities.reduce((acc: number, curr: FlavourAvailability) => {
+                return acc == null ? curr.availableUnits : Math.min(acc, curr.availableUnits);
+            }, maxInstances);
+
+            let available = true;
+            let message = null;
+            if (!this.datesValid) {
+                message = 'Selected dates are invalid';
+                available = false;
+            } else if (maxInstances === 0) {
+                message = 'Resources unavailable for chosen dates';
+                available = false;
+            } else if (maxDaysInAdvance != null && this.reservationDaysInAdvance > maxDaysInAdvance) {
+                message = `Reservation must be less than ${maxDaysInAdvance + 1}  days in advance`;
+                available = false;
+            } else if (maxReservationDays != null && this.reservationDurationDays > maxReservationDays) {
+                message = `Reservation period must less than ${maxReservationDays + 1} days`;
+                available = false;
+            }
+
+            if (!available && this.isFlavourSelected(flavour)) {
+                this._unselectFlavour(flavour);
+            }
+
+            return {flavour, maxInstances, maxDaysInAdvance, maxReservationDays, available, message};
+        });
+
     }
 }
