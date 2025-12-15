@@ -21,9 +21,8 @@ $disabled-color: #dfdfdf;
 }
 
 .booking-card-details {
-    flex-grow: 1;
+    flex-grow: 2;
     flex-basis: 0;
-    text-align: center;
 
     .booking-card-name {
         margin-top: 4px;
@@ -57,21 +56,23 @@ $disabled-color: #dfdfdf;
 .booking-card-flavours {
     width: 100%;
     display: flex;
-    flex-direction: column;
-    flex-grow: 2;
+    flex-direction: row;
+    column-gap: 16px;
+    flex-grow: 5;
     flex-basis: 0;
 
     .flavour-box {
         margin-top: 0.5rem;
         margin-bottom: 0.5rem;
+        width: 200px;
 
         display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
+        flex-direction: column;
+        justify-content: stretch;
+        align-items: stretch;
         text-align: center;
         color: #666;
         border: 1px solid $primary-color;
-        width: 100%;
 
         .flavour-name {
             text-align: center;
@@ -80,23 +81,21 @@ $disabled-color: #dfdfdf;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            border-right: 1px solid $primary-color;
+            border-bottom: 1px solid $primary-color;
             color: #0747a6;
             background: #f5f9ff;
-            flex-grow: 1;
-            flex-basis: 0;
             padding: 10px 0;
+            height: 2.5rem;
         }
 
         .flavour-description {
-            border-right: 1px solid $primary-color;
+            border-bottom: 1px solid $primary-color;
             background: #fff;
             outline: 0;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            flex-grow: 2;
-            flex-basis: 0;
+            justify-content: center;
+            flex-grow: 1;
             padding: 10px 0;
             color: #0747a6;
 
@@ -126,10 +125,9 @@ $disabled-color: #dfdfdf;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            flex-grow: 1;
-            flex-basis: 0;
             padding: 10px 0;
             color: #0747a6;
+            height: 2.5rem;
 
             &__label {
                 font-size: 8pt;
