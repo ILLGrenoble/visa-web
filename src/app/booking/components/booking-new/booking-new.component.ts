@@ -343,8 +343,11 @@ export class BookingNewComponent implements OnInit {
             if (!this.datesValid) {
                 message = 'Selected dates are invalid';
                 available = false;
+            } else if (maxInstances == null) {
+                message = 'Unable to determine availability of flavour';
+                available = false;
             } else if (maxInstances === 0) {
-                message = 'Resources unavailable for chosen dates';
+                message = 'Flavour unavailable for chosen dates';
                 available = false;
             } else if (maxDaysInAdvance != null && this.reservationDaysInAdvance > maxDaysInAdvance) {
                 message = `Reservation must be less than ${maxDaysInAdvance + 1}  days in advance`;
