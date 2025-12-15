@@ -165,16 +165,17 @@
                         <div formArrayName="flavourRequests">
                             <ng-container *ngFor="let flavourRequest of flavourRequestsFormArray.controls; let i = index">
                                 <div [formGroupName]="i">
-                                    <div class="clr-row">
-                                        <div class="clr-col-2 booking-new-flavour-label">
-                                            <div class="booking-new-flavour-label-flavour">{{flavourRequest.get('flavour').value.name}}</div>
-                                        </div>
-                                        <div class="clr-col-10">
-                                            <clr-input-container class="vertical-label">
-                                                <label for="quantity" class="clr-col-md-12">Quantity ({{getMaxInstancesForFlavour(flavourRequest.get('flavour').value)}} max)</label>
-                                                    <input style="width: 150px;" id="quantity" clrInput formControlName="quantity" type="number" min="1" [max]="getMaxInstancesForFlavour(flavourRequest.get('flavour').value)" class="clr-col-md-12"/>
-                                            </clr-input-container>
-                                        </div>
+                                    <div class="clr-row booking-new-flavour">
+                                        <clr-input-container>
+                                            <label for="quantity" class="clr-col-md-6">{{flavourRequest.get('flavour').value.name}}</label>
+                                            <input style="width: 150px;" id="quantity" clrInput formControlName="quantity" type="number" min="1" [max]="getMaxInstancesForFlavour(flavourRequest.get('flavour').value)" class="clr-col-md-6"/>
+                                            <clr-control-helper>
+                                                Quantity ({{getMaxInstancesForFlavour(flavourRequest.get('flavour').value)}} max)
+                                            </clr-control-helper>
+                                            <clr-control-error *ngIf="flavourRequest.get('quantity')?.errors?.limitExceeded">
+                                                Exceeds maximum allowed
+                                            </clr-control-error>
+                                        </clr-input-container>
                                     </div>
                                 </div>
                             </ng-container>

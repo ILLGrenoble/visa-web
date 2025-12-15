@@ -288,8 +288,13 @@ export class BookingNewComponent implements OnInit {
     private _createFlavourRequestFormGroup(flavour: Flavour): FormGroup {
         return this._formBuilder.group({
             flavour: [flavour, [Validators.required]],
-            quantity: [null, [Validators.required]],
+            quantity: [null, [Validators.required, (control: AbstractControl) => this._flavourQuantityValidator(flavour, control.value)]],
         });
+    }
+
+    private _flavourQuantityValidator(flavour: Flavour, quantity: number): ValidationErrors | null {
+        const limits = this._bookingFlavourLimits.find(limit => limit.flavour.id === flavour.id);
+        return quantity > limits.maxInstances ? {limitExceeded: true} : null;
     }
 
     private _selectFlavour(flavour: Flavour): void {
@@ -356,5 +361,20 @@ export class BookingNewComponent implements OnInit {
             return {flavour, maxInstances, maxDaysInAdvance, maxReservationDays, available, message};
         });
 
+        this._revalidateForm(this._form);
     }
+
+    private _revalidateForm(control: AbstractControl): void {
+        control.updateValueAndValidity({ onlySelf: true, emitEvent: true });
+        control.markAsTouched({ onlySelf: true });
+
+        if (control instanceof FormGroup) {
+            Object.values(control.controls).forEach(c => this._revalidateForm(c));
+        }
+
+        if (control instanceof FormArray) {
+            control.controls.forEach(c => this._revalidateForm(c));
+        }
+    }
+
 }

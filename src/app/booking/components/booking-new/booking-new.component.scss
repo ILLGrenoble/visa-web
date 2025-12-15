@@ -203,17 +203,8 @@
     }
 }
 
-.booking-new-flavour-label {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-end;
-
-    .booking-new-flavour-label-flavour {
-        font-size: 16px;
-        font-weight: 500;
-        color: #666;
-    }
+.booking-new-flavour {
+    margin-left: 0;
 }
 
 .booking-new-comments-input {
