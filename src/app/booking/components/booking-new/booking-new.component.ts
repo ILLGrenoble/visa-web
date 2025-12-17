@@ -250,7 +250,7 @@ export class BookingNewComponent implements OnInit {
             flavourRequests: flavourRequestInputs,
         }
 
-        this._bookingService.sendBookingRequest(input).subscribe({
+        this._bookingService.createBookingRequest(input).subscribe({
             next: ({data, errors}) => {
                 this._sendingRequest = false;
                 if (errors) {

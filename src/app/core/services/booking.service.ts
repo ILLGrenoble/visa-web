@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {BookingRequest, BookingUserConfiguration, FlavourAvailabilitiesFuture} from '../models';
+import {BookingRequest, BookingToken, BookingUserConfiguration, FlavourAvailabilitiesFuture} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
 import {Response} from "./visa-response";
 
@@ -69,7 +69,7 @@ export class BookingService {
             );
     }
 
-    public sendBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {
+    public createBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings`;
         return this.http.post<Response<BookingRequest>>(url, input)
@@ -81,6 +81,19 @@ export class BookingService {
             }));
 
     }
+
+
+    public getBookingRequestTokens(uid: string): Observable<BookingToken[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/${uid}/tokens`;
+        return this.http.get<Response<BookingToken[]>>(url)
+            .pipe(
+                map(({data}) => {
+                    return data.map(element => this.objectMapper.deserialize(element, BookingToken))
+                })
+            );
+    }
+
 
     public getFlavourAvailabilities(startDate: string, endDate: string): Observable<FlavourAvailabilitiesFuture[]> {
         const baseUrl = environment.paths.api;

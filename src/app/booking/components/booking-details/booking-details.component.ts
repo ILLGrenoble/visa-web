@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {BookingRequest, BookingService, Flavour} from "../../../core";
-import {Subject} from "rxjs";
+import {BookingRequest, BookingService, BookingToken, Flavour} from "../../../core";
+import {forkJoin, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotifierService} from "angular-notifier";
@@ -14,6 +14,7 @@ export class BookingDetailsComponent implements OnInit {
 
     private _loading = false;
     private _booking: BookingRequest;
+    private _tokens: BookingToken[];
     private _error: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _showDeleteModal = false;
@@ -61,12 +62,16 @@ export class BookingDetailsComponent implements OnInit {
         const uid = this._route.snapshot.paramMap.get('uid');
 
         this._loading = true;
-        this._bookingService.getBookingRequest(uid)
-            .pipe(takeUntil(this._destroy$))
+
+        forkJoin({
+                booking: this._bookingService.getBookingRequest(uid),
+                tokens: this._bookingService.getBookingRequestTokens(uid),
+            }).pipe(takeUntil(this._destroy$))
             .subscribe({
-                next: (booking) => {
+                next: ({booking, tokens}) => {
                     this._loading = false;
                     this._booking = booking;
+                    this._tokens = tokens;
                 },
                 error: (error) => {
                     this._loading = false;
