@@ -4,7 +4,7 @@ FROM node:22-alpine AS builder
 COPY package.json package-lock.json ./
 
 RUN apk update
-RUN apk add --no-cache git
+RUN apk add --no-cache git python3 py3-setuptools make g++
 
 # build
 RUN npm install --legacy-peer-deps && mkdir /visa-web && mv ./node_modules ./visa-web
