@@ -68,8 +68,9 @@ export class AvailabilityChartData {
                 const totalData = this.points[0];
                 const availableData = this.points[1];
                 const details = `<span style="color:${availableData.color}">\u25CF</span> Available instances: <b>${availableData.y}</b> / ${totalData.y}`;
+                const date = new Date(availableData.x).toLocaleDateString('en-UK');
 
-                return `<span style="font-size: 0.8em;">${availableData.series.name}</span><br/>${details}`;
+                return `<span style="font-size: 0.7em;">${date}</span><br/><span style="font-size: 0.8em;">${availableData.series.name}</span><br/>${details}`;
             },
         },
         plotOptions: {
