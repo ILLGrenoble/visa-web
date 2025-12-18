@@ -106,14 +106,43 @@ export class AvailabilityChartData {
         const yMax = Math.max(...totalData.map(p => p.y)) * 1.1;
         this._options.xAxis = {...this._options.xAxis, min: xMin, max: xMax};
         this._options.yAxis = {...this._options.yAxis, min: 0, max: yMax};
+        this.addUncertaintyRegion(availabilities);
 
-        availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits})
+        availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits});
         totalData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].totalUnits})
         this._options.series = [
             {name: flavour.name, data: totalData, color: '#b0b0ff', fillColor: '#fcfcff', lineWidth: 1, dashStyle: 'LongDash'},
-            {name: flavour.name, data: availableData, color: '#00a65a', fillColor: '#edfbf1' },
+            {name: flavour.name, data: availableData, color: '#00a65a', fillColor: '#edfbf1'},
         ];
+    }
 
+    private addUncertaintyRegion(availabilities: FlavourAvailability[]): void {
+        const uncertaintyStart = availabilities.find(availability => availability.confidence === 'UNCERTAIN');
+        if (uncertaintyStart) {
+            this._options.xAxis = {...this._options.xAxis,
+                plotBands: [{
+                    color: 'rgba(0, 0, 0, 0.04)',
+                    from: Date.parse(uncertaintyStart.date),
+                    to: Date.parse('2050-01-01T00:00:00.000'),
+                    zIndex: 10,
+                    label: {
+                        text: 'Availabilities cannot be calculated with certainty',
+                        style: {
+                            fontSize: 12,
+                            color: '#7a7a7a',
+                        },
+                        align: 'left',
+                        x: 8,
+                    },
+                }],
+                plotLines: [{
+                    dashStyle: 'dash',
+                    color: '#aaa',
+                    width: 2,
+                    value: Date.parse(uncertaintyStart.date),
+                    zIndex: 10,
+                }]};
+        }
     }
 
 }
