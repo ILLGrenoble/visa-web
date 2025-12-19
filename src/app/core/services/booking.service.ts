@@ -106,4 +106,15 @@ export class BookingService {
             );
     }
 
+    public calculateFlavourAvailabilities(input: BookingRequestInput): Observable<FlavourAvailabilitiesFuture[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/flavours/availabilities`;
+        return this.http.post<Response<FlavourAvailabilitiesFuture[]>>(url, input)
+            .pipe(
+                map(({data}) => {
+                    return data.map(element => this.objectMapper.deserialize(element, FlavourAvailabilitiesFuture))
+                })
+            );
+    }
+
 }

@@ -9,14 +9,14 @@ import {
     Validators
 } from "@angular/forms";
 import {
-    ApplicationState, BookingFlavourConfiguration,
+    ApplicationState, BookingFlavourConfiguration, BookingFlavourRequestInput,
     BookingRequestInput,
     BookingService,
     BookingUserConfiguration,
     Flavour, FlavourAvailabilitiesFuture, FlavourAvailability,
     selectUserBookingConfiguration
 } from "../../../core";
-import {combineLatestWith, filter, take, takeUntil} from "rxjs/operators";
+import {combineLatestWith, distinctUntilChanged, filter, take, takeUntil} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {NotifierService} from "angular-notifier";
 import {Router} from "@angular/router";
@@ -203,10 +203,7 @@ export class BookingNewComponent implements OnInit {
             startDate == null ? this._form.get('endDate').disable() : this._form.get('endDate').enable();
 
             if (startDate && endDate) {
-                this._bookingService.getFlavourAvailabilities(toDateString(startDate), toDateString(endDate)).subscribe((flavourAvailabilitiesFutures) => {
-                    this._flavourAvailabilitiesFutures = flavourAvailabilitiesFutures;
-                    this._updateFlavourLimits();
-                })
+                this._calculateFlavourAvailabilities();
             }
         });
 
@@ -286,10 +283,20 @@ export class BookingNewComponent implements OnInit {
     }
 
     private _createFlavourRequestFormGroup(flavour: Flavour): FormGroup {
-        return this._formBuilder.group({
+        const formGroup = this._formBuilder.group({
             flavour: [flavour, [Validators.required]],
             quantity: [null, [Validators.required, (control: AbstractControl) => this._flavourQuantityValidator(flavour, control.value)]],
         });
+
+        // Add listener to quantity change to update the availabilities
+        formGroup.get('quantity').valueChanges.pipe(
+            filter(value => !!value),
+            distinctUntilChanged(),
+        ).subscribe((value) => {
+            this._calculateFlavourAvailabilities();
+        })
+
+        return formGroup;
     }
 
     private _flavourQuantityValidator(flavour: Flavour, quantity: number): ValidationErrors | null {
@@ -326,6 +333,45 @@ export class BookingNewComponent implements OnInit {
             this.flavourRequestsFormArray.removeAt(index);
             this.flavourRequestsFormArray.markAsDirty();
         }
+    }
+
+    private _calculateFlavourAvailabilities(): void {
+        const {name, comments, flavourRequests} = this._form.value;
+        const formArray = this.flavourRequestsFormArray;
+
+        const flavourRequestInputs = formArray.controls.map((control: AbstractControl) => {
+            const group = control as FormGroup;
+            return {
+                flavourId: group.get('flavour')?.value.id,
+                quantity: group.get('quantity')?.value
+            };
+        });
+
+        const input: BookingRequestInput = {
+            startDate: toDateString(this.startDate),
+            endDate: toDateString(this.endDate),
+            name: name ? name : 'temporary booking request',
+            comments : comments ? comments : 'work in progress',
+            flavourRequests: flavourRequestInputs,
+        }
+
+        this._bookingService.calculateFlavourAvailabilities(input).subscribe((flavourAvailabilitiesFutures) => {
+            const bookingFlavourUsage = flavourRequestInputs.reduce((acc: any, curr: BookingFlavourRequestInput) => {
+                acc[curr.flavourId] = curr.quantity;
+                return acc;
+            }, {})
+
+            // Add the current usage onto the availabilities to keep the limits coherent
+            flavourAvailabilitiesFutures.forEach(flavourAvailabilitiesFuture => {
+                flavourAvailabilitiesFuture.availabilities.forEach(availability => {
+                    const modifier = bookingFlavourUsage[flavourAvailabilitiesFuture.flavour.id] || 0;
+                    availability.availableUnits += modifier;
+                });
+            });
+            this._flavourAvailabilitiesFutures = flavourAvailabilitiesFutures;
+            this._updateFlavourLimits();
+        })
+
     }
 
     private _updateFlavourLimits(): void {
