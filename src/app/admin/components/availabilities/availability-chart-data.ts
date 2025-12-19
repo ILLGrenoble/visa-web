@@ -125,7 +125,7 @@ export class AvailabilityChartData {
                     color: 'rgba(0, 0, 0, 0.04)',
                     from: Date.parse(uncertaintyStart.date),
                     to: Date.parse('2050-01-01T00:00:00.000'),
-                    zIndex: 10,
+                    zIndex: 4,
                     label: {
                         text: 'Availabilities cannot be calculated with certainty',
                         style: {
@@ -141,7 +141,7 @@ export class AvailabilityChartData {
                     color: '#aaa',
                     width: 2,
                     value: Date.parse(uncertaintyStart.date),
-                    zIndex: 10,
+                    zIndex: 4,
                 }]};
         }
     }
