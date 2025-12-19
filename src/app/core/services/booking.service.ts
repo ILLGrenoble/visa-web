@@ -98,7 +98,7 @@ export class BookingService {
     public getFlavourAvailabilities(startDate: string, endDate: string): Observable<FlavourAvailabilitiesFuture[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings/flavours/availabilities`;
-        return this.http.get<Response<FlavourAvailabilitiesFuture[]>>(url, {params: {startDate}})
+        return this.http.get<Response<FlavourAvailabilitiesFuture[]>>(url, {params: {startDate, endDate}})
             .pipe(
                 map(({data}) => {
                     return data.map(element => this.objectMapper.deserialize(element, FlavourAvailabilitiesFuture))

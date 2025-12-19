@@ -61,6 +61,9 @@ export class AvailabilityComponent implements OnInit {
     }
 
     public ngOnInit(): void {
+        this._highcharts.setOptions({
+            time: {useUTC: false},
+        })
         this._chartData = new AvailabilityChartData(this._availability.flavour, this._availability.availabilities, this._axisData$);
 
         this._axisData$.pipe(
