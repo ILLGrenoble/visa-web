@@ -21,6 +21,7 @@ import {Store} from "@ngrx/store";
 import {NotifierService} from "angular-notifier";
 import {Router} from "@angular/router";
 import {BehaviorSubject, Subject} from "rxjs";
+import {Title} from "@angular/platform-browser";
 
 const toDateString = (date: Date): string => {
     if (date == null) {
@@ -171,10 +172,12 @@ export class BookingNewComponent implements OnInit {
                 private _store: Store<ApplicationState>,
                 private _notifierService: NotifierService,
                 private _router: Router,
-                private _bookingService: BookingService) {
+                private _bookingService: BookingService,
+                private _titleService: Title) {
     }
 
     ngOnInit(): void {
+        this._titleService.setTitle(`New booking | VISA`);
         this._store.select(selectUserBookingConfiguration).pipe(
             filter(bookingConfig => !!bookingConfig),
             take(1)

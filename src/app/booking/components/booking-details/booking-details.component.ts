@@ -4,6 +4,7 @@ import {forkJoin, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotifierService} from "angular-notifier";
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'visa-booking-details',
@@ -55,10 +56,12 @@ export class BookingDetailsComponent implements OnInit {
     constructor(private _route: ActivatedRoute,
                 private _notifierService: NotifierService,
                 private _router: Router,
-                private _bookingService: BookingService) {
+                private _bookingService: BookingService,
+                private _titleService: Title) {
     }
 
     ngOnInit() {
+        this._titleService.setTitle(`Booking details | VISA`);
         const uid = this._route.snapshot.paramMap.get('uid');
 
         this._loading = true;
@@ -72,6 +75,7 @@ export class BookingDetailsComponent implements OnInit {
                     this._loading = false;
                     this._booking = booking;
                     this._tokens = tokens;
+                    this._titleService.setTitle(`Booking details (${booking.name}) | VISA`);
                 },
                 error: (error) => {
                     this._loading = false;
