@@ -14,8 +14,8 @@ export class BookingHeaderComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        if (!this.titleService.getTitle().endsWith(`Booking | Admin | VISA`)) {
-            this.titleService.setTitle(`Booking | Admin | VISA`);
+        if (!this.titleService.getTitle().endsWith(`Bookings | Admin | VISA`)) {
+            this.titleService.setTitle(`Bookings | Admin | VISA`);
         }
     }
 }

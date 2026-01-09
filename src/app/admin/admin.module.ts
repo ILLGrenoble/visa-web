@@ -88,8 +88,12 @@ import {
     AvailabilitiesComponent,
     AvailabilityComponent,
     BookingSettingsComponent,
+    BookingRequestsComponent,
+    BookingRequestListComponent,
+    BookingRequestCardComponent,
 } from './components';
 import {ClrSpinnerModule} from "@clr/angular";
+import {DatePipe, NgIf} from "@angular/common";
 
 @NgModule({
     imports: [
@@ -97,6 +101,8 @@ import {ClrSpinnerModule} from "@clr/angular";
         HighchartsChartModule,
         RouterModule.forChild(ROUTES),
         ClrSpinnerModule,
+        DatePipe,
+        NgIf,
     ],
     declarations: [
         DashboardComponent,
@@ -175,6 +181,9 @@ import {ClrSpinnerModule} from "@clr/angular";
         AvailabilitiesComponent,
         AvailabilityComponent,
         BookingSettingsComponent,
+        BookingRequestsComponent,
+        BookingRequestListComponent,
+        BookingRequestCardComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,

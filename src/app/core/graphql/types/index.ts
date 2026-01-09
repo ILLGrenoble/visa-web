@@ -424,6 +424,33 @@ export type BookingConfigurationInput = {
     flavourRoleConfigurations: Array<BookingFlavourRoleConfigurationInput>;
 };
 
+export type BookingRequest = {
+    id: Scalars['Int'];
+    uid: Scalars['String'];
+    name: Scalars['String'];
+    createdAt: Scalars['String'];
+    startDate: Scalars['String'];
+    endDate: Scalars['String'];
+    owner: User;
+    state: Scalars['String'];
+    flavours: Array<BookingRequestFlavour>;
+    history: Array<BookingRequestHistory>;
+};
+
+export type BookingRequestFlavour = {
+    id: Scalars['Int'];
+    flavour: Flavour;
+    quantity: Scalars['Int'];
+};
+
+export type BookingRequestHistory = {
+    id: Scalars['Int'];
+    state: Scalars['String'];
+    actor: User;
+    comments?: Maybe<Scalars['String']>;
+    date: Scalars['String'];
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /** Create an image */
@@ -542,15 +569,17 @@ export type Query = {
     hypervisors: Array<Hypervisor>;
     /** Get all flavour availabilities futures */
     flavourAvailabilitiesFutures: Array<FlavourAvailabilitiesFuture>;
-    /** Get booking configuration for a cloud client*/
+    /** Get booking configuration for a cloud client */
     bookingConfigurationForCloudClient: BookingConfiguration;
+    /** Get booking requests */
+    bookingRequests: Array<BookingRequest>;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
     countImages: Scalars['Int'];
     /** Get all instruments */
     instruments?: Maybe<Array<Instrument>>;
-    /** Get all image protcocols */
+    /** Get all image protocols */
     imageProtocols?: Maybe<Array<Maybe<ImageProtocol>>>;
     /** Get all instances */
     instances: InstanceConnection;

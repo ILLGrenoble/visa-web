@@ -19,7 +19,7 @@ import {
     ExtensionRequestsComponent,
     HypervisorsComponent,
     AvailabilitiesComponent,
-    BookingSettingsComponent,
+    BookingSettingsComponent, BookingRequestsComponent,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -66,10 +66,13 @@ export const ROUTES: Routes = [
                 path: 'cloud/security_groups', component: SecurityGroupsOverviewComponent,
             },
             {
-                path: 'booking/settings', component: BookingSettingsComponent,
+                path: 'bookings/requests', component: BookingRequestsComponent,
             },
             {
-                path: 'booking/availabilities', component: AvailabilitiesComponent,
+                path: 'bookings/settings', component: BookingSettingsComponent,
+            },
+            {
+                path: 'bookings/availabilities', component: AvailabilitiesComponent,
             },
             {
                 path: 'users', component: UsersComponent,

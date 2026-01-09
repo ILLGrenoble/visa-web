@@ -119,7 +119,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this._titleService.setTitle(`Settings | Booking | Admin | VISA`);
+        this._titleService.setTitle(`Settings | Bookings | Admin | VISA`);
 
         this._loading = true;
         this._apollo.query<any>({

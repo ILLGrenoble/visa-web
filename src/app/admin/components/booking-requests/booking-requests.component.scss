@@ -1,0 +1,30 @@
+.booking-requests-spinner-outer {
+    position: relative;
+    width: 100%;
+}
+
+.booking-requests-spinner {
+    height: 150px;
+    top: 16px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 999999;
+}
+
+.booking-requests-section {
+    margin-top: 24px;
+
+    .booking-requests-section-title {
+        font-size: 14pt;
+        font-weight: 300;
+        color: black;
+        margin-top: 36px;
+        margin-bottom: 12px;
+    }
+
+    .booking-requests-section-empty {
+        color: #666;
+    }
+}
