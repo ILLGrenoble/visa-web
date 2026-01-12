@@ -133,7 +133,7 @@
             <div class="booking-request-section-title">
                 Availability of requested resources
             </div>
-            <div class="booking-request-availabilities-charts">
+            <div *ngIf="availabilities" class="booking-request-availabilities-charts">
                 <visa-admin-availability *ngFor="let availability of availabilities"
                                          [availability]="availability"
                                          [bookings]="[bookingRequest]">

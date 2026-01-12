@@ -3,12 +3,18 @@ import {BehaviorSubject} from "rxjs";
 import * as moment from "moment/moment";
 
 const colours = [
-    '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
-    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#e83f0b',
+    '#3366E6',
+    '#9e1d77',
+    '#1a97b3',
+    '#B34D4D',
+    '#222bd3',
+    '#B366CC',
+    '#B33300',
+    '#4DB3FF',
+    '#1a98ff',
+    '#66664D',
+    '#CC80CC',
     '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
     '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
     '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
@@ -118,7 +124,7 @@ export class AvailabilityChartData {
         return this._options;
     }
 
-    constructor(flavour: Flavour, availabilities: FlavourAvailability[], private _axisData$: BehaviorSubject<{min: number, max: number}>, bookings: BookingRequest[]) {
+    constructor(flavour: Flavour, availabilities: FlavourAvailability[], private _axisData$: BehaviorSubject<{min: number, max: number}>, bookings: BookingRequest[], showUncertaintyRegion: boolean) {
         const availableData = availabilities.map(availability => {
             return { x: Date.parse(availability.date), y: availability.availableUnits };
         });
@@ -131,18 +137,19 @@ export class AvailabilityChartData {
         const yMax = Math.max(...totalData.map(p => p.y)) * 1.1;
         this._options.xAxis = {...this._options.xAxis, min: xMin, max: xMax};
         this._options.yAxis = {...this._options.yAxis, min: 0, max: yMax};
-        this.addRegions(availabilities, bookings);
+
+        this.addRegions(showUncertaintyRegion ? availabilities : null, bookings);
 
         availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits});
         totalData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].totalUnits})
         this._options.series = [
             {name: flavour.name, data: totalData, color: '#b0b0ff', fillColor: '#fcfcff', lineWidth: 1, dashStyle: 'LongDash'},
-            {name: flavour.name, data: availableData, color: '#00a65a', fillColor: '#edfbf1'},
+            {name: flavour.name, data: availableData, color: '#00a65a', fillColor: '#f8fffa'},
         ];
     }
 
     private addRegions(availabilities: FlavourAvailability[], bookings: BookingRequest[]): void {
-        const uncertaintyStart = availabilities.find(availability => availability.confidence === 'UNCERTAIN');
+        const uncertaintyStart = availabilities?.find(availability => availability.confidence === 'UNCERTAIN');
         let index = 4;
 
         if (uncertaintyStart) {
@@ -176,7 +183,7 @@ export class AvailabilityChartData {
             for (const [i, booking] of bookings.entries()) {
                 const color = colours[i];
                 this._options.xAxis.plotBands.push({
-                    color: hexToRgba(color, 0.4),
+                    color: hexToRgba(color, 0.2),
                     from: Date.parse(booking.startDate),
                     to: new Date (Date.parse(booking.endDate) + 24 * 60 * 60 * 1000).getTime(),
                     zIndex: index,
@@ -191,14 +198,14 @@ export class AvailabilityChartData {
                 });
                 this._options.xAxis.plotLines.push({
                     dashStyle: 'solid',
-                    color: hexToRgba(color, 0.8),
+                    color: hexToRgba(color, 0.5),
                     width: 1,
                     value: Date.parse(booking.startDate),
                     zIndex: index,
                 })
                 this._options.xAxis.plotLines.push({
                     dashStyle: 'solid',
-                    color: hexToRgba(color, 0.8),
+                    color: hexToRgba(color, 0.5),
                     width: 1,
                     value: new Date (Date.parse(booking.endDate) + 24 * 60 * 60 * 1000).getTime(),
                     zIndex: index,

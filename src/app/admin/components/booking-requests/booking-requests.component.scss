@@ -28,3 +28,14 @@
         color: #666;
     }
 }
+
+.booking-requests-availabilities {
+
+    .booking-requests-availabilities-charts {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        row-gap: 16px;
+    }
+}

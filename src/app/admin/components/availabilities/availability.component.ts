@@ -20,6 +20,7 @@ export class AvailabilityComponent implements OnInit {
     private _axisData$: BehaviorSubject<{min: number, max: number}>;
     private _reset$: Subject<void>;
     private _bookings: BookingRequest[];
+    private _showUncertaintyRegion: boolean = true;
 
     private chart: Highcharts.Chart;
 
@@ -54,6 +55,11 @@ export class AvailabilityComponent implements OnInit {
         this._bookings = bookings;
     }
 
+    @Input()
+    set showUncertaintyRegion(value: boolean) {
+        this._showUncertaintyRegion = value;
+    }
+
     get flavour(): Flavour {
         return this._availability.flavour;
     }
@@ -70,7 +76,7 @@ export class AvailabilityComponent implements OnInit {
         this._highcharts.setOptions({
             time: {useUTC: false},
         })
-        this._chartData = new AvailabilityChartData(this._availability.flavour, this._availability.availabilities, this._axisData$, this._bookings);
+        this._chartData = new AvailabilityChartData(this._availability.flavour, this._availability.availabilities, this._axisData$, this._bookings, this._showUncertaintyRegion);
 
         if (this._axisData$) {
             this._axisData$.pipe(

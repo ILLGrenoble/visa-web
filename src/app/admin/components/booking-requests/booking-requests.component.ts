@@ -5,7 +5,7 @@ import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import gql from "graphql-tag";
 import {map, takeUntil, tap} from "rxjs/operators";
-import {BookingRequest} from "../../../core/graphql";
+import {BookingRequest, Flavour, FlavourAvailabilitiesFuture} from "../../../core/graphql";
 
 
 @Component({
@@ -17,9 +17,12 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _loading: boolean;
+    private _availabilityLoading: boolean;
 
+    private _allBookingRequests: BookingRequest[];
     private _pendingBookingRequests: BookingRequest[];
     private _acceptedBookingRequests: BookingRequest[];
+    private _availabilities: FlavourAvailabilitiesFuture[] = [];
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
@@ -30,12 +33,20 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
         return this._loading;
     }
 
+    get allBookingRequests(): BookingRequest[] {
+        return this._allBookingRequests;
+    }
+
     get pendingBookingRequests(): BookingRequest[] {
         return this._pendingBookingRequests;
     }
 
     get acceptedBookingRequests(): BookingRequest[] {
         return this._acceptedBookingRequests;
+    }
+
+    get availabilities(): FlavourAvailabilitiesFuture[] {
+        return this._availabilities;
     }
 
     public ngOnInit(): void {
@@ -89,8 +100,12 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
             map(({data}) => data),
             tap(() => this._loading = false)
         ).subscribe(({bookingRequests}) => {
+            this._allBookingRequests = bookingRequests;
             this._pendingBookingRequests = bookingRequests.filter(bookingRequest => bookingRequest.state === 'CREATED');
             this._acceptedBookingRequests = bookingRequests.filter(bookingRequest => bookingRequest.state === 'ACCEPTED');
+            this._getFlavourAvailabilities(bookingRequests
+                .flatMap(bookingRequest => bookingRequest.flavours).map(flavourRequest => flavourRequest.flavour.id)
+                .filter((value, index, array) => array.indexOf(value) === index));
         });
 
     }
@@ -100,4 +115,48 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
+    private _getFlavourAvailabilities(flavourIds: number[]): void {
+        this._availabilityLoading = true;
+        this._apollo.query<any>({
+            query: gql`
+                query flavourAvailabilitiesFutures($flavourIds: [Int]) {
+                    flavourAvailabilitiesFutures(flavourIds: $flavourIds) {
+                        flavour {
+                            id
+                            name
+                            memory
+                            cpu
+                            cloudId
+                            devices {
+                                devicePool {
+                                    id
+                                    name
+                                    description
+                                    resourceClass
+                                }
+                                unitCount
+                            }
+                        }
+                        confidence
+                        availabilities {
+                            date
+                            confidence
+                            availableUnits
+                            totalUnits
+                        }
+                    }
+                }
+            `,
+            variables: {
+                flavourIds,
+            },
+        }).pipe(
+            takeUntil(this._destroy$),
+            map(({data}) => data),
+            tap(() => this._availabilityLoading = false)
+        ).subscribe(({flavourAvailabilitiesFutures}) => {
+            this._availabilities = flavourAvailabilitiesFutures;
+        });
+
+    }
 }
