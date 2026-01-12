@@ -11,24 +11,18 @@
     <div class="admin-container--main">
         <h3>Booking Requests</h3>
 
-        <div class="booking-requests-section">
+        <div *ngIf="pendingBookingRequests.length > 0" class="booking-requests-section">
             <div class="booking-requests-section-title">
                 Pending requests
             </div>
-            <visa-admin-booking-request-list *ngIf="pendingBookingRequests.length > 0" [bookingRequests]="pendingBookingRequests"></visa-admin-booking-request-list>
-            <div *ngIf="pendingBookingRequests.length == 0" class="booking-requests-section-empty">
-                There are no pending booking requests
-            </div>
+            <visa-admin-booking-request-list [bookingRequests]="pendingBookingRequests"></visa-admin-booking-request-list>
         </div>
 
         <div class="booking-requests-section">
             <div class="booking-requests-section-title">
                 Accepted requests
             </div>
-            <visa-admin-booking-request-list *ngIf="acceptedBookingRequests.length > 0" [bookingRequests]="acceptedBookingRequests"></visa-admin-booking-request-list>
-            <div *ngIf="acceptedBookingRequests.length == 0" class="booking-requests-section-empty">
-                There are no accepted booking requests
-            </div>
+            <visa-admin-booking-request-list [bookingRequests]="acceptedBookingRequests"></visa-admin-booking-request-list>
         </div>
 
 

@@ -22,4 +22,21 @@ export class BookingRequestListComponent {
     constructor() {
     }
 
+    public creationComment(bookingRequest: BookingRequest) {
+        return bookingRequest.history.find(history => history.state === 'CREATED')?.comments;
+    }
+
+    public getCSSFromState(bookingRequest: BookingRequest) {
+        if (bookingRequest.state === 'CREATED') {
+            return 'booking-request-list-row-pending';
+        } else if (bookingRequest.state === 'ACCEPTED') {
+            if (new Date(bookingRequest.startDate).getTime() <= new Date().getTime() && new Date(bookingRequest.endDate).getTime() >= new Date().getTime()) {
+                return 'booking-request-list-row-active';
+
+            } else {
+                return 'booking-request-list-row-accepted';
+            }
+        }
+    }
+
 }

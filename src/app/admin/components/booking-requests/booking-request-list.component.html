@@ -1,7 +1,70 @@
-<div class="booking-request-list-container">
-    <div *ngFor="let bookingRequest of bookingRequests">
-        <visa-admin-booking-request-card [bookingRequest]="bookingRequest" >
-        </visa-admin-booking-request-card>
-    </div>
-
-</div>
+<clr-datagrid>
+    <clr-dg-column clrDgColType="number" [clrDgSortBy]="'id'">
+        <ng-container>
+            ID
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'name'">
+        <ng-container>
+            Details
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'startDate'">
+        <ng-container>
+            Start Date
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'endDate'">
+        <ng-container>
+            End Date
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgSortBy]="'owner.lastName'">
+        <ng-container>
+            Organiser
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            Affiliation
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            Created
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            State
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-column>
+        <ng-container>
+            Resources
+        </ng-container>
+    </clr-dg-column>
+    <clr-dg-placeholder><div style="font-size: 9pt">Nothing to show</div></clr-dg-placeholder>
+    <clr-dg-row *clrDgItems="let bookingRequest of bookingRequests" [style.cursor]="'pointer'" [routerLink]="['/admin/booking/requests/', bookingRequest.id]" [class]="getCSSFromState(bookingRequest)">
+        <clr-dg-cell>{{ bookingRequest.id }}</clr-dg-cell>
+        <clr-dg-cell>
+            {{ bookingRequest.name }}
+            <div class="booking-request-list-comment">
+                {{ creationComment(bookingRequest) }}
+            </div>
+        </clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.startDate | date }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.endDate | date }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.owner.fullName }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.state }}</clr-dg-cell>
+        <clr-dg-cell>
+            <div class="booking-request-list-resources">
+                <div class="label" *ngFor="let flavourRequest of bookingRequest.flavours">
+                    {{ flavourRequest.quantity }} x {{flavourRequest.flavour.name}}
+                </div>
+            </div>
+        </clr-dg-cell>
+    </clr-dg-row>
+</clr-datagrid>
