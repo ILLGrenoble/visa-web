@@ -49,3 +49,4 @@ export * from './hypervisors';
 export * from './availabilities';
 export * from './booking-settings';
 export * from './booking-requests';
+export * from './booking-request';

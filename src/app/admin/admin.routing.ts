@@ -19,7 +19,7 @@ import {
     ExtensionRequestsComponent,
     HypervisorsComponent,
     AvailabilitiesComponent,
-    BookingSettingsComponent, BookingRequestsComponent,
+    BookingSettingsComponent, BookingRequestsComponent, BookingRequestComponent,
 } from './components';
 
 export const ROUTES: Routes = [
@@ -67,6 +67,9 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'bookings/requests', component: BookingRequestsComponent,
+            },
+            {
+                path: 'bookings/requests/:id', component: BookingRequestComponent,
             },
             {
                 path: 'bookings/settings', component: BookingSettingsComponent,

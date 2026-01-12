@@ -1,14 +1,36 @@
-import {Flavour, FlavourAvailability} from "../../../core/graphql";
+import {BookingRequest, Flavour, FlavourAvailability} from "../../../core/graphql";
 import {BehaviorSubject} from "rxjs";
 import * as moment from "moment/moment";
 
-export class AvailabilityChartData {
+const colours = [
+    '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
+]
 
+const hexToRgba = (hex, alpha = 1) => {
+    const cleanHex = hex.replace('#', '');
+
+    const r = parseInt(cleanHex.slice(0, 2), 16);
+    const g = parseInt(cleanHex.slice(2, 4), 16);
+    const b = parseInt(cleanHex.slice(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export class AvailabilityChartData {
 
     private _options: any = {
         chart: {
             type: 'area',
-            zoomType: 'x',
+            zoomType: this._axisData$ ? 'x' : null,
             panning: true,
             panKey: 'shift',
             events: {
@@ -50,7 +72,9 @@ export class AvailabilityChartData {
                         this._axisData$.next({ min, max });
                     }
                 }
-            }
+            },
+            plotBands: [],
+            plotLines: [],
         },
         yAxis: {
             title: '',
@@ -94,7 +118,7 @@ export class AvailabilityChartData {
         return this._options;
     }
 
-    constructor(flavour: Flavour, availabilities: FlavourAvailability[], private _axisData$: BehaviorSubject<{min: number, max: number}>) {
+    constructor(flavour: Flavour, availabilities: FlavourAvailability[], private _axisData$: BehaviorSubject<{min: number, max: number}>, bookings: BookingRequest[]) {
         const availableData = availabilities.map(availability => {
             return { x: Date.parse(availability.date), y: availability.availableUnits };
         });
@@ -107,7 +131,7 @@ export class AvailabilityChartData {
         const yMax = Math.max(...totalData.map(p => p.y)) * 1.1;
         this._options.xAxis = {...this._options.xAxis, min: xMin, max: xMax};
         this._options.yAxis = {...this._options.yAxis, min: 0, max: yMax};
-        this.addUncertaintyRegion(availabilities);
+        this.addRegions(availabilities, bookings);
 
         availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits});
         totalData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].totalUnits})
@@ -117,32 +141,70 @@ export class AvailabilityChartData {
         ];
     }
 
-    private addUncertaintyRegion(availabilities: FlavourAvailability[]): void {
+    private addRegions(availabilities: FlavourAvailability[], bookings: BookingRequest[]): void {
         const uncertaintyStart = availabilities.find(availability => availability.confidence === 'UNCERTAIN');
+        let index = 4;
+
         if (uncertaintyStart) {
-            this._options.xAxis = {...this._options.xAxis,
-                plotBands: [{
-                    color: 'rgba(0, 0, 0, 0.04)',
-                    from: Date.parse(uncertaintyStart.date),
-                    to: Date.parse('2050-01-01T00:00:00.000'),
-                    zIndex: 4,
+            this._options.xAxis.plotBands.push({
+                color: 'rgba(0, 0, 0, 0.04)',
+                from: Date.parse(uncertaintyStart.date),
+                to: Date.parse('2050-01-01T00:00:00.000'),
+                zIndex: index,
+                label: {
+                    text: 'Availabilities cannot be calculated with certainty',
+                    style: {
+                        fontSize: 12,
+                        color: '#7a7a7a',
+                    },
+                    align: 'left',
+                    x: 8,
+                },
+            });
+            this._options.xAxis.plotLines.push({
+                dashStyle: 'dash',
+                color: '#aaa',
+                width: 2,
+                value: Date.parse(uncertaintyStart.date),
+                zIndex: index,
+            })
+            index++;
+        }
+
+        if (bookings) {
+
+            for (const [i, booking] of bookings.entries()) {
+                const color = colours[i];
+                this._options.xAxis.plotBands.push({
+                    color: hexToRgba(color, 0.4),
+                    from: Date.parse(booking.startDate),
+                    to: new Date (Date.parse(booking.endDate) + 24 * 60 * 60 * 1000).getTime(),
+                    zIndex: index,
                     label: {
-                        text: 'Availabilities cannot be calculated with certainty',
+                        text: booking.name,
+                        verticalAlign: 'bottom',
                         style: {
                             fontSize: 12,
-                            color: '#7a7a7a',
+                            color: color
                         },
-                        align: 'left',
-                        x: 8,
-                    },
-                }],
-                plotLines: [{
-                    dashStyle: 'dash',
-                    color: '#aaa',
-                    width: 2,
-                    value: Date.parse(uncertaintyStart.date),
-                    zIndex: 4,
-                }]};
+                    }
+                });
+                this._options.xAxis.plotLines.push({
+                    dashStyle: 'solid',
+                    color: hexToRgba(color, 0.8),
+                    width: 1,
+                    value: Date.parse(booking.startDate),
+                    zIndex: index,
+                })
+                this._options.xAxis.plotLines.push({
+                    dashStyle: 'solid',
+                    color: hexToRgba(color, 0.8),
+                    width: 1,
+                    value: new Date (Date.parse(booking.endDate) + 24 * 60 * 60 * 1000).getTime(),
+                    zIndex: index,
+                })
+                index++;
+            }
         }
     }
 

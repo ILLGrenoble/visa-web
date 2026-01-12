@@ -45,7 +45,7 @@
         </ng-container>
     </clr-dg-column>
     <clr-dg-placeholder><div style="font-size: 9pt">Nothing to show</div></clr-dg-placeholder>
-    <clr-dg-row *clrDgItems="let bookingRequest of bookingRequests" [style.cursor]="'pointer'" [routerLink]="['/admin/booking/requests/', bookingRequest.id]" [class]="getCSSFromState(bookingRequest)">
+    <clr-dg-row *clrDgItems="let bookingRequest of bookingRequests" [style.cursor]="'pointer'" [routerLink]="['/admin/bookings/requests/', bookingRequest.id]" [class]="getCSSFromState(bookingRequest)">
         <clr-dg-cell>{{ bookingRequest.id }}</clr-dg-cell>
         <clr-dg-cell>
             {{ bookingRequest.name }}

@@ -1,0 +1,145 @@
+<visa-admin-header></visa-admin-header>
+<visa-booking-admin-header></visa-booking-admin-header>
+
+<div class="admin-container" *ngIf="bookingRequest">
+    <div class="admin-container--main">
+        <div class="clr-row">
+            <div class="clr-col-lg-12">
+                <div class="admin-box admin-box-borderless">
+                    <div class="admin-box-header">
+                        <div class="admin-box-title">
+                            <ul class="admin-breadcrumbs">
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin']">Administration</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin/bookings/requests']">Booking Requests</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    {{ bookingRequest.name }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="admin-box-body p-t-10 p-b-10">
+                        <div class="booking-request-section-title">
+                            Details
+                        </div>
+                        <dl class="admin-details-list">
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>ID</b>
+                                </dt>
+                                <dd>
+                                    {{ bookingRequest.id }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Created at</b>
+                                </dt>
+                                <dd>
+                                    {{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Details</b>
+                                </dt>
+                                <dd>
+                                    {{ bookingRequest.name }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                </dt>
+                                <dd>
+                                    {{ creationComment() }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Period</b>
+                                </dt>
+                                <dd>
+                                    {{ bookingRequest.startDate | date }} to  {{ bookingRequest.endDate | date }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                </dt>
+                                <dd>
+                                    {{ durationDays() }} days
+                                </dd>
+                            </div>
+
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Resources</b>
+                                </dt>
+                                <dd>
+                                    <div *ngFor="let flavourRequest of bookingRequest.flavours">
+                                        <div>{{ flavourRequest.quantity }} x {{flavourRequest.flavour.name}}</div>
+                                        <div class="booking-request-flavour-details">{{getCpuView(flavourRequest.flavour)}}</div>
+                                        <div class="booking-request-flavour-details">{{getRamView(flavourRequest.flavour)}} RAM</div>
+                                        <div class="booking-request-flavour-details" *ngFor="let device of flavourRequest.flavour.devices">
+                                            {{device.devicePool.name}}
+                                        </div>
+                                    </div>
+                                </dd>
+                            </div>
+
+                            <div class="admin-details-list-item">
+                                <dt>
+                                    <b>Organiser</b>
+                                </dt>
+                                <dd>
+                                    {{ bookingRequest.owner.fullName }} (<a
+                                    href="mailto:{{ bookingRequest.owner.email }}">{{ bookingRequest.owner.email }}</a>)
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                </dt>
+                                <dd>
+                                    {{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                </dt>
+                                <dd>
+                                    <span *ngIf="bookingRequest.owner.activeUserRoles.length === 0">User has no roles</span>
+                                    <span *ngFor="let userRole of bookingRequest.owner?.activeUserRoles"
+                                          class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
+                                </dd>
+                            </div>
+                            <div class="admin-details-list-item">
+                                <dt>
+                                </dt>
+                                <dd>
+                                    <span *ngIf="bookingRequest.owner.groups.length === 0">User does not belong to any user groups</span>
+                                    <span *ngFor="let group of bookingRequest.owner?.groups"
+                                          class="admin-details-list-item-tag">{{ group.name }}</span>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="booking-request-availabilities">
+            <div class="booking-request-section-title">
+                Availability of requested resources
+            </div>
+            <div class="booking-request-availabilities-charts">
+                <visa-admin-availability *ngFor="let availability of availabilities"
+                                         [availability]="availability"
+                                         [bookings]="[bookingRequest]">
+                </visa-admin-availability>
+            </div>
+
+        </div>
+    </div>
+</div>

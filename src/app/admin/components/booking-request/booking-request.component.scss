@@ -1,0 +1,22 @@
+.booking-request-flavour-details {
+    margin-left: 12px;
+    font-size: 11pt;
+    color: #666;
+}
+
+.booking-request-section-title {
+    font-size: 1.3em;
+    color: #444;
+    margin-bottom: 12px;
+}
+
+.booking-request-availabilities {
+
+    .booking-request-availabilities-charts {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        row-gap: 16px;
+    }
+}

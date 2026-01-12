@@ -90,6 +90,7 @@ import {
     BookingSettingsComponent,
     BookingRequestsComponent,
     BookingRequestListComponent,
+    BookingRequestComponent,
 } from './components';
 import {ClrSpinnerModule} from "@clr/angular";
 import {DatePipe, NgIf} from "@angular/common";
@@ -182,6 +183,7 @@ import {DatePipe, NgIf} from "@angular/common";
         BookingSettingsComponent,
         BookingRequestsComponent,
         BookingRequestListComponent,
+        BookingRequestComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,

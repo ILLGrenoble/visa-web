@@ -62,11 +62,6 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
                             affiliation {
                                 name
                             }
-                            activeUserRoles {
-                                role {
-                                    name
-                                }
-                            }
                         }
                         state
                         flavours {
@@ -74,15 +69,6 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
                             flavour {
                                 id
                                 name
-                                memory
-                                cpu
-                                devices {
-                                    devicePool {
-                                        id
-                                        name
-                                    }
-                                    unitCount
-                                }
                             }
                             quantity
                         }
