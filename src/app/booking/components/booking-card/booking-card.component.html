@@ -12,6 +12,8 @@
         </div>
         <div class="booking-card-status">
             <div>
+                <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
+
                 {{bookingStatus}}
             </div>
         </div>

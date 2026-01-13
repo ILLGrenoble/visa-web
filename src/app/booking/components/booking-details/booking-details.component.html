@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<div class="content-small-container" *ngIf="booking ! null">
+<div class="content-small-container" *ngIf="booking != null">
     <div class="booking-details-container">
 
         <div class="booking-details-header">
@@ -63,7 +63,7 @@
                     Created on {{booking.createdAt | date:'dd MMMM y HH:mm' }}
                 </div>
                 <div class="booking-details-dates">
-                    {{ booking.startDate | date:'dd MMM y' }} - {{ booking.endDate | date:'dd MMM y' }}
+                    {{ booking.startDate | date:'dd MMMM y' }} - {{ booking.endDate | date:'dd MMMM y' }}
                 </div>
             </div>
 
@@ -99,6 +99,21 @@
                 </div>
                 <div class="information-panel-body-text">
                     You are free to distribute the tokens to your team or other people you are working with so that they can take advantage of the resources during the reservation period.
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="booking.state == 'ACCEPTED'" class="information-panel booking-card-status-info">
+            <h4 class="information-panel-title">
+                <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
+                Your reservation request has been accepted!
+            </h4>
+            <div class="information-panel-body">
+                <div class="information-panel-body-text">
+                    Tokens for all of your requested resources are now visible below. You can associate these to other VISA users or use them for your own needs.
+                </div>
+                <div class="information-panel-body-text">
+                    From the {{ booking.startDate | date:'dd MMMM y'}}, the owner of the token will be able to create an instance using it. The instance will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
                 </div>
             </div>
         </div>
