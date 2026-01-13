@@ -424,6 +424,11 @@ export type BookingConfigurationInput = {
     flavourRoleConfigurations: Array<BookingFlavourRoleConfigurationInput>;
 };
 
+export type BookingRequestResponseInput = {
+    accepted: Scalars['Boolean'];
+    comments: Scalars['String'];
+}
+
 export type BookingRequest = {
     id: Scalars['Int'];
     uid: Scalars['String'];
@@ -489,6 +494,8 @@ export type Mutation = {
     deleteInstance: Message;
     /** Update an instance termination date */
     updateInstanceTerminationDate: Message;
+    /** respond to a booking request */
+    bookingRequestResponse: BookingRequestHistory;
 };
 
 

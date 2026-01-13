@@ -55,7 +55,7 @@
                                 <dt>
                                 </dt>
                                 <dd>
-                                    {{ creationComment() }}
+                                    {{ creationHistory()?.comments }}
                                 </dd>
                             </div>
                             <div class="admin-details-list-item">
@@ -139,7 +139,82 @@
                                          [bookings]="[bookingRequest]">
                 </visa-admin-availability>
             </div>
-
         </div>
+
+        <div class="booking-request-response">
+            <div class="booking-request-section-title">
+                Booking response
+            </div>
+            <div *ngIf="bookingRequest.state === 'CREATED'">
+                <form [formGroup]="form" clrForm clrLayout="horizontal">
+                    <div class="booking-request-response-input">
+                        <div class="booking-request-response-input-label">
+                            The booking request is
+                        </div>
+                        <div class="booking-request-response-input-value">
+                            <button [ngClass]="{'btn-success': isAcceptedValue(true), 'btn-success-outline': !isAcceptedValue(true)}" class="btn" (click)="setAcceptedValue(true)">Accepted</button>
+                            <button [ngClass]="{'btn-warning': isAcceptedValue(false), 'btn-warning-outline': !isAcceptedValue(false)}" class="btn" (click)="setAcceptedValue(false)">Refused</button>
+                        </div>
+                    </div>
+                    <div *ngIf="accepted != null">
+                        <div class="booking-request-response-input">
+                            <div class="booking-request-response-input-label">
+                            </div>
+                            <div class="booking-request-response-input-value">
+                                <textarea id="comments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments" placeholder="Enter comments to send to the booking organiser"></textarea>
+                            </div>
+                        </div>
+                        <div class="booking-request-response-input">
+                            <div class="booking-request-response-input-label">
+                            </div>
+                            <div class="booking-request-response-input-value">
+                                <button (click)="submit()" [disabled]="!form.valid" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div *ngIf="bookingRequest.state === 'ACCEPTED'">
+                <div class="booking-request-response-input">
+                    <div class="booking-request-response-input-label">
+                        Accepted
+                    </div>
+                    <div class="booking-request-response-input-value">
+                        {{ acceptedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ acceptedHistory()?.actor.fullName}})
+                    </div>
+                </div>
+                <div class="booking-request-response-input">
+                    <div class="booking-request-response-input-label">
+                        Comments
+                    </div>
+                    <div class="booking-request-response-input-value">
+                        {{ acceptedHistory()?.comments}}
+                    </div>
+                </div>
+
+            </div>
+            <div *ngIf="bookingRequest.state === 'REFUSED'">
+                <div class="booking-request-response-input">
+                    <div class="booking-request-response-input-label">
+                        Refused
+                    </div>
+                    <div class="booking-request-response-input-value">
+                        {{ refusedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ refusedHistory()?.actor.fullName}})
+                    </div>
+                </div>
+                <div class="booking-request-response-input">
+                    <div class="booking-request-response-input-label">
+                        Comments
+                    </div>
+                    <div class="booking-request-response-input-value">
+                        {{ refusedHistory()?.comments}}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
