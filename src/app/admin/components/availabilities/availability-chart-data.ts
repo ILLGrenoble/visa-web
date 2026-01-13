@@ -92,6 +92,7 @@ export class AvailabilityChartData {
             },
             lineColor: '#a0a0a0',
             tickColor: '#a0a0a0',
+            plotLines: [],
         },
         tooltip: {
             shared: true,
@@ -198,15 +199,15 @@ export class AvailabilityChartData {
                 });
                 this._options.xAxis.plotLines.push({
                     dashStyle: 'solid',
-                    color: hexToRgba(color, 0.5),
-                    width: 1,
+                    color: hexToRgba(color, 1.0),
+                    width: 2,
                     value: Date.parse(booking.startDate),
                     zIndex: index,
                 })
                 this._options.xAxis.plotLines.push({
                     dashStyle: 'solid',
-                    color: hexToRgba(color, 0.5),
-                    width: 1,
+                    color: hexToRgba(color, 1.0),
+                    width: 2,
                     value: new Date (Date.parse(booking.endDate) + 24 * 60 * 60 * 1000).getTime(),
                     zIndex: index,
                 })

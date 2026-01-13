@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Title} from '@angular/platform-browser';
-import {CloudClient, FlavourAvailabilitiesFuture} from '../../../core/graphql';
+import {BookingRequest, CloudClient, FlavourAvailabilitiesFuture} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-availabilities',
@@ -19,6 +19,8 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
     private _resetDisabled = true;
     private _allAvailabilities: FlavourAvailabilitiesFuture[] = [];
     private _availabilities: FlavourAvailabilitiesFuture[] = [];
+    private _allBookingRequests: BookingRequest[];
+    private _bookingRequests: BookingRequest[];
     private _cloudClients: CloudClient[] = [];
     private _loading: boolean;
     private _multiCloudEnabled = false;
@@ -39,6 +41,10 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
 
     get cloudClients(): CloudClient[] {
         return this._cloudClients;
+    }
+
+    get bookingRequests(): BookingRequest[] {
+        return this._bookingRequests;
     }
 
     get multiCloudEnabled(): boolean {
@@ -105,15 +111,22 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
                                 id
                                 name
                             }
+                            bookingRequests {
+                                startDate
+                                endDate
+                                name
+                            }
+
                         }
                     `
                 })),
                 map(({data}) => data),
                 tap(() => this._loading = false)
             )
-            .subscribe(({flavourAvailabilitiesFutures, cloudClients}) => {
+            .subscribe(({flavourAvailabilitiesFutures, cloudClients, bookingRequests}) => {
                 this._allAvailabilities = flavourAvailabilitiesFutures;
                 this._cloudClients = cloudClients;
+                this._allBookingRequests = bookingRequests;
                 this.selectedCloudClient = this._cloudClients[0];
 
                 this._multiCloudEnabled = cloudClients.length > 1 || flavourAvailabilitiesFutures
@@ -153,5 +166,13 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
     public resetCharts(): void {
         this._resetDisabled = true;
         this._resetCharts$.next();
+    }
+
+    public showBookingRequests(): void {
+        this._bookingRequests = this._allBookingRequests;
+    }
+
+    public hideBookingRequests(): void {
+        this._bookingRequests = null;
     }
 }

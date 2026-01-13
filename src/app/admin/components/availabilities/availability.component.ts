@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {BookingRequest, Flavour, FlavourAvailabilitiesFuture} from '../../../core/graphql';
 import * as Highcharts from "highcharts";
 import {AvailabilityChartData} from "./availability-chart-data";
@@ -11,7 +11,7 @@ import {filter} from "rxjs/operators";
     styleUrls: ['./availability.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class AvailabilityComponent implements OnInit {
+export class AvailabilityComponent implements OnInit, OnDestroy {
 
     private _availability: FlavourAvailabilitiesFuture;
     private _chartData: AvailabilityChartData;
@@ -21,6 +21,7 @@ export class AvailabilityComponent implements OnInit {
     private _reset$: Subject<void>;
     private _bookings: BookingRequest[];
     private _showUncertaintyRegion: boolean = true;
+    private _redrawCharts$: Subject<void>;
 
     private chart: Highcharts.Chart;
 
@@ -38,11 +39,13 @@ export class AvailabilityComponent implements OnInit {
     @Input()
     set availability(value: FlavourAvailabilitiesFuture) {
         this._availability = value;
+        this.redraw();
     }
 
     @Input('axisData')
     set axisData$(value: BehaviorSubject<{ min: number; max: number }>) {
         this._axisData$ = value;
+        this.redraw();
     }
 
     @Input('reset')
@@ -53,6 +56,7 @@ export class AvailabilityComponent implements OnInit {
     @Input()
     set bookings(bookings: BookingRequest[]) {
         this._bookings = bookings;
+        this.redraw();
     }
 
     @Input()
@@ -77,6 +81,10 @@ export class AvailabilityComponent implements OnInit {
             time: {useUTC: false},
         })
         this._chartData = new AvailabilityChartData(this._availability.flavour, this._availability.availabilities, this._axisData$, this._bookings, this._showUncertaintyRegion);
+        this._redrawCharts$ = new Subject<void>();
+        this._redrawCharts$.subscribe(() => {
+            this._chartData = new AvailabilityChartData(this._availability.flavour, this._availability.availabilities, this._axisData$, this._bookings, this._showUncertaintyRegion);
+        })
 
         if (this._axisData$) {
             this._axisData$.pipe(
@@ -90,6 +98,18 @@ export class AvailabilityComponent implements OnInit {
             this._reset$.subscribe(() => {
                 this.chart.zoomOut();
             });
+        }
+    }
+
+    public ngOnDestroy(): void {
+        if (this._redrawCharts$) {
+            this._redrawCharts$.unsubscribe();
+        }
+    }
+
+    private redraw(): void {
+        if (this._redrawCharts$) {
+            this._redrawCharts$.next();
         }
     }
 

@@ -21,12 +21,17 @@
 
             <div class="availabilities-header">
                 <h3 class="filters-box-title">Flavour Availabilities</h3>
-                <button type="button" class="btn btn-outline" [disabled]="resetDisabled" (click)="resetCharts()">Reset charts</button>
+                <div>
+                    <button *ngIf="bookingRequests == null" type="button" class="btn btn-outline" (click)="showBookingRequests()">Show bookings</button>
+                    <button *ngIf="bookingRequests != null" type="button" class="btn btn-outline" (click)="hideBookingRequests()">Hide bookings</button>
+                    <button type="button" class="btn btn-outline" [disabled]="resetDisabled" (click)="resetCharts()">Reset charts</button>
+                </div>
             </div>
 
             <div class="availabilities-content">
                 <visa-admin-availability *ngFor="let availability of availabilities"
                                         [availability]="availability"
+                                        [bookings]="bookingRequests"
                                         [axisData]="axisData$"
                                         [reset]="resetCharts$">
                 </visa-admin-availability>
