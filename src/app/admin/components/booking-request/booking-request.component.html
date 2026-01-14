@@ -21,200 +21,227 @@
                             </ul>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="admin-box-body p-t-10 p-b-10">
-                        <div class="booking-request-section-title">
-                            Details
+        <div class="clr-row">
+            <div class="clr-col-4">
+                <div class="admin-box-body p-t-10 p-b-10">
+                    <div class="booking-request-section-title">
+                        Details
+                    </div>
+                    <dl class="admin-details-list">
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>ID</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.id }}
+                            </dd>
                         </div>
-                        <dl class="admin-details-list">
-                            <div class="admin-details-list-item">
-                                <dt>
-                                    <b>ID</b>
-                                </dt>
-                                <dd>
-                                    {{ bookingRequest.id }}
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                    <b>Created at</b>
-                                </dt>
-                                <dd>
-                                    {{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                    <b>Details</b>
-                                </dt>
-                                <dd>
-                                    {{ bookingRequest.name }}
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                </dt>
-                                <dd>
-                                    {{ creationHistory()?.comments }}
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                    <b>Period</b>
-                                </dt>
-                                <dd>
-                                    {{ bookingRequest.startDate | date }} to  {{ bookingRequest.endDate | date }}
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                </dt>
-                                <dd>
-                                    {{ durationDays() }} days
-                                </dd>
-                            </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Created at</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Details</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.name }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ creationHistory()?.comments }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Period</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.startDate | date }} to  {{ bookingRequest.endDate | date }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ durationDays() }} days
+                            </dd>
+                        </div>
 
-                            <div class="admin-details-list-item">
-                                <dt>
-                                    <b>Resources</b>
-                                </dt>
-                                <dd>
-                                    <div *ngFor="let flavourRequest of bookingRequest.flavours">
-                                        <div>{{ flavourRequest.quantity }} x {{flavourRequest.flavour.name}}</div>
-                                        <div class="booking-request-flavour-details">{{getCpuView(flavourRequest.flavour)}}</div>
-                                        <div class="booking-request-flavour-details">{{getRamView(flavourRequest.flavour)}} RAM</div>
-                                        <div class="booking-request-flavour-details" *ngFor="let device of flavourRequest.flavour.devices">
-                                            {{device.devicePool.name}}
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Resources</b>
+                            </dt>
+                            <dd>
+                                <div *ngFor="let flavourRequest of bookingRequest.flavours">
+                                    <div>{{ flavourRequest.quantity }} x {{flavourRequest.flavour.name}}</div>
+                                    <div class="booking-request-flavour-details">{{getCpuView(flavourRequest.flavour)}}</div>
+                                    <div class="booking-request-flavour-details">{{getRamView(flavourRequest.flavour)}} RAM</div>
+                                    <div class="booking-request-flavour-details" *ngFor="let device of flavourRequest.flavour.devices">
+                                        {{device.devicePool.name}}
+                                    </div>
+                                </div>
+                            </dd>
+                        </div>
+
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Organiser</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.owner.fullName }} (<a
+                                href="mailto:{{ bookingRequest.owner.email }}">{{ bookingRequest.owner.email }}</a>)
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                <span *ngIf="bookingRequest.owner.activeUserRoles.length === 0">User has no roles</span>
+                                <span *ngFor="let userRole of bookingRequest.owner?.activeUserRoles"
+                                      class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                <span *ngIf="bookingRequest.owner.groups.length === 0">User does not belong to any user groups</span>
+                                <span *ngFor="let group of bookingRequest.owner?.groups"
+                                      class="admin-details-list-item-tag">{{ group.name }}</span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+            </div>
+
+            <div class="clr-col-8">
+                <div class="admin-box-body p-t-10 p-b-10">
+
+                    <div class="booking-request-availabilities">
+                        <div class="booking-request-section-title">
+                            Availability of requested resources
+                        </div>
+                        <div *ngIf="availabilities" class="booking-request-availabilities-charts">
+                            <visa-admin-availability *ngFor="let availability of availabilities"
+                                                     [availability]="availability"
+                                                     [bookings]="[bookingRequest]">
+                            </visa-admin-availability>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="clr-row">
+            <div class="clr-col-12">
+                <div class="admin-box-body p-t-10 p-b-10">
+                    <div class="booking-request-response">
+                        <div class="booking-request-section-title">
+                            Booking response
+                        </div>
+                        <div *ngIf="bookingRequest.state === 'CREATED'">
+                            <form [formGroup]="form" clrForm clrLayout="horizontal">
+                                <dl class="admin-details-list">
+                                    <div class="admin-details-list-item">
+                                        <dt>
+                                            <b>Request is</b>
+                                        </dt>
+                                        <dd>
+                                            <button [ngClass]="{'btn-success': isAcceptedValue(true), 'btn-success-outline': !isAcceptedValue(true)}" class="btn" (click)="setAcceptedValue(true)">Accepted</button>
+                                            <button [ngClass]="{'btn-warning': isAcceptedValue(false), 'btn-warning-outline': !isAcceptedValue(false)}" class="btn" (click)="setAcceptedValue(false)">Refused</button>
+                                        </dd>
+                                    </div>
+
+                                    <div *ngIf="accepted != null">
+                                        <div class="admin-details-list-item">
+                                            <dt>
+                                            </dt>
+                                            <dd>
+                                                <textarea id="comments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments" placeholder="Enter comments to send to the booking organiser"></textarea>
+                                            </dd>
+                                        </div>
+                                        <div class="admin-details-list-item">
+                                            <dt>
+                                            </dt>
+                                            <dd>
+                                                <button (click)="submit()" [disabled]="!form.valid" class="btn btn-primary">Submit</button>
+                                            </dd>
                                         </div>
                                     </div>
-                                </dd>
-                            </div>
 
-                            <div class="admin-details-list-item">
-                                <dt>
-                                    <b>Organiser</b>
-                                </dt>
-                                <dd>
-                                    {{ bookingRequest.owner.fullName }} (<a
-                                    href="mailto:{{ bookingRequest.owner.email }}">{{ bookingRequest.owner.email }}</a>)
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                </dt>
-                                <dd>
-                                    {{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                </dt>
-                                <dd>
-                                    <span *ngIf="bookingRequest.owner.activeUserRoles.length === 0">User has no roles</span>
-                                    <span *ngFor="let userRole of bookingRequest.owner?.activeUserRoles"
-                                          class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
-                                </dd>
-                            </div>
-                            <div class="admin-details-list-item">
-                                <dt>
-                                </dt>
-                                <dd>
-                                    <span *ngIf="bookingRequest.owner.groups.length === 0">User does not belong to any user groups</span>
-                                    <span *ngFor="let group of bookingRequest.owner?.groups"
-                                          class="admin-details-list-item-tag">{{ group.name }}</span>
-                                </dd>
-                            </div>
-                        </dl>
+                                </dl>
+                            </form>
+                        </div>
+
+                        <div *ngIf="bookingRequest.state === 'ACCEPTED'">
+                            <dl class="admin-details-list">
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Accepted
+                                    </dt>
+                                    <dd>
+                                        {{ acceptedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ acceptedHistory()?.actor.fullName}})
+                                    </dd>
+                                </div>
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Comments
+                                    </dt>
+                                    <dd>
+                                        {{ acceptedHistory()?.comments}}
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div *ngIf="bookingRequest.state === 'REFUSED'">
+                            <dl class="admin-details-list">
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Refused
+                                    </dt>
+                                    <dd>
+                                        {{ refusedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ refusedHistory()?.actor.fullName}})
+                                    </dd>
+                                </div>
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Comments
+                                    </dt>
+                                    <dd>
+                                        {{ refusedHistory()?.comments}}
+                                    </dd>
+                                </div>
+                            </dl>
+
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
-        <div class="booking-request-availabilities">
-            <div class="booking-request-section-title">
-                Availability of requested resources
-            </div>
-            <div *ngIf="availabilities" class="booking-request-availabilities-charts">
-                <visa-admin-availability *ngFor="let availability of availabilities"
-                                         [availability]="availability"
-                                         [bookings]="[bookingRequest]">
-                </visa-admin-availability>
-            </div>
-        </div>
 
-        <div class="booking-request-response">
-            <div class="booking-request-section-title">
-                Booking response
-            </div>
-            <div *ngIf="bookingRequest.state === 'CREATED'">
-                <form [formGroup]="form" clrForm clrLayout="horizontal">
-                    <div class="booking-request-response-input">
-                        <div class="booking-request-response-input-label">
-                            The booking request is
-                        </div>
-                        <div class="booking-request-response-input-value">
-                            <button [ngClass]="{'btn-success': isAcceptedValue(true), 'btn-success-outline': !isAcceptedValue(true)}" class="btn" (click)="setAcceptedValue(true)">Accepted</button>
-                            <button [ngClass]="{'btn-warning': isAcceptedValue(false), 'btn-warning-outline': !isAcceptedValue(false)}" class="btn" (click)="setAcceptedValue(false)">Refused</button>
-                        </div>
-                    </div>
-                    <div *ngIf="accepted != null">
-                        <div class="booking-request-response-input">
-                            <div class="booking-request-response-input-label">
-                            </div>
-                            <div class="booking-request-response-input-value">
-                                <textarea id="comments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments" placeholder="Enter comments to send to the booking organiser"></textarea>
-                            </div>
-                        </div>
-                        <div class="booking-request-response-input">
-                            <div class="booking-request-response-input-label">
-                            </div>
-                            <div class="booking-request-response-input-value">
-                                <button (click)="submit()" [disabled]="!form.valid" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </form>
-            </div>
-            <div *ngIf="bookingRequest.state === 'ACCEPTED'">
-                <div class="booking-request-response-input">
-                    <div class="booking-request-response-input-label">
-                        Accepted
-                    </div>
-                    <div class="booking-request-response-input-value">
-                        {{ acceptedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ acceptedHistory()?.actor.fullName}})
-                    </div>
-                </div>
-                <div class="booking-request-response-input">
-                    <div class="booking-request-response-input-label">
-                        Comments
-                    </div>
-                    <div class="booking-request-response-input-value">
-                        {{ acceptedHistory()?.comments}}
-                    </div>
-                </div>
-
-            </div>
-            <div *ngIf="bookingRequest.state === 'REFUSED'">
-                <div class="booking-request-response-input">
-                    <div class="booking-request-response-input-label">
-                        Refused
-                    </div>
-                    <div class="booking-request-response-input-value">
-                        {{ refusedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ refusedHistory()?.actor.fullName}})
-                    </div>
-                </div>
-                <div class="booking-request-response-input">
-                    <div class="booking-request-response-input-label">
-                        Comments
-                    </div>
-                    <div class="booking-request-response-input-value">
-                        {{ refusedHistory()?.comments}}
-                    </div>
-                </div>
-
-            </div>
-        </div>
 
     </div>
 </div>

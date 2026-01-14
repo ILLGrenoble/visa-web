@@ -11,6 +11,7 @@
 }
 
 .booking-request-availabilities {
+    margin-left: 64px;
 
     .booking-request-availabilities-charts {
         display: flex;
@@ -21,20 +22,3 @@
     }
 }
 
-.booking-request-response-input {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin-top: 12px;
-
-    .booking-request-response-input-label {
-        width: 220px;
-        color: #24292e;
-    }
-
-    .booking-request-response-input-value {
-        flex-grow: 1;
-        color: #24292e;
-    }
-}
