@@ -29,15 +29,22 @@
             <div class="clr-col-4">
                 <div class="admin-box-body p-t-10 p-b-10">
                     <div class="booking-request-section-title">
-                        Details
+                        Booking Request
                     </div>
                     <dl class="admin-details-list">
                         <div class="admin-details-list-item">
                             <dt>
-                                <b>ID</b>
+                                <b>Details</b>
                             </dt>
                             <dd>
-                                {{ bookingRequest.id }}
+                                <b>{{ bookingRequest.name }}</b> ({{bookingRequest.id}})
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ creationHistory()?.comments }}
                             </dd>
                         </div>
                         <div class="admin-details-list-item">
@@ -46,21 +53,6 @@
                             </dt>
                             <dd>
                                 {{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}
-                            </dd>
-                        </div>
-                        <div class="admin-details-list-item">
-                            <dt>
-                                <b>Details</b>
-                            </dt>
-                            <dd>
-                                {{ bookingRequest.name }}
-                            </dd>
-                        </div>
-                        <div class="admin-details-list-item">
-                            <dt>
-                            </dt>
-                            <dd>
-                                {{ creationHistory()?.comments }}
                             </dd>
                         </div>
                         <div class="admin-details-list-item">
@@ -94,7 +86,14 @@
                                 </div>
                             </dd>
                         </div>
-
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>State</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.state | titlecase }}
+                            </dd>
+                        </div>
                         <div class="admin-details-list-item">
                             <dt>
                                 <b>Organiser</b>
@@ -124,7 +123,6 @@
                             <dt>
                             </dt>
                             <dd>
-                                <span *ngIf="bookingRequest.owner.groups.length === 0">User does not belong to any user groups</span>
                                 <span *ngFor="let group of bookingRequest.owner?.groups"
                                       class="admin-details-list-item-tag">{{ group.name }}</span>
                             </dd>
@@ -237,11 +235,88 @@
 
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="bookingRequest.state === 'ACCEPTED' && tokens != null" class="clr-row">
+            <div class="clr-col-12">
+                <div class="admin-box-body p-t-10 p-b-10">
+                    <div class="booking-request-tokens">
+                        <div class="booking-request-section-title">
+                            Tokens
+                        </div>
+                    </div>
+                    <clr-datagrid>
+                        <clr-dg-column clrDgColType="number" [clrDgSortBy]="'id'">
+                            <ng-container>
+                                ID
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column>
+                            <ng-container>
+                                UID
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'flavour.name'">
+                            <ng-container>
+                                Flavour
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'owner.lastName'">
+                            <ng-container>
+                                Owner
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column>
+                            <ng-container>
+                                Affiliation
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column clrDgColType="number" [clrDgSortBy]="'instance.id'">
+                            <ng-container>
+                                Instance ID
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.name'">
+                            <ng-container>
+                                Instance Name
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.createdAt'">
+                            <ng-container>
+                                Instance Created
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.plan.image.name'">
+                            <ng-container>
+                                Image
+                            </ng-container>
+                        </clr-dg-column>
+
+                        <clr-dg-placeholder>No tokens exist for the booking request</clr-dg-placeholder>
+
+                        <clr-dg-row *ngFor="let token of tokens">
+                            <clr-dg-cell>{{ token.id }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.uid }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.flavour.name }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.owner?.fullName }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.owner ? token.owner.affiliation?.name || 'No affiliation' : '' }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.id }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.name }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
+                            <clr-dg-cell>{{ formatImageName(token.instance?.plan.image) }}</clr-dg-cell>
+                        </clr-dg-row>
+
+                        <clr-dg-footer>
+                            <clr-dg-column-toggle [hidden]="true">
+                            </clr-dg-column-toggle>
+                        </clr-dg-footer>
+                    </clr-datagrid>
 
                 </div>
             </div>
         </div>
 
-
-    </div>
+                    </div>
 </div>

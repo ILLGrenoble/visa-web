@@ -6,8 +6,10 @@ import {Apollo} from "apollo-angular";
 import {NotifierService} from "angular-notifier";
 import {Title} from "@angular/platform-browser";
 import {ActivatedRoute, Router} from "@angular/router";
-import {BookingRequest, FlavourAvailabilitiesFuture, Flavour} from "../../../core/graphql";
+import {BookingRequest, FlavourAvailabilitiesFuture, Flavour, BookingToken, Image} from "../../../core/graphql";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {id} from "@cds/core/internal";
+import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
     selector: 'visa-admin-booking-request',
@@ -21,6 +23,7 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
 
     private _bookingRequest: BookingRequest;
     private _availabilities: FlavourAvailabilitiesFuture[] = [];
+    private _tokens: BookingToken[] = [];
 
     private _form = new FormGroup({
         comments: new FormControl('', Validators.compose([Validators.maxLength(2500), Validators.required])),
@@ -37,6 +40,10 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
 
     get availabilities(): FlavourAvailabilitiesFuture[] {
         return this._availabilities;
+    }
+
+    get tokens(): BookingToken[] {
+        return this._tokens;
     }
 
     get form(): FormGroup {
@@ -132,7 +139,9 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
             this._bookingRequest = bookingRequest;
             const flavours = this._bookingRequest.flavours.map(flavour => flavour.flavour);
             this._getFlavourAvailabilities(flavours);
-
+            if (bookingRequest.state === 'ACCEPTED') {
+                this._getTokens();
+            }
         });
     }
 
@@ -171,6 +180,13 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
 
     protected setAcceptedValue(value: boolean): void {
         this._accepted = value;
+    }
+
+    protected formatImageName(image?: Image): string {
+        if (image) {
+            return image.version ? `${image.name} (${image.version})` : image.name;
+        }
+        return null;
     }
 
     protected submit(): void {
@@ -246,6 +262,7 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
             next: ({bookingRequestResponse}) => {
                 this._notifierService.notify('success', 'Booking request has been successfully modified');
                 this._bookingRequest = bookingRequestResponse;
+                this._getTokens();
             },
             error: (error) => {
                 this._notifierService.notify('error', error);
@@ -295,6 +312,44 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
             tap(() => this._loading = false)
         ).subscribe(({flavourAvailabilitiesFutures}) => {
             this._availabilities = flavourAvailabilitiesFutures;
+        });
+
+    }
+
+    private _getTokens(): void {
+        this._apollo.query<any>({
+            query: gql`
+                query bookingTokens($bookingRequestId: Int!) {
+                    bookingTokens(bookingRequestId: $bookingRequestId) {
+                        id
+                        uid
+                        flavour {
+                            name
+                        }
+                        owner {
+                            id
+                            firstName
+                            lastName
+                            fullName
+                            affiliation {
+                                name
+                            }
+                        }
+                        instance {
+                            id
+                            name
+                        }
+                    }
+                }
+            `,
+            variables: {
+                bookingRequestId: this._bookingRequest.id,
+            },
+        }).pipe(
+            takeUntil(this._destroy$),
+            map(({data}) => data),
+        ).subscribe(({bookingTokens}) => {
+            this._tokens = bookingTokens;
         });
 
     }

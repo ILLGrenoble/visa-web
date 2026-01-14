@@ -456,6 +456,14 @@ export type BookingRequestHistory = {
     date: Scalars['String'];
 };
 
+export type BookingToken = {
+    id: Scalars['Int'];
+    uid: Scalars['String'];
+    flavour: Flavour;
+    owner?: Maybe<User>;
+    instance?: Maybe<Instance>;
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /** Create an image */
