@@ -13,6 +13,11 @@ type BookingTokenContainer = {
     form: FormGroup;
 };
 
+type BookingFlavourTokensContainer = {
+    flavour: Flavour;
+    tokens: BookingTokenContainer[];
+};
+
 @Component({
     selector: 'visa-booking-details',
     templateUrl: './booking-details.component.html',
@@ -22,7 +27,7 @@ export class BookingDetailsComponent implements OnInit {
 
     private _loading = false;
     private _booking: BookingRequest;
-    private _tokens: BookingTokenContainer[];
+    private _flavourTokens: BookingFlavourTokensContainer[];
     private _error: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _showDeleteModal = false;
@@ -40,8 +45,8 @@ export class BookingDetailsComponent implements OnInit {
         return this._booking;
     }
 
-    get tokens(): BookingTokenContainer[] {
-        return this._tokens;
+    get flavourTokens(): BookingFlavourTokensContainer[] {
+        return this._flavourTokens;
     }
 
     get error(): string {
@@ -91,14 +96,7 @@ export class BookingDetailsComponent implements OnInit {
                 next: ({booking, tokens}) => {
                     this._loading = false;
                     this._booking = booking;
-                    this._tokens = tokens.map(token => {
-                        const formGroup = this._addTokenFormGroup(token);
-                        return {
-                            token,
-                            form: formGroup
-                        }
-                    });
-
+                    this._buildFlavourTokens(tokens);
                     this._titleService.setTitle(`Booking details (${booking.name}) | VISA`);
                 },
                 error: (error) => {
@@ -152,14 +150,26 @@ export class BookingDetailsComponent implements OnInit {
         this._bookingService.updateBookingRequestTokens(this.booking.uid, tokenInputs).subscribe((tokens) => {
             this._notifierService.notify('success', 'Tokens successfully updated');
             this._form.markAsPristine();
-            this.tokensFormArray.clear();
-            this._tokens = tokens.map(token => {
-                const formGroup = this._addTokenFormGroup(token);
-                return {
-                    token,
-                    form: formGroup
-                }
-            });
+            this._buildFlavourTokens(tokens);
+        });
+    }
+
+    private _buildFlavourTokens(allTokens: BookingToken[]): void {
+        this.tokensFormArray.clear();
+
+        const flavours = this._booking.flavours.map(flavour => flavour.flavour);
+        this._flavourTokens = flavours.map(flavour => {
+            const tokens = allTokens
+                .filter(token => token.flavour.id === flavour.id)
+                .map(token => {
+                    const formGroup = this._addTokenFormGroup(token);
+                    return {
+                        token,
+                        form: formGroup
+                    }
+                });
+
+            return {flavour, tokens}
         });
     }
 

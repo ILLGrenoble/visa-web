@@ -181,12 +181,17 @@
             </div>
             <div class="booking-details-tokens-container">
                 <form [formGroup]="form" clrForm clrLayout="horizontal">
-
-                    <div *ngFor="let token of tokens">
-                        <visa-booking-token [token]="token.token" [form]="token.form" [bookingActive]="bookingActive"></visa-booking-token>
+                    <div *ngFor="let flavourToken of flavourTokens">
+                        <div class="booking-details-tokens-flavour">
+                            {{flavourToken.flavour.name}}
+                        </div>
+                        <div *ngFor="let token of flavourToken.tokens">
+                            <visa-booking-token [token]="token.token" [form]="token.form" [bookingActive]="bookingActive"></visa-booking-token>
+                        </div>
                     </div>
 
-                    <div class="booking-request-response-input-value">
+
+                    <div class="booking-details-tokens-submit">
                         <button (click)="submitTokens()" [disabled]="form.invalid || form.pristine" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
