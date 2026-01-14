@@ -56,17 +56,6 @@ export class BookingDetailsComponent implements OnInit {
         return this._sendingDeleteRequest;
     }
 
-    get bookingStatus(): string {
-        if (this._booking.state == 'CREATED') {
-            return 'The request is pending approval';
-        } else if (this._booking.state == 'ACCEPTED') {
-            // Check dates to see if active
-            return 'The request has been accepted';
-        } else if (this._booking.state == 'REFUSED') {
-            return 'The request has been refused';
-        }
-    }
-
     get bookingActive(): boolean {
         const now = Date.now();
         return now > this._booking.startDate.getTime() && now < this._booking.endDate.getTime();
@@ -154,11 +143,29 @@ export class BookingDetailsComponent implements OnInit {
     }
 
     protected submitTokens(): void {
+        const tokenForms = this._form.value.tokens;
+        const tokenInputs = tokenForms.map(tokenForm => {
+            const {id, owner} = tokenForm;
+            return {id, ownerId: owner ? owner.id : null}
+        });
 
+        this._bookingService.updateBookingRequestTokens(this.booking.uid, tokenInputs).subscribe((tokens) => {
+            this._notifierService.notify('success', 'Tokens successfully updated');
+            this._form.markAsPristine();
+            this.tokensFormArray.clear();
+            this._tokens = tokens.map(token => {
+                const formGroup = this._addTokenFormGroup(token);
+                return {
+                    token,
+                    form: formGroup
+                }
+            });
+        });
     }
 
     private _addTokenFormGroup(token: BookingToken): FormGroup {
         const tokenFormGroup = this._formBuilder.group({
+            id: [token.id],
             owner: [token.owner],
         });
 

@@ -24,10 +24,20 @@ export class BookingCardComponent {
             return 'The request is pending approval';
         } else if (this._booking.state == 'ACCEPTED') {
             // Check dates to see if active
-            return 'The request has been accepted';
+            if (this.bookingActive) {
+                return 'The booking is active!';
+
+            } else {
+                return 'The request has been accepted';
+            }
         } else if (this._booking.state == 'REFUSED') {
             return 'The request has been refused';
         }
+    }
+
+    get bookingActive(): boolean {
+        const now = Date.now();
+        return now > this._booking.startDate.getTime() && now < this._booking.endDate.getTime();
     }
 
     constructor() {

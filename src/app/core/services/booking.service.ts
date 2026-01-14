@@ -82,7 +82,6 @@ export class BookingService {
 
     }
 
-
     public getBookingRequestTokens(uid: string): Observable<BookingToken[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings/${uid}/tokens`;
@@ -94,6 +93,16 @@ export class BookingService {
             );
     }
 
+    public updateBookingRequestTokens(uid: string, input: [{id: number, ownerId: string}]): Observable<BookingToken[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/${uid}/tokens`;
+        return this.http.put<Response<BookingToken[]>>(url, input)
+            .pipe(
+                map(({data}) => {
+                    return data.map(element => this.objectMapper.deserialize(element, BookingToken))
+                })
+            );
+    }
 
     public getFlavourAvailabilities(startDate: string, endDate: string): Observable<FlavourAvailabilitiesFuture[]> {
         const baseUrl = environment.paths.api;

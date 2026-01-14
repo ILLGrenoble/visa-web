@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        <div *ngIf="booking.state == 'ACCEPTED'" class="information-panel booking-card-status-info">
+        <div *ngIf="booking.state == 'ACCEPTED' && !bookingActive" class="information-panel booking-card-status-info">
             <h4 class="information-panel-title">
                 <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
                 Your reservation request has been accepted!
@@ -114,6 +114,21 @@
                 </div>
                 <div class="information-panel-body-text">
                     From the {{ booking.startDate | date:'dd MMMM y'}}, the owner of the token will be able to create an instance using it. The instance will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="booking.state == 'ACCEPTED' && bookingActive" class="information-panel booking-card-status-info">
+            <h4 class="information-panel-title">
+                <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
+                Your reservation is active!
+            </h4>
+            <div class="information-panel-body">
+                <div class="information-panel-body-text">
+                    Distribute any unassigned tokens to other VISA users or assign them to yourself: all tokens are active and can be used to create instances.
+                </div>
+                <div class="information-panel-body-text">
+                    The instances created with this reservation will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
                 </div>
             </div>
         </div>
