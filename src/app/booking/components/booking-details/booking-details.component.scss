@@ -207,6 +207,27 @@ $disabled-color: #dfdfdf;
     }
 }
 
+.booking-details-tokens {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+
+    .booking-details-tokens-title {
+        margin-top: 24px;
+        font-size: 20px;
+    }
+
+    .booking-details-tokens-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
 .booking-details-delete-modal {
     margin-top: 20px;
     height: 100px;

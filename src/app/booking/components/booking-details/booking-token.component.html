@@ -1,0 +1,61 @@
+<div class="booking-token-container">
+    <div class="booking-token-container-left">
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                Reference
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-reference">
+                    {{token.uid}}
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                Flavour
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-flavour">
+                    {{token.flavour.name}}
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                <div class="booking-token-owner-title">
+                    Owner
+                </div>
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-owner">
+                    <div class="booking-token-owner-select">
+                        <visa-owner-search [form]="form"></visa-owner-search>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" [disabled]="assignToMeDisabled()" (click)="assignToMe()">
+                        Assign to me
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="booking-token-container-right">
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                Instance
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-instance">
+                    <div *ngIf="!bookingActive" class="booking-token-instance-not-active">
+                        <em>Not available until booking is active</em>
+                    </div>
+                    <div *ngIf="token.instance == null && bookingActive" class="booking-token-instance-null">
+                        No active instance
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

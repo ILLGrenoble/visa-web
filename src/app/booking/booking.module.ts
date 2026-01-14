@@ -6,7 +6,8 @@ import {
     BookingDetailsComponent,
     BookingHomeComponent,
     BookingListComponent,
-    BookingNewComponent
+    BookingNewComponent,
+    BookingTokenComponent,
 } from './components';
 import {ClrCheckboxModule, ClrCommonFormsModule, ClrInputModule, ClrModalModule, ClrSpinnerModule} from "@clr/angular";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -33,6 +34,7 @@ import {DatePipe, LowerCasePipe, NgIf, TitleCasePipe} from "@angular/common";
         BookingNewComponent,
         BookingCardComponent,
         BookingDetailsComponent,
+        BookingTokenComponent,
     ],
     exports: [
         BookingHomeComponent,
@@ -40,6 +42,7 @@ import {DatePipe, LowerCasePipe, NgIf, TitleCasePipe} from "@angular/common";
         BookingNewComponent,
         BookingCardComponent,
         BookingDetailsComponent,
+        BookingTokenComponent,
     ]
 })
 export class BookingModule {
