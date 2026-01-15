@@ -86,7 +86,7 @@
     }
 
     .booking-token-instance {
-        width: 300px;
+        width: 350px;
         text-align: left;
 
         .booking-token-instance-null {
@@ -98,6 +98,56 @@
             color: #777;
             font-size: 10pt;
         }
+
+        .booking-token-instance-assigned {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            height: 36px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 8px;
+
+            .booking-token-instance-assigned-name {
+                color: #0747a6;
+                font-size: 12pt;
+                font-weight: 400;
+            }
+
+            .booking-token-instance-assigned-image {
+                color: #888;
+                font-size: 10pt;
+                margin-right: 8px;
+            }
+
+            .booking-token-instance-assigned-name-and-state {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                column-gap: 16px;
+            }
+
+            .booking-token-instance-assigned-state {
+                width: 16px;
+                height: 16px;
+                margin-left: 8px;
+                border-radius: 100%;
+                text-indent: -9999px;
+                background: #faa831;
+
+                &--danger {
+                    background: #f95a27;
+                }
+
+                &--success {
+                    background: #5fba7d;
+                }
+            }
+        }
     }
 
 }
+

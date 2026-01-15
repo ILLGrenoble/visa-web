@@ -215,7 +215,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     return a.findIndex(t => (t.id === v.id)) === i;
                 });
             this._allTokens = tokens;
-            this._freeTokens = tokens.filter((token) => token.instanceId == null);
+            this._freeTokens = tokens.filter((token) => token.instance == null);
             this.loading = false;
         });
     }

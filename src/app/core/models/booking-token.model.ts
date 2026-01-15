@@ -2,6 +2,81 @@ import {JsonObject, JsonProperty} from 'json2typescript';
 import {Flavour} from "./flavour.model";
 import {User} from "./user.model";
 import {BookingRequestSimple} from "./booking-request-simple.model";
+import {Plan} from "./plan.model";
+import {Member} from "./member.model";
+import {Experiment} from "./experiment.model";
+import {Protocol} from "./protocol.model";
+
+@JsonObject('BookingTokenInstance')
+export class BookingTokenInstance {
+
+    @JsonProperty('id', Number, true)
+    private _id: number = undefined;
+
+    @JsonProperty('uid', String)
+    private _uid: string = undefined;
+
+    @JsonProperty('name', String)
+    private _name: string = undefined;
+
+    @JsonProperty('createdAt', String)
+    private _createdAt: string = undefined;
+
+    @JsonProperty('plan', Plan)
+    private _plan: Plan = undefined;
+
+    @JsonProperty('state', String)
+    private _state: string = undefined;
+
+
+    get id(): number {
+        return this._id;
+    }
+
+    set id(value: number) {
+        this._id = value;
+    }
+
+    get uid(): string {
+        return this._uid;
+    }
+
+    set uid(value: string) {
+        this._uid = value;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    set name(value: string) {
+        this._name = value;
+    }
+
+    get createdAt(): string {
+        return this._createdAt;
+    }
+
+    set createdAt(value: string) {
+        this._createdAt = value;
+    }
+
+    get plan(): Plan {
+        return this._plan;
+    }
+
+    set plan(value: Plan) {
+        this._plan = value;
+    }
+
+    get state(): string {
+        return this._state;
+    }
+
+    set state(value: string) {
+        this._state = value;
+    }
+}
 
 @JsonObject('BookingToken')
 export class BookingToken {
@@ -20,8 +95,8 @@ export class BookingToken {
     @JsonProperty('owner', User)
     private _owner: User = undefined;
 
-    @JsonProperty('instanceId', Number)
-    private _instanceId: number = undefined;
+    @JsonProperty('instance', BookingTokenInstance)
+    private _instance: BookingTokenInstance = undefined;
 
 
     get id(): number {
@@ -64,12 +139,12 @@ export class BookingToken {
         this._owner = value;
     }
 
-    get instanceId(): number {
-        return this._instanceId;
+    get instance(): BookingTokenInstance {
+        return this._instance;
     }
 
-    set instanceId(value: number) {
-        this._instanceId = value;
+    set instance(value: BookingTokenInstance) {
+        this._instance = value;
     }
 }
 

@@ -54,7 +54,7 @@ export class ListComponent implements OnInit {
         this._instancesAndTokens = this._instances.map(instance => {
             return {
                 instance: instance,
-                token: this._bookingTokens?.find(token => token.instanceId === instance.id),
+                token: this._bookingTokens?.find(token => token.instance?.id === instance.id),
             }
         })
 

@@ -43,15 +43,35 @@
     <div class="booking-token-container-right">
         <div class="booking-token-part">
             <div class="booking-token-part-title">
-                Instance
+                <div>
+                    <span>
+                        Instance
+                    </span>
+                    <span *ngIf="instance != null && bookingActive">
+                        created {{instance.createdAt | date}}
+                    </span>
+                </div>
             </div>
             <div class="booking-token-part-content">
                 <div class="booking-token-instance">
                     <div *ngIf="!bookingActive" class="booking-token-instance-not-active">
                         <em>Not available until booking is active</em>
                     </div>
-                    <div *ngIf="token.instance == null && bookingActive" class="booking-token-instance-null">
+                    <div *ngIf="instance == null && bookingActive" class="booking-token-instance-null">
                         No active instance
+                    </div>
+                    <div *ngIf="instance != null && bookingActive" class="booking-token-instance-assigned">
+                        <div class="booking-token-instance-assigned-name-and-state">
+                            <div class="booking-token-instance-assigned-state" [ngClass]="{'booking-token-instance-assigned-state--success': ['PARTIALLY_ACTIVE', 'ACTIVE'].includes(instance.state), 'booking-token-instance-assigned-state--error': ['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)}">
+
+                            </div>
+                            <div class="booking-token-instance-assigned-name">
+                                {{instance.name}}
+                            </div>
+                        </div>
+                        <div class="booking-token-instance-assigned-image">
+                            {{instance.plan.image.name}}
+                        </div>
                     </div>
                 </div>
             </div>

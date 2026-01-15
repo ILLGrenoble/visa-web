@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ApplicationState, BookingToken, selectLoggedInUser, User} from "../../../core";
+import {ApplicationState, BookingToken, BookingTokenInstance, selectLoggedInUser, User} from "../../../core";
 import {FormGroup} from "@angular/forms";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs";
@@ -46,6 +46,10 @@ export class BookingTokenComponent implements OnInit {
         this._bookingActive = value;
     }
 
+    get instance(): BookingTokenInstance {
+        return this._token.instance;
+    }
+
     constructor(store: Store<ApplicationState>) {
         this._user$ = store.select(selectLoggedInUser);
     }
@@ -62,6 +66,9 @@ export class BookingTokenComponent implements OnInit {
     }
 
     protected assignToMeDisabled(): boolean {
+        if (this._token.instance != null) {
+            return true;
+        }
         const assignedUser: User = this._form.value.owner;
         return !(assignedUser == null || this._user.id != assignedUser.id);
     }
