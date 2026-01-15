@@ -126,7 +126,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     get stage(): number {
-        if (this._experimentsObservable.getValue().length === 0 && this._experimentFree === false) {
+        if (this._bookingToken == null && this._experimentsObservable.getValue().length === 0 && this._experimentFree === false) {
             return 0;
         } else if (this._selectedPlan == null) {
             return 1;
@@ -274,10 +274,10 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
 
         } else {
             this._catalogueService.getPlansForFlavour(this._bookingToken.flavour.id).subscribe((plans) => {
-                this._plans = plans;
                 if (plans.length == 1) {
                     plans[0].preset = true;
                 }
+                this._plans = plans;
             });
         }
 
@@ -328,7 +328,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
 
     public isValidData(): boolean {
         return this._selectedPlan != null &&
-            (this._experimentsObservable.getValue().length > 0 || this._experimentFree) &&
+            (this._experimentsObservable.getValue().length > 0 || this._experimentFree || this._bookingToken != null) &&
             this.form.valid;
     }
 
