@@ -5,6 +5,7 @@ import {InstanceListModule} from '../instance-list';
 import {InstanceNewModule} from '../instance-new/instance-new.module';
 import {HomeComponent} from './home.component';
 import {UserNotificationDialog} from "./dialogs";
+import {InstanceTokenComponent} from "./instance-token";
 
 @NgModule({
     imports: [
@@ -16,6 +17,7 @@ import {UserNotificationDialog} from "./dialogs";
     declarations: [
         HomeComponent,
         UserNotificationDialog,
+        InstanceTokenComponent,
     ]
 })
 export class HomeModule {

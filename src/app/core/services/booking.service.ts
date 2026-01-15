@@ -82,9 +82,20 @@ export class BookingService {
 
     }
 
-    public getBookingRequestTokens(uid: string): Observable<BookingToken[]> {
+    public getBookingTokensForBookingRequestUid(uid: string): Observable<BookingToken[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings/${uid}/tokens`;
+        return this.http.get<Response<BookingToken[]>>(url)
+            .pipe(
+                map(({data}) => {
+                    return data.map(element => this.objectMapper.deserialize(element, BookingToken))
+                })
+            );
+    }
+
+    public getAssignedBookingTokens(): Observable<BookingToken[]> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/tokens`;
         return this.http.get<Response<BookingToken[]>>(url)
             .pipe(
                 map(({data}) => {

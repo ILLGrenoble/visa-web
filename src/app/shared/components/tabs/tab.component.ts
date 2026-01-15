@@ -14,6 +14,8 @@ import {TabTitleComponent} from './tab-title.component';
 export class TabComponent implements OnChanges, AfterContentInit {
     @Input() public name: string;
 
+    @Input() public hidden: boolean;
+
     @ContentChild(TabTitleComponent)
     public title: TabTitleComponent;
 

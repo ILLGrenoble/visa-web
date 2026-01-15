@@ -9,17 +9,20 @@ import {
     selectLoggedInUser,
     User,
     Configuration,
-    EventsGateway, GatewayEventSubscriber, NotificationService, NotificationPayload, SystemNotification
+    EventsGateway,
+    GatewayEventSubscriber,
+    NotificationService,
+    SystemNotification,
+    BookingService,
+    BookingToken
 } from '@core';
 import {BehaviorSubject, forkJoin, Observable, Subject} from 'rxjs';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {MatDialog} from "@angular/material/dialog";
-import {NotificationUpdateComponent} from "../../admin/components";
 import {UserNotificationDialog} from "./dialogs";
 import PluginHandler from "highcharts/dashboards/es-modules/Dashboards/PluginHandler";
-import revision = PluginHandler.revision;
 
 @Component({
     styleUrls: ['./home.component.scss'],
@@ -31,6 +34,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _user: User;
 
     private _instances: Instance[] = [];
+    private _allTokens: BookingToken[] = [];
+    private _freeTokens: BookingToken[] = [];
     private _selectedExperiment: Experiment = null;
     private _refresh$: Subject<void> = new BehaviorSubject<void>(null);
     private _destroy$: Subject<boolean> = new Subject<boolean>();
@@ -53,6 +58,23 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     set instances(value: Instance[]) {
         this._instances = value;
+    }
+
+
+    get allTokens(): BookingToken[] {
+        return this._allTokens;
+    }
+
+    get freeTokens(): BookingToken[] {
+        return this._freeTokens;
+    }
+
+    get tokensRedeemable(): boolean {
+        const now = Date.now();
+
+        return this._freeTokens.filter(token => {
+            return now > token.bookingRequest.startDate.getTime() && now < token.bookingRequest.endDate.getTime()
+        }).length > 0;
     }
 
     get selectedExperiment(): Experiment {
@@ -98,7 +120,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         return this._user;
     }
 
+    get defaultTab(): string {
+        if (this._freeTokens?.length > 0 && this._instances?.length === 0) {
+            return 'tokens';
+        }
+        return 'instances';
+    }
+
     constructor(private accountService: AccountService,
+                private bookingService: BookingService,
                 private titleService: Title,
                 private route: ActivatedRoute,
                 store: Store<ApplicationState>,
@@ -123,7 +153,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.refresh$.pipe(
             tap(() => this.loading = true),
             takeUntil(this.destroy$),
-        ).subscribe(this.refresh.bind(this));
+        ).subscribe(() => this.refresh());
 
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
@@ -175,12 +205,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public refresh(): void {
         this.loading = true;
-        this.accountService.getInstances().subscribe((instances) => {
+        forkJoin({
+            instances: this.accountService.getInstances(),
+            tokens: this.bookingService.getAssignedBookingTokens()
+        }).subscribe(({instances, tokens}) => {
             this.mergeInstances(instances);
             this.experiments = [].concat(...instances.map(instance => instance.experiments))
                 .filter((v, i, a) => {
                     return a.findIndex(t => (t.id === v.id)) === i;
                 });
+            this._allTokens = tokens;
+            this._freeTokens = tokens.filter((token) => token.instance == null);
             this.loading = false;
         });
     }

@@ -1,7 +1,8 @@
-import {JsonConverter, JsonCustomConvert, JsonObject, JsonProperty} from 'json2typescript';
+import {JsonObject, JsonProperty} from 'json2typescript';
 import {Flavour} from "./flavour.model";
 import {User} from "./user.model";
 import {Instance} from "./instance.model";
+import {BookingRequestSimple} from "./booking-request-simple.model";
 
 @JsonObject('BookingToken')
 export class BookingToken {
@@ -10,6 +11,9 @@ export class BookingToken {
 
     @JsonProperty('uid', String)
     private _uid: string = undefined;
+
+    @JsonProperty('bookingRequest', BookingRequestSimple)
+    private _bookingRequest: BookingRequestSimple = undefined;
 
     @JsonProperty('flavour', Flavour)
     private _flavour: Flavour = undefined;
@@ -35,6 +39,14 @@ export class BookingToken {
 
     set uid(value: string) {
         this._uid = value;
+    }
+
+    get bookingRequest(): BookingRequestSimple {
+        return this._bookingRequest;
+    }
+
+    set bookingRequest(value: BookingRequestSimple) {
+        this._bookingRequest = value;
     }
 
     get flavour(): Flavour {

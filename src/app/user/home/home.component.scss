@@ -18,3 +18,25 @@
     justify-content: center;
     width: 100%;
 }
+
+.home-tokens-container {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.home-tokens-waiting {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+
+    img {
+        width: 250px;
+        margin: 0 64px;
+    }
+}

@@ -90,7 +90,7 @@ export class BookingDetailsComponent implements OnInit {
 
         forkJoin({
                 booking: this._bookingService.getBookingRequest(uid),
-                tokens: this._bookingService.getBookingRequestTokens(uid),
+                tokens: this._bookingService.getBookingTokensForBookingRequestUid(uid),
             }).pipe(takeUntil(this._destroy$))
             .subscribe({
                 next: ({booking, tokens}) => {

@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="content-small-container" [hidden]="instances.length > 0">
+        <div class="content-small-container" [hidden]="instances.length > 0 || freeTokens.length > 0">
             <div class="information-panel">
                 <h4 class="information-panel-title">
                     What is VISA?
@@ -50,7 +50,18 @@
                 </div>
             </div>
         </div>
-        <div class="content-small-container" [hidden]="instances.length === 0">
+        <div class="content-small-container" [hidden]="freeTokens.length === 0">
+            <div class="information-panel">
+                <h4 class="information-panel-title">
+                    VISA resources have been reserved for you!
+                </h4>
+                <div class="information-panel-body">
+                    A reservation request for VISA resources has been accepted and you have been assigned one or more instances using these resources. Below you will see all the <em>tokens</em> that have been assigned to you which allow you to create instances during the reservation period.
+                </div>
+            </div>
+        </div>
+
+        <div class="content-small-container" *ngIf="instances.length > 0 || freeTokens.length > 0">
             <ng-select class="m-b-10" [multiple]="false" [searchable]="true" notFoundText="No experiments found"
                        (change)="handleExperimentFilter($event)" placeholder="Filter instances by experiment...">
                 <ng-option *ngFor="let experiment of experiments" [value]="experiment">
@@ -63,8 +74,8 @@
                     <clr-spinner></clr-spinner>
                 </div>
             </div>
-            <visa-tabs>
-                <visa-tab>
+            <visa-tabs [selected]="defaultTab">
+                <visa-tab name="instances">
                     <visa-tab-title>My instances <span class="label">{{ (instances | instanceFilterPipe: ['OWNER']: selectedExperiment).length }}</span></visa-tab-title>
                     <visa-tab-actions>
                         <button class="visa-tabs-btn" (click)="handleUpdate()">
@@ -77,8 +88,22 @@
                                 (doUpdateParent)="handleUpdate()">
                             </visa-instance-list>
                         </div>
-                        <div class="blankslate"
-                             [hidden]="(instances | instanceFilterPipe: ['OWNER']: selectedExperiment).length > 0">
+                        <div class="blankslate" [hidden]="instances.length > 0">
+                            <div class="title">
+                                <img src="/assets/images/cloud.png" alt="cloud"/>
+                                <h3>Looks like you don't have any instances</h3>
+                            </div>
+                            <div class="description">
+                                <p>Why not create one?</p>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-primary" [routerLink]="['/instances/new']">Create a new
+                                    instance
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="blankslate" [hidden]="instances.length === 0 || (instances | instanceFilterPipe: ['OWNER']: selectedExperiment).length > 0">
                             <div class="title">
                                 <img src="/assets/images/cloud.png" alt="cloud"/>
                                 <h3>No instances found</h3>
@@ -114,6 +139,40 @@
                                 <div class="description">
                                     <p>We couldn't find any instances for the given filter</p>
                                 </div>
+                            </div>
+                        </div>
+                    </visa-tab-content>
+                </visa-tab>
+                <visa-tab name="tokens" [hidden]="freeTokens.length === 0">
+                    <visa-tab-title>
+                        My instance tokens <span class="label">{{ freeTokens.length }}</span>
+                    </visa-tab-title>
+                    <visa-tab-actions>
+                        <button class="visa-tabs-btn" (click)="handleUpdate()">
+                            <clr-icon shape="sync"></clr-icon>
+                        </button>
+                    </visa-tab-actions>
+                    <visa-tab-content>
+                        <div class="home-tokens-container">
+                            <div *ngFor="let token of freeTokens">
+                                <visa-instance-token [token]="token"></visa-instance-token>
+                            </div>
+                        </div>
+                        <div class="blankslate" [hidden]="tokensRedeemable">
+                            <div class="home-tokens-waiting">
+                                <img src="/assets/images/visa-computing.png" alt="cloud"/>
+                                <div>
+                                    <div class="title">
+                                        <h3 style="margin-top:16px;">Waiting for your tokens to become active?</h3>
+                                    </div>
+                                    <div class="description">
+                                        <p>Why not create an instance now and see what VISA can do for you!</p>
+                                    </div>
+                                    <div class="actions">
+                                        <button class="btn btn-sm btn-primary" [routerLink]="['/instances/new']">Create a new instance</button>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </visa-tab-content>
