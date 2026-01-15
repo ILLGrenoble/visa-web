@@ -104,6 +104,17 @@ export class BookingService {
             );
     }
 
+    public getAssignedBookingTokenByUid(uid: string): Observable<BookingToken> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/tokens/${uid}`;
+        return this.http.get<Response<BookingToken>>(url)
+            .pipe(
+                map(({data}) => {
+                    return this.objectMapper.deserialize(data, BookingToken);
+                })
+            );
+    }
+
     public updateBookingRequestTokens(uid: string, input: [{id: number, ownerId: string}]): Observable<BookingToken[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings/${uid}/tokens`;

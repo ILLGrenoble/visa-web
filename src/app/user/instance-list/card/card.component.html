@@ -118,6 +118,9 @@
                             {{ experiment.startDate | date:'MMM yyyy' }})
                         </span>
                     </div>
+                    <div *ngIf="bookingToken != null" class="instance-text">
+                        Resource reservation: <span class="label instance-card-booking">{{ bookingToken.bookingRequest.name }}</span>
+                    </div>
                 </div>
 
                 <div class="instance-actions">

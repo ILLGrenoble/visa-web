@@ -6,7 +6,10 @@ import {
     User,
     ApplicationState,
     selectLoggedInUser,
-    GatewayEventSubscriber, EventsGateway, InstanceStateChangedEvent
+    GatewayEventSubscriber,
+    EventsGateway,
+    InstanceStateChangedEvent,
+    BookingToken
 } from '@core';
 import {Observable, Subject, timer} from 'rxjs';
 import {DetailsDialog, ExperimentsDialog, MembersDialog, RequestExtensionDialog} from '../dialogs';
@@ -32,6 +35,7 @@ export class CardComponent implements OnInit, OnDestroy {
     private _user: User;
 
     private _instance: Instance;
+    private _bookingToken: BookingToken;
     private _configuration: Configuration;
     private _requestExtensionEnabled = false;
     private _gatewayEventSubscriber: GatewayEventSubscriber;
@@ -51,6 +55,15 @@ export class CardComponent implements OnInit, OnDestroy {
 
     get instance(): Instance {
         return this._instance;
+    }
+
+    get bookingToken(): BookingToken {
+        return this._bookingToken;
+    }
+
+    @Input()
+    set bookingToken(value: BookingToken) {
+        this._bookingToken = value;
     }
 
     @Input()

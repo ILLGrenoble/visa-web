@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {
     AccountService,
     AnalyticsService,
-    ApplicationState,
+    ApplicationState, BookingToken,
     CatalogueService, ConfigService, CustomFlavour,
     Experiment,
     HelperService,
@@ -40,6 +40,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
 
     private _user$: Observable<User>;
     private _user: User;
+    private _bookingToken: BookingToken;
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -171,6 +172,10 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
         this._quotas = value;
     }
 
+    get bookingToken(): BookingToken {
+        return this._bookingToken;
+    }
+
     get selectedPlan(): Plan {
         return this._selectedPlan;
     }
@@ -206,9 +211,10 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
         const title = `New instance | VISA`;
         this.titleService.setTitle(title);
         this.analyticsService.trackPageView(title);
-        const {quotas, totalExperiments} = this.route.snapshot.data;
+        const {quotas, totalExperiments, bookingToken} = this.route.snapshot.data;
         this.quotas = quotas;
         this._totalExperiments = totalExperiments;
+        this._bookingToken = bookingToken;
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
         });
@@ -258,12 +264,22 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
                 }
             });
 
-        this._experimentsObservable.subscribe(experiments => {
-            const experimentIds = experiments.map((experiment) => experiment.id);
-            this._catalogueService.getPlansForExperiments(experimentIds).subscribe((plans) => {
-                this._plans = plans;
+        if (this._bookingToken == null) {
+            this._experimentsObservable.subscribe(experiments => {
+                const experimentIds = experiments.map((experiment) => experiment.id);
+                this._catalogueService.getPlansForExperiments(experimentIds).subscribe((plans) => {
+                    this._plans = plans;
+                });
             });
-        });
+
+        } else {
+            this._catalogueService.getPlansForFlavour(this._bookingToken.flavour.id).subscribe((plans) => {
+                this._plans = plans;
+                if (plans.length == 1) {
+                    plans[0].preset = true;
+                }
+            });
+        }
 
         this.handleGenerateRandomName();
         this._selectedScreenArrangement = this._instanceDisplayHelper.defaultArrangement;
@@ -338,7 +354,7 @@ export class InstanceNewComponent implements OnInit, OnDestroy, AfterViewChecked
 
             this._canSubmit = false;
 
-            this._accountService.createInstance(instance, true)
+            this._accountService.createInstance(instance, this._bookingToken, true)
                 .subscribe({next: () => {
                     this._router.navigate([''], {replaceUrl: true});
                     this.notifierService.notify('success', 'Your instance is being created.');

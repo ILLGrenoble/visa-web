@@ -1,6 +1,7 @@
 <div *ngIf="customFlavours && customFlavours.length > 0">
     <div class="flavour-title">
-        <h3>Choose hardware requirements</h3>
+        <h3 *ngIf="bookingToken == null">Choose hardware requirements</h3>
+        <h3 *ngIf="bookingToken != null">Reserved hardware resources</h3>
     </div>
     <div class="flavours">
         <div *ngFor="let flavourConfig of customFlavours" (click)="flavourConfig.flavour.available ? setSelectedFlavourConfig(flavourConfig) : ''" class="flavour-box" [ngClass]="{'flavour-box--selected': flavourConfig === selectedCustomFlavour.getValue(), 'flavour-box--disabled': !flavourConfig.flavour.available}">
@@ -20,7 +21,7 @@
                     </div>
                 </div>
             </button>
-            <div class="flavour-duration">
+            <div *ngIf="bookingToken == null" class="flavour-duration">
                 <div class="title">
                     Instance duration
                 </div>

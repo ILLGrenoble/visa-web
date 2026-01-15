@@ -5,7 +5,12 @@ import {HomeComponent} from './home/home.component';
 import {InstanceNewComponent} from './instance-new';
 import {InstanceComponent} from './instance/instance.component';
 import {JupyterComponent} from './jupyter/jupyter.component';
-import {accountExperimentCountResolver, accountQuotaResolver, authenticationGuard} from "../core";
+import {
+    accountBookingTokenResolver,
+    accountExperimentCountResolver,
+    accountQuotaResolver,
+    authenticationGuard
+} from "../core";
 
 export const ROUTES: Routes = [
     {
@@ -27,6 +32,12 @@ export const ROUTES: Routes = [
                 canActivate: [authenticationGuard],
                 component: InstanceNewComponent,
                 resolve: {quotas: accountQuotaResolver, totalExperiments: accountExperimentCountResolver},
+            },
+            {
+                path: 'instances/new/:tokenUid',
+                canActivate: [authenticationGuard],
+                component: InstanceNewComponent,
+                resolve: {quotas: accountQuotaResolver, totalExperiments: accountExperimentCountResolver, bookingToken: accountBookingTokenResolver},
             },
             {
                 path: 'instances/:id',

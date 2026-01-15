@@ -1,28 +1,40 @@
-import {Component, Input, Output} from '@angular/core';
-import {Configuration, Instance} from '@core';
+import {Component, Input, OnInit, Output} from '@angular/core';
+import {BookingToken, Configuration, Instance} from '@core';
 import {Subject} from 'rxjs';
+
+type InstanceAndToken = {
+    instance: Instance;
+    token?: BookingToken;
+}
 
 @Component({
     selector: 'visa-instance-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
 })
-export class ListComponent {
+export class ListComponent implements OnInit {
 
     @Output()
     public doUpdateParent: Subject<null> = new Subject();
 
     private _instances: Instance[];
+    private _bookingTokens: BookingToken[];
+    private _instancesAndTokens: InstanceAndToken[];
 
     private _configuration: Configuration;
 
-    get instances(): Instance[] {
-        return this._instances;
+    get instancesAndTokens(): InstanceAndToken[] {
+        return this._instancesAndTokens;
     }
 
     @Input()
     set instances(value: Instance[]) {
         this._instances = value || [];
+    }
+
+    @Input()
+    set bookingTokens(value: BookingToken[]) {
+        this._bookingTokens = value;
     }
 
     get configuration(): Configuration {
@@ -38,4 +50,13 @@ export class ListComponent {
         this.doUpdateParent.next(null);
     }
 
+    public ngOnInit() {
+        this._instancesAndTokens = this._instances.map(instance => {
+            return {
+                instance: instance,
+                token: this._bookingTokens?.find(token => token.instanceId === instance.id),
+            }
+        })
+
+    }
 }

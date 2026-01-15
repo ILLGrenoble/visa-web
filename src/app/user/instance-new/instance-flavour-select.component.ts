@@ -1,6 +1,6 @@
 import {Component, Input, Output, ViewEncapsulation} from '@angular/core';
-import {CustomFlavour, Flavour, ImagePlans, Plan} from '@core';
-import {BehaviorSubject} from 'rxjs';
+import {BookingToken, CustomFlavour, Flavour, ImagePlans, Plan} from '@core';
+import {BehaviorSubject, config} from 'rxjs';
 
 @Component({
     selector: 'visa-instance-flavour-select',
@@ -11,6 +11,7 @@ import {BehaviorSubject} from 'rxjs';
 export class InstanceFlavourSelectComponent {
 
     private _flavourConfigs: CustomFlavour[] = null;
+    private _bookingToken: BookingToken = null;
 
     @Output()
     public selectedCustomFlavour: BehaviorSubject<CustomFlavour> = new BehaviorSubject<CustomFlavour>(null);
@@ -31,6 +32,15 @@ export class InstanceFlavourSelectComponent {
         }
 
         this.setSelectedFlavourConfig(selectedFlavourConfig);
+    }
+
+    get bookingToken(): BookingToken {
+        return this._bookingToken;
+    }
+
+    @Input()
+    set bookingToken(value: BookingToken) {
+        this._bookingToken = value;
     }
 
     get customFlavours(): CustomFlavour[] {

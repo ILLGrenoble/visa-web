@@ -5,6 +5,7 @@ import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
+    BookingToken,
     Experiment,
     Instance, InstanceExtensionRequest,
     InstanceSessionMember,
@@ -316,7 +317,7 @@ export class AccountService {
         );
     }
 
-    public createInstance(instance: Instance, acceptedTerms = false): Observable<Instance> {
+    public createInstance(instance: Instance, bookingToken: BookingToken,  acceptedTerms = false): Observable<Instance> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances`;
         const body = {
@@ -330,6 +331,7 @@ export class AccountService {
             screenWidth: instance.screenWidth,
             keyboardLayout: instance.keyboardLayout,
             vdiProtocolId: instance.vdiProtocol.id,
+            bookingTokenId: bookingToken ? bookingToken.id : null,
         };
         return this.http.post<Response<Instance>>(url, body).pipe(
             map((response) => {

@@ -1,7 +1,6 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {Flavour} from "./flavour.model";
 import {User} from "./user.model";
-import {Instance} from "./instance.model";
 import {BookingRequestSimple} from "./booking-request-simple.model";
 
 @JsonObject('BookingToken')
@@ -21,8 +20,8 @@ export class BookingToken {
     @JsonProperty('owner', User)
     private _owner: User = undefined;
 
-    @JsonProperty('instance', Instance)
-    private _instance: Instance = undefined;
+    @JsonProperty('instanceId', Number)
+    private _instanceId: number = undefined;
 
 
     get id(): number {
@@ -65,12 +64,12 @@ export class BookingToken {
         this._owner = value;
     }
 
-    get instance(): Instance {
-        return this._instance;
+    get instanceId(): number {
+        return this._instanceId;
     }
 
-    set instance(value: Instance) {
-        this._instance = value;
+    set instanceId(value: number) {
+        this._instanceId = value;
     }
 }
 

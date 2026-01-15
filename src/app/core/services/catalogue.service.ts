@@ -29,6 +29,23 @@ export class CatalogueService {
         }
     }
 
+    public getPlansForFlavour(flavourId: number): Observable<Plan[]> {
+        const baseUrl = environment.paths.api;
+        if (flavourId == null) {
+            return this.getPlans();
+
+        } else {
+            const params = {
+                params: new HttpParams().set('flavour', flavourId),
+            };
+            const url = `${baseUrl}/plans`;
+            return this.http.get<Response<Plan[]>>(url, params).pipe(map((response) => {
+                const plans = response.data;
+                return plans.map((plan) => this.objectMapper.deserialize(plan, Plan));
+            }));
+        }
+    }
+
     public getPlans(): Observable<Plan[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/plans`;
