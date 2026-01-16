@@ -290,22 +290,36 @@
                         </clr-dg-column>
                         <clr-dg-column [clrDgSortBy]="'instance.plan.image.name'">
                             <ng-container>
-                                Image
+                                Instance Image
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.state'">
+                            <ng-container>
+                                Instance State
                             </ng-container>
                         </clr-dg-column>
 
                         <clr-dg-placeholder>No tokens exist for the booking request</clr-dg-placeholder>
 
-                        <clr-dg-row *ngFor="let token of tokens">
+                        <clr-dg-row *clrDgItems="let token of tokens">
                             <clr-dg-cell>{{ token.id }}</clr-dg-cell>
                             <clr-dg-cell>{{ token.uid }}</clr-dg-cell>
                             <clr-dg-cell>{{ token.flavour.name }}</clr-dg-cell>
-                            <clr-dg-cell>{{ token.owner?.fullName }}</clr-dg-cell>
+                            <clr-dg-cell>
+                                <div *ngIf="token.owner != null" [style.color]="'#0747a6'" [style.cursor]="'pointer'" [routerLink]="['/admin/users/', token.owner?.id]">
+                                    {{ token.owner?.fullName }}
+                                </div>
+                            </clr-dg-cell>
                             <clr-dg-cell>{{ token.owner ? token.owner.affiliation?.name || 'No affiliation' : '' }}</clr-dg-cell>
                             <clr-dg-cell>{{ token.instance?.id }}</clr-dg-cell>
-                            <clr-dg-cell>{{ token.instance?.name }}</clr-dg-cell>
+                            <clr-dg-cell>
+                                <div *ngIf="token.instance != null" [style.color]="'#0747a6'" [style.cursor]="'pointer'" [routerLink]="['/admin/compute/instances/', token.instance?.id]">
+                                    {{ token.instance?.name }}
+                                </div>
+                            </clr-dg-cell>
                             <clr-dg-cell>{{ token.instance?.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
                             <clr-dg-cell>{{ formatImageName(token.instance?.plan.image) }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.state }}</clr-dg-cell>
                         </clr-dg-row>
 
                         <clr-dg-footer>

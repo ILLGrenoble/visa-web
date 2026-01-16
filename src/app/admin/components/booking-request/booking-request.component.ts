@@ -8,8 +8,6 @@ import {Title} from "@angular/platform-browser";
 import {ActivatedRoute, Router} from "@angular/router";
 import {BookingRequest, FlavourAvailabilitiesFuture, Flavour, BookingToken, Image} from "../../../core/graphql";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {id} from "@cds/core/internal";
-import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
     selector: 'visa-admin-booking-request',
@@ -338,6 +336,13 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
                         instance {
                             id
                             name
+                            state
+                            createdAt
+                            plan {
+                                image {
+                                    name
+                                }
+                            }
                         }
                     }
                 }
