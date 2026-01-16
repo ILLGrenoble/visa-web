@@ -30,221 +30,223 @@
     </div>
 </clr-modal>
 
-<form clrForm [formGroup]="form" clrLayout="horizontal">
-    <div class="content-container">
-        <div class="content-area">
-            <div class="content-small-container">
+<div class="booking-new-container">
+    <form clrForm [formGroup]="form" clrLayout="horizontal">
+        <div class="content-container">
+            <div class="content-area">
+                <div class="content-small-container">
 
-                <div class="clr-row">
-                    <div class="clr-col-12">
-                        <div class="information-panel">
-                            <div class="information-panel-body">
-                                Please fill in the details below to create a new instance reservation request.
+                    <div class="clr-row">
+                        <div class="clr-col-12">
+                            <div class="information-panel">
+                                <div class="information-panel-body">
+                                    Please fill in the details below to create a new instance reservation request.
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="sections">
+                    <div class="sections">
 
-                    <div class="section">
-                        <div class="clr-row">
-                            <div class="clr-col-12">
-                                <div class="title">
-                                    <h2>
-                                        Reservation period
-                                    </h2>
-                                </div>
-                            </div>
-                            <div class="clr-col-12">
-                                <div class="content">
-                                    <p>
-                                        Please select the days you'd like to reserve the resources for.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="content">
+                        <div class="section">
                             <div class="clr-row">
-                                <div class="clr-col-5">
-                                    <clr-date-container>
-                                        <label for="startDate" class="clr-col-md-5">Reservation period from</label>
-                                        <input id="startDate" [(clrDate)]="startDate" type="date" formControlName="startDate" [min]="minStartDate" [max]="maxStartDate" class="clr-col-md-7">
-                                    </clr-date-container>
+                                <div class="clr-col-12">
+                                    <div class="title">
+                                        <h2>
+                                            Reservation period
+                                        </h2>
+                                    </div>
                                 </div>
-                                <div [hidden]="startDate == null" class="clr-col-7">
-                                    <clr-date-container>
-                                        <label for="endDate" class="clr-col-md-1">to</label>
-                                        <input id="endDate" [(clrDate)]="endDate" type="date" formControlName="endDate" [min]="minEndDate">
-                                    </clr-date-container>
+                                <div class="clr-col-12">
+                                    <div class="content">
+                                        <p>
+                                            Please select the days you'd like to reserve the resources for.
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="clr-col-12" *ngIf="datesValid" style="margin-top: 24px;">
-                                    <p>
-                                        Selected reservation period is for {{reservationDurationDays}} days.
-                                    </p>
+                            </div>
+                            <div class="content">
+                                <div class="clr-row">
+                                    <div class="clr-col-5">
+                                        <clr-date-container>
+                                            <label for="startDate" class="clr-col-md-5">Reservation period from</label>
+                                            <input id="startDate" [(clrDate)]="startDate" type="date" formControlName="startDate" [min]="minStartDate" [max]="maxStartDate" class="clr-col-md-7">
+                                        </clr-date-container>
+                                    </div>
+                                    <div [hidden]="startDate == null" class="clr-col-7">
+                                        <clr-date-container>
+                                            <label for="endDate" class="clr-col-md-1">to</label>
+                                            <input id="endDate" [(clrDate)]="endDate" type="date" formControlName="endDate" [min]="minEndDate">
+                                        </clr-date-container>
+                                    </div>
+                                    <div class="clr-col-12" *ngIf="datesValid" style="margin-top: 24px;">
+                                        <p>
+                                            Selected reservation period is for {{reservationDurationDays}} days.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="section" *ngIf="datesValid">
-                        <div class="clr-row">
-                            <div class="clr-col-12">
-                                <div class="title">
-                                    <h2>
-                                        Hardware requirements
-                                    </h2>
+                        <div class="section" *ngIf="datesValid">
+                            <div class="clr-row">
+                                <div class="clr-col-12">
+                                    <div class="title">
+                                        <h2>
+                                            Hardware requirements
+                                        </h2>
+                                    </div>
+                                </div>
+                                <div class="clr-col-12">
+                                    <div class="content">
+                                        <p>
+                                            Please select the resources you'd like to reserve. Flavours that you are allowed to reserve are shown below. Click on them to add them to your request.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="clr-col-12">
-                                <div class="content">
-                                    <p>
-                                        Please select the resources you'd like to reserve. Flavours that you are allowed to reserve are shown below. Click on them to add them to your request.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="flavours">
-                            <div *ngFor="let flavourLimit of flavourLimits" (click)="toggleSelectFlavour(flavourLimit)" class="flavour-box" [ngClass]="{'flavour-box--selected': isFlavourSelected(flavourLimit.flavour), 'flavour-box--disabled': !flavourLimit.available}">
-                                <button class="flavour-button">
-                                    <div class="flavour-button__detail">
-                                        {{getCpuView(flavourLimit.flavour)}}
-                                    </div>
-                                    <div class="flavour-button__detail">
-                                        {{getRamView(flavourLimit.flavour)}} memory
-                                    </div>
-                                    <div *ngFor="let device of flavourLimit.flavour.devices" class="flavour-button__detail">
-                                        <div class="flavour-button__device-name">
-                                            {{device.devicePool.name}}
+                            <div class="flavours">
+                                <div *ngFor="let flavourLimit of flavourLimits" (click)="toggleSelectFlavour(flavourLimit)" class="flavour-box" [ngClass]="{'flavour-box--selected': isFlavourSelected(flavourLimit.flavour), 'flavour-box--disabled': !flavourLimit.available}">
+                                    <button class="flavour-button">
+                                        <div class="flavour-button__detail">
+                                            {{getCpuView(flavourLimit.flavour)}}
                                         </div>
-                                        <div *ngIf="device.devicePool.description" class="flavour-button__device-description">
-                                            {{device.devicePool.description}}
+                                        <div class="flavour-button__detail">
+                                            {{getRamView(flavourLimit.flavour)}} memory
+                                        </div>
+                                        <div *ngFor="let device of flavourLimit.flavour.devices" class="flavour-button__detail">
+                                            <div class="flavour-button__device-name">
+                                                {{device.devicePool.name}}
+                                            </div>
+                                            <div *ngIf="device.devicePool.description" class="flavour-button__device-description">
+                                                {{device.devicePool.description}}
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <div class="flavour-details">
+                                        <div>
+                                            {{flavourLimit.flavour.name}}
                                         </div>
                                     </div>
-                                </button>
-                                <div class="flavour-details">
-                                    <div>
-                                        {{flavourLimit.flavour.name}}
-                                    </div>
-                                </div>
-                                <div class="flavour-availability">
-                                    <div>
-                                        {{flavourLimit.maxInstances}} instance{{flavourLimit.maxInstances > 1 ? 's' : ''}} available
-                                    </div>
-                                </div>
-                                <div class="flavour-unavailable">
-                                    <div *ngIf="!flavourLimit.available" class="unavailable-text">
-                                        <div class="unavailable-text-sub">
-                                            {{flavourLimit.message}}
+                                    <div class="flavour-availability">
+                                        <div>
+                                            {{flavourLimit.maxInstances}} instance{{flavourLimit.maxInstances > 1 ? 's' : ''}} available
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section" *ngIf="datesValid && flavourRequestsFormArray.length > 0">
-                        <div class="clr-row">
-                            <div class="clr-col-12">
-                                <div class="title">
-                                    <h2 style="margin-top: 0;">
-                                        Number of instances
-                                    </h2>
-                                </div>
-                            </div>
-                            <div class="clr-col-12">
-                                <div class="content">
-                                    <p>
-                                        Please enter the required number of instances for each of the chosen flavours.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div formArrayName="flavourRequests">
-                            <ng-container *ngFor="let flavourRequest of flavourRequestsFormArray.controls; let i = index">
-                                <div [formGroupName]="i">
-                                    <div class="clr-row booking-new-flavour">
-                                        <clr-input-container>
-                                            <label for="quantity" class="clr-col-md-6">{{flavourRequest.get('flavour').value.name}}</label>
-                                            <input style="width: 150px;" id="quantity" clrInput formControlName="quantity" type="number" min="1" [max]="getMaxInstancesForFlavour(flavourRequest.get('flavour').value)" class="clr-col-md-6"/>
-                                            <clr-control-helper>
-                                                Quantity ({{getMaxInstancesForFlavour(flavourRequest.get('flavour').value)}} max)
-                                            </clr-control-helper>
-                                            <clr-control-error *ngIf="flavourRequest.get('quantity')?.errors?.limitExceeded">
-                                                Exceeds maximum allowed
-                                            </clr-control-error>
-                                        </clr-input-container>
-                                    </div>
-                                </div>
-                            </ng-container>
-                        </div>
-
-                    </div>
-
-
-                    <div class="section" *ngIf="datesValid && flavourRequestsFormArray.length > 0 && flavourQuantitiesValid">
-                        <div class="clr-row">
-
-                            <div class="clr-col-7">
-                                <div class="title">
-                                    <h2>
-                                        Reason for reservation
-                                    </h2>
-                                </div>
-
-                                <clr-input-container>
-                                    <label for="label" class="clr-col-md-7">Enter a label to easily identify your reservation request.</label>
-                                    <input clrInput id="label" formControlName="name" class="clr-col-md-5 booking-new-id-label">
-                                </clr-input-container>
-
-                                <div class="content">
-                                    <p>
-                                        Please enter the details outlining your need to reserve computational resources in VISA.
-                                    </p>
-                                </div>
-                                <textarea id="comments" rows="3" name="comments" class="booking-new-comments-input"
-                                          style="width: 100%"
-                                          formControlName="comments">
-                                </textarea>
-                            </div>
-                            <div class="clr-col-1">
-                            </div>
-
-                            <div class="clr-col-4">
-                                <div class="title">
-                                    <h2>
-                                        Booking Summary
-                                    </h2>
-                                </div>
-                                <div class="content">
-                                    <div class="booking-new-summary">
-                                        <div class="booking-new-summary-item">
-                                            <p>
-                                                Reservation from {{ startDate | date}} to {{endDate | date}} ({{reservationDurationDays}} days)
-                                            </p>
-                                        </div>
-                                        <div class="booking-new-summary-item">
-                                            <p>
-                                                Requested resources:
-                                            </p>
-
-                                            <div *ngFor="let flavourRequest of flavourRequestsFormArray.controls">
-                                                <p style="margin-left: 8px;">{{flavourRequest.value.quantity}} x "{{flavourRequest.value.flavour.name}}" instance{{flavourRequest.value.quantity > 1 ? 's' : ''}}</p>
+                                    <div class="flavour-unavailable">
+                                        <div *ngIf="!flavourLimit.available" class="unavailable-text">
+                                            <div class="unavailable-text-sub">
+                                                {{flavourLimit.message}}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="clr-col-12 booking-new-submit">
-                                <button class="btn btn-primary btn-block" [disabled]="form.invalid" (click)="createBookingRequest()">Send booking request</button>
+                        <div class="section" *ngIf="datesValid && flavourRequestsFormArray.length > 0">
+                            <div class="clr-row">
+                                <div class="clr-col-12">
+                                    <div class="title">
+                                        <h2 style="margin-top: 0;">
+                                            Number of instances
+                                        </h2>
+                                    </div>
+                                </div>
+                                <div class="clr-col-12">
+                                    <div class="content">
+                                        <p>
+                                            Please enter the required number of instances for each of the chosen flavours.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div formArrayName="flavourRequests">
+                                <ng-container *ngFor="let flavourRequest of flavourRequestsFormArray.controls; let i = index">
+                                    <div [formGroupName]="i">
+                                        <div class="clr-row booking-new-flavour">
+                                            <clr-input-container>
+                                                <label for="quantity" class="clr-col-md-6">{{flavourRequest.get('flavour').value.name}}</label>
+                                                <input style="width: 150px;" id="quantity" clrInput formControlName="quantity" type="number" min="1" [max]="getMaxInstancesForFlavour(flavourRequest.get('flavour').value)" class="clr-col-md-6"/>
+                                                <clr-control-helper>
+                                                    Quantity ({{getMaxInstancesForFlavour(flavourRequest.get('flavour').value)}} max)
+                                                </clr-control-helper>
+                                                <clr-control-error *ngIf="flavourRequest.get('quantity')?.errors?.limitExceeded">
+                                                    Exceeds maximum allowed
+                                                </clr-control-error>
+                                            </clr-input-container>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+
+                        </div>
+
+
+                        <div class="section" *ngIf="datesValid && flavourRequestsFormArray.length > 0 && flavourQuantitiesValid">
+                            <div class="clr-row">
+
+                                <div class="clr-col-7">
+                                    <div class="title">
+                                        <h2>
+                                            Reason for reservation
+                                        </h2>
+                                    </div>
+
+                                    <clr-input-container>
+                                        <label for="label" class="clr-col-md-7">Enter a label to easily identify your reservation request.</label>
+                                        <input clrInput id="label" formControlName="name" class="clr-col-md-5 booking-new-id-label">
+                                    </clr-input-container>
+
+                                    <div class="content">
+                                        <p>
+                                            Please enter the details outlining your need to reserve computational resources in VISA.
+                                        </p>
+                                    </div>
+                                    <textarea id="comments" rows="3" name="comments" class="booking-new-comments-input"
+                                              style="width: 100%"
+                                              formControlName="comments">
+                                </textarea>
+                                </div>
+                                <div class="clr-col-1">
+                                </div>
+
+                                <div class="clr-col-4">
+                                    <div class="title">
+                                        <h2>
+                                            Booking Summary
+                                        </h2>
+                                    </div>
+                                    <div class="content">
+                                        <div class="booking-new-summary">
+                                            <div class="booking-new-summary-item">
+                                                <p>
+                                                    Reservation from {{ startDate | date}} to {{endDate | date}} ({{reservationDurationDays}} days)
+                                                </p>
+                                            </div>
+                                            <div class="booking-new-summary-item">
+                                                <p>
+                                                    Requested resources:
+                                                </p>
+
+                                                <div *ngFor="let flavourRequest of flavourRequestsFormArray.controls">
+                                                    <p style="margin-left: 8px;">{{flavourRequest.value.quantity}} x "{{flavourRequest.value.flavour.name}}" instance{{flavourRequest.value.quantity > 1 ? 's' : ''}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="clr-col-12 booking-new-submit">
+                                    <button class="btn btn-primary btn-block" [disabled]="form.invalid" (click)="createBookingRequest()">Send booking request</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
