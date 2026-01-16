@@ -1,5 +1,4 @@
 <div class="booking-token-container">
-    <div class="booking-token-container-left">
         <div class="booking-token-part">
             <div class="booking-token-part-title">
                 Reference
@@ -39,16 +38,15 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="booking-token-container-right">
-        <div class="booking-token-part">
+
+        <div class="booking-token-part" style="flex-grow: 1; margin-left: 24px;">
             <div class="booking-token-part-title">
                 <div>
                     <span>
                         Instance
                     </span>
                     <span *ngIf="instance != null && bookingActive">
-                        created {{instance.createdAt | date}}
+                        created {{instance.createdAt | date: 'dd MMMM y HH:mm'}}
                     </span>
                 </div>
             </div>
@@ -62,9 +60,13 @@
                     </div>
                     <div *ngIf="instance != null && bookingActive" class="booking-token-instance-assigned">
                         <div class="booking-token-instance-assigned-name-and-state">
-                            <div class="booking-token-instance-assigned-state" [ngClass]="{'booking-token-instance-assigned-state--success': ['PARTIALLY_ACTIVE', 'ACTIVE'].includes(instance.state), 'booking-token-instance-assigned-state--error': ['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)}">
-
-                            </div>
+                            <clr-tooltip>
+                                <div clrTooltipTrigger class="booking-token-instance-assigned-state" [ngClass]="{'booking-token-instance-assigned-state--success': ['PARTIALLY_ACTIVE', 'ACTIVE'].includes(instance.state), 'booking-token-instance-assigned-state--error': ['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)}">
+                                </div>
+                                <clr-tooltip-content clrPosition="top-right" clrSize="sm" *clrIfOpen>
+                                    <span>{{instance.state }}</span>
+                                </clr-tooltip-content>
+                            </clr-tooltip>
                             <div class="booking-token-instance-assigned-name">
                                 {{instance.name}}
                             </div>
@@ -75,7 +77,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 
 </div>
