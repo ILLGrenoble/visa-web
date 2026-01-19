@@ -282,6 +282,7 @@ export type Instance = {
     cloudClient?: Maybe<CloudClient>;
     vdiProtocol: ImageProtocol;
     deviceAllocations: Maybe<Array<Maybe<InstanceDeviceAllocation>>>;
+    bookingToken: Maybe<BookingToken>;
 };
 
 export type InstanceConnection = {

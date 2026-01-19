@@ -74,6 +74,12 @@
                 </dt>
                 <dd>{{  formatImageName(instance.plan.image) }}</dd>
             </div>
+            <div *ngIf="instance.bookingToken != null" class="admin-details-list-item extension-request-list-item" style="margin-top: 16px;">
+                <dt>
+                    <b>Booking Request</b>
+                </dt>
+                <dd><b>Instance part of a booking request: </b><a target="_blank" [routerLink]="['/admin/bookings/requests', instance.bookingToken.bookingRequest.id]">{{instance.bookingToken.bookingRequest.name}}</a></dd>
+            </div>
         </dl>
     </div>
 
@@ -99,7 +105,14 @@
         </dl>
     </div>
 
-    <h4>Extension response</h4>
+    <h4>Availability of requested flavour</h4>
+    <div class="extension-request-availabilities">
+        <div *ngIf="availability">
+            <visa-admin-availability [availability]="availability" [showUncertaintyRegion]="true"></visa-admin-availability>
+        </div>
+    </div>
+
+    <h4 style="margin-top: 0;">Extension response</h4>
     <div class="admin-box-body p-t-10 p-b-10">
         <dl class="admin-details-list">
             <div class="admin-details-list-item extension-request-list-item">
