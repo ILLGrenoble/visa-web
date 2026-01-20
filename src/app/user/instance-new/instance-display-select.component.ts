@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, Input, Output} from '@angular/core';
 import {combineLatest, BehaviorSubject, Subject, window} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
-import {Protocol, Plan} from "@core";
+import {Protocol, Plan, ConfigService} from "@core";
 import {InstanceDisplayHelper, ScreenArrangement, ScreenResolution} from "./instance-display-helper";
 
 @Component({
@@ -15,11 +15,13 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     private _availableVdiProtocols: Protocol[] = null;
     private _vdiProtocol$: BehaviorSubject<Protocol> = new BehaviorSubject(null);
     private _showAdvancedSettings = false;
+    private _plan: Plan;
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
     private _selectedSingleScreenResolution: BehaviorSubject<ScreenResolution> = new BehaviorSubject<ScreenResolution>(null);
     private _selectedArrangement: BehaviorSubject<ScreenArrangement> = new BehaviorSubject<ScreenArrangement>(null);
+    private _vdiProtocolLocalStorageKey: string = InstanceDisplayHelper.USER_INSTANCE_VDI_PROTOCOL_KEY;
 
     get availableVdiProtocols(): Protocol[] {
         return this._availableVdiProtocols;
@@ -32,13 +34,9 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
 
     @Input()
     set plan(plan: Plan) {
+        this._plan = plan;
         this._availableVdiProtocols = plan?.image.availableVdiProtocols();
-        const userPreferredProtocol = this._availableVdiProtocols?.find(protocol => protocol.name === localStorage.getItem(InstanceDisplayHelper.USER_INSTANCE_VDI_PROTOCOL_KEY));
-        if (userPreferredProtocol) {
-            this._vdiProtocol$.next(userPreferredProtocol);
-        } else {
-            this._vdiProtocol$.next(plan?.image.defaultVdiProtocol ? this._availableVdiProtocols?.find(protocol => protocol.id === plan?.image.defaultVdiProtocol.id) : null);
-        }
+        this._updateVdiProtocol();
     }
 
     public get destroy$(): Subject<boolean> {
@@ -82,7 +80,7 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
 
     set vdiProtocol(value: Protocol) {
         this._vdiProtocol$.next(value);
-        localStorage.setItem(InstanceDisplayHelper.USER_INSTANCE_VDI_PROTOCOL_KEY, value.name);
+        localStorage.setItem(this._vdiProtocolLocalStorageKey, value.name);
     }
 
     get vdiProtocolChoiceAvailable(): boolean {
@@ -108,6 +106,9 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     @Output()
     public arrangement: Subject<ScreenArrangement> = new Subject<ScreenArrangement>();
 
+    constructor(private _configurationService: ConfigService) {
+    }
+
     public ngOnInit(): void {
         this.selectedSingleScreenResolution = this._helper.defaultScreenResolution;
         this.selectedArrangement = this._helper.defaultArrangement;
@@ -125,6 +126,17 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
         ).subscribe(arrangement => {
             this.arrangement.next(arrangement);
         })
+
+        this._configurationService.configuration$()
+            .pipe(takeUntil(this._destroy$))
+            .subscribe((config) => {
+                const vdiProtocolLocalStorageKey = config.metadata['VDI_LOCAL_STORAGE_KEY'];
+                if (vdiProtocolLocalStorageKey != null) {
+                    this._vdiProtocolLocalStorageKey = vdiProtocolLocalStorageKey;
+                    localStorage.removeItem(InstanceDisplayHelper.USER_INSTANCE_VDI_PROTOCOL_KEY);
+                    this._updateVdiProtocol();
+                }
+            });
     }
 
     public handleSelectedArrangement(arrangement: ScreenArrangement): void {
@@ -154,5 +166,14 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
             return 'Experimental remote desktop protocol with low latency and high graphical quality';
         }
         return null;
+    }
+
+    private _updateVdiProtocol(): void {
+        const userPreferredProtocol = this._availableVdiProtocols?.find(protocol => protocol.name === localStorage.getItem(this._vdiProtocolLocalStorageKey));
+        if (userPreferredProtocol) {
+            this._vdiProtocol$.next(userPreferredProtocol);
+        } else {
+            this._vdiProtocol$.next(this._plan?.image.defaultVdiProtocol ? this._availableVdiProtocols?.find(protocol => protocol.id === this._plan?.image.defaultVdiProtocol.id) : null);
+        }
     }
 }
