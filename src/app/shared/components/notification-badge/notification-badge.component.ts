@@ -23,6 +23,9 @@ export class NotificationBadgeComponent implements OnInit , OnDestroy {
     @Input()
     public showCount: boolean;
 
+    @Input()
+    public backgroundColor: string;
+
     get clientNotifications(): ClientNotification[] {
         return this._clientNotifications;
     }

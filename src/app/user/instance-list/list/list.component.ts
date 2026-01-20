@@ -12,12 +12,12 @@ type InstanceAndToken = {
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
 })
-export class ListComponent implements OnInit {
+export class ListComponent {
 
     @Output()
     public doUpdateParent: Subject<null> = new Subject();
 
-    private _instances: Instance[];
+    private _instances: Instance[] = [];
     private _bookingTokens: BookingToken[];
     private _instancesAndTokens: InstanceAndToken[];
 
@@ -30,11 +30,13 @@ export class ListComponent implements OnInit {
     @Input()
     set instances(value: Instance[]) {
         this._instances = value || [];
+        this._updateInstancesAndTokens();
     }
 
     @Input()
     set bookingTokens(value: BookingToken[]) {
         this._bookingTokens = value;
+        this._updateInstancesAndTokens();
     }
 
     get configuration(): Configuration {
@@ -50,13 +52,12 @@ export class ListComponent implements OnInit {
         this.doUpdateParent.next(null);
     }
 
-    public ngOnInit() {
+    private _updateInstancesAndTokens(): void {
         this._instancesAndTokens = this._instances.map(instance => {
             return {
                 instance: instance,
                 token: this._bookingTokens?.find(token => token.instance?.id === instance.id),
             }
         })
-
     }
 }

@@ -5,6 +5,7 @@
                 <a class="admin-tab" routerLink="/admin/bookings/requests" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="event" class="is-solid"></clr-icon>
                     Requests
+                    <visa-notification-badge [badgeTags]="['booking.requests.pending']" [showCount]="true" [backgroundColor]="'#ff9f43'"></visa-notification-badge>
                 </a>
                 <a class="admin-tab" routerLink="/admin/bookings/availabilities" routerLinkActive="admin-tab--selected">
                     <clr-icon shape="calendar" class="is-solid"></clr-icon>

@@ -1,4 +1,4 @@
-<div *ngIf="isActive" class="notification-badge" [ngClass]="{'with-text': showCount}">
+<div *ngIf="isActive" class="notification-badge" [ngClass]="{'with-text': showCount}" [style.background-color]="backgroundColor">
     <p *ngIf="showCount">
         {{count}}
     </p>
