@@ -3,117 +3,200 @@
     <div mat-dialog-content>
         <form clrForm [formGroup]="clientForm" clrLayout="horizontal" clrLabelSize="3">
 
-            <clr-select-container *ngIf="!readonly">
-                <label for="type">Type</label>
-                <select clrSelect id="type" formControlName="type">
-                    <option *ngFor="let providerType of providerTypes" [ngValue]="providerType.value">{{providerType.name}}</option>
-                </select>
-                <clr-control-helper>Please select a provider type</clr-control-helper>
-            </clr-select-container>
+            <div class="form-control-container">
+                <clr-select-container *ngIf="!readonly" class="form-control-input">
+                    <label for="type">Type</label>
+                    <select clrSelect id="type" formControlName="type">
+                        <option *ngFor="let providerType of providerTypes" [ngValue]="providerType.value">{{providerType.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select a provider type</clr-control-helper>
+                </clr-select-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container *ngIf="readonly">
-                <label for="type_ro">Type</label>
-                <input *ngIf="readonly" clrInput id="type_ro" formControlName="type" class="form-control" size="40" readOnly />
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container *ngIf="readonly" class="form-control-input">
+                    <label for="type_ro">Type</label>
+                    <input *ngIf="readonly" clrInput id="type_ro" formControlName="type" class="form-control" size="40" readOnly />
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="name">Name</label>
-                <input clrInput id="name" formControlName="name" class="form-control" size="40" [readOnly]="readonly" />
-                <clr-control-helper *ngIf="!readonly">Please enter a name for the provider</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="name">Name</label>
+                    <input clrInput id="name" formControlName="name" class="form-control" size="40" [readOnly]="readonly" />
+                    <clr-control-helper *ngIf="!readonly">Please enter a name for the provider</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="serverNamePrefix">Server name prefix</label>
-                <input clrInput id="serverNamePrefix" formControlName="serverNamePrefix" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter a prefix that will be applied to all instance names in the provider</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="serverNamePrefix">Server name prefix</label>
+                    <input clrInput id="serverNamePrefix" formControlName="serverNamePrefix" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter a prefix that will be applied to all instance names in the provider</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container *ngIf="!readonly">
-                <label for="visible">Visible</label>
-                <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible" [readOnly]="readonly" />
-                <clr-control-helper *ngIf="!readonly">
-                    A provider that is not set to visible can only used by administrators (images and flavours can not be used by standard users). This is useful for testing a provider before making it public.
-                </clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container *ngIf="!readonly" class="form-control-input">
+                    <label for="visible">Visible</label>
+                    <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible" [readOnly]="readonly" />
+                    <clr-control-helper *ngIf="!readonly">
+                        A provider that is not set to visible can only used by administrators (images and flavours can not be used by standard users). This is useful for testing a provider before making it public.
+                    </clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container *ngIf="readonly">
-                <label for="visible_ro">Visible</label>
-                <input clrInput id="visible_ro" formControlName="visible" class="form-control" size="40" [readOnly]="readonly"  />
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container *ngIf="readonly" class="form-control-input">
+                    <label for="visible_ro">Visible</label>
+                    <input clrInput id="visible_ro" formControlName="visible" class="form-control" size="40" [readOnly]="readonly"  />
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
         </form>
 
         <form clrForm [formGroup]="openStackForm" clrLayout="horizontal" clrLabelSize="3" *ngIf="providerType === 'openstack'">
 
-            <clr-input-container>
-                <label for="applicationId">Application Id</label>
-                <input clrInput id="applicationId" formControlName="applicationId" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Application Id used to authenticate with OpenStack</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="applicationId">Application Id</label>
+                    <input clrInput id="applicationId" formControlName="applicationId" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Application Id used to authenticate with OpenStack</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="applicationSecret">Application Secret</label>
-                <input clrInput id="applicationSecret" formControlName="applicationSecret" class="form-control" size="60" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Application Secret used to authenticate with OpenStack</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="applicationSecret">Application Secret</label>
+                    <input clrInput id="applicationSecret" formControlName="applicationSecret" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Application Secret used to authenticate with OpenStack</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="computeEndpoint">Compute Endpoint</label>
-                <input clrInput id="computeEndpoint" formControlName="computeEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Compute endpoint URL</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="computeEndpoint">Compute Endpoint</label>
+                    <input clrInput id="computeEndpoint" formControlName="computeEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Compute endpoint URL</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="placementEndpoint">Placement Endpoint</label>
-                <input clrInput id="placementEndpoint" formControlName="placementEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Placement endpoint URL</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="placementEndpoint">Placement Endpoint</label>
+                    <input clrInput id="placementEndpoint" formControlName="placementEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Placement endpoint URL</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="imageEndpoint">Image Endpoint</label>
-                <input clrInput id="imageEndpoint" formControlName="imageEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Image endpoint URL</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="imageEndpoint">Image Endpoint</label>
+                    <input clrInput id="imageEndpoint" formControlName="imageEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Image endpoint URL</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="networkEndpoint">Network Endpoint</label>
-                <input clrInput id="networkEndpoint" formControlName="networkEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Network endpoint URL</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="networkEndpoint">Network Endpoint</label>
+                    <input clrInput id="networkEndpoint" formControlName="networkEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Network endpoint URL</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="identityEndpoint">Identity Endpoint</label>
-                <input clrInput id="identityEndpoint" formControlName="identityEndpoint" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Identity endpoint URL</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label class="clr-col-3" for="identityEndpoint">Identity Endpoint</label>
+                    <input clrInput id="identityEndpoint" formControlName="identityEndpoint" class="form-control clr-col-5" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the Identity endpoint URL</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="addressProvider">Address Provider</label>
-                <input clrInput id="addressProvider" formControlName="addressProvider" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Address Provider name</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label class="clr-col-3" for="addressProvider">Address Provider</label>
+                    <input clrInput id="addressProvider" formControlName="addressProvider" class="form-control clr-col-5" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter principal the Address Provider name</clr-control-helper>
+                </clr-input-container>
+                <div  class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="addressProviderUUID">Address Provider UUID</label>
-                <input clrInput id="addressProviderUUID" formControlName="addressProviderUUID" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the Address Provider UUID</clr-control-helper>
-            </clr-input-container>
+            <div formArrayName="addressProviderUUIDs">
+                <div *ngFor="let ctrl of openStackAddressProviderUUIDsForm.controls; let i = index" class="form-control-container">
+                    <clr-input-container class="form-control-input">
+                        <label for="addressProviderUUID" *ngIf="i == 0">Address Provider UUIDs</label>
+                        <label for="addressProviderUUID" *ngIf="i > 0"></label>
+                        <input clrInput id="addressProviderUUID" formControlName="{{ i }}" class="form-control" size="40" [readOnly]="readonly"/>
+                        <clr-control-helper *ngIf="!readonly">Please enter an Address Provider UUID</clr-control-helper>
+                    </clr-input-container>
+                    <div class="form-control-right">
+                        <button *ngIf="!readonly" type="button" class="btn btn-sm btn-outline" (click)="removeAddressProviderUUID(i)" [disabled]="openStackAddressProviderUUIDsForm.length === 1">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-control-container">
+                <div class="form-control-input">
+                </div>
+                <div class="form-control-right">
+                    <button type="button" class="btn btn-sm btn-outline" (click)="addAddressProviderUUID()">
+                        Add UUID
+                    </button>
+                </div>
+            </div>
+
         </form>
 
 
         <form clrForm [formGroup]="webForm" clrLayout="horizontal" clrLabelSize="3" *ngIf="providerType === 'web'">
-            <clr-input-container>
-                <label for="url">Web cloud provider URL</label>
-                <input clrInput id="url" formControlName="url" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the URL of the Web Provider</clr-control-helper>
-            </clr-input-container>
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="url">Web cloud provider URL</label>
+                    <input clrInput id="url" formControlName="url" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the URL of the Web Provider</clr-control-helper>
+                </clr-input-container>
+                <div class="form-control-right">
+                </div>
+            </div>
 
-            <clr-input-container>
-                <label for="authToken">Authentication Token</label>
-                <input clrInput id="authToken" formControlName="authToken" class="form-control" size="40" [readOnly]="readonly"  />
-                <clr-control-helper *ngIf="!readonly">Please enter the token used to authenticate with the Web cloud provider</clr-control-helper>
-            </clr-input-container>
-
+            <div class="form-control-container">
+                <clr-input-container class="form-control-input">
+                    <label for="authToken">Authentication Token</label>
+                    <input clrInput id="authToken" formControlName="authToken" class="form-control" size="40" [readOnly]="readonly"  />
+                    <clr-control-helper *ngIf="!readonly">Please enter the token used to authenticate with the Web cloud provider</clr-control-helper>
+                </clr-input-container>
+                <div class="form-control-right">
+                </div>
+            </div>
         </form>
+
         <div *ngIf="!readonly" class="modal-footer">
             <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
             <button (click)="submit()" [disabled]="clientForm.invalid || !providerFormValid" class="btn btn-primary">Save</button>
