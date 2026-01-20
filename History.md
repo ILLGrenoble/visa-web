@@ -1,3 +1,7 @@
+3.7.1 20/01/2026
+================
+ - Modify cloud-client edit component to accept multiple openstack address provider UUIDs.
+
 3.7.0 08/12/2025
 ================
  - Update to WebX-Client 1.13.1
