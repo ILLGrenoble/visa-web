@@ -139,7 +139,7 @@ export class AvailabilityChartData {
         this._options.xAxis = {...this._options.xAxis, min: xMin, max: xMax};
         this._options.yAxis = {...this._options.yAxis, min: 0, max: yMax};
 
-        this.addRegions(showUncertaintyRegion ? availabilities : null, bookings);
+        this.addRegions(showUncertaintyRegion ? availabilities : [], bookings);
 
         availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits});
         totalData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].totalUnits})
@@ -150,33 +150,55 @@ export class AvailabilityChartData {
     }
 
     private addRegions(availabilities: FlavourAvailability[], bookings: BookingRequest[]): void {
-        const uncertaintyStart = availabilities?.find(availability => availability.confidence === 'UNCERTAIN');
+
+        const unavailabilityPeriods: {startDate: string, endDate?: string}[] = [];
+        let currentUnavailabilityStart: string = null;
+        for (const availability of availabilities) {
+            if (currentUnavailabilityStart == null && availability.confidence === 'UNCERTAIN') {
+                currentUnavailabilityStart = availability.date;
+            } else if (currentUnavailabilityStart != null && availability.confidence === 'CERTAIN') {
+                unavailabilityPeriods.push({startDate: currentUnavailabilityStart, endDate: availability.date});
+                currentUnavailabilityStart = null;
+            }
+        }
+        if (currentUnavailabilityStart != null) {
+            unavailabilityPeriods.push({startDate: currentUnavailabilityStart, endDate: '2050-01-01T00:00:00.000'});
+        }
         let index = 4;
 
-        if (uncertaintyStart) {
-            this._options.xAxis.plotBands.push({
-                color: 'rgba(0, 0, 0, 0.04)',
-                from: Date.parse(uncertaintyStart.date),
-                to: Date.parse('2050-01-01T00:00:00.000'),
-                zIndex: index,
-                label: {
-                    text: 'Availabilities cannot be calculated with certainty',
-                    style: {
-                        fontSize: 12,
-                        color: '#7a7a7a',
+        if (unavailabilityPeriods.length > 0) {
+            for (const period of unavailabilityPeriods) {
+                this._options.xAxis.plotBands.push({
+                    color: 'rgba(0, 0, 0, 0.04)',
+                    from: Date.parse(period.startDate),
+                    to: Date.parse(period.endDate),
+                    zIndex: index,
+                    label: {
+                        text: 'Availabilities cannot be calculated with certainty',
+                        style: {
+                            fontSize: 12,
+                            color: '#7a7a7a',
+                        },
+                        align: 'left',
+                        x: 8,
                     },
-                    align: 'left',
-                    x: 8,
-                },
-            });
-            this._options.xAxis.plotLines.push({
-                dashStyle: 'dash',
-                color: '#aaa',
-                width: 2,
-                value: Date.parse(uncertaintyStart.date),
-                zIndex: index,
-            })
-            index++;
+                });
+                this._options.xAxis.plotLines.push({
+                    dashStyle: 'dash',
+                    color: '#aaa',
+                    width: 2,
+                    value: Date.parse(period.startDate),
+                    zIndex: index,
+                })
+                this._options.xAxis.plotLines.push({
+                    dashStyle: 'dash',
+                    color: '#aaa',
+                    width: 2,
+                    value: Date.parse(period.endDate),
+                    zIndex: index,
+                })
+                index++;
+            }
         }
 
         if (bookings) {
