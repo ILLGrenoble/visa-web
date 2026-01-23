@@ -13,7 +13,6 @@ import {NotifierService} from "angular-notifier";
 })
 export class ImageEditComponent implements OnInit, OnDestroy {
 
-    private _imageId: number;
     private _form: FormGroup;
     private _icons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
     private _cloudClients: CloudClient[];
@@ -21,12 +20,12 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     private _protocols: ImageProtocol[] = [];
     private _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
     private _multiCloudEnabled = false;
 
+    private _imageId: number;
     private _modalData$: Subject<{image: Image, clone: boolean}>;
-
     private _showEditModal = false;
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
 
 
     get showEditModal(): boolean {

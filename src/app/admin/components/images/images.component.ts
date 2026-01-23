@@ -2,11 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
-import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
-import {Image, ImageInput} from '../../../core/graphql';
-import {error} from "@angular/compiler-cli/src/transformers/util";
+import {Image} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-images',
@@ -23,11 +22,6 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _modalData$ = new Subject<{ image: Image, clone: boolean }>();
 
     private _imageToDelete: Image;
-
-    constructor(private readonly _apollo: Apollo,
-                private readonly _notifierService: NotifierService,
-                private readonly _titleService: Title) {
-    }
 
     get loading(): boolean {
         return this._loading;
@@ -63,6 +57,11 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
     get imageToDelete(): Image {
         return this._imageToDelete;
+    }
+
+    constructor(private readonly _apollo: Apollo,
+                private readonly _notifierService: NotifierService,
+                private readonly _titleService: Title) {
     }
 
     public ngOnInit(): void {
