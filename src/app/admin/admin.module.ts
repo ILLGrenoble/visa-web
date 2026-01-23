@@ -33,10 +33,8 @@ import {
     BookingHeaderComponent,
 } from './common';
 import {
-    ApplicationCredentialDeleteComponent,
-    ApplicationCredentialNewComponent,
     ApplicationCredentialsComponent,
-    ApplicationCredentialUpdateComponent,
+    ApplicationCredentialEditComponent,
     DashboardComponent,
     FlavourEditComponent,
     FlavoursComponent,
@@ -165,9 +163,7 @@ import {DatePipe, NgIf} from "@angular/common";
         UserGroupEditComponent,
         UserGroupDeleteComponent,
         ApplicationCredentialsComponent,
-        ApplicationCredentialNewComponent,
-        ApplicationCredentialDeleteComponent,
-        ApplicationCredentialUpdateComponent,
+        ApplicationCredentialEditComponent,
         ExtensionRequestsComponent,
         ExtensionRequestHandlerComponent,
         HypervisorsComponent,

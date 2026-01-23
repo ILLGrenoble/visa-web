@@ -19,8 +19,8 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _images: Image[] = [];
     private _loading: boolean;
     private _multiCloudEnabled = false;
-    private _modalData$ = new Subject<{ image: Image, clone: boolean }>();
 
+    private _modalData$ = new Subject<{ image: Image, clone: boolean }>();
     private _imageToDelete: Image;
 
     get loading(): boolean {
