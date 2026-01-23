@@ -13,7 +13,6 @@ export * from './flavours';
 export * from './flavour-delete';
 export * from './flavour-edit';
 export * from './images';
-export * from './image-delete';
 export * from './image-edit';
 export * from './sessions';
 export * from './instance-sessions';

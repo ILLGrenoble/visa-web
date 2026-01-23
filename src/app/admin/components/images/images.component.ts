@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
@@ -7,8 +6,7 @@ import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/ope
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {Image, ImageInput} from '../../../core/graphql';
-import {ImageDeleteComponent} from '../image-delete';
-import {ImageEditComponent} from '../image-edit';
+import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
     selector: 'visa-admin-images',
@@ -22,10 +20,12 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _images: Image[] = [];
     private _loading: boolean;
     private _multiCloudEnabled = false;
+    private _modalData$ = new Subject<{ image: Image, clone: boolean }>();
+
+    private _imageToDelete: Image;
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
-                private readonly _dialog: MatDialog,
                 private readonly _titleService: Title) {
     }
 
@@ -51,6 +51,18 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
     get multiCloudEnabled(): boolean {
         return this._multiCloudEnabled;
+    }
+
+    get modalData$(): Subject<{ image: Image; clone: boolean }> {
+        return this._modalData$;
+    }
+
+    get showDeleteModal(): boolean {
+        return this._imageToDelete != null;
+    }
+
+    get imageToDelete(): Image {
+        return this._imageToDelete;
     }
 
     public ngOnInit(): void {
@@ -123,73 +135,29 @@ export class ImagesComponent implements OnInit, OnDestroy {
 
 
     public onCreate(image?: Image): void {
-        const dialogRef = this._dialog.open(ImageEditComponent, {
-            width: '900px',
-            data: {image, clone: !!image}
-        });
-
-        dialogRef.componentInstance.onSave$.pipe(
-            switchMap((input: ImageInput) => {
-                return this._apollo.mutate<any>({
-                    mutation: gql`
-                        mutation CreateImage($input: ImageInput!){
-                            createImage(input:$input) {
-                              id
-                              name
-                              version
-                              description
-                              icon
-                              computeId
-                              defaultVdiProtocol {
-                                id
-                                name
-                              }
-                              secondaryVdiProtocol {
-                                id
-                                name
-                              }
-                            }
-                        }
-                    `,
-                    variables: {input},
-                }).pipe(
-                    takeUntil(this._destroy$),
-                );
-            })).subscribe({
-                next: () => {
-                    this._notifierService.notify('success', 'Image created');
-                    this._refresh$.next();
-                    dialogRef.close();
-                },
-                error: (error) => {
-                    this._notifierService.notify('error', error);
-                }
-            });
+        this.modalData$.next({image: image, clone: !!image});
     }
 
     public onDelete(image: Image): void {
+        this._imageToDelete = image;
+    }
 
-        const dialogRef = this._dialog.open(ImageDeleteComponent, {
-            width: '400px'
-        });
-
-        dialogRef.afterClosed().pipe(
-            filter(result => result),
-            switchMap(() => {
-                return this._apollo.mutate({
-                    mutation: gql`
-                        mutation DeleteImage($id: Int!) {
-                            deleteImage(id: $id) {
-                                id
-                            }
-                        }
-                    `,
-                    variables: {id: image.id},
-                }).pipe(
-                    takeUntil(this._destroy$),
-                );
-            })).subscribe({
+    public onConfirmDelete(): void {
+        if (this._imageToDelete) {
+            this._apollo.mutate({
+                mutation: gql`
+                mutation DeleteImage($id: Int!) {
+                    deleteImage(id: $id) {
+                        id
+                    }
+                }
+            `,
+                variables: {id: this._imageToDelete.id},
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
                 next: () => {
+                    this._imageToDelete = null;
                     this._notifierService.notify('success', 'Successfully deleted image');
                     this._refresh$.next();
                 },
@@ -197,38 +165,19 @@ export class ImagesComponent implements OnInit, OnDestroy {
                     this._notifierService.notify('error', error);
                 }
             });
+        }
+    }
+
+    public onDeleteModalClosed(): void {
+        this._imageToDelete = null;
     }
 
     public onUpdate(image: Image): void {
-        const dialogRef = this._dialog.open(ImageEditComponent, {
-            width: '900px',
-            data: {image}
-        });
+        this.modalData$.next({image: image, clone: false});
+    }
 
-        dialogRef.componentInstance.onSave$.pipe(
-            switchMap((input: ImageInput) =>
-                this._apollo.mutate({
-                    mutation: gql`
-                    mutation UpdateImage($id: Int!, $input: ImageInput!) {
-                      updateImage(id: $id, input: $input) {
-                        id
-                      }
-                    }
-                  `,
-                    variables: { id: image.id, input },
-                }).pipe(
-                    takeUntil(this._destroy$),
-                )
-            )).subscribe({
-                next: () => {
-                    this._notifierService.notify('success', 'Image saved');
-                    this._refresh$.next();
-                    dialogRef.close();
-                },
-                error: (error) => {
-                    this._notifierService.notify('error', error);
-                }
-            });
+    public onImageSaved(): void {
+        this._refresh$.next();
     }
 
 }

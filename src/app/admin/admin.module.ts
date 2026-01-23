@@ -43,7 +43,6 @@ import {
     FlavoursComponent,
     DevicePoolEditComponent,
     DevicePoolDeleteComponent,
-    ImageDeleteComponent,
     ImageEditComponent,
     ImagesComponent,
     InstanceAttributesComponent,
@@ -92,7 +91,7 @@ import {
     BookingRequestListComponent,
     BookingRequestComponent,
 } from './components';
-import {ClrSpinnerModule} from "@clr/angular";
+import {ClrModalModule, ClrSpinnerModule} from "@clr/angular";
 import {DatePipe, NgIf} from "@angular/common";
 
 @NgModule({
@@ -103,6 +102,7 @@ import {DatePipe, NgIf} from "@angular/common";
         ClrSpinnerModule,
         DatePipe,
         NgIf,
+        ClrModalModule,
     ],
     declarations: [
         DashboardComponent,
@@ -115,7 +115,6 @@ import {DatePipe, NgIf} from "@angular/common";
         InstanceComponent,
         ImagesComponent,
         ImageEditComponent,
-        ImageDeleteComponent,
         ImageDistributionBoxComponent,
         FlavourDistributionBoxComponent,
         CloudClientDistributionBoxComponent,

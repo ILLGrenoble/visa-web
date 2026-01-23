@@ -1,109 +1,115 @@
-<h1 mat-dialog-title>{{ title }}</h1>
-<ng-container *ngIf="form">
-    <div mat-dialog-content>
-        <form clrForm [formGroup]="form" clrLayout="horizontal">
-            <clr-input-container>
-                <label for="name">Name</label>
-                <input clrInput id="name" formControlName="name" class="form-control"/>
-                <clr-control-error>Please enter a name</clr-control-error>
-            </clr-input-container>
-            <clr-textarea-container>
-                <label for="description">Description</label>
-                <textarea clrTextarea id="description" formControlName="description" rows="2" cols="80"></textarea>
-            </clr-textarea-container>
-            <clr-input-container>
-                <label for="version">Version</label>
-                <input clrInput id="version" formControlName="version" class="form-control"/>
-                <clr-control-error>Please enter a version</clr-control-error>
-                <clr-control-helper>You can specify a version as images evolve</clr-control-helper>
-            </clr-input-container>
+<clr-modal clrModalSize="lg"
+           [(clrModalOpen)]="showEditModal"
+           [clrModalStaticBackdrop]="false">
+    <h3 class="modal-title">{{ title }}</h3>
 
-            <clr-select-container *ngIf="multiCloudEnabled">
-                <label for="cloud">Cloud Provider</label>
-                <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
-                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
-                </select>
-                <clr-control-helper>Please select the cloud provider</clr-control-helper>
-            </clr-select-container>
+    <div class="modal-body">
+        <ng-container>
+            <form clrForm [formGroup]="form" clrLayout="horizontal">
+                <clr-input-container>
+                    <label for="name">Name</label>
+                    <input clrInput id="name" formControlName="name" class="form-control"/>
+                    <clr-control-error>Please enter a name</clr-control-error>
+                </clr-input-container>
+                <clr-textarea-container>
+                    <label for="description">Description</label>
+                    <textarea clrTextarea id="description" formControlName="description" rows="2" cols="80"></textarea>
+                </clr-textarea-container>
+                <clr-input-container>
+                    <label for="version">Version</label>
+                    <input clrInput id="version" formControlName="version" class="form-control"/>
+                    <clr-control-error>Please enter a version</clr-control-error>
+                    <clr-control-helper>You can specify a version as images evolve</clr-control-helper>
+                </clr-input-container>
 
-            <clr-select-container>
-                <label for="image">Cloud image</label>
-                <select clrSelect id="image" formControlName="cloudImage" [compareWith]="compareCloudImage">
-                    <option *ngFor="let cloudImage of cloudImages" [ngValue]="cloudImage">{{cloudImage?.name}}</option>
-                </select>
-                <clr-control-helper>Please select a cloud flavour</clr-control-helper>
-            </clr-select-container>
+                <clr-select-container *ngIf="multiCloudEnabled">
+                    <label for="cloud">Cloud Provider</label>
+                    <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
+                        <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select the cloud provider</clr-control-helper>
+                </clr-select-container>
 
-            <clr-combobox-container>
-                <label for="protocols">Protocols</label>
-                <clr-combobox clrMulti="true" id="protocols" formControlName="protocols">
-                    <ng-container *clrOptionSelected="let selected">
-                        {{selected?.name}}
-                    </ng-container>
-                    <clr-options>
-                        <clr-option *clrOptionItems="let protocol of protocols;" [clrValue]="protocol">
-                            {{protocol.name}}
-                        </clr-option>
-                    </clr-options>
-                </clr-combobox>
-                <clr-control-helper>Protocols indicate to VISA which services are accessible on an active instance</clr-control-helper>
-            </clr-combobox-container>
+                <clr-select-container>
+                    <label for="image">Cloud image</label>
+                    <select clrSelect id="image" formControlName="cloudImage" [compareWith]="compareCloudImage">
+                        <option *ngFor="let cloudImage of cloudImages" [ngValue]="cloudImage">{{cloudImage?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select a cloud flavour</clr-control-helper>
+                </clr-select-container>
 
-            <clr-select-container>
-                <label for="image">Default VDI Protocol</label>
-                <select clrSelect id="vdiProtocol" formControlName="defaultVdiProtocol" [compareWith]="compareProtocol">
-                    <option *ngFor="let imageProtocol of availableVdiProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
-                </select>
-                <clr-control-helper>Please select a default VDI protocol (the image protocols must include GUACD and/or WEBX)</clr-control-helper>
-            </clr-select-container>
+                <clr-combobox-container>
+                    <label for="protocols">Protocols</label>
+                    <clr-combobox clrMulti="true" id="protocols" formControlName="protocols">
+                        <ng-container *clrOptionSelected="let selected">
+                            {{selected?.name}}
+                        </ng-container>
+                        <clr-options>
+                            <clr-option *clrOptionItems="let protocol of protocols;" [clrValue]="protocol">
+                                {{protocol.name}}
+                            </clr-option>
+                        </clr-options>
+                    </clr-combobox>
+                    <clr-control-helper>Protocols indicate to VISA which services are accessible on an active instance</clr-control-helper>
+                </clr-combobox-container>
 
-            <clr-select-container *ngIf="isGuacamoleAvailable()">
-                <label for="image">Guacamole Protocol</label>
-                <select clrSelect id="guacamoleRDProtocol" formControlName="secondaryVdiProtocol" [compareWith]="compareProtocol">
-                    <option *ngFor="let imageProtocol of availableGuacamoleProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
-                </select>
-                <clr-control-helper>Please select a remote desktop protocol that will be used by Guacamole (the image protocols must include RDP)</clr-control-helper>
-            </clr-select-container>
+                <clr-select-container>
+                    <label for="image">Default VDI Protocol</label>
+                    <select clrSelect id="vdiProtocol" formControlName="defaultVdiProtocol" [compareWith]="compareProtocol">
+                        <option *ngFor="let imageProtocol of availableVdiProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select a default VDI protocol (the image protocols must include GUACD and/or WEBX)</clr-control-helper>
+                </clr-select-container>
 
-            <clr-select-container>
-                <label for="icon">Icon</label>
-                <select clrSelect id="icon" formControlName="icon">
-                    <option *ngFor="let icon of icons">{{icon}}</option>
-                </select>
-            </clr-select-container>
-            <clr-select-container>
-                <label for="autologin">Auto Login</label>
-                <select clrSelect id="autologin" formControlName="autologin">
-                    <option value=""></option>
-                    <option value="VISA_PAM">VISA PAM</option>
-                </select>
-                <clr-control-helper>Automatic login is possible if the VISA PAM module has been installed in the image</clr-control-helper>
-            </clr-select-container>
-            <clr-select-container>
-                <label for="autoAcceptExtension">Auto Grant Extension</label>
-                <select clrSelect id="autoAcceptExtension" formControlName="autoAcceptExtensionRequest">
-                    <option value="NONE">No one</option>
-                    <option value="STAFF">Staff only</option>
-                    <option value="ALL">Everyone</option>
-                </select>
-                <clr-control-helper>Automatically accepts instance extension requests</clr-control-helper>
-            </clr-select-container>
-            <clr-textarea-container>
-                <label for="bootCommand">Boot command</label>
-                <textarea clrTextarea id="bootCommand" formControlName="bootCommand" rows="8" cols="80"></textarea>
-                <clr-control-helper>The boot command is executed when the instance is booting</clr-control-helper>
-            </clr-textarea-container>
-            <clr-input-container>
-                <label for="visible">Visible</label>
-                <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible"/>
-                <clr-control-helper>
-                    An image that is not set to visible can only seen by administrators. This is useful for testing an image before making it available to all users.
-                </clr-control-helper>
-            </clr-input-container>
-        </form>
-        <div class="modal-footer">
-            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-            <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
-        </div>
+                <clr-select-container *ngIf="isGuacamoleAvailable()">
+                    <label for="image">Guacamole Protocol</label>
+                    <select clrSelect id="guacamoleRDProtocol" formControlName="secondaryVdiProtocol" [compareWith]="compareProtocol">
+                        <option *ngFor="let imageProtocol of availableGuacamoleProtocols" [ngValue]="imageProtocol">{{imageProtocol?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select a remote desktop protocol that will be used by Guacamole (the image protocols must include RDP)</clr-control-helper>
+                </clr-select-container>
+
+                <clr-select-container>
+                    <label for="icon">Icon</label>
+                    <select clrSelect id="icon" formControlName="icon">
+                        <option *ngFor="let icon of icons">{{icon}}</option>
+                    </select>
+                </clr-select-container>
+                <clr-select-container>
+                    <label for="autologin">Auto Login</label>
+                    <select clrSelect id="autologin" formControlName="autologin">
+                        <option value=""></option>
+                        <option value="VISA_PAM">VISA PAM</option>
+                    </select>
+                    <clr-control-helper>Automatic login is possible if the VISA PAM module has been installed in the image</clr-control-helper>
+                </clr-select-container>
+                <clr-select-container>
+                    <label for="autoAcceptExtension">Auto Grant Extension</label>
+                    <select clrSelect id="autoAcceptExtension" formControlName="autoAcceptExtensionRequest">
+                        <option value="NONE">No one</option>
+                        <option value="STAFF">Staff only</option>
+                        <option value="ALL">Everyone</option>
+                    </select>
+                    <clr-control-helper>Automatically accepts instance extension requests</clr-control-helper>
+                </clr-select-container>
+                <clr-textarea-container>
+                    <label for="bootCommand">Boot command</label>
+                    <textarea clrTextarea id="bootCommand" formControlName="bootCommand" rows="8" cols="80"></textarea>
+                    <clr-control-helper>The boot command is executed when the instance is booting</clr-control-helper>
+                </clr-textarea-container>
+                <clr-input-container>
+                    <label for="visible">Visible</label>
+                    <input type="checkbox" clrInput clrToggle id="visible" formControlName="visible"/>
+                    <clr-control-helper>
+                        An image that is not set to visible can only seen by administrators. This is useful for testing an image before making it available to all users.
+                    </clr-control-helper>
+                </clr-input-container>
+            </form>
+        </ng-container>
     </div>
-</ng-container>
+    <div class="modal-footer">
+        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
+    </div>
+
+</clr-modal>

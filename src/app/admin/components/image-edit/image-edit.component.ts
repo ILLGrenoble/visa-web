@@ -1,11 +1,11 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {CloudClient, CloudImage, Image, ImageInput, ImageProtocol} from '../../../core/graphql';
 import gql from 'graphql-tag';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
+import {NotifierService} from "angular-notifier";
 
 @Component({
     selector: 'visa-admin-image-edit',
@@ -13,64 +13,38 @@ import {Apollo} from 'apollo-angular';
 })
 export class ImageEditComponent implements OnInit, OnDestroy {
 
+    private _imageId: number;
     private _form: FormGroup;
     private _icons = ['data-analysis-1.jpg', 'data-analysis-2.jpg', 'data-analysis-3.jpg'];
     private _cloudClients: CloudClient[];
     private _cloudImages: CloudImage[] = [];
     private _protocols: ImageProtocol[] = [];
-    private readonly _title: string;
+    private _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private _onSave$: Subject<ImageInput> = new Subject<ImageInput>();
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
     private _multiCloudEnabled = false;
 
-    constructor(private readonly _dialogRef: MatDialogRef<ImageEditComponent>,
-                private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {image, clone}) {
+    private _modalData$: Subject<{image: Image, clone: boolean}>;
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
+    private _showEditModal = false;
 
-        this._form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            version: new FormControl(null, Validators.required),
-            icon: new FormControl('data-analysis-1.jpg', Validators.required),
-            visible: new FormControl(false, Validators.required),
-            cloudClient: new FormControl(null, Validators.required),
-            cloudImage: new FormControl(null, Validators.required),
-            description: new FormControl(null),
-            protocols: new FormControl(null),
-            autologin: new FormControl(null),
-            autoAcceptExtensionRequest: new FormControl(null),
-            bootCommand: new FormControl(null),
-            defaultVdiProtocol: new FormControl(null, Validators.required),
-            secondaryVdiProtocol: new FormControl(null, this._secondaryVdiProtocolValidator.bind(this)),
-        });
 
-        this._form.get('defaultVdiProtocol')?.valueChanges.subscribe(() => {
-            this._form.get('secondaryVdiProtocol')?.updateValueAndValidity();
-        });
+    get showEditModal(): boolean {
+        return this._showEditModal;
+    }
 
-        this._form.get('protocols')?.valueChanges.subscribe(protocols => {
-            const availableGuacamoleProtocols = protocols.filter(protocol => ['RDP', 'VNC'].includes(protocol.name));
-            if (availableGuacamoleProtocols.length === 1) {
-                this._form.controls.secondaryVdiProtocol.setValue(availableGuacamoleProtocols[0]);
-            }
-            if (availableGuacamoleProtocols.length === 0) {
-                this._form.controls.secondaryVdiProtocol.setValue(null);
-            }
-        });
+    set showEditModal(value: boolean) {
+        this._showEditModal = value;
+    }
 
-        if (image) {
-            if (clone) {
-                this._title = `Clone image`;
-            } else {
-                this._title = `Edit image`;
-            }
-            this._createFormFromImage(image);
-        } else {
-            this._title = `Create image`;
-        }
+    @Input()
+    set modalData$(value: Subject<{ image: Image; clone: boolean }>) {
+        this._modalData$ = value;
+    }
 
+    @Output()
+    get onSave(): EventEmitter<void> {
+        return this._onSave$;
     }
 
     get form(): FormGroup {
@@ -107,10 +81,6 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return this._icons;
     }
 
-    get onSave$(): Subject<ImageInput> {
-        return this._onSave$;
-    }
-
     get title(): string {
         return this._title;
     }
@@ -119,74 +89,70 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
-    public isGuacamoleAvailable(): boolean {
-        return this.availableVdiProtocols.map(protocol => protocol.name).includes('GUACD');
-    }
-
-    public compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
-        if (cloudClient1 == null || cloudClient2 == null) {
-            return false;
-        }
-        return cloudClient1.id === cloudClient2.id;
-    }
-
-    public compareCloudImage(image1: CloudImage, image2: CloudImage): boolean {
-        if (image1 == null || image2 == null) {
-            return false;
-        }
-        return image1.id === image2.id;
-    }
-
-    public compareProtocol(protocol1: ImageProtocol, protocol2: ImageProtocol): boolean {
-        if (protocol1 == null || protocol2 == null) {
-            return false;
-        }
-        return protocol1.id === protocol2.id;
-    }
-
-    private _createFormFromImage(image: Image): void {
-        const {
-            name,
-            version,
-            icon,
-            visible,
-            cloudClient,
-            cloudImage,
-            description,
-            protocols,
-            defaultVdiProtocol,
-            secondaryVdiProtocol,
-            autologin,
-            autoAcceptExtensionRequest,
-            bootCommand
-        } = image;
-        this.form.reset({
-            name,
-            version,
-            icon,
-            visible,
-            protocols,
-            defaultVdiProtocol,
-            secondaryVdiProtocol,
-            autologin,
-            autoAcceptExtensionRequest: autoAcceptExtensionRequest == null ? 'NONE' : autoAcceptExtensionRequest,
-            bootCommand,
-            description,
-            cloudClient,
-            cloudImage
+    constructor(private readonly _apollo: Apollo,
+        private readonly _notifierService: NotifierService) {
+        this._form = new FormGroup({
+            name: new FormControl(null, Validators.required),
+            version: new FormControl(null, Validators.required),
+            icon: new FormControl('data-analysis-1.jpg', Validators.required),
+            visible: new FormControl(false, Validators.required),
+            cloudClient: new FormControl(null, Validators.required),
+            cloudImage: new FormControl(null, Validators.required),
+            description: new FormControl(null),
+            protocols: new FormControl(null),
+            autologin: new FormControl(null),
+            autoAcceptExtensionRequest: new FormControl(null),
+            bootCommand: new FormControl(null),
+            defaultVdiProtocol: new FormControl(null, Validators.required),
+            secondaryVdiProtocol: new FormControl(null, this._secondaryVdiProtocolValidator.bind(this)),
         });
 
-        if (secondaryVdiProtocol == null && this.isGuacamoleAvailable()) {
-            if (this.availableGuacamoleProtocols.length === 1) {
-                this._form.controls.secondaryVdiProtocol.setValue(this.availableGuacamoleProtocols[0]);
-            }
-        }
+        this._form.get('defaultVdiProtocol')?.valueChanges.subscribe(() => {
+            this._form.get('secondaryVdiProtocol')?.updateValueAndValidity();
+        });
 
-        // Initialise cloud flavours with current cloud flavour
-        this._cloudImages = [null, cloudImage];
+        this._form.get('protocols')?.valueChanges.subscribe(protocols => {
+            if (protocols) {
+                const availableGuacamoleProtocols = protocols.filter(protocol => ['RDP', 'VNC'].includes(protocol.name));
+                if (availableGuacamoleProtocols.length === 1) {
+                    this._form.controls.secondaryVdiProtocol.setValue(availableGuacamoleProtocols[0]);
+                }
+                if (availableGuacamoleProtocols.length === 0) {
+                    this._form.controls.secondaryVdiProtocol.setValue(null);
+                }
+
+            } else {
+                this._form.controls.secondaryVdiProtocol.setValue(null);
+            }
+        });
     }
 
     public ngOnInit(): void {
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {image, clone} = data;
+
+            if (image) {
+                if (clone) {
+                    this._title = `Clone image`;
+                    this._imageId = null;
+
+                } else {
+                    this._title = `Edit image`;
+                    this._imageId = image.id;
+                }
+                this._createFormFromImage(image);
+
+            } else {
+                this._title = `Create image`;
+                this._imageId = null;
+
+                this._resetForm();
+            }
+            this._showEditModal = true;
+        });
+
         this._apollo.query<any>({
             query: gql`
                     query {
@@ -228,6 +194,88 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
+    public isGuacamoleAvailable(): boolean {
+        return this.availableVdiProtocols.map(protocol => protocol.name).includes('GUACD');
+    }
+
+    public compareCloudClient(cloudClient1: CloudClient, cloudClient2: CloudClient): boolean {
+        if (cloudClient1 == null || cloudClient2 == null) {
+            return false;
+        }
+        return cloudClient1.id === cloudClient2.id;
+    }
+
+    public compareCloudImage(image1: CloudImage, image2: CloudImage): boolean {
+        if (image1 == null || image2 == null) {
+            return false;
+        }
+        return image1.id === image2.id;
+    }
+
+    public compareProtocol(protocol1: ImageProtocol, protocol2: ImageProtocol): boolean {
+        if (protocol1 == null || protocol2 == null) {
+            return false;
+        }
+        return protocol1.id === protocol2.id;
+    }
+
+    private _resetForm(): void {
+        this.form.reset({
+            name: null,
+            version: null,
+            icon: null,
+            visible: false,
+            protocols: null,
+            defaultVdiProtocol: null,
+            secondaryVdiProtocol: null,
+            autologin: null,
+            autoAcceptExtensionRequest: null,
+            bootCommand: null,
+            description: null,
+            cloudClient: this._cloudClients[0],
+            cloudImage: null
+        });
+    }
+
+    private _createFormFromImage(image: Image): void {
+        const {
+            name,
+            version,
+            icon,
+            visible,
+            cloudClient,
+            cloudImage,
+            description,
+            protocols,
+            defaultVdiProtocol,
+            secondaryVdiProtocol,
+            autologin,
+            autoAcceptExtensionRequest,
+            bootCommand
+        } = image;
+        this.form.reset({
+            name,
+            version,
+            icon,
+            visible,
+            protocols,
+            defaultVdiProtocol,
+            secondaryVdiProtocol,
+            autologin,
+            autoAcceptExtensionRequest: autoAcceptExtensionRequest == null ? 'NONE' : autoAcceptExtensionRequest,
+            bootCommand,
+            description,
+            cloudClient,
+            cloudImage
+        });
+
+        if (secondaryVdiProtocol == null && this.isGuacamoleAvailable()) {
+            if (this.availableGuacamoleProtocols.length === 1) {
+                this._form.controls.secondaryVdiProtocol.setValue(this.availableGuacamoleProtocols[0]);
+            }
+        }
+    }
+
     public onCloudChange(): void {
         this._loadCloudImages(this._form.value.cloudClient.id);
         this.form.controls.cloudImage.reset();
@@ -256,7 +304,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     public onCancel(): void {
-        this._dialogRef.close();
+        this._showEditModal = false;
     }
 
     public submit(): void {
@@ -276,7 +324,56 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             autologin,
             autoAcceptExtensionRequest,
         } as ImageInput;
-        this._onSave$.next(input);
+        this._saveImage(input);
+    }
+
+    private _saveImage(input: ImageInput): void {
+        if (this._imageId != null) {
+            this._apollo.mutate({
+                mutation: gql`
+                mutation UpdateImage($id: Int!, $input: ImageInput!) {
+                  updateImage(id: $id, input: $input) {
+                    id
+                  }
+                }
+              `,
+                variables: { id: this._imageId, input },
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Image saved');
+                    this._showEditModal = false;
+                    this._onSave$.next();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            });
+
+        } else {
+            this._apollo.mutate<any>({
+                mutation: gql`
+                mutation CreateImage($input: ImageInput!){
+                    createImage(input:$input) {
+                      id
+                    }
+                }
+            `,
+                variables: {input},
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Image created');
+                    this._showEditModal = false;
+                    this._onSave$.next();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            });
+        }
     }
 
     private _secondaryVdiProtocolValidator(control: FormControl): { [key: string]: boolean } | null {
