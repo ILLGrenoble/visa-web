@@ -1,3 +1,33 @@
+<visa-admin-security-group-import [modalData$]="modalData$" (onSave)="onSecurityGroupSaved()"></visa-admin-security-group-import>
+
+<clr-modal clrModalSize="md"
+           [clrModalOpen]="showDeleteModal"
+           [clrModalStaticBackdrop]="false"
+           [clrModalPreventClose]="true"
+           (clrModalAlternateClose)="onDeleteModalClosed()">
+    <h3 class="modal-title">Delete security group</h3>
+
+    <div class="modal-body">
+        <div class="alert alert-danger" role="alert" style="margin-top:16px;">
+            <div class="alert-items">
+                <div class="alert-item static">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="info-alert"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                    Any rules associated to this security group will also be deleted. Are you sure you want to delete the security group {{ securityGroupToDelete?.name}}?
+                </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onDeleteModalClosed()" class="btn btn-outline">Cancel</button>
+        <button (click)="onConfirmDelete()" class="btn btn-warning-outline">Delete</button>
+    </div>
+</clr-modal>
+
 <div class="filters-box-header">
     <h3 class="filters-box-title">Security Groups</h3>
     <button type="button" class="filters-box-action-btn" (click)="onImport()">

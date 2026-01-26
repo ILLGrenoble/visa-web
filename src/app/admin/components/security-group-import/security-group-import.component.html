@@ -1,27 +1,32 @@
-<h1 mat-dialog-title>Import a cloud security group</h1>
-<ng-container *ngIf="form">
-    <div mat-dialog-content>
-        <form clrForm [formGroup]="form" clrLayout="horizontal">
+<clr-modal clrModalSize="lg"
+           [(clrModalOpen)]="showEditModal"
+           [clrModalStaticBackdrop]="false">
+    <h3 class="modal-title">Import a cloud security group</h3>
 
-            <clr-input-container *ngIf="multiCloudEnabled">
-                <label for="cloudClient">Cloud Provider</label>
-                <input clrInput readonly id="cloudClient" class="form-control" [value]="cloudClient.name + ' cloud provider'" style="width: 400px;">
-            </clr-input-container>
+    <div class="modal-body">
+        <ng-container>
+            <form clrForm [formGroup]="form" clrLayout="horizontal">
 
-            <clr-select-container>
-                <label for="securityGroup">Security Group</label>
-                <select clrSelect id="securityGroup"
-                        formControlName="securityGroup" required>
-                    <option *ngFor="let securityGroup of securityGroups"
-                            [ngValue]="securityGroup">{{securityGroup.name}}</option>
-                </select>
-                <clr-control-helper>Please select a cloud security group to import</clr-control-helper>
-            </clr-select-container>
-        </form>
-        <div class="modal-footer">
-            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-            <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Import</button>
-        </div>
+                <clr-input-container *ngIf="multiCloudEnabled">
+                    <label for="cloudClient">Cloud Provider</label>
+                    <input clrInput readonly id="cloudClient" class="form-control" [value]="cloudClient.name + ' cloud provider'" style="width: 400px;">
+                </clr-input-container>
+
+                <clr-select-container>
+                    <label for="securityGroup">Security Group</label>
+                    <select clrSelect id="securityGroup"
+                            formControlName="securityGroup" required>
+                        <option *ngFor="let securityGroup of filteredSecurityGroups"
+                                [ngValue]="securityGroup">{{securityGroup?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select a cloud security group to import</clr-control-helper>
+                </clr-select-container>
+            </form>
+        </ng-container>
     </div>
-</ng-container>
+    <div class="modal-footer">
+        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
+    </div>
 
+</clr-modal>

@@ -1,7 +1,6 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
@@ -17,10 +16,33 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private _securityGroups: CloudSecurityGroup[];
+    private _securityGroups: Map<number, CloudSecurityGroup[]> = new Map();
+    private _filteredSecurityGroups: CloudSecurityGroup[];
     private _currentSecurityGroups: SecurityGroup[];
-    private readonly _cloudClient: CloudClient;
-    private readonly _multiCloudEnabled: boolean;
+    private _cloudClient: CloudClient;
+    private _multiCloudEnabled: boolean;
+
+    private _modalData$: Subject<{currentSecurityGroups: SecurityGroup[], cloudClient: CloudClient, multiCloudEnabled: boolean}>;
+    private _showEditModal = false;
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
+
+    get showEditModal(): boolean {
+        return this._showEditModal;
+    }
+
+    set showEditModal(value: boolean) {
+        this._showEditModal = value;
+    }
+
+    @Input()
+    set modalData$(value: Subject<{ currentSecurityGroups: SecurityGroup[], cloudClient: CloudClient, multiCloudEnabled: boolean }>) {
+        this._modalData$ = value;
+    }
+
+    @Output()
+    get onSave(): EventEmitter<void> {
+        return this._onSave$;
+    }
 
     get form(): FormGroup {
         return this._form;
@@ -30,12 +52,8 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         this._form = value;
     }
 
-    get securityGroups(): CloudSecurityGroup[] {
-        return this._securityGroups;
-    }
-
-    set securityGroups(value: CloudSecurityGroup[]) {
-        this._securityGroups = value;
+    get filteredSecurityGroups(): CloudSecurityGroup[] {
+        return this._filteredSecurityGroups;
     }
 
     get cloudClient(): CloudClient {
@@ -46,16 +64,78 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
-    constructor(private readonly _dialogRef: MatDialogRef<SecurityGroupImportComponent>,
-                private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {cloudClient, currentSecurityGroups, multiCloudEnabled},
+    constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService) {
-        this._cloudClient = cloudClient;
-        this._currentSecurityGroups = currentSecurityGroups;
-        this._multiCloudEnabled = multiCloudEnabled;
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
+        this.form = new FormGroup({
+            securityGroup: new FormControl()
+        });
+
+    }
+
+    ngOnInit(): void {
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {cloudClient, multiCloudEnabled, currentSecurityGroups} = data;
+            this._cloudClient = cloudClient;
+            this._currentSecurityGroups = currentSecurityGroups;
+            this._multiCloudEnabled = multiCloudEnabled;
+
+            this._showEditModal = true;
+            this._loadCloudSecurityGroups();
+
+            // Reset form
+            this.form.reset({
+                securityGroup: null,
+            });
+        });
+    }
+
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
+    }
+
+    private _loadCloudSecurityGroups(): void {
+        const cloudId = this._cloudClient.id == null ? -1 : this._cloudClient.id;
+        if (this._securityGroups.has(cloudId)) {
+            this._filterSecurityGroups();
+        } else {
+            this._apollo.query<any>({
+                query: gql`
+                      query cloudSecurityGroups($cloudId: Int!) {
+                          cloudSecurityGroups(cloudId: $cloudId) {
+                            name
+                          }
+                      }
+                    `,
+                variables: { cloudId: this._cloudClient.id },
+            }).pipe(
+                takeUntil(this._destroy$),
+                map(({data}) => ({cloudSecurityGroups: data.cloudSecurityGroups})),
+            ).subscribe(({cloudSecurityGroups}) => {
+                this._securityGroups.set(cloudId, cloudSecurityGroups || []);
+                this._filterSecurityGroups();
+            });
+        }
+    }
+
+    private _filterSecurityGroups(): void {
+        const cloudId = this._cloudClient.id == null ? -1 : this._cloudClient.id;
+        const allCloudSecurityGroups = this._securityGroups.get(cloudId);
+
+        if (this._currentSecurityGroups) {
+            this._filteredSecurityGroups = allCloudSecurityGroups.filter(cloudSecurityGroup => {
+                return this._currentSecurityGroups.find(securityGroup => securityGroup.name === cloudSecurityGroup.name) == null;
+            });
+            this._filteredSecurityGroups.unshift(null);
+
+        } else {
+            // copy
+            this._filteredSecurityGroups = allCloudSecurityGroups.map(securityGroup => securityGroup);
+            this._filteredSecurityGroups.unshift(null);
+        }
     }
 
     submit(): void {
@@ -111,7 +191,8 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         ).subscribe({
             next: () => {
                 this._notifierService.notify('success', 'Successfully imported security group from the cloud');
-                this._dialogRef.close(true);
+                this._showEditModal = false;
+                this._onSave$.next();
             },
             error: (error) => {
                 this._notifierService.notify('error', error);
@@ -119,36 +200,8 @@ export class SecurityGroupImportComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this._destroy$.next(true);
-        this._destroy$.unsubscribe();
-    }
-
-    ngOnInit(): void {
-        this._apollo.query<any>({
-            query: gql`
-                      query cloudSecurityGroups($cloudId: Int!) {
-                          cloudSecurityGroups(cloudId: $cloudId) {
-                            name
-                          }
-                      }
-                    `,
-            variables: { cloudId: this._cloudClient.id },
-        }).pipe(
-            map(({data}) => ({cloudSecurityGroups: data.cloudSecurityGroups})),
-            takeUntil(this._destroy$)
-        ).subscribe(({cloudSecurityGroups}) => {
-            this._securityGroups = (cloudSecurityGroups || [])
-                .filter(cloudSecurityGroup => this._currentSecurityGroups
-                    .find(securityGroup => securityGroup.name === cloudSecurityGroup.name) == null);
-            this.form = new FormGroup({
-                securityGroup: new FormControl()
-            });
-        });
-    }
-
     public onCancel(): void {
-        this._dialogRef.close();
+        this._showEditModal = false;
     }
 
 }
