@@ -5,7 +5,6 @@ export * from './cloud-clients';
 export * from './cloud-client-edit';
 export * from './plans';
 export * from './plan-edit';
-export * from './plan-delete';
 export * from './device-pool-edit';
 export * from './flavours';
 export * from './flavour-edit';

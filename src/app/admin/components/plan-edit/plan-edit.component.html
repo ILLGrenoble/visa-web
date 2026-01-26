@@ -1,34 +1,41 @@
-<h1 mat-dialog-title>{{ title }}</h1>
-<ng-container *ngIf="form">
-    <div mat-dialog-content>
-        <form clrForm [formGroup]="form" clrLayout="horizontal">
+<clr-modal clrModalSize="lg"
+           [(clrModalOpen)]="showEditModal"
+           [clrModalStaticBackdrop]="false">
+    <h3 class="modal-title">{{ title }}</h3>
 
-            <clr-select-container>
-                <label for="image">Image</label>
-                <select clrSelect id="image" formControlName="image" [compareWith]="compareImage" (change)="onImageChange()">
-                    <option *ngFor="let image of images" [ngValue]="image">{{imageName(image)}}</option>
-                </select>
-                <clr-control-helper>Please select an image</clr-control-helper>
-            </clr-select-container>
+    <div class="modal-body">
+        <ng-container>
+            <form clrForm [formGroup]="form" clrLayout="horizontal">
 
-            <clr-select-container>
-                <label for="flavour">Flavour</label>
-                <select clrSelect id="flavour" formControlName="flavour" [compareWith]="compareFlavour">
-                    <option *ngFor="let flavour of flavours" [ngValue]="flavour">{{flavour?.name}}</option>
-                </select>
-                <clr-control-helper>Please select a flavour</clr-control-helper>
-            </clr-select-container>
+                <clr-select-container>
+                    <label for="image">Image</label>
+                    <select clrSelect id="image" formControlName="image" [compareWith]="compareImage" (change)="onImageChange()">
+                        <option *ngFor="let image of images" [ngValue]="image">{{imageName(image)}}</option>
+                    </select>
+                    <clr-control-helper>Please select an image</clr-control-helper>
+                </clr-select-container>
 
-            <clr-input-container>
-                <label for="preset">Preset</label>
-                <input type="checkbox" clrInput clrToggle id="preset" formControlName="preset"/>
-                <clr-control-helper>The preset plan will be chosen by default when creating an instance. Only one plan can be preset.</clr-control-helper>
-            </clr-input-container>
+                <clr-select-container>
+                    <label for="flavour">Flavour</label>
+                    <select clrSelect id="flavour" formControlName="flavour" [compareWith]="compareFlavour">
+                        <option *ngFor="let flavour of flavours" [ngValue]="flavour">{{flavour?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select a flavour</clr-control-helper>
+                </clr-select-container>
 
-        </form>
-        <div class="modal-footer">
-            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-            <button (click)="submit()" class="btn btn-primary">Save</button>
-        </div>
+                <clr-input-container>
+                    <label for="preset">Preset</label>
+                    <input type="checkbox" clrInput clrToggle id="preset" formControlName="preset"/>
+                    <clr-control-helper>The preset plan will be chosen by default when creating an instance. Only one plan can be preset.</clr-control-helper>
+                </clr-input-container>
+
+            </form>
+        </ng-container>
     </div>
-</ng-container>
+
+    <div class="modal-footer">
+        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        <button (click)="submit()" class="btn btn-primary">Save</button>
+    </div>
+
+</clr-modal>
