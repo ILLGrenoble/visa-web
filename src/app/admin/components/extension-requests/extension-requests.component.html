@@ -1,5 +1,8 @@
 <visa-admin-header></visa-admin-header>
 <visa-compute-admin-header></visa-compute-admin-header>
+
+<visa-admin-extension-request-handler [modalData$]="modalData$" (onHandled)="onExtensionRequestHandled()"></visa-admin-extension-request-handler>
+
 <div class="admin-container">
     <div class="admin-container--main">
         <clr-datagrid id="datagrid" [clrDgLoading]="loading">
