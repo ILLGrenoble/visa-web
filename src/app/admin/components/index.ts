@@ -30,7 +30,6 @@ export * from './security-groups';
 export * from './security-group-filter-new';
 export * from './security-group-filters';
 export * from './security-group-import';
-export * from './security-group-filter-delete';
 export * from './application-credentials';
 export * from './application-credential-edit';
 export * from './extension-requests';

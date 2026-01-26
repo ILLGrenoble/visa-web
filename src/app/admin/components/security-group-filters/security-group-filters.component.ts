@@ -1,12 +1,9 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {CloudClient, SecurityGroupFilter} from '../../../core/graphql';
-import {SecurityGroupFilterNewComponent} from '../security-group-filter-new';
-import {SecurityGroupFilterDeleteComponent} from '../security-group-filter-delete';
 import {NotifierService} from 'angular-notifier';
 
 @Component({
@@ -25,7 +22,9 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
     private _filteredSecurityGroupFilters: SecurityGroupFilter[] = [];
     private _apollo: Apollo;
     private _notifierService: NotifierService;
-    private _dialog: MatDialog;
+
+    private _modalData$ = new Subject<{ objectType: string, cloudClient: CloudClient, multiCloudEnabled: boolean }>();
+    private _filterToDelete: SecurityGroupFilter;
 
     get filteredSecurityGroupFilters(): SecurityGroupFilter[] {
         return this._filteredSecurityGroupFilters;
@@ -67,12 +66,18 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
         this._multiCloudEnabled = multiCloudEnabled;
     }
 
+    get modalData$(): Subject<{ objectType: string; cloudClient: CloudClient; multiCloudEnabled: boolean }> {
+        return this._modalData$;
+    }
+
+    get showDeleteModal(): boolean {
+        return this._filterToDelete != null;
+    }
+
     constructor(apollo: Apollo,
-                notifierService: NotifierService,
-                dialog: MatDialog) {
+                notifierService: NotifierService) {
         this._apollo = apollo;
         this._notifierService = notifierService;
-        this._dialog = dialog;
     }
 
     public ngOnInit(): void {
@@ -129,44 +134,40 @@ export class SecurityGroupFiltersComponent implements OnInit, OnDestroy {
     }
 
     public onCreate(objectType: string): void {
-        const dialogRef = this._dialog.open(SecurityGroupFilterNewComponent, {
-            width: '600px',
-            data: {
-                objectType,
-                cloudClient: this._cloudClient$.getValue(),
-                multiCloudEnabled: this._multiCloudEnabled,
-            }
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._refresh$.next();
-            }
-        });
+        this._modalData$.next({objectType, cloudClient: this._cloudClient$.getValue(), multiCloudEnabled: this._multiCloudEnabled});
     }
 
     public onDelete(securityGroupFilter: SecurityGroupFilter): void {
-        const dialogRef = this._dialog.open(SecurityGroupFilterDeleteComponent, {
-            width: '400px'
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._apollo.mutate({
-                    mutation: gql`
+        this._filterToDelete = securityGroupFilter;
+    }
+
+    public onConfirmDelete(): void {
+        if (this._filterToDelete) {
+            this._apollo.mutate({
+                mutation: gql`
                     mutation DeleteSecurityGroupFilter($id: Int!){
                       deleteSecurityGroupFilter(id: $id) {
                         id
                       }
                     }
                 `,
-                    variables: {
-                        id: securityGroupFilter.id
-                    },
-                }).subscribe(() => {
-                    this._notifierService.notify('success', 'Successfully delete security group filter rule');
-                    this._refresh$.next();
-                });
-            }
-        });
+                variables: {
+                    id: this._filterToDelete.id
+                },
+            }).subscribe(() => {
+                this._notifierService.notify('success', 'Successfully delete security group filter rule');
+                this._refresh$.next();
+                this._filterToDelete = null;
+            });
+        }
+    }
+
+    public onDeleteModalClosed(): void {
+        this._filterToDelete = null;
+    }
+
+    public onFilterCreated(): void {
+        this._refresh$.next();
     }
 
 }
