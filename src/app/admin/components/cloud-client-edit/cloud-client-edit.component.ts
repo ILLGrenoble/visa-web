@@ -6,7 +6,7 @@ import {
     OpenStackProviderConfigurationInput,
     WebProviderConfigurationInput
 } from '../../../core/graphql';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import {filter} from 'rxjs/operators';
@@ -14,6 +14,7 @@ import {filter} from 'rxjs/operators';
 @Component({
     selector: 'visa-admin-cloud-client-edit',
     templateUrl: './cloud-client-edit.component.html',
+    styleUrls: ['./cloud-client-edit.component.scss'],
 })
 export class CloudClientEditComponent implements OnDestroy {
 
@@ -28,6 +29,7 @@ export class CloudClientEditComponent implements OnDestroy {
 
     constructor(private readonly _dialogRef: MatDialogRef<CloudClientEditComponent>,
                 private readonly _apollo: Apollo,
+                private readonly _formBuilder: FormBuilder,
                 @Inject(MAT_DIALOG_DATA) {cloudClient, clone, readonly}) {
         this._readonly = readonly;
         this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
@@ -49,7 +51,10 @@ export class CloudClientEditComponent implements OnDestroy {
             networkEndpoint: new FormControl(null, Validators.required),
             identityEndpoint: new FormControl(null, Validators.required),
             addressProvider: new FormControl(null, Validators.required),
-            addressProviderUUID: new FormControl(null, Validators.required),
+            // addressProviderUUID: new FormControl(null, Validators.required),
+            addressProviderUUIDs: this._formBuilder.array([
+                new FormControl(null, Validators.required)
+            ]),
         });
 
         this._webForm = new FormGroup({
@@ -77,6 +82,10 @@ export class CloudClientEditComponent implements OnDestroy {
 
     get openStackForm(): FormGroup {
         return this._openStackForm;
+    }
+
+    get openStackAddressProviderUUIDsForm(): FormArray {
+        return this._openStackForm.get('addressProviderUUIDs') as FormArray;
     }
 
     get webForm(): FormGroup {
@@ -140,6 +149,9 @@ export class CloudClientEditComponent implements OnDestroy {
                 addressProvider,
                 addressProviderUUID,
             } = cloudClient.openStackProviderConfiguration;
+
+            const addressProviderUUIDs = addressProvider  == null ? [] : addressProviderUUID.split(',');
+
             this._openStackForm.reset({
                 applicationId,
                 applicationSecret,
@@ -149,8 +161,13 @@ export class CloudClientEditComponent implements OnDestroy {
                 networkEndpoint,
                 identityEndpoint,
                 addressProvider,
-                addressProviderUUID,
             });
+
+            this.openStackAddressProviderUUIDsForm.clear();
+            for (const addressProviderUUID of addressProviderUUIDs) {
+                this.openStackAddressProviderUUIDsForm.push(new FormControl(addressProviderUUID, Validators.required))
+            }
+
         } else if (type === 'web') {
             const {
                 url,
@@ -184,9 +201,12 @@ export class CloudClientEditComponent implements OnDestroy {
             networkEndpoint,
             identityEndpoint,
             addressProvider,
-            addressProviderUUID,
+            addressProviderUUIDs,
         } = this._openStackForm.value;
         const { url, authToken } = this._webForm.value;
+
+        const addressProviderUUID = addressProviderUUIDs.join(',');
+
         const input = {
             type,
             name,
@@ -209,5 +229,15 @@ export class CloudClientEditComponent implements OnDestroy {
             } as WebProviderConfigurationInput : null,
         } as CloudClientInput;
         this._onSave$.next(input);
+    }
+
+    addAddressProviderUUID(): void {
+        this.openStackAddressProviderUUIDsForm.push(
+            this._formBuilder.control('', Validators.required)
+        );
+    }
+
+    removeAddressProviderUUID(index: number): void {
+        this.openStackAddressProviderUUIDsForm.removeAt(index);
     }
 }

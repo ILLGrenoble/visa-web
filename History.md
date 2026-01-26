@@ -1,3 +1,13 @@
+3.7.1 20/01/2026
+================
+ - Modify cloud-client edit component to accept multiple openstack address provider UUIDs.
+
+3.7.0 08/12/2025
+================
+ - Update to WebX-Client 1.13.1
+ - Add admin Compute/Availabilities to show current and future availabilities and limits of all flavours (note: will relocate to Bookings section in the future)
+ - Add Admin Cloud/Hypervisors UI to display status of all Hypervisors and resource allocations. Show (known) instances belonging to each Hypervisor.
+
 3.6.0 17/11/2025
 ================
  * Show whether a flavour is currently unavailable when creating an instance: show estimated availability date
