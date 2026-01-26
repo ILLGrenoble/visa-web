@@ -89,7 +89,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     constructor(private readonly _apollo: Apollo,
-        private readonly _notifierService: NotifierService) {
+                private readonly _notifierService: NotifierService) {
         this._form = new FormGroup({
             name: new FormControl(null, Validators.required),
             version: new FormControl(null, Validators.required),

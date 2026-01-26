@@ -1,14 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
-import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
-import {CloudClient, CloudClientInput, NumberInstancesByCloudClient} from '../../../core/graphql';
-import {CloudClientEditComponent} from '../cloud-client-edit';
-import {CloudClientDeleteComponent} from '../cloud-client-delete';
+import {CloudClient, NumberInstancesByCloudClient} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-cloud-clients',
@@ -23,9 +20,11 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
     private _instanceCounts: NumberInstancesByCloudClient[] = [];
     private _loading: boolean;
 
+    private _modalData$ = new Subject<{ cloudClient: CloudClient, clone: boolean, readonly: boolean }>();
+    private _cloudClientToDelete: CloudClient;
+
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService,
-                private readonly _dialog: MatDialog,
                 private readonly _titleService: Title) {
     }
 
@@ -42,6 +41,18 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
     }
     public onRefresh(): void {
         this._refresh$.next();
+    }
+
+    get modalData$(): Subject<{ cloudClient: CloudClient; clone: boolean; readonly: boolean }> {
+        return this._modalData$;
+    }
+
+    get cloudClientToDelete(): CloudClient {
+        return this._cloudClientToDelete;
+    }
+
+    get showDeleteModal(): boolean {
+        return this._cloudClientToDelete != null;
     }
 
     public ngOnInit(): void {
@@ -104,144 +115,51 @@ export class CloudClientsComponent implements OnInit, OnDestroy {
     }
 
     public onCreate(cloudClient?: CloudClient): void {
-        const dialogRef = this._dialog.open(CloudClientEditComponent, {
-            width: '900px',
-            data: {cloudClient, clone: !!cloudClient}
-        });
-
-        dialogRef.componentInstance.onSave$.pipe(
-            switchMap((input: CloudClientInput) => {
-                return this._apollo.mutate<any>({
-                    mutation: gql`
-                            mutation CreateCloudClient($input: CloudClientInput!){
-                                createCloudClient(input: $input) {
-                                    id
-                                    name
-                                    type
-                                    serverNamePrefix
-                                    visible
-                                    openStackProviderConfiguration {
-                                        applicationId
-                                        applicationSecret
-                                        computeEndpoint
-                                        placementEndpoint
-                                        imageEndpoint
-                                        networkEndpoint
-                                        identityEndpoint
-                                        addressProvider
-                                        addressProviderUUID
-                                    }
-                                    webProviderConfiguration {
-                                        url
-                                        authToken
-                                    }
-                                }
-                            }
-                        `,
-                    variables: {input},
-                }).pipe(
-                    takeUntil(this._destroy$),
-                    map(({data}) => ({cloudClient: data.createCloudClient})),
-                )
-            })).subscribe({
-                next: ({cloudClient}) => {
-                    this._notifierService.notify('success', 'Cloud provider created');
-                    this._cloudClients.push(cloudClient);
-                    dialogRef.close();
-                },
-                error: (error) => {
-                    this._notifierService.notify('error', error);
-                }
-            })
+        this.modalData$.next({cloudClient: cloudClient, clone: !!cloudClient, readonly: false});
     }
 
     public onDelete(cloudClient: CloudClient): void {
+        this._cloudClientToDelete = cloudClient;
+    }
 
-        const dialogRef = this._dialog.open(CloudClientDeleteComponent, {
-            width: '400px'
-        });
-
-        dialogRef.afterClosed().pipe(
-            filter((result) => result),
-            switchMap(() => {
-                return this._apollo.mutate({
+    public onConfirmDelete(): void {
+        if (this._cloudClientToDelete) {
+            this._apollo.mutate({
                     mutation: gql`
                         mutation DeleteCloudClient($id: Int!){
                             deleteCloudClient(id: $id)
                         }
                     `,
-                    variables: {id: cloudClient.id},
+                    variables: {id: this._cloudClientToDelete.id},
                 }).pipe(
                     takeUntil(this._destroy$)
-                )
-            })).subscribe({
+                ).subscribe({
                 next: () => {
+                    this._cloudClientToDelete = null;
                     this._notifierService.notify('success', 'Successfully deleted cloud provider');
-                    this._cloudClients = this._cloudClients.filter(aCloudClient => aCloudClient.id !== cloudClient.id);
+                    this._refresh$.next();
                 },
                 error: (error) => {
                     this._notifierService.notify('error', error);
                 }
-            })
+            });
+        }
     }
 
     public onUpdate(cloudClient: CloudClient): void {
-        const dialogRef = this._dialog.open(CloudClientEditComponent, {
-            width: '900px',
-            data: {cloudClient}
-        });
-
-        dialogRef.componentInstance.onSave$.pipe(
-            switchMap((input: CloudClientInput) => {
-                return this._apollo.mutate<any>({
-                    mutation: gql`
-                        mutation UpdateCloudClient($id: Int!,$input: CloudClientInput!){
-                            updateCloudClient(id: $id, input: $input) {
-                                id
-                                name
-                                type
-                                serverNamePrefix
-                                visible
-                                openStackProviderConfiguration {
-                                    applicationId
-                                    applicationSecret
-                                    computeEndpoint
-                                    placementEndpoint
-                                    imageEndpoint
-                                    networkEndpoint
-                                    identityEndpoint
-                                    addressProvider
-                                    addressProviderUUID
-                                }
-                                webProviderConfiguration {
-                                    url
-                                    authToken
-                                }
-                            }
-                        }
-                        `,
-                    variables: {id: cloudClient.id, input},
-                }).pipe(
-                    takeUntil(this._destroy$),
-                    map(({data}) => ({cloudClient: data.updateCloudClient})),
-                )
-            })).subscribe({
-                next: ({cloudClient}) => {
-                    this._cloudClients = this._cloudClients.map(aCloudClient => cloudClient.id === aCloudClient.id ? cloudClient : aCloudClient);
-                    this._notifierService.notify('success', 'Cloud provider saved');
-                    dialogRef.close();
-                },
-                error: (error) => {
-                    this._notifierService.notify('error', error);
-                }
-            })
+        this.modalData$.next({cloudClient: cloudClient, clone: false, readonly: false});
     }
 
     public onView(cloudClient: CloudClient): void {
-        this._dialog.open(CloudClientEditComponent, {
-            width: '900px',
-            data: {cloudClient, clone: false, readonly: true}
-        });
+        this.modalData$.next({cloudClient: cloudClient, clone: false, readonly: true});
+    }
+
+    public onDeleteModalClosed(): void {
+        this._cloudClientToDelete = null;
+    }
+
+    public onCloudClientSaved(): void {
+        this._refresh$.next();
     }
 
     public instanceCount(cloudClient: CloudClient): number {
