@@ -1,32 +1,39 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Instance, User} from '@core';
-import {filter} from "rxjs/operators";
+import {Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'visa-instance-members-connected-dialog',
     styleUrls: ['./members-connected.component.scss'],
     templateUrl: './members-connected.component.html',
 })
-export class MembersConnectedComponent {
+export class MembersConnectedComponent implements OnInit, OnDestroy {
 
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _users = [];
     private _user: User;
     private _instance: Instance;
 
-    private _eventEmitter: (type: string, data: any) => void;
+    private _onDropUser$: EventEmitter<User> = new EventEmitter<User>();
+
+    private _showModal$: Subject<boolean>;
+    private _showModal: boolean = false;
 
     get instance(): Instance {
         return this._instance;
     }
 
+    @Input()
     set instance(value: Instance) {
         this._instance = value;
     }
+
     get user(): User {
         return this._user;
     }
 
+    @Input()
     set user(value: User) {
         this._user = value;
     }
@@ -35,25 +42,43 @@ export class MembersConnectedComponent {
         return this._users;
     }
 
+    @Input()
     set users(value: any[]) {
         this._users = value;
     }
 
-    constructor(private dialogRef: MatDialogRef<MembersConnectedComponent>,
-                @Inject(MAT_DIALOG_DATA) private data: any) {
-        this._instance = data.instance;
-        this._eventEmitter = data.eventEmitter;
-        this._user = data.user;
-        data.users$.subscribe((users) => {
-            this.users = users;
-        });
-
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
+    get showModal(): boolean {
+        return this._showModal;
     }
 
-    public onNoClick(): void {
-        this.dialogRef.close();
+    set showModal(value: boolean) {
+        this._showModal = value;
+    }
+
+    @Input()
+    set showModal$(value: Subject<boolean>) {
+        this._showModal$ = value;
+    }
+
+    @Output()
+    get onDropUser(): EventEmitter<User> {
+        return this._onDropUser$;
+    }
+
+    constructor() {
+    }
+
+    public ngOnInit(): void {
+        this._showModal$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(showModal => {
+            this._showModal = showModal;
+        });
+    }
+
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     public canDelete(user: User): boolean {
@@ -71,8 +96,7 @@ export class MembersConnectedComponent {
 
     public dropUser(event, user: User): void {
         event.preventDefault();
-
-        this._eventEmitter('vdi:access_revoked', {userId: user.id});
+        this._onDropUser$.next(user);
     }
 
 }

@@ -1,3 +1,8 @@
+<visa-instance-members-connected-dialog [instance]="instance"
+                                        [user]="user"
+                                        [users]="users"
+                                        [showModal$]="membersConnectedDialogOpen$"
+                                        (onDropUser)="onDropUser($event)"></visa-instance-members-connected-dialog>
 <visa-instance-access-request-dialog [modalData$]="accessRequestData$"></visa-instance-access-request-dialog>
 
 <div class="remote-desktop-error-container" *ngIf="error">
@@ -192,7 +197,7 @@
         </ngx-remote-desktop-status-bar-item>
 
         <ngx-remote-desktop-status-bar-item toolbarPosition="right" (click)="handleMembersConnected()" style="cursor: pointer">
-            Members connected: <strong>{{ (users$ | async)?.length }}</strong>
+            Members connected: <strong>{{ users.length }}</strong>
         </ngx-remote-desktop-status-bar-item>
 
         <ngx-remote-desktop-status-bar-item toolbarPosition="right" *ngIf="isPrinterAvailable()">

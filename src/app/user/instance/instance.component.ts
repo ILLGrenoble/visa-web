@@ -26,7 +26,6 @@ import {BehaviorSubject, combineLatest, interval, Observable, Subject, Subscript
 import {catchError, filter, finalize, map, scan, share, startWith, takeUntil, timeInterval} from 'rxjs/operators';
 import {ClipboardComponent} from './clipboard';
 import {KeyboardComponent} from './keyboard';
-import {MembersConnectedComponent} from './members-connected';
 import {SettingsComponent} from './settings';
 import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
@@ -48,14 +47,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     public user: User;
 
-    public users$: BehaviorSubject<[]> = new BehaviorSubject<[]>([]);
+    public users: User[] = [];
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     private _accessRequestData$ = new Subject<{userFullName: string, callback: (response: string) => void}>();
-
-    public stats$;
+    private _membersConnectedDialogOpen$ = new Subject<boolean>();
 
     /**
      * Hot keys
@@ -98,6 +96,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     get dataReceivedRate$(): BehaviorSubject<number> {
         return this._dataReceivedRate$;
+    }
+
+    get membersConnectedDialogOpen$(): Subject<boolean> {
+        return this._membersConnectedDialogOpen$;
     }
 
     get accessRequestData$(): Subject<{ userFullName: string; callback: (response: string) => void }> {
@@ -550,7 +552,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private bindEventGatewayListeners(): void {
         this._gatewayEventSubscriber = this.eventsGateway.subscribe()
             .on('vdi:users_connected', ({users}) => {
-                this.users$.next(users);
+                this.users = users;
             })
             .on('vdi:user_connected', ({user}) => {
                 this.notifierService.notify('success', `${user.fullName} has connected to the instance`);
@@ -761,19 +763,11 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
 
     private createMembersConnectedDialog(): void {
-        this.dialog.open(MembersConnectedComponent, {
-            height: 'auto',
-            id: 'members-connected-dialog',
-            width: '450px',
-            data: {
-                instance: this.instance,
-                users$: this.users$,
-                user: this.user,
-                eventEmitter: (type: string, data?: any) => {
-                    this.eventsGateway.emit(type, data);
-                }
-            },
-        });
+        this._membersConnectedDialogOpen$.next(true);
+    }
+
+    public onDropUser(user: User): void {
+        this.eventsGateway.emit('vdi:access_revoked', {userId: user.id});
     }
 
     private createKeyboardDialog(): void {
