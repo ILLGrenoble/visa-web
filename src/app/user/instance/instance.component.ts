@@ -24,7 +24,6 @@ import * as md5 from 'blueimp-md5';
 import * as FileSaver from 'file-saver';
 import {BehaviorSubject, combineLatest, interval, Observable, Subject, Subscription, throwError, timer} from 'rxjs';
 import {catchError, filter, finalize, map, scan, share, startWith, takeUntil, timeInterval} from 'rxjs/operators';
-import {AccessRequestComponent} from './access-request';
 import {ClipboardComponent} from './clipboard';
 import {KeyboardComponent} from './keyboard';
 import {MembersConnectedComponent} from './members-connected';
@@ -53,6 +52,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
+
+    private _accessRequestData$ = new Subject<{userFullName: string, callback: (response: string) => void}>();
 
     public stats$;
 
@@ -97,6 +98,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     get dataReceivedRate$(): BehaviorSubject<number> {
         return this._dataReceivedRate$;
+    }
+
+    get accessRequestData$(): Subject<{ userFullName: string; callback: (response: string) => void }> {
+        return this._accessRequestData$;
     }
 
     constructor(private route: ActivatedRoute,
@@ -584,8 +589,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.accessPending = true;
             })
             .on('vdi:access_request', ({sessionId, user, requesterConnectionId}) => {
-                const dialogId = 'access-request-dialog-' + requesterConnectionId;
-                this.createAccessRequestDialog(dialogId, user.fullName, (response: string) => {
+                this.createAccessRequestDialog(user.fullName, (response: string) => {
                     this.eventsGateway.emit('vdi:access_reply', {sessionId, requesterConnectionId, response});
                 });
             })
@@ -817,16 +821,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
         });
     }
 
-    private createAccessRequestDialog(dialogId: string, userFullName: string, callback: (response: string) => void): void {
-        this.dialog.open(AccessRequestComponent, {
-            id: dialogId,
-            height: 'auto',
-            data: {
-                userFullName,
-                callback,
-            },
-            hasBackdrop: true,
-        });
+    private createAccessRequestDialog(userFullName: string, callback: (response: string) => void): void {
+        this._accessRequestData$.next({userFullName, callback});
     }
 
     private createFileManagerDialog(): void {
