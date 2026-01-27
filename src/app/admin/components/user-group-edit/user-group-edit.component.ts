@@ -1,7 +1,6 @@
-import {Component, Inject, OnDestroy} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
@@ -13,12 +12,34 @@ import {NotifierService} from 'angular-notifier';
     selector: 'visa-admin-user-group-edit',
     templateUrl: './user-group-edit.component.html'
 })
-export class UserGroupEditComponent implements OnDestroy {
+export class UserGroupEditComponent implements OnInit, OnDestroy {
 
     private _form: FormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private readonly _title: string;
-    private readonly _role: Role;
+    private _title: string;
+
+    private _roleId: number;
+    private _modalData$: Subject<{role: Role}>;
+    private _showEditModal = false;
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
+
+    get showEditModal(): boolean {
+        return this._showEditModal;
+    }
+
+    set showEditModal(value: boolean) {
+        this._showEditModal = value;
+    }
+
+    @Input()
+    set modalData$(value: Subject<{ role: Role }>) {
+        this._modalData$ = value;
+    }
+
+    @Output()
+    get onSave(): EventEmitter<void> {
+        return this._onSave$;
+    }
 
     get form(): FormGroup {
         return this._form;
@@ -32,27 +53,39 @@ export class UserGroupEditComponent implements OnDestroy {
         return this._title;
     }
 
-    constructor(private readonly _dialogRef: MatDialogRef<UserGroupEditComponent>,
-                private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {role},
+    constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService) {
-
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
-
         this._form = new FormGroup({
             name: new FormControl(null, Validators.required),
             description: new FormControl(null),
         });
 
-        if (role) {
-            this._role = role;
-            this._title = 'Edit user group';
-            this._createFormFromRole(role);
+    }
 
-        } else {
-            this._title = 'Create user group';
-        }
+    public ngOnInit(): void {
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {role} = data;
+
+            if (role) {
+                this._roleId = role.id;
+                this._title = 'Edit user group';
+                this._createFormFromRole(role);
+
+            } else {
+                this._roleId = null;
+                this._title = 'Create user group';
+                this._resetForm();
+            }
+
+            this._showEditModal = true;
+        });
+    }
+
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     private _createFormFromRole(role: Role): void {
@@ -63,6 +96,13 @@ export class UserGroupEditComponent implements OnDestroy {
         this.form.reset({
             name,
             description
+        });
+    }
+
+    private _resetForm(): void {
+        this.form.reset({
+            name: null,
+            description: null
         });
     }
 
@@ -81,12 +121,12 @@ export class UserGroupEditComponent implements OnDestroy {
             map(({data}) => ({rolesAndGroups: data.rolesAndGroups})),
             takeUntil(this._destroy$),
         ).subscribe(({rolesAndGroups}) => {
-            if (rolesAndGroups.find(role => role.name === name && role.id !== this._role.id)) {
+            if (rolesAndGroups.find(role => role.name === name && role.id !== this._roleId)) {
                 this._notifierService.notify('warning', `A role or group with this name already exists`);
 
             } else {
-                if (this._role) {
-                    this.updateRole(this._role.id, name, description);
+                if (this._roleId) {
+                    this.updateRole(this._roleId, name, description);
 
                 } else {
                     this.createRole(name, description);
@@ -117,7 +157,8 @@ export class UserGroupEditComponent implements OnDestroy {
         ).subscribe({
              next: () => {
                  this._notifierService.notify('success', 'Successfully created new user group');
-                 this._dialogRef.close(true);
+                 this._showEditModal = false;
+                 this._onSave$.next();
              },
              error: (error) => {
                  this._notifierService.notify('error', error);
@@ -147,7 +188,8 @@ export class UserGroupEditComponent implements OnDestroy {
         ).subscribe({
             next: () => {
                 this._notifierService.notify('success', 'Successfully updated user group');
-                this._dialogRef.close(true);
+                this._showEditModal = false;
+                this._onSave$.next();
             },
             error: (error) => {
                 this._notifierService.notify('error', error);
@@ -155,13 +197,8 @@ export class UserGroupEditComponent implements OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this._destroy$.next(true);
-        this._destroy$.unsubscribe();
-    }
-
     public onCancel(): void {
-        this._dialogRef.close();
+        this._showEditModal = false;
     }
 
 }

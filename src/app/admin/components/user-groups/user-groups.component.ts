@@ -1,13 +1,10 @@
 import {Component, EventEmitter, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
-import { Role } from '../../../core/graphql';
+import {Role} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
-import {UserGroupEditComponent} from "../user-group-edit";
-import {UserGroupDeleteComponent} from "../user-group-delete";
 
 @Component({
     selector: 'visa-admin-user-groups',
@@ -25,6 +22,9 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _userGroups: Role[] = [];
 
+    private _modalData$ = new Subject<{ role: Role }>();
+    private _groupToDelete: Role;
+
     @Output('onChange')
     public get onChange(): EventEmitter<void> {
         return this._onChange;
@@ -38,22 +38,20 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
         return this._loading;
     }
 
-    set loading(value: boolean) {
-        this._loading = value;
+    get modalData$(): Subject<{ role: Role }> {
+        return this._modalData$;
     }
 
-    @Output('onRefresh')
-    get refresh$(): Subject<void> {
-        return this._refresh$;
+    get showDeleteModal(): boolean {
+        return this._groupToDelete != null;
     }
 
-    set refresh$(value: Subject<void>) {
-        this._refresh$ = value;
+    get groupToDelete(): Role {
+        return this._groupToDelete;
     }
 
     constructor(private _apollo: Apollo,
-                private _notifierService: NotifierService,
-                private _dialog: MatDialog) {
+                private _notifierService: NotifierService) {
     }
 
     public ngOnInit(): void {
@@ -92,56 +90,45 @@ export class UserGroupsComponent implements OnInit, OnDestroy {
     }
 
     public onDelete(userGroup: Role): void {
+        this._groupToDelete = userGroup;
+    }
 
-        const dialogRef = this._dialog.open(UserGroupDeleteComponent, {
-            width: '400px'
-        });
+    public onConfirmDelete(): void {
+        if (this._groupToDelete) {
+            this._apollo.mutate({
+                mutation: gql`
+                mutation DeleteRole($id: Int!){
+                  deleteRole(id: $id)
+                }
+            `,
+            variables: {
+                id: this._groupToDelete.id
+            },
+            }).subscribe(() => {
+                this._notifierService.notify('success', 'Successfully deleted user group');
+                this._groupToDelete = null;
+                this._refresh$.next();
+                this._onChange.emit();
+            });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._apollo.mutate({
-                    mutation: gql`
-                    mutation DeleteRole($id: Int!){
-                      deleteRole(id: $id)
-                    }
-                `,
-                    variables: {
-                        id: userGroup.id
-                    },
-                }).subscribe(() => {
-                    this._notifierService.notify('success', 'Successfully deleted user group');
-                    this._refresh$.next();
-                    this._onChange.emit();
-                });
-            }
-        });
+        }
     }
 
     public onCreate(): void {
-        const dialogRef = this._dialog.open(UserGroupEditComponent, {
-            width: '800px', data: {}
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._refresh$.next();
-                this._onChange.emit();
-            }
-        });
-
+        this._modalData$.next({role: null});
     }
 
     public onEdit(userGroup: Role): void {
-        const dialogRef = this._dialog.open(UserGroupEditComponent, {
-            width: '800px', data: {
-                role: userGroup
-            }
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._refresh$.next();
-            }
-        });
+        this._modalData$.next({role: userGroup});
+    }
 
+    public onDeleteModalClosed(): void {
+        this._groupToDelete = null;
+    }
+
+    public onGroupSaved(): void {
+        this._refresh$.next();
+        this._onChange.emit();
     }
 
 }

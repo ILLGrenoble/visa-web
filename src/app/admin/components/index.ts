@@ -24,7 +24,6 @@ export * from './user-edit';
 export * from './user-experiments';
 export * from './user-groups';
 export * from './user-group-edit';
-export * from './user-group-delete';
 export * from './security-groups-overview';
 export * from './security-groups';
 export * from './security-group-filter-new';
