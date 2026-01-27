@@ -789,6 +789,7 @@ export type User = {
     groups?: Maybe<Array<Maybe<Role>>>;
     lastSeenAt?: Maybe<Scalars['String']>;
     activatedAt?: Maybe<Scalars['String']>;
+    instanceQuota?: Maybe<Scalars['Int']>;
 };
 
 export type UserConnection = {

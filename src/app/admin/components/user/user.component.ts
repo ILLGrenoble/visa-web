@@ -1,14 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {Apollo} from 'apollo-angular';
 import {User} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
-import {NotifierService} from 'angular-notifier';
-import {MatDialog} from '@angular/material/dialog';
-import {UserEditComponent} from '../user-edit';
-import {UserInput} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-user',
@@ -17,69 +13,33 @@ import {UserInput} from '../../../core/graphql';
 export class UserComponent implements OnInit, OnDestroy {
 
     private _user: User;
-
     private _destroy$: Subject<boolean> = new Subject<boolean>();
+
+    private _modalData$ = new Subject<{ user: User }>();
 
     public get user(): User {
         return this._user;
     }
 
-    public set user(user: User) {
-        this._user = user;
-    }
-
-    public get destroy$(): Subject<boolean> {
-        return this._destroy$;
-    }
-
-    public set destroy$(value: Subject<boolean>) {
-        this._destroy$ = value;
+    get modalData$(): Subject<{ user: User }> {
+        return this._modalData$;
     }
 
     constructor(private apollo: Apollo,
-                private route: ActivatedRoute,
-                private router: Router,
-                private dialog: MatDialog,
-                private notifierService: NotifierService) {
-
-    }
-
-    public ngOnDestroy(): void {
-        this.destroy$.next(true);
-        this.destroy$.unsubscribe();
+                private route: ActivatedRoute) {
     }
 
     public ngOnInit(): void {
         this.refresh();
     }
 
+    public ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
+    }
 
     public handleEdit(): void {
-        const dialogRef = this.dialog.open(UserEditComponent, {
-            width: '800px',
-            data: this._user
-        });
-        dialogRef.componentInstance.onSubmit$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((input: UserInput) => {
-                const id = this._user.id;
-                this.apollo.mutate({
-                    mutation: gql`
-                      mutation updateUser($id: String!, $input: UserInput!) {
-                        updateUser(id: $id, input: $input) {
-                          id
-                        }
-                      }
-                    `,
-                    variables: {
-                        id,
-                        input
-                    },
-                }).subscribe(() => {
-                    this.refresh();
-                    this.notifierService.notify('success', 'Updated user successfully');
-                });
-            });
+        this.modalData$.next({user: this._user});
     }
 
     public refresh(): void {
@@ -130,11 +90,13 @@ export class UserComponent implements OnInit, OnDestroy {
         })
             .pipe(
                 map(({data}) => data.user),
-                takeUntil(this.destroy$)
+                takeUntil(this._destroy$)
             ).subscribe((data) => {
                 this._user = data;
             });
     }
 
-
+    public onUserSaved(): void {
+        this.refresh();
+    }
 }

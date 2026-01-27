@@ -1,42 +1,48 @@
-<h1 mat-dialog-title>Edit user</h1>
-<div mat-dialog-content>
-    <form clrForm [formGroup]="form">
-        <clr-input-container>
-            <label>Instance quota</label>
-            <input clrInput type="number" formControlName="instanceQuota"/>
-            <clr-control-error>The instance quota is required</clr-control-error>
-        </clr-input-container>
-        <clr-toggle-container>
-            <label>Admin?</label>
-            <clr-toggle-wrapper>
-                <input type="checkbox" clrToggle formControlName="admin" required/>
-            </clr-toggle-wrapper>
-        </clr-toggle-container>
-        <clr-toggle-container>
-            <label>Guest?</label>
-            <clr-toggle-wrapper>
-                <input type="checkbox" clrToggle formControlName="guest" required/>
-            </clr-toggle-wrapper>
-        </clr-toggle-container>
-        <clr-date-container *ngIf="showGuestExpiryDate">
-            <input type="date" clrDate formControlName="guestExpiresAt" [min]="minDate">
-        </clr-date-container>
-        <clr-combobox-container>
-            <label for="userGroups">User groups</label>
-            <clr-combobox clrMulti="true" id="userGroups" formControlName="userGroups">
-                <ng-container *clrOptionSelected="let userGroup">
-                    {{userGroup?.name}}
-                </ng-container>
-                <clr-options>
-                    <clr-option *clrOptionItems="let userGroup of userGroups;" [clrValue]="userGroup">
-                        {{userGroup.name}}
-                    </clr-option>
-                </clr-options>
-            </clr-combobox>
-        </clr-combobox-container>
-    </form>
+<clr-modal clrModalSize="lg"
+           [(clrModalOpen)]="showEditModal"
+           [clrModalStaticBackdrop]="false">
+    <h3 class="modal-title">Edit user</h3>
+
+    <div class="modal-body">
+        <form clrForm [formGroup]="form">
+            <clr-input-container>
+                <label>Instance quota</label>
+                <input clrInput type="number" formControlName="instanceQuota"/>
+                <clr-control-error>The instance quota is required</clr-control-error>
+            </clr-input-container>
+            <clr-toggle-container>
+                <label>Admin?</label>
+                <clr-toggle-wrapper>
+                    <input type="checkbox" clrToggle formControlName="admin"/>
+                </clr-toggle-wrapper>
+            </clr-toggle-container>
+            <clr-toggle-container>
+                <label>Guest?</label>
+                <clr-toggle-wrapper>
+                    <input type="checkbox" clrToggle formControlName="guest"/>
+                </clr-toggle-wrapper>
+            </clr-toggle-container>
+            <clr-date-container *ngIf="showGuestExpiryDate">
+                <input type="date" clrDate formControlName="guestExpiresAt" [min]="minDate">
+            </clr-date-container>
+            <clr-combobox-container>
+                <label for="userGroups">User groups</label>
+                <clr-combobox clrMulti="true" id="userGroups" formControlName="userGroups">
+                    <ng-container *clrOptionSelected="let userGroup">
+                        {{userGroup?.name}}
+                    </ng-container>
+                    <clr-options>
+                        <clr-option *clrOptionItems="let userGroup of userGroups;" [clrValue]="userGroup">
+                            {{userGroup.name}}
+                        </clr-option>
+                    </clr-options>
+                </clr-combobox>
+            </clr-combobox-container>
+        </form>
+    </div>
     <div class="modal-footer">
         <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-        <button (click)="submit()" class="btn btn-primary">Update user</button>
+        <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
     </div>
-</div>
+
+</clr-modal>
