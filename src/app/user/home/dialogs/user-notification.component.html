@@ -1,10 +1,14 @@
-<div mat-dialog-content>
-    <div class="documentation-page-content">
-        <markdown [data]="notification?.message">
-        </markdown>
+<clr-modal clrModalSize="md"
+           [(clrModalOpen)]="showModal"
+           [clrModalStaticBackdrop]="false">
+    <div class="modal-body">
+        <div>
+            <markdown [data]="notification?.message">
+            </markdown>
+        </div>
     </div>
 
     <div class="modal-footer">
         <button (click)="submit()" class="btn btn-primary">Got it!</button>
     </div>
-</div>
+</clr-modal>

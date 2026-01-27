@@ -1,7 +1,6 @@
-import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SystemNotification} from "@core";
-import {filter} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 @Component({
     selector: 'visa-user-notification-dialog',
@@ -9,31 +8,47 @@ import {filter} from "rxjs/operators";
 })
 export class UserNotificationDialog implements OnInit {
 
-    public notification: SystemNotification;
+    private _notification: SystemNotification;
+    private _modalData$: Subject<{notification: SystemNotification}>;
+    private _showModal = false;
+    private _onAck$: EventEmitter<SystemNotification> = new EventEmitter<SystemNotification>();
 
-    public onAck$: EventEmitter<any> = new EventEmitter();
+    get showModal(): boolean {
+        return this._showModal;
+    }
 
-    constructor(public dialogRef: MatDialogRef<UserNotificationDialog>,
-                @Inject(MAT_DIALOG_DATA) public data: { notification: SystemNotification }) {
-        this.notification = data.notification;
+    set showModal(value: boolean) {
+        this._showModal = value;
+    }
 
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.handleClose());
-        this.dialogRef.backdropClick().subscribe(() => this.handleClose());
+    get notification(): SystemNotification {
+        return this._notification;
+    }
+
+    @Input()
+    set modalData$(value: Subject<{ notification: SystemNotification }>) {
+        this._modalData$ = value;
+    }
+
+    @Output()
+    get onAck(): EventEmitter<SystemNotification> {
+        return this._onAck$;
+    }
+
+    constructor() {
     }
 
     public ngOnInit(): void {
+        this._modalData$.pipe(
+        ).subscribe(data => {
+            const {notification} = data;
+            this._notification = notification;
+            this._showModal = true;
+        });
     }
 
     public submit(): void {
-        this.onAck$.emit(true);
-        this.handleClose();
-        // this.accountService.requestInstanceLifetimeExtension(this.instance, comments)
-        //     .subscribe((data) => {
-        //         this.dialogRef.close(data);
-        //     });
-    }
-
-    public handleClose(): void {
-        this.dialogRef.close();
+        this._showModal = false;
+        this._onAck$.emit(this._notification);
     }
 }

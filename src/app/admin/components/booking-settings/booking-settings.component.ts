@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import {NotifierService} from 'angular-notifier';
