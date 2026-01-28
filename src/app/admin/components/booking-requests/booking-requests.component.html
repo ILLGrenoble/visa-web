@@ -11,6 +11,12 @@
     <div class="admin-container--main">
         <h3>Booking Requests</h3>
 
+        <div *ngIf="allBookingRequests.length == 0" class="booking-requests-section">
+            <div class="booking-requests-section-title">
+                No requests to reserve VISA resources have been made.
+            </div>
+        </div>
+
         <div *ngIf="pendingBookingRequests.length > 0" class="booking-requests-section">
             <div class="booking-requests-section-title">
                 Pending requests
@@ -25,7 +31,7 @@
             <visa-admin-booking-request-list [bookingRequests]="acceptedBookingRequests"></visa-admin-booking-request-list>
         </div>
 
-        <div class="booking-requests-section">
+        <div *ngIf="allBookingRequests.length > 0" class="booking-requests-section">
             <div class="booking-requests-section-title">
                 Availability of requested resources
             </div>

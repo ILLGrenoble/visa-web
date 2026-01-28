@@ -116,9 +116,14 @@ export class BookingRequestsComponent implements OnInit, OnDestroy {
             this._allBookingRequests = bookingRequests;
             this._pendingBookingRequests = bookingRequests.filter(bookingRequest => bookingRequest.state === 'CREATED');
             this._acceptedBookingRequests = bookingRequests.filter(bookingRequest => bookingRequest.state === 'ACCEPTED');
-            this._getFlavourAvailabilities(bookingRequests
+
+            const flavourIds = bookingRequests
                 .flatMap(bookingRequest => bookingRequest.flavours).map(flavourRequest => flavourRequest.flavour.id)
-                .filter((value, index, array) => array.indexOf(value) === index));
+                .filter((value, index, array) => array.indexOf(value) === index);
+
+            if (flavourIds.length > 0) {
+                this._getFlavourAvailabilities(flavourIds);
+            }
         });
     }
 
