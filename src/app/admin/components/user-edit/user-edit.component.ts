@@ -1,11 +1,11 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Role, User, UserInput} from '../../../core/graphql';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import gql from 'graphql-tag';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
+import {NotifierService} from "angular-notifier";
 
 @Component({
     selector: 'visa-admin-user-edit',
@@ -13,29 +13,38 @@ import {Apollo} from 'apollo-angular';
 })
 export class UserEditComponent implements OnInit, OnDestroy {
 
-    private _onSubmit$: Subject<UserInput> = new Subject<UserInput>();
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-
     private _form: FormGroup;
+    private _userId: string;
 
-    private readonly _minDate: string;
+    private _minDate: string;
     private _userGroups: Role[];
 
+    private _modalData$: Subject<{user: User}>;
+    private _showEditModal = false;
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
 
-    get user(): User {
-        return this._user;
+
+    get showEditModal(): boolean {
+        return this._showEditModal;
+    }
+
+    set showEditModal(value: boolean) {
+        this._showEditModal = value;
+    }
+
+    @Input()
+    set modalData$(value: Subject<{ user: User }>) {
+        this._modalData$ = value;
+    }
+
+    @Output()
+    get onSave(): EventEmitter<void> {
+        return this._onSave$;
     }
 
     public get form(): FormGroup {
         return this._form;
-    }
-
-    public set form(value: FormGroup) {
-        this._form = value;
-    }
-
-    get onSubmit$(): Subject<UserInput> {
-        return this._onSubmit$;
     }
 
     get showGuestExpiryDate(): boolean {
@@ -50,34 +59,32 @@ export class UserEditComponent implements OnInit, OnDestroy {
         return this._userGroups;
     }
 
-    constructor(private _dialogRef: MatDialogRef<UserEditComponent>,
-                private _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) private _user) {
+    constructor(private _apollo: Apollo,
+                private readonly _notifierService: NotifierService) {
 
-        const now = new Date();
-        this._minDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-    }
-
-    private _createForm(): FormGroup {
-        const {instanceQuota, activeUserRoles, groups} = this._user;
-        const admin = activeUserRoles.find(userRole => userRole.role.name === 'ADMIN') != null;
-        const guestRole = activeUserRoles.find(userRole => userRole.role.name === 'GUEST');
-        const guest = guestRole != null;
-        const guestRoleExpiresAtDate = guestRole != null && guestRole.expiresAt != null ? new Date(guestRole.expiresAt) : null;
-
-        const guestRoleExpiresAt = guestRoleExpiresAtDate == null ? null : `${guestRoleExpiresAtDate.getDate()}/${guestRoleExpiresAtDate.getMonth() + 1}/${guestRoleExpiresAtDate.getFullYear()}`;
-
-        return new FormGroup({
-            instanceQuota: new FormControl(instanceQuota),
-            admin: new FormControl(admin),
-            guest: new FormControl(guest),
-            guestExpiresAt:  new FormControl(guestRoleExpiresAt),
-            userGroups: new FormControl(groups),
+        this._form = new FormGroup({
+            instanceQuota: new FormControl(null, Validators.required),
+            admin: new FormControl(null),
+            guest: new FormControl(null),
+            guestExpiresAt:  new FormControl(null),
+            userGroups: new FormControl(null),
         });
     }
 
     public ngOnInit(): void {
-        this._form = this._createForm();
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {user} = data;
+            this._userId = user.id;
+
+            const now = new Date();
+            this._minDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
+            this._createFormFromUser(user);
+            this._showEditModal = true;
+        });
+
         this._apollo.query<any>({
             query: gql`
                query groups {
@@ -93,9 +100,6 @@ export class UserEditComponent implements OnInit, OnDestroy {
         ).subscribe(({userGroups}) => {
             this._userGroups = userGroups || [];
         });
-
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
     }
 
     ngOnDestroy(): void {
@@ -103,8 +107,26 @@ export class UserEditComponent implements OnInit, OnDestroy {
         this._destroy$.unsubscribe();
     }
 
+    private _createFormFromUser(user: User): void {
+        const {instanceQuota, activeUserRoles, groups} = user;
+        const admin = activeUserRoles.find(userRole => userRole.role.name === 'ADMIN') != null;
+        const guestRole = activeUserRoles.find(userRole => userRole.role.name === 'GUEST');
+        const guest = guestRole != null;
+        const guestRoleExpiresAtDate = guestRole != null && guestRole.expiresAt != null ? new Date(guestRole.expiresAt) : null;
+
+        const guestRoleExpiresAt = guestRoleExpiresAtDate == null ? null : `${guestRoleExpiresAtDate.getDate()}/${guestRoleExpiresAtDate.getMonth() + 1}/${guestRoleExpiresAtDate.getFullYear()}`;
+
+        this._form.reset({
+            instanceQuota,
+            admin,
+            guest,
+            guestExpiresAt: guestRoleExpiresAt,
+            userGroups: [...groups],
+        });
+    }
+
     public onCancel(): void {
-        this._dialogRef.close();
+        this._showEditModal = false;
     }
 
     public submit(): void {
@@ -123,8 +145,24 @@ export class UserEditComponent implements OnInit, OnDestroy {
             guestExpiresAt: guestExpiresAtDate,
             groupIds: userGroups ? userGroups.map(role => role.id) : [],
         } as UserInput;
-        this._onSubmit$.next(input);
-        this._dialogRef.close();
+
+        this._apollo.mutate({
+            mutation: gql`
+              mutation updateUser($id: String!, $input: UserInput!) {
+                updateUser(id: $id, input: $input) {
+                  id
+                }
+              }
+            `,
+            variables: {
+                id: this._userId,
+                input
+            },
+        }).subscribe(() => {
+            this._notifierService.notify('success', 'Updated user successfully');
+            this._showEditModal = false;
+            this._onSave$.next();
+        });
     }
 
 }

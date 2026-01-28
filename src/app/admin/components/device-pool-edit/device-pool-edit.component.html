@@ -1,87 +1,93 @@
-<h1 mat-dialog-title>{{ title }}</h1>
-<ng-container *ngIf="form">
-    <div mat-dialog-content>
-        <form clrForm [formGroup]="form" clrLayout="horizontal">
-            <clr-input-container>
-                <label for="name">Name</label>
-                <input clrInput id="name" formControlName="name" class="form-control"/>
-                <clr-control-error>Please enter a name</clr-control-error>
-            </clr-input-container>
+<clr-modal clrModalSize="lg"
+           [(clrModalOpen)]="showEditModal"
+           [clrModalStaticBackdrop]="false">
+    <h3 class="modal-title">{{ title }}</h3>
 
-            <clr-input-container>
-                <label for="description">Description</label>
-                <input clrInput id="description" formControlName="description" class="form-control"/>
-                <clr-control-error>Please enter a description</clr-control-error>
-            </clr-input-container>
+    <div class="modal-body">
+        <ng-container>
+            <form clrForm [formGroup]="form" clrLayout="horizontal">
+                <clr-input-container>
+                    <label for="name">Name</label>
+                    <input clrInput id="name" formControlName="name" class="form-control"/>
+                    <clr-control-error>Please enter a name</clr-control-error>
+                </clr-input-container>
 
-            <clr-select-container *ngIf="multiCloudEnabled">
-                <label for="cloud">Cloud Provider</label>
-                <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
-                    <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
-                </select>
-                <clr-control-helper>Please select the cloud provider</clr-control-helper>
-            </clr-select-container>
+                <clr-input-container>
+                    <label for="description">Description</label>
+                    <input clrInput id="description" formControlName="description" class="form-control"/>
+                    <clr-control-error>Please enter a description</clr-control-error>
+                </clr-input-container>
 
-            <clr-select-container *ngIf="cloudDevices?.length > 0">
-                <label for="device">Cloud device</label>
-                <select clrSelect id="device" formControlName="cloudDevice" [compareWith]="compareCloudDevice">
-                    <option *ngFor="let cloudDevice of cloudDevices" [ngValue]="cloudDevice">{{ cloudDevice | cloudDevice }}</option>
-                </select>
-                <clr-control-error>Please select a cloud device</clr-control-error>
-            </clr-select-container>
+                <clr-select-container *ngIf="multiCloudEnabled">
+                    <label for="cloud">Cloud Provider</label>
+                    <select clrSelect id="cloud" formControlName="cloudClient" [compareWith]="compareCloudClient" (change)="onCloudChange()">
+                        <option *ngFor="let cloudClient of cloudClients" [ngValue]="cloudClient">{{cloudClient?.name}}</option>
+                    </select>
+                    <clr-control-helper>Please select the cloud provider</clr-control-helper>
+                </clr-select-container>
 
-            <div *ngIf="cloudDevices?.length == 0" class="device-pool-edit-none-remaining">
-                There are no unconfigured cloud devices
-            </div>
+                <clr-select-container *ngIf="cloudDevices?.length > 0">
+                    <label for="device">Cloud device</label>
+                    <select clrSelect id="device" formControlName="cloudDevice" [compareWith]="compareCloudDevice">
+                        <option *ngFor="let cloudDevice of cloudDevices" [ngValue]="cloudDevice">{{ cloudDevice | cloudDevice }}</option>
+                    </select>
+                    <clr-control-error>Please select a cloud device</clr-control-error>
+                </clr-select-container>
 
-            <clr-select-container>
-                <label for="resource-class">Resource class</label>
-                <select clrSelect id="resource-class" formControlName="resourceClass" [compareWith]="compareResourceClass">
-                    <option *ngFor="let resourceClass of customResourceClasses" [ngValue]="resourceClass">{{ resourceClass?.title }}</option>
-                </select>
-                <clr-control-helper>
-                    <span>
-                        <span *ngIf="!loadingCloudDevices && !placementAvailable">
-                            <clr-tooltip>
-                                <span clrTooltipTrigger>
-                                    <clr-icon size="24" shape="info" style="color: red;"></clr-icon>
-                                </span>
-                                <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
-                                    {{ placementConfigMessage() }}
-                                </clr-tooltip-content>
-                            </clr-tooltip>
+                <div *ngIf="cloudDevices?.length == 0" class="device-pool-edit-none-remaining">
+                    There are no unconfigured cloud devices
+                </div>
 
-                        </span>
-                        <span *ngIf="!loadingCloudDevices &&placementAvailable && customResourceClasses.length === 1">
-                            <clr-tooltip>
-                                <span clrTooltipTrigger>
-                                    <clr-icon size="24" shape="info" style="color: red;"></clr-icon>
-                                </span>
-                                <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
-                                    {{ resourceClassConfigMessage() }}
-                                </clr-tooltip-content>
-                            </clr-tooltip>
-
-                        </span>
+                <clr-select-container>
+                    <label for="resource-class">Resource class</label>
+                    <select clrSelect id="resource-class" formControlName="resourceClass" [compareWith]="compareResourceClass">
+                        <option *ngFor="let resourceClass of customResourceClasses" [ngValue]="resourceClass">{{ resourceClass?.title }}</option>
+                    </select>
+                    <clr-control-helper>
                         <span>
-                            The resource class allows VISA to automatically determine the number and availability of the device
+                            <span *ngIf="!loadingCloudDevices && !placementAvailable">
+                                <clr-tooltip>
+                                    <span clrTooltipTrigger>
+                                        <clr-icon size="24" shape="info" style="color: red;"></clr-icon>
+                                    </span>
+                                    <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
+                                        {{ placementConfigMessage() }}
+                                    </clr-tooltip-content>
+                                </clr-tooltip>
+
+                            </span>
+                            <span *ngIf="!loadingCloudDevices &&placementAvailable && customResourceClasses.length === 1">
+                                <clr-tooltip>
+                                    <span clrTooltipTrigger>
+                                        <clr-icon size="24" shape="info" style="color: red;"></clr-icon>
+                                    </span>
+                                    <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
+                                        {{ resourceClassConfigMessage() }}
+                                    </clr-tooltip-content>
+                                </clr-tooltip>
+
+                            </span>
+                            <span>
+                                The resource class allows VISA to automatically determine the number and availability of the device
+                            </span>
                         </span>
-                    </span>
-                </clr-control-helper>
-            </clr-select-container>
+                    </clr-control-helper>
+                </clr-select-container>
 
-            <clr-input-container class="device-pool-total-units">
-                <label for="totalUnits">Total Units</label>
-                <input type="number" clrInput id="totalUnits" formControlName="totalUnits" [placeholder]="selectedResourceClass != null ? selectedResourceClass.placeholder : ''" class="form-control"/>
-                <clr-control-helper *ngIf="selectedResourceClass == null">Please enter the total number of units available</clr-control-helper>
-                <clr-control-helper *ngIf="selectedResourceClass != null">Leave this blank if you'd like VISA to manage the available devices</clr-control-helper>
-            </clr-input-container>
+                <clr-input-container class="device-pool-total-units">
+                    <label for="totalUnits">Total Units</label>
+                    <input type="number" clrInput id="totalUnits" formControlName="totalUnits" [placeholder]="selectedResourceClass != null ? selectedResourceClass.placeholder : ''" class="form-control"/>
+                    <clr-control-helper *ngIf="selectedResourceClass == null">Please enter the total number of units available</clr-control-helper>
+                    <clr-control-helper *ngIf="selectedResourceClass != null">Leave this blank if you'd like VISA to manage the available devices</clr-control-helper>
+                </clr-input-container>
 
-        </form>
-        <div class="modal-footer">
-            <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-            <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
-        </div>
+            </form>
+        </ng-container>
     </div>
-</ng-container>
 
+    <div class="modal-footer">
+        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
+    </div>
+
+</clr-modal>

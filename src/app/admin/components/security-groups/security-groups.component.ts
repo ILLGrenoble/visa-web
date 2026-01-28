@@ -1,12 +1,9 @@
 import {Component, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {delay, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {CloudClient, SecurityGroup} from '../../../core/graphql';
-import {SecurityGroupImportComponent} from '../security-group-import';
-import {SecurityGroupDeleteComponent} from '../security-group-delete';
 import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 
@@ -25,6 +22,9 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
     private _securityGroups: SecurityGroup[] = [];
     private _filteredSecurityGroups: SecurityGroup[] = [];
     private _cloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
+
+    private _modalData$ = new Subject<{ currentSecurityGroups: SecurityGroup[], cloudClient: CloudClient, multiCloudEnabled: boolean }>();
+    private _securityGroupToDelete: SecurityGroup;
 
     get filteredSecurityGroups(): SecurityGroup[] {
         return this._filteredSecurityGroups;
@@ -69,9 +69,20 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
+    get modalData$(): Subject<{ currentSecurityGroups: SecurityGroup[], cloudClient: CloudClient, multiCloudEnabled: boolean }> {
+        return this._modalData$;
+    }
+
+    get showDeleteModal(): boolean {
+        return this._securityGroupToDelete != null;
+    }
+
+    get securityGroupToDelete(): SecurityGroup {
+        return this._securityGroupToDelete;
+    }
+
     constructor(private _apollo: Apollo,
                 private _notifierService: NotifierService,
-                private _dialog: MatDialog,
                 private _titleService: Title) {
     }
 
@@ -124,46 +135,45 @@ export class SecurityGroupsComponent implements OnInit, OnDestroy {
     }
 
     public onDelete(securityGroup: SecurityGroup): void {
+        this._securityGroupToDelete = securityGroup;
+    }
 
-        const dialogRef = this._dialog.open(SecurityGroupDeleteComponent, {
-            width: '400px'
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._apollo.mutate({
-                    mutation: gql`
-                    mutation DeleteSecurityGroup($id: Int!){
-                      deleteSecurityGroup(id: $id) {
-                        id
-                      }
-                    }
-                `,
-                    variables: {
-                        id: securityGroup.id
-                    },
-                }).subscribe(() => {
+    public onConfirmDelete(): void {
+        if (this._securityGroupToDelete) {
+            this._apollo.mutate({
+                mutation: gql`
+                mutation DeleteSecurityGroup($id: Int!){
+                  deleteSecurityGroup(id: $id) {
+                    id
+                  }
+                }
+            `,
+                variables: {
+                    id: this._securityGroupToDelete.id
+                },
+            }).subscribe({
+                next: () => {
                     this._notifierService.notify('success', 'Successfully deleted security group');
                     this._refresh$.next();
-                });
-            }
-        });
+                    this._securityGroupToDelete = null;
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            });
+        }
+    }
+
+    public onDeleteModalClosed(): void {
+        this._securityGroupToDelete = null;
     }
 
     public onImport(): void {
-        const dialogRef = this._dialog.open(SecurityGroupImportComponent, {
-            width: '800px', data: {
-                cloudClient: this._cloudClient$.getValue(),
-                currentSecurityGroups: this._filteredSecurityGroups,
-                multiCloudEnabled: this._multiCloudEnabled,
-            }
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this._refresh$.next();
-            }
-        });
+        this._modalData$.next({cloudClient: this._cloudClient$.getValue(), currentSecurityGroups: this._filteredSecurityGroups, multiCloudEnabled: this._multiCloudEnabled});
+    }
 
+    public onSecurityGroupSaved(): void {
+        this._refresh$.next();
     }
 
 }

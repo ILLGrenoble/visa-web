@@ -1,14 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import {NotifierService} from 'angular-notifier';
 import {Title} from '@angular/platform-browser';
 import {InstanceExtensionRequest} from '../../../core/graphql';
 import gql from 'graphql-tag';
 import {map, takeUntil} from 'rxjs/operators';
-import {ExtensionRequestHandlerComponent} from '../extension-request-handler';
-import {EventsGateway, GatewayEventSubscriber, NotificationPayload, NotificationService} from '../../../core';
+import {EventsGateway, GatewayEventSubscriber, NotificationService} from '../../../core';
 
 @Component({
     selector: 'visa-admin-extension-requests',
@@ -23,6 +20,8 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
 
+    private _modalData$ = new Subject<{ request: InstanceExtensionRequest }>();
+
     get extensionRequests(): InstanceExtensionRequest[] {
         return this._extensionRequests;
     }
@@ -31,10 +30,12 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
         return this._loading;
     }
 
+    get modalData$(): Subject<{ request: InstanceExtensionRequest }> {
+        return this._modalData$;
+    }
+
     constructor(private apollo: Apollo,
                 private notificationService: NotificationService,
-                private notifierService: NotifierService,
-                private dialog: MatDialog,
                 private titleService: Title,
                 private eventsGateway: EventsGateway) {
     }
@@ -56,37 +57,12 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
     }
 
     public onHandle(request: InstanceExtensionRequest): void {
-        const dialogRef = this.dialog.open(ExtensionRequestHandlerComponent, {
-            width: '900px', data: { request },
-        });
-        dialogRef.componentInstance.onHandled$.subscribe(async (data) => {
-            this.apollo.mutate<any>({
-                mutation: gql`
-                    mutation handleInstanceExtensionRequest($requestId: Int!, $response: InstanceExtensionResponseInput!){
-                        handleInstanceExtensionRequest(requestId:$requestId, response:$response) {
-                            id
-                            comments
-                            state
-                        }
-                    }
-            `,
-                variables: {requestId: request.id, response: data},
-            }).pipe(
-                takeUntil(this._destroy$),
-            ).subscribe({
-                next: () => {
-                    dialogRef.close();
-                    this.showSuccessNotification('Instance extension request has been handled successfully');
-                    if (this._extensionRequests.length === 1) {
-                        this.notificationService.getAll();
-                    }
-                    this.load();
-                },
-                error: (error) => {
-                    this.showErrorNotification(error);
-                }
-            })
-        });
+        this._modalData$.next({ request });
+    }
+
+    public onExtensionRequestHandled(): void {
+        this.notificationService.getAll();
+        this.load();
     }
 
     private load(): void {
@@ -144,14 +120,6 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
             this._extensionRequests = instanceExtensionRequests;
             this._loading = false;
         });
-    }
-
-    private showSuccessNotification(message): void {
-        this.notifierService.notify('success', message);
-    }
-
-    private showErrorNotification(message): void {
-        this.notifierService.notify('error', message);
     }
 
     private bindEventGatewayListeners(): void {

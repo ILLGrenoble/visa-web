@@ -1,5 +1,4 @@
-import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
     FlavourAvailabilitiesFuture,
     Instance,
@@ -9,25 +8,24 @@ import {
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import * as moment from 'moment';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
-import {filter, map, take, tap} from 'rxjs/operators';
-import {Store} from '@ngrx/store';
+import {filter, map, take, takeUntil} from 'rxjs/operators';
 import gql from "graphql-tag";
 import {Apollo} from "apollo-angular";
+import {Subject} from "rxjs";
+import {NotifierService} from "angular-notifier";
+import {Store} from "@ngrx/store";
 
 @Component({
     selector: 'visa-admin-extension-request-handler',
     styleUrls: ['./extension-request-handler.component.scss'],
     templateUrl: './extension-request-handler.component.html',
 })
-export class ExtensionRequestHandlerComponent implements OnInit {
+export class ExtensionRequestHandlerComponent implements OnInit, OnDestroy {
 
     private _user: CoreUser;
 
-    private _onHandled$: EventEmitter<any> = new EventEmitter();
-
-    private readonly _extensionRequest: InstanceExtensionRequest;
-    private readonly _instance: Instance;
-    private _availabilityLoading = false;
+    private _extensionRequest: InstanceExtensionRequest;
+    private _instance: Instance;
     private _availability: FlavourAvailabilitiesFuture = null;
 
     private _form: FormGroup;
@@ -35,8 +33,27 @@ export class ExtensionRequestHandlerComponent implements OnInit {
     private _terminationDate: Date;
     private _minDate: string;
 
-    get onHandled$(): EventEmitter<any> {
-        return this._onHandled$;
+    private _destroy$: Subject<boolean> = new Subject<boolean>();
+    private _modalData$: Subject<{request: InstanceExtensionRequest}>;
+    private _showHandlerModal = false;
+    private _onHandled: EventEmitter<void> = new EventEmitter<void>();
+
+    get showHandlerModal(): boolean {
+        return this._showHandlerModal;
+    }
+
+    set showHandlerModal(value: boolean) {
+        this._showHandlerModal = value;
+    }
+
+    @Input()
+    set modalData$(value: Subject<{ request: InstanceExtensionRequest }>) {
+        this._modalData$ = value;
+    }
+
+    @Output()
+    get onHandled(): EventEmitter<void> {
+        return this._onHandled;
     }
 
     get extensionRequest(): InstanceExtensionRequest {
@@ -83,32 +100,40 @@ export class ExtensionRequestHandlerComponent implements OnInit {
         value.setMinutes(minutes);
     }
 
-    get availabilityLoading(): boolean {
-        return this._availabilityLoading;
-    }
-
     get availability(): FlavourAvailabilitiesFuture {
         return this._availability;
     }
 
     constructor(private apollo: Apollo,
-                private dialogRef: MatDialogRef<ExtensionRequestHandlerComponent>,
-                private store: Store<ApplicationState>,
-                @Inject(MAT_DIALOG_DATA) data) {
-        this._extensionRequest = data.request;
-        this._instance = this._extensionRequest.instance;
-        this._terminationDate = new Date(this._instance.terminationDate);
-        this._minDate = `${this._terminationDate.getFullYear()}-${this._terminationDate.getMonth() + 1}-${this._terminationDate.getDate()}`;
-        store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1)).subscribe((user: CoreUser) => {
+                private _store: Store<ApplicationState>,
+                private readonly _notifierService: NotifierService) {
+
+        this._store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1)).subscribe((user: CoreUser) => {
             this._user = user;
         });
     }
 
     public ngOnInit(): void {
-        this.createForm();
-        this._getFlavourAvailabilities(this._instance.plan.flavour.id);
-        this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
-        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {request} = data;
+
+            this._extensionRequest = request;
+            this._accepted = null;
+            this._instance = this._extensionRequest.instance;
+            this._terminationDate = new Date(this._instance.terminationDate);
+            this._minDate = `${this._terminationDate.getFullYear()}-${this._terminationDate.getMonth() + 1}-${this._terminationDate.getDate()}`;
+            this._getFlavourAvailabilities(this._instance.plan.flavour.id);
+            this.createForm();
+
+            this._showHandlerModal = true;
+        });
+    }
+
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     public isAcceptedValue(value: boolean): boolean {
@@ -143,7 +168,7 @@ export class ExtensionRequestHandlerComponent implements OnInit {
     }
 
     public onCancel(): void {
-        this.dialogRef.close();
+        this._showHandlerModal = false;
     }
 
     public submit(): void {
@@ -155,12 +180,36 @@ export class ExtensionRequestHandlerComponent implements OnInit {
             accepted: this._accepted,
             terminationDate: dateString,
         } as InstanceExtensionResponseInput;
-        this._onHandled$.emit(response);
+        this._handleRequest(response);
     }
 
+    private _handleRequest(input: InstanceExtensionResponseInput): void {
+        this.apollo.mutate<any>({
+                mutation: gql`
+                    mutation handleInstanceExtensionRequest($requestId: Int!, $response: InstanceExtensionResponseInput!){
+                        handleInstanceExtensionRequest(requestId:$requestId, response:$response) {
+                            id
+                            comments
+                            state
+                        }
+                    }
+                `,
+                variables: {requestId: this._extensionRequest.id, response: input},
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Instance extension request has been handled successfully');
+                    this._showHandlerModal = false;
+                    this._onHandled.next();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            });
+    }
 
     private _getFlavourAvailabilities(flavourId: number): void {
-        this._availabilityLoading = true;
         this.apollo.query<any>({
             query: gql`
                 query flavourAvailabilitiesFutures($flavourIds: [Int]) {
@@ -196,7 +245,6 @@ export class ExtensionRequestHandlerComponent implements OnInit {
             },
         }).pipe(
             map(({data}) => data),
-            tap(() => this._availabilityLoading = false)
         ).subscribe(({flavourAvailabilitiesFutures}) => {
             this._availability = flavourAvailabilitiesFutures[0];
         });

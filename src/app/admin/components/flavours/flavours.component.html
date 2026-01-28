@@ -1,6 +1,65 @@
 <visa-admin-header></visa-admin-header>
 <visa-cloud-admin-header></visa-cloud-admin-header>
 
+<visa-admin-flavour-edit [instruments]="instruments" [roles]="roles" [modalData$]="flavourModalData$" (onSave)="onFlavourSaved()"></visa-admin-flavour-edit>
+<visa-admin-device-pool-edit [allHypervisors]="hypervisors" [configuredDevicePools]="devicePools" [modalData$]="devicePoolModalData$" (onSave)="onDevicePoolSaved()"></visa-admin-device-pool-edit>
+
+<clr-modal clrModalSize="md"
+           [clrModalOpen]="showFlavourDeleteModal"
+           [clrModalStaticBackdrop]="false"
+           [clrModalPreventClose]="true"
+           (clrModalAlternateClose)="onFlavourDeleteModalClosed()">
+    <h3 class="modal-title">Delete flavour</h3>
+
+    <div class="modal-body">
+        <div class="alert alert-danger" role="alert" style="margin-top:16px;">
+            <div class="alert-items">
+                <div class="alert-item static">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="info-alert"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                    Are you sure you want to delete the flavour {{ flavourToDelete?.name}}?
+                </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onFlavourDeleteModalClosed()" class="btn btn-outline">Cancel</button>
+        <button (click)="onConfirmFlavourDelete()" class="btn btn-warning-outline">Delete</button>
+    </div>
+</clr-modal>
+
+<clr-modal clrModalSize="md"
+           [clrModalOpen]="showDevicePoolDeleteModal"
+           [clrModalStaticBackdrop]="false"
+           [clrModalPreventClose]="true"
+           (clrModalAlternateClose)="onDevicePoolDeleteModalClosed()">
+    <h3 class="modal-title">Delete flavour</h3>
+
+    <div class="modal-body">
+        <div class="alert alert-danger" role="alert" style="margin-top:16px;">
+            <div class="alert-items">
+                <div class="alert-item static">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="info-alert"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                    Are you sure you want to delete the device pool {{ devicePoolToDelete?.name}}?
+                </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onDevicePoolDeleteModalClosed()" class="btn btn-outline">Cancel</button>
+        <button (click)="onConfirmDevicePoolDelete()" class="btn btn-warning-outline">Delete</button>
+    </div>
+</clr-modal>
+
 <div class="flavours-overview">
     <div class="admin-container flavours-main">
         <div class="admin-container--main">

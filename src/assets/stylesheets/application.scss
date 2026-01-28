@@ -55,6 +55,11 @@ $visa-theme: mat.define-light-theme((
     --clr-btn-default-outline-color: #0052cc;
     --clr-p1-color: #000;
     --clr-global-app-background: white;
+    --clr-modal-backdrop-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-header .close {
+    display: none;
 }
 
 .mat-mdc-dialog-container {

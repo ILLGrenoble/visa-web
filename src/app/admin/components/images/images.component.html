@@ -1,6 +1,36 @@
 <visa-admin-header></visa-admin-header>
 <visa-cloud-admin-header></visa-cloud-admin-header>
 
+<visa-admin-image-edit [modalData$]="modalData$" (onSave)="onImageSaved()"></visa-admin-image-edit>
+
+<clr-modal clrModalSize="md"
+           [clrModalOpen]="showDeleteModal"
+           [clrModalStaticBackdrop]="false"
+           [clrModalPreventClose]="true"
+           (clrModalAlternateClose)="onDeleteModalClosed()">
+    <h3 class="modal-title">Delete image</h3>
+
+    <div class="modal-body">
+        <div class="alert alert-danger" role="alert" style="margin-top:16px;">
+            <div class="alert-items">
+                <div class="alert-item static">
+                    <div class="alert-icon-wrapper">
+                        <clr-icon class="alert-icon" shape="info-alert"></clr-icon>
+                    </div>
+                    <span class="alert-text">
+                    Are you sure you want to delete the image {{ imageToDelete?.name}}?
+                </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onDeleteModalClosed()" class="btn btn-outline">Cancel</button>
+        <button (click)="onConfirmDelete()" class="btn btn-warning-outline">Delete</button>
+    </div>
+</clr-modal>
+
 
 <div class="admin-container">
     <div class="admin-container--main">

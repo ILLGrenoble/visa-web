@@ -1,11 +1,17 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {Subject} from 'rxjs';
-import {CloudClient, SecurityGroup, SecurityGroupFilterInput} from '../../../core/graphql';
+import {
+    CloudClient,
+    Flavour,
+    Instrument,
+    Role,
+    SecurityGroup,
+    SecurityGroupFilterInput
+} from '../../../core/graphql';
 import {NotifierService} from 'angular-notifier';
 
 
@@ -18,10 +24,38 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
     private _form: FormGroup;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _securityGroups: SecurityGroup[];
+    private _roles: Role[];
+    private _instruments: Instrument[];
+    private _flavours: Flavour[];
+
+    private _filteredSecurityGroups: SecurityGroup[];
     private _objectIdentifiers: { id: number, name: string }[];
-    private readonly _objectType: string;
-    private readonly _cloudClient: CloudClient;
-    private readonly _multiCloudEnabled: boolean;
+    private _objectType: string;
+    private _cloudClient: CloudClient;
+    private _multiCloudEnabled: boolean;
+
+    private _modalData$: Subject<{objectType: string; cloudClient: CloudClient; multiCloudEnabled: boolean}>;
+    private _showEditModal = false;
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
+
+
+    get showEditModal(): boolean {
+        return this._showEditModal;
+    }
+
+    set showEditModal(value: boolean) {
+        this._showEditModal = value;
+    }
+
+    @Input()
+    set modalData$(value: Subject<{ objectType: string; cloudClient: CloudClient; multiCloudEnabled: boolean }>) {
+        this._modalData$ = value;
+    }
+
+    @Output()
+    get onSave(): EventEmitter<void> {
+        return this._onSave$;
+    }
 
     get form(): FormGroup {
         return this._form;
@@ -31,12 +65,8 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         this._form = value;
     }
 
-    get securityGroups(): SecurityGroup[] {
-        return this._securityGroups;
-    }
-
-    set securityGroups(value: SecurityGroup[]) {
-        this._securityGroups = value;
+    get filteredSecurityGroups(): SecurityGroup[] {
+        return this._filteredSecurityGroups;
     }
 
     get objectIdentifiers(): { id: number; name: string }[] {
@@ -55,16 +85,74 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
-    constructor(private readonly _dialogRef: MatDialogRef<SecurityGroupFilterNewComponent>,
-                private readonly _apollo: Apollo,
-                @Inject(MAT_DIALOG_DATA) {objectType, cloudClient, multiCloudEnabled},
+    constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService) {
-        this._objectType = objectType;
-        this._cloudClient = cloudClient;
-        this._multiCloudEnabled = multiCloudEnabled;
+        this.form = new FormGroup({
+            securityGroup: new FormControl(),
+            objectIdentifier: new FormControl()
+        });
+    }
 
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
+    ngOnInit(): void {
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {objectType, cloudClient, multiCloudEnabled} = data;
+
+            this._objectType = objectType;
+            this._cloudClient = cloudClient;
+            this._multiCloudEnabled = multiCloudEnabled;
+
+            this._filterSecurityGroups();
+
+            this.form.reset({
+                securityGroup: null,
+                objectIdentifier: null,
+            });
+
+            this._showEditModal = true;
+        });
+
+        this._apollo.query<any>({
+            query: gql`
+                      query {
+                          securityGroups {
+                            id
+                            name
+                            cloudClient {
+                                id
+                                name
+                            }
+                          }
+                          rolesAndGroups {
+                            id
+                            name
+                          }
+                          instruments {
+                            id
+                            name
+                          }
+                          flavours {
+                            id
+                            name
+                          }
+                      }
+                    `
+        }).pipe(
+            map(({data}) => ({securityGroups: data.securityGroups, roles: data.rolesAndGroups, instruments: data.instruments, flavours: data.flavours})),
+            takeUntil(this._destroy$)
+        ).subscribe(({securityGroups, roles, instruments, flavours}) => {
+            this._securityGroups = securityGroups;
+            this._roles = roles;
+            this._instruments = instruments;
+            this._flavours = flavours;
+        });
+
+    }
+
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     submit(): void {
@@ -92,6 +180,30 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
                 this.createFilter(securityGroup, objectIdentifier);
             }
         });
+    }
+
+    private _filterSecurityGroups(): void {
+        if (this._objectType != null) {
+            this._filteredSecurityGroups = this._securityGroups
+                .filter(securityGroup => !!securityGroup.cloudClient)
+                .filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient.id);
+            if (this._objectType === 'ROLE') {
+                this._objectIdentifiers = this._roles.map(role => {
+                    return {id: role.id, name: role.name};
+                });
+
+            } else if (this._objectType === 'FLAVOUR') {
+                this._objectIdentifiers = this._flavours.map(flavour => {
+                    return {id: flavour.id, name: flavour.name};
+                });
+
+            } else if (this._objectType === 'INSTRUMENT') {
+                this._objectIdentifiers = this._instruments.map(instrument => {
+                    return {id: instrument.id, name: instrument.name};
+                });
+            }
+            this._objectIdentifiers.unshift(null);
+        }
     }
 
     private createFilter(securityGroup: SecurityGroup, objectIdentifier: { id: number, name: string }): void {
@@ -122,7 +234,8 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         ).subscribe({
             next: () => {
                 this._notifierService.notify('success', 'Successfully created new security group filter rule');
-                this._dialogRef.close(true);
+                this._showEditModal = false;
+                this._onSave$.next();
             },
             error: (error) => {
                 this._notifierService.notify('error', error);
@@ -130,69 +243,8 @@ export class SecurityGroupFilterNewComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this._destroy$.next(true);
-        this._destroy$.unsubscribe();
-    }
-
-    ngOnInit(): void {
-        this._apollo.query<any>({
-            query: gql`
-                      query {
-                          securityGroups {
-                            id
-                            name
-                            cloudClient {
-                                id
-                                name
-                            }
-                          }
-                          rolesAndGroups {
-                            id
-                            name
-                          }
-                          instruments {
-                            id
-                            name
-                          }
-                          flavours {
-                            id
-                            name
-                          }
-                      }
-                    `
-        }).pipe(
-            map(({data}) => ({securityGroups: data.securityGroups, roles: data.rolesAndGroups, instruments: data.instruments, flavours: data.flavours})),
-            takeUntil(this._destroy$)
-        ).subscribe(({securityGroups, roles, instruments, flavours}) => {
-            this._securityGroups = securityGroups
-                .filter(securityGroup => !!securityGroup.cloudClient)
-                .filter(securityGroup => securityGroup.cloudClient.id === this._cloudClient.id);
-            if (this._objectType === 'ROLE') {
-                this._objectIdentifiers = roles.map(role => {
-                    return {id: role.id, name: role.name};
-                });
-
-            } else if (this._objectType === 'FLAVOUR') {
-                this._objectIdentifiers = flavours.map(flavour => {
-                    return {id: flavour.id, name: flavour.name};
-                });
-
-            } else if (this._objectType === 'INSTRUMENT') {
-                this._objectIdentifiers = instruments.map(instrument => {
-                    return {id: instrument.id, name: instrument.name};
-                });
-            }
-            this.form = new FormGroup({
-                securityGroup: new FormControl(),
-                objectIdentifier: new FormControl()
-            });
-        });
-
-    }
-
     public onCancel(): void {
-        this._dialogRef.close();
+        this._showEditModal = false;
     }
 
 }

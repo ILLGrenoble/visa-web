@@ -1,5 +1,4 @@
-import {Component, Inject, OnDestroy} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
     CloudClient,
     CloudClientInput,
@@ -9,71 +8,46 @@ import {
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import {filter} from 'rxjs/operators';
+import {NotifierService} from "angular-notifier";
+import {takeUntil} from "rxjs/operators";
+import gql from "graphql-tag";
 
 @Component({
     selector: 'visa-admin-cloud-client-edit',
     templateUrl: './cloud-client-edit.component.html',
     styleUrls: ['./cloud-client-edit.component.scss'],
 })
-export class CloudClientEditComponent implements OnDestroy {
+export class CloudClientEditComponent implements OnInit, OnDestroy {
 
-    private readonly _clientForm: FormGroup;
-    private readonly _openStackForm: FormGroup;
-    private readonly _webForm: FormGroup;
-    private readonly _title: string;
+    private _clientForm: FormGroup;
+    private _openStackForm: FormGroup;
+    private _webForm: FormGroup;
+    private _title: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
-    private _onSave$: Subject<CloudClientInput> = new Subject<CloudClientInput>();
-    private readonly _readonly: boolean;
+    private _readonly: boolean;
     private _providerTypes = [{value: 'openstack', name: 'OpenStack'}, {value: 'web', name: 'Web'}];
 
-    constructor(private readonly _dialogRef: MatDialogRef<CloudClientEditComponent>,
-                private readonly _apollo: Apollo,
-                private readonly _formBuilder: FormBuilder,
-                @Inject(MAT_DIALOG_DATA) {cloudClient, clone, readonly}) {
-        this._readonly = readonly;
-        this._dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this._dialogRef.close());
-        this._dialogRef.backdropClick().subscribe(() => this._dialogRef.close());
+    private _cloudClientId: number;
+    private _modalData$: Subject<{cloudClient: CloudClient, clone: boolean, readonly: boolean}>;
+    private _showEditModal = false;
+    private _onSave$: EventEmitter<void> = new EventEmitter<void>();
 
-        this._clientForm = new FormGroup({
-            type: new FormControl(null, Validators.required),
-            name: new FormControl(null, Validators.required),
-            serverNamePrefix: new FormControl(null, Validators.required),
-            visible: new FormControl(false, Validators.required),
-        });
+    get showEditModal(): boolean {
+        return this._showEditModal;
+    }
 
-        this._openStackForm = new FormGroup({
-            applicationId: new FormControl(null, Validators.required),
-            applicationSecret: new FormControl(null, Validators.required),
-            computeEndpoint: new FormControl(null, Validators.required),
-            placementEndpoint: new FormControl(null), // optional
-            imageEndpoint: new FormControl(null, Validators.required),
-            networkEndpoint: new FormControl(null, Validators.required),
-            identityEndpoint: new FormControl(null, Validators.required),
-            addressProvider: new FormControl(null, Validators.required),
-            // addressProviderUUID: new FormControl(null, Validators.required),
-            addressProviderUUIDs: this._formBuilder.array([
-                new FormControl(null, Validators.required)
-            ]),
-        });
+    set showEditModal(value: boolean) {
+        this._showEditModal = value;
+    }
 
-        this._webForm = new FormGroup({
-            url: new FormControl(null, Validators.required),
-            authToken: new FormControl(null, Validators.required),
-        });
+    @Input()
+    set modalData$(value: Subject<{ cloudClient: CloudClient, clone: boolean, readonly: boolean }>) {
+        this._modalData$ = value;
+    }
 
-        if (cloudClient) {
-            if (clone) {
-                this._title = `Clone cloud provider`;
-            } else if (readonly) {
-                this._title = `Cloud provider details`;
-            } else {
-                this._title = `Edit cloud provider`;
-            }
-            this._createFormFromCloudClient(cloudClient);
-        } else {
-            this._title = `Create cloud provider`;
-        }
+    @Output()
+    get onSave(): EventEmitter<void> {
+        return this._onSave$;
     }
 
     get clientForm(): FormGroup {
@@ -107,10 +81,6 @@ export class CloudClientEditComponent implements OnDestroy {
         return this._providerTypes;
     }
 
-    get onSave$(): Subject<CloudClientInput> {
-        return this._onSave$;
-    }
-
     get title(): string {
         return this._title;
     }
@@ -121,6 +91,73 @@ export class CloudClientEditComponent implements OnDestroy {
 
     get readonly(): boolean {
         return this._readonly;
+    }
+
+    constructor(private readonly _apollo: Apollo,
+                private readonly _notifierService: NotifierService,
+                private readonly _formBuilder: FormBuilder) {
+
+        this._clientForm = new FormGroup({
+            type: new FormControl(null, Validators.required),
+            name: new FormControl(null, Validators.required),
+            serverNamePrefix: new FormControl(null, Validators.required),
+            visible: new FormControl(false, Validators.required),
+        });
+
+        this._openStackForm = new FormGroup({
+            applicationId: new FormControl(null, Validators.required),
+            applicationSecret: new FormControl(null, Validators.required),
+            computeEndpoint: new FormControl(null, Validators.required),
+            placementEndpoint: new FormControl(null), // optional
+            imageEndpoint: new FormControl(null, Validators.required),
+            networkEndpoint: new FormControl(null, Validators.required),
+            identityEndpoint: new FormControl(null, Validators.required),
+            addressProvider: new FormControl(null, Validators.required),
+            // addressProviderUUID: new FormControl(null, Validators.required),
+            addressProviderUUIDs: this._formBuilder.array([
+                new FormControl(null, Validators.required)
+            ]),
+        });
+
+        this._webForm = new FormGroup({
+            url: new FormControl(null, Validators.required),
+            authToken: new FormControl(null, Validators.required),
+        });
+    }
+
+    ngOnInit() {
+        this._modalData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(data => {
+            const {cloudClient, clone, readonly} = data;
+
+            this._readonly = readonly;
+            this._cloudClientId = null;
+
+            if (cloudClient) {
+                if (clone) {
+                    this._title = `Clone cloud provider`;
+
+                } else if (readonly) {
+                    this._title = `Cloud provider details`;
+
+                } else {
+                    this._cloudClientId = cloudClient.id;
+                    this._title = `Edit cloud provider`;
+                }
+                this._createFormFromCloudClient(cloudClient);
+
+            } else {
+                this._title = `Create cloud provider`;
+                this._resetForm();
+            }
+            this._showEditModal = true;
+        });
+    }
+
+    ngOnDestroy(): void {
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     private _createFormFromCloudClient(cloudClient: CloudClient): void {
@@ -180,14 +217,32 @@ export class CloudClientEditComponent implements OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this._destroy$.next(true);
-        this._destroy$.unsubscribe();
+    private _resetForm(): void {
+        this._clientForm.reset({
+            type: null,
+            name: null,
+            serverNamePrefix: null,
+            visible: null,
+        });
+        this._openStackForm.reset({
+            applicationId: null,
+            applicationSecret: null,
+            computeEndpoint: null,
+            placementEndpoint: null,
+            imageEndpoint: null,
+            networkEndpoint: null,
+            identityEndpoint: null,
+            addressProvider: null,
+        });
+        this.openStackAddressProviderUUIDsForm.clear();
+        this._clientForm.reset({
+            url: null,
+            authToken: null,
+        });
     }
 
-
     public onCancel(): void {
-        this._dialogRef.close();
+        this._showEditModal = false;
     }
 
     public submit(): void {
@@ -228,7 +283,56 @@ export class CloudClientEditComponent implements OnDestroy {
                 authToken,
             } as WebProviderConfigurationInput : null,
         } as CloudClientInput;
-        this._onSave$.next(input);
+        this._saveCloudClient(input);
+    }
+
+    private _saveCloudClient(input: CloudClientInput): void {
+        if (this._cloudClientId == null) {
+            this._apollo.mutate<any>({
+                mutation: gql`
+                    mutation CreateCloudClient($input: CloudClientInput!){
+                        createCloudClient(input: $input) {
+                            id
+                        }
+                    }
+                `,
+                variables: {input},
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Cloud provider created');
+                    this._showEditModal = false;
+                    this._onSave$.next();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            })
+
+        } else {
+            this._apollo.mutate<any>({
+                mutation: gql`
+                mutation UpdateCloudClient($id: Int!,$input: CloudClientInput!){
+                    updateCloudClient(id: $id, input: $input) {
+                        id
+                    }
+                }
+                `,
+                variables: {id: this._cloudClientId, input},
+            }).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe({
+                next: () => {
+                    this._notifierService.notify('success', 'Cloud provider saved');
+                    this._showEditModal = false;
+                    this._onSave$.next();
+                },
+                error: (error) => {
+                    this._notifierService.notify('error', error);
+                }
+            })
+        }
     }
 
     addAddressProviderUUID(): void {
