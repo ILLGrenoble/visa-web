@@ -1,0 +1,78 @@
+.visa-modal-container {
+    width: 100hw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    overflow: hidden;
+
+    &__closed {
+        //display: none;
+        //opacity: 0;
+    }
+
+    .visa-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1040;
+        background-color: rgba(0, 0, 0, 0.3);
+
+        opacity: 1;
+        transition: opacity 100ms ease-out;
+
+        &__hidden {
+            opacity: 0;
+        }
+    }
+
+    .visa-modal-dialog {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+
+        background-color: #fff;
+        border-radius: 4px;
+        padding: 0 24px 20px 24px;
+        z-index: 1050;
+
+        opacity: 1;
+        transition: opacity 100ms ease-out;
+
+        .visa-modal-title {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .visa-modal-body {
+            padding-top: 24px;
+            width: 100%;
+        }
+
+        .visa-modal-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px 0 0 0;
+        }
+    }
+}
+
+.visa-modal-container__closed .visa-modal-backdrop {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.visa-modal-container__closed .visa-modal-dialog {
+    opacity: 0;
+    pointer-events: none;
+}

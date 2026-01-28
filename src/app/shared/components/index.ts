@@ -9,4 +9,5 @@ export * from './image';
 export * from './instance-thumbnail';
 export * from './dialogs';
 export * from './notification-badge';
+export * from './modal';
 

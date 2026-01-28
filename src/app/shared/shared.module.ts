@@ -33,6 +33,7 @@ import {
     TabTitleIconComponent,
     NotificationBadgeComponent,
     InstanceThumbnailComponent,
+    ModalComponent,
 } from './components';
 import {AuthenticatedContainerComponent} from './containers';
 import {
@@ -147,6 +148,7 @@ export function markedOptionsFactory(): MarkedOptions {
         SafePipe,
         ImageComponent,
         InstanceThumbnailComponent,
+        ModalComponent,
         FormsModule,
         NgSelectModule,
         MatCommonModule,
@@ -192,6 +194,7 @@ export function markedOptionsFactory(): MarkedOptions {
         InvalidAccountDialogComponent,
         SanitizerPipe,
         NotificationBadgeComponent,
+        ModalComponent,
     ]
 })
 export class SharedModule {

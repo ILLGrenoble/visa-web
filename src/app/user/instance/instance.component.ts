@@ -54,6 +54,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private _accessRequestData$ = new Subject<{userFullName: string, callback: (response: string) => void}>();
     private _membersConnectedDialogOpen$ = new Subject<boolean>();
+    private _clipboardDialogOpen$ = new Subject<boolean>();
 
     /**
      * Hot keys
@@ -100,6 +101,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     get membersConnectedDialogOpen$(): Subject<boolean> {
         return this._membersConnectedDialogOpen$;
+    }
+
+    get clipboardDialogOpen$(): Subject<boolean> {
+        return this._clipboardDialogOpen$;
     }
 
     get accessRequestData$(): Subject<{ userFullName: string; callback: (response: string) => void }> {
@@ -791,14 +796,24 @@ export class InstanceComponent implements OnInit, OnDestroy {
             return;
         }
         this.manager.setFocused(false);
-        const dialog = this.createDialog(ClipboardComponent, 'clipboard-dialog');
-        dialog.afterClosed()
-            .pipe(
-                finalize(() => this.manager.setFocused(true)),
-                filter((text) => text != null),
-            )
-            .subscribe((text) => this.handleSendRemoteClipboardData(text.toString()));
+        this._clipboardDialogOpen$.next(true);
+
+        // const dialog = this.createDialog(ClipboardComponent, 'clipboard-dialog');
+        // dialog.afterClosed()
+        //     .pipe(
+        //         finalize(() => this.manager.setFocused(true)),
+        //         filter((text) => text != null),
+        //     )
+        //     .subscribe((text) => this.handleSendRemoteClipboardData(text.toString()));
     }
+
+    public onClipboardClosed(text: string): void {
+        this.manager.setFocused(true);
+        if (text != null) {
+            this.handleSendRemoteClipboardData(text.toString());
+        }
+    }
+
 
     private createSettingsDialog(): void {
         this.dialog.open(SettingsComponent, {

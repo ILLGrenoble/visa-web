@@ -3,6 +3,9 @@
                                         [users]="users"
                                         [showModal$]="membersConnectedDialogOpen$"
                                         (onDropUser)="onDropUser($event)"></visa-instance-members-connected-dialog>
+
+<visa-instance-clipboard-dialog [showModal$]="clipboardDialogOpen$" [manager]="manager" (onClosed)="onClipboardClosed($event)"></visa-instance-clipboard-dialog>
+
 <visa-instance-access-request-dialog [modalData$]="accessRequestData$"></visa-instance-access-request-dialog>
 
 <div class="remote-desktop-error-container" *ngIf="error">

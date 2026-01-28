@@ -1,0 +1,16 @@
+<div class="visa-modal-container" [ngClass]="{'visa-modal-container__closed': !modalOpen }">
+    <div class="visa-modal-backdrop" [ngClass]="{'visa-modal-backdrop__hidden': !backdrop }" (click)="onBackdropClicked()">
+    </div>
+    <div class="visa-modal-dialog"
+         [style.width]="width"
+         cdkDrag
+         [cdkDragDisabled]="!draggable"
+         cdkDragRootElement=".cdk-overlay-pane">
+
+        <div class="visa-modal-header" cdkDragHandle>
+            <ng-content select="[modalDragHandle]"></ng-content>
+        </div>
+
+        <ng-content></ng-content>
+    </div>
+</div>

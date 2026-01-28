@@ -1,13 +1,24 @@
-import {AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {BehaviorSubject, ReplaySubject, Subject, timer} from 'rxjs';
-import { takeUntil, tap} from 'rxjs/operators';
+import {
+    AfterViewInit,
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import {ReplaySubject, Subject, timer} from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {VirtualDesktopManager} from '@vdi';
 import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 
 @Component({
     selector: 'visa-instance-clipboard-dialog',
-    templateUrl: './clipboard.component.html'
+    templateUrl: './clipboard.component.html',
+    styleUrls: ['./clipboard.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -16,7 +27,10 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _manager: VirtualDesktopManager;
     private _documentListener: () => void;
-    private _clipboardSynchronisationEnabled$ = new BehaviorSubject<boolean>(true);
+
+    private _showModal$: Subject<boolean>;
+    private _showModal: boolean = false;
+    private _onClosed$: EventEmitter<string> = new EventEmitter<string>();
 
     @ViewChild('codeMirror')
     private _codeEditorCmp: CodemirrorComponent;
@@ -29,14 +43,6 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this._destroy$ = value;
     }
 
-    get clipboardSynchronisationEnabled$(): BehaviorSubject<boolean> {
-        return this._clipboardSynchronisationEnabled$;
-    }
-
-    set clipboardSynchronisationEnabled$(value: BehaviorSubject<boolean>) {
-        this._clipboardSynchronisationEnabled$ = value;
-    }
-
     get text(): string {
         return this._text;
     }
@@ -45,55 +51,70 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this._text = value;
     }
 
-    get clipboardSubscription$(): ReplaySubject<{ content: string; event: string }> {
-        return this._clipboardSubscription$;
-    }
-
-    set clipboardSubscription$(value: ReplaySubject<{ content: string; event: string }>) {
-        this._clipboardSubscription$ = value;
-    }
-
     get manager(): VirtualDesktopManager {
         return this._manager;
     }
 
+    get showModal(): boolean {
+        return this._showModal;
+    }
+
+    set showModal(value: boolean) {
+        this._showModal = value;
+        if (!value) {
+            this._onClosed$.next(null);
+        }
+    }
+
+    @Input()
+    set showModal$(value: Subject<boolean>) {
+        this._showModal$ = value;
+    }
+
+    @Input()
     set manager(value: VirtualDesktopManager) {
         this._manager = value;
+        if (this._manager) {
+            this._clipboardSubscription$ = this._manager.onRemoteClipboardData;
+            this._clipboardSubscription$.pipe(
+                takeUntil(this._destroy$),
+            ).subscribe((text) => this._text = text.content);
+        }
     }
 
-    get documentListener(): () => void {
-        return this._documentListener;
+    @Output()
+    get onClosed(): EventEmitter<string> {
+        return this._onClosed$;
     }
 
-    set documentListener(value: () => void) {
-        this._documentListener = value;
-    }
-
-    get codeEditorCmp(): CodemirrorComponent {
-        return this._codeEditorCmp;
-    }
-
-    set codeEditorCmp(value: CodemirrorComponent) {
-        this._codeEditorCmp = value;
-    }
-
-    constructor(private dialogRef: MatDialogRef<ClipboardComponent>,
-                @Inject(MAT_DIALOG_DATA) private data: { manager: VirtualDesktopManager }) {
-        this._manager = data.manager;
-        this._clipboardSubscription$ = this._manager.onRemoteClipboardData;
-        this._clipboardSubscription$.pipe(
-            takeUntil(this._destroy$),
-        ).subscribe((text) => this._text = text.content);
+    constructor() {
     }
 
     private handleOnKeydown(event: KeyboardEvent): void {
         if (event.ctrlKey && event.key === 'Enter') {
-            this.dialogRef.close(this._text);
+            this.sendClipboardText();
         }
     }
 
-    public onNoClick(): void {
-        this.dialogRef.close();
+    public sendClipboardText(): void {
+        this._onClosed$.next(this._text);
+        this._showModal = false;
+    }
+
+    public ngOnInit(): void {
+        this._showModal$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(showModal => {
+            this._showModal = showModal;
+        });
+
+        timer(1, 100)
+            .pipe(
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                this._codeEditorCmp.codeMirror?.refresh();
+            });
     }
 
     public ngOnDestroy(): void {
@@ -104,18 +125,6 @@ export class ClipboardComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         const inputField = this._codeEditorCmp.codeMirror.getInputField();
         inputField.removeEventListener('keydown', this.handleOnKeydown.bind(this));
-    }
-
-    public ngOnInit(): void {
-        timer(1, 100)
-            .pipe(
-                takeUntil(this.destroy$),
-            )
-            .subscribe(() => {
-                this._codeEditorCmp.codeMirror?.refresh();
-            });
-
-        this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
 
     public ngAfterViewInit(): void {
