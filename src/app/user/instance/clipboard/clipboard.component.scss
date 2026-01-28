@@ -1,6 +1,11 @@
 .visa-modal-dialog {
-    opacity: 0.9;
+    opacity: 0.9 !important;
 }
+
+.visa-modal-container__closed .visa-modal-dialog {
+    opacity: 0 !important;
+}
+
 
 .visa-modal-footer {
     justify-content: flex-end !important;
