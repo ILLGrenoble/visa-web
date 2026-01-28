@@ -1,0 +1,82 @@
+<div class="booking-token-container">
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                Reference
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-reference">
+                    {{token.uid}}
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                Flavour
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-flavour">
+                    {{token.flavour.name}}
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-token-part">
+            <div class="booking-token-part-title">
+                <div class="booking-token-owner-title">
+                    Owner
+                </div>
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-owner">
+                    <div class="booking-token-owner-select">
+                        <visa-owner-search [form]="form"></visa-owner-search>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" [disabled]="assignToMeDisabled()" (click)="assignToMe()">
+                        Assign to me
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-token-part" style="flex-grow: 1; margin-left: 24px;">
+            <div class="booking-token-part-title">
+                <div>
+                    <span>
+                        Instance
+                    </span>
+                    <span *ngIf="instance != null && bookingActive">
+                        created {{instance.createdAt | date: 'dd MMMM y HH:mm'}}
+                    </span>
+                </div>
+            </div>
+            <div class="booking-token-part-content">
+                <div class="booking-token-instance">
+                    <div *ngIf="!bookingActive" class="booking-token-instance-not-active">
+                        <em>Not available until booking is active</em>
+                    </div>
+                    <div *ngIf="instance == null && bookingActive" class="booking-token-instance-null">
+                        No active instance
+                    </div>
+                    <div *ngIf="instance != null && bookingActive" class="booking-token-instance-assigned">
+                        <div class="booking-token-instance-assigned-name-and-state">
+                            <clr-tooltip>
+                                <div clrTooltipTrigger class="booking-token-instance-assigned-state" [ngClass]="{'booking-token-instance-assigned-state--success': ['PARTIALLY_ACTIVE', 'ACTIVE'].includes(instance.state), 'booking-token-instance-assigned-state--error': ['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)}">
+                                </div>
+                                <clr-tooltip-content clrPosition="top-right" clrSize="sm" *clrIfOpen>
+                                    <span>{{instance.state }}</span>
+                                </clr-tooltip-content>
+                            </clr-tooltip>
+                            <div class="booking-token-instance-assigned-name">
+                                {{instance.name}}
+                            </div>
+                        </div>
+                        <div class="booking-token-instance-assigned-image">
+                            {{instance.plan.image.name}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+</div>

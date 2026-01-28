@@ -1,0 +1,32 @@
+.booking-request-list-comment {
+    font-size: 8pt;
+    max-width: 300px;
+    word-break: normal;
+    margin-top: 4px;
+}
+
+.booking-request-list-resources {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    row-gap: 8px;
+}
+
+.booking-request-list-row-pending {
+    .datagrid-cell {
+        //background-color: #f9f9f9;
+    }
+}
+
+.booking-request-list-row-accepted {
+    .datagrid-cell {
+        //background-color: #fff;
+    }
+}
+
+.booking-request-list-row-active {
+    .datagrid-cell {
+        background-color: #fdfff8;
+    }
+}

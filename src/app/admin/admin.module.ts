@@ -30,6 +30,7 @@ import {
     FlavourDevicePipe,
     InstanceDeviceAllocationPipe,
     RoleLifetimePipe,
+    BookingHeaderComponent,
 } from './common';
 import {
     ApplicationCredentialDeleteComponent,
@@ -86,8 +87,13 @@ import {
     ServerComponent,
     AvailabilitiesComponent,
     AvailabilityComponent,
+    BookingSettingsComponent,
+    BookingRequestsComponent,
+    BookingRequestListComponent,
+    BookingRequestComponent,
 } from './components';
 import {ClrSpinnerModule} from "@clr/angular";
+import {DatePipe, NgIf} from "@angular/common";
 
 @NgModule({
     imports: [
@@ -95,6 +101,8 @@ import {ClrSpinnerModule} from "@clr/angular";
         HighchartsChartModule,
         RouterModule.forChild(ROUTES),
         ClrSpinnerModule,
+        DatePipe,
+        NgIf,
     ],
     declarations: [
         DashboardComponent,
@@ -103,6 +111,7 @@ import {ClrSpinnerModule} from "@clr/angular";
         CloudHeaderComponent,
         SettingsHeaderComponent,
         ComputeHeaderComponent,
+        BookingHeaderComponent,
         InstanceComponent,
         ImagesComponent,
         ImageEditComponent,
@@ -171,6 +180,10 @@ import {ClrSpinnerModule} from "@clr/angular";
         ServerComponent,
         AvailabilitiesComponent,
         AvailabilityComponent,
+        BookingSettingsComponent,
+        BookingRequestsComponent,
+        BookingRequestListComponent,
+        BookingRequestComponent,
         CloudDevicePipe,
         CloudDeviceAllocationPipe,
         InstanceDeviceAllocationPipe,

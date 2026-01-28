@@ -17,7 +17,7 @@ import {TabComponent} from './tab.component';
     template: `
         <div class="visa-tabs">
             <ul class="visa-tabs-body">
-                <li *ngFor="let tab of tabs" (click)="selectTab(tab)" class="visa-tab" [class.visa-tab--selected]="tab === activeTab">
+                <li *ngFor="let tab of tabs" (click)="selectTab(tab)" class="visa-tab" [class.visa-tab--selected]="tab === activeTab" [class.visa-tab--hidden]="tab.hidden">
                     <span class="visa-tab-title-icon" *ngIf="tab.icon">
                         <ng-container class="visa-tab-title-icon" *ngTemplateOutlet="tab.icon.content">
                         </ng-container>
@@ -88,7 +88,7 @@ export class TabsComponent implements AfterContentInit, AfterViewInit {
                 this.activeTab = this.tabs.first;
 
             } else {
-                const selectedTab = this.tabs.find((tab) => tab.name === this._selected);
+                const selectedTab = this.tabs.find((tab) => tab.name === this._selected && !tab.hidden);
                 if (selectedTab == null) {
                     this.activeTab = this.tabs.first;
                 } else {

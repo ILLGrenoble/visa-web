@@ -3,7 +3,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 import {RouterModule} from '@angular/router';
-import {authenticationGuard, CoreModule} from '@core';
+import {authenticationGuard, bookingGuard, CoreModule} from '@core';
 import {NotfoundComponent} from '@shared';
 import {UserModule} from '@user';
 import {AppComponent} from './app.component';
@@ -37,6 +37,11 @@ registerLocaleData(localeGB);
                 data: {roles: ['IT_SUPPORT', 'INSTRUMENT_CONTROL', 'INSTRUMENT_SCIENTIST']},
                 path: 'support',
                 loadChildren: () => import(`./support/support.module`).then((m) => m.SupportModule),
+            },
+            {
+                canActivate: [authenticationGuard, bookingGuard],
+                path: 'bookings',
+                loadChildren: () => import(`./booking/booking.module`).then((m) => m.BookingModule),
             },
             {
                 canActivate: [authenticationGuard],

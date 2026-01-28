@@ -106,10 +106,12 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
                             state
                             plan {
                                 image {
+                                    id
                                     name
                                     version
                                 }
                                 flavour {
+                                    id
                                     name
                                 }
                             }
@@ -125,6 +127,12 @@ export class ExtensionRequestsComponent implements OnInit, OnDestroy {
                                 email
                             }
                             username
+                            bookingToken {
+                                bookingRequest {
+                                    id
+                                    name
+                                }
+                            }
                         }
                     }
                 }

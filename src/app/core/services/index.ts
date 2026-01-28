@@ -11,3 +11,4 @@ export * from './documentation.service';
 export * from './helper.service';
 export * from './analytics.service';
 export * from './events-gateway.service';
+export * from './booking.service';

@@ -1,0 +1,21 @@
+<div class="admin-header booking-admin-header">
+    <div class="admin-header-container">
+        <div class="admin-tabs">
+            <div class="admin-tabs-body">
+                <a class="admin-tab" routerLink="/admin/bookings/requests" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="event" class="is-solid"></clr-icon>
+                    Requests
+                    <visa-notification-badge [badgeTags]="['booking.requests.pending']" [showCount]="true" [backgroundColor]="'#ff9f43'"></visa-notification-badge>
+                </a>
+                <a class="admin-tab" routerLink="/admin/bookings/availabilities" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="calendar" class="is-solid"></clr-icon>
+                    Availabilities
+                </a>
+                <a class="admin-tab" routerLink="/admin/bookings/settings" routerLinkActive="admin-tab--selected">
+                    <clr-icon shape="wrench" class="is-solid"></clr-icon>
+                    Settings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

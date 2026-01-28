@@ -1,0 +1,135 @@
+.instance-token-container {
+    width: 300px;
+    padding: 16px;
+}
+
+.instance-token-content {
+    //margin: 16px;
+    box-shadow: rgba(0, 0, 0, 0.13) 0px 14px 28px, rgba(0, 0, 0, 0.10) 0px 10px 10px;
+    //box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    height: 500px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    .instance-token-request-title {
+        font-weight: 400;
+        font-size: 20px;
+        padding-top:20px;
+        height: 70px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .instance-token-request-header {
+        font-size: 11px;
+        color: #666;
+        line-height: 11px;
+    }
+
+    .instance-token-request-period {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80px;
+
+        .instance-token-request-period-text {
+            color: #0747a6;
+            font-weight: 400;
+            font-size: 17px;
+        }
+
+    }
+
+    .instance-token-request-organiser {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 85px;
+
+        .instance-token-request-organiser-name {
+            font-weight: 400;
+            font-size: 17px;
+        }
+
+        .instance-token-request-organiser-affiliation {
+            font-weight: 300;
+            font-size: 12px;
+            line-height: 12px;
+        }
+
+    }
+
+    .instance-token-request-flavour {
+        $primary-color: #0747a6;
+        flex-grow: 1;
+
+        .flavour-box {
+            width: 200px;
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
+            align-items: stretch;
+            text-align: center;
+            color: #666;
+            border: 1px solid $primary-color;
+
+            .flavour-name {
+                text-align: center;
+                font-size: 13px;
+                outline: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                color: #0747a6;
+                background: #f5f9ff;
+                padding: 10px 0;
+                height: 2.5rem;
+            }
+
+            .flavour-description {
+                border-bottom: 1px solid $primary-color;
+                background: #fff;
+                outline: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                flex-grow: 1;
+                padding: 10px 0;
+                color: #0747a6;
+
+                &__detail {
+                    font-size: 14px;
+                    font-weight: 500;
+                    display: block;
+                    margin: 0;
+                }
+
+                &__device-name {
+                }
+
+                &__device-description {
+                    font-size: 8pt;
+                    line-height: 10px;
+                    font-weight: 400;
+                    height: 10px;
+                }
+            }
+        }
+    }
+
+    .instance-token-create-button {
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+

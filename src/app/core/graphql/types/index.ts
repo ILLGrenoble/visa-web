@@ -282,6 +282,7 @@ export type Instance = {
     cloudClient?: Maybe<CloudClient>;
     vdiProtocol: ImageProtocol;
     deviceAllocations: Maybe<Array<Maybe<InstanceDeviceAllocation>>>;
+    bookingToken: Maybe<BookingToken>;
 };
 
 export type InstanceConnection = {
@@ -388,6 +389,82 @@ export type Message = {
     message: Scalars['String'];
 };
 
+export type BookingFlavourRoleConfiguration = {
+    flavour: Flavour;
+    role?: Maybe<Role>;
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+}
+
+export type BookingConfiguration = {
+    enabled: Scalars['Boolean'];
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysInAdvance?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+    cloudId: Scalars['Int'];
+    flavours: Array<Flavour>;
+    roles: Array<Role>;
+    flavourRoleConfigurations: Array<BookingFlavourRoleConfiguration>;
+};
+
+export type BookingFlavourRoleConfigurationInput = {
+    flavourId: Flavour;
+    roleId?: Maybe<Scalars['Int']>;
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+}
+
+export type BookingConfigurationInput = {
+    enabled: Scalars['Boolean'];
+    maxInstancesPerReservation?: Maybe<Scalars['Int']>;
+    maxDaysInAdvance?: Maybe<Scalars['Int']>;
+    maxDaysReservation?: Maybe<Scalars['Int']>;
+    cloudId: Scalars['Int'];
+    flavourIds: Array<Scalars['Int']>;
+    roleIds: Array<Scalars['Int']>;
+    flavourRoleConfigurations: Array<BookingFlavourRoleConfigurationInput>;
+};
+
+export type BookingRequestResponseInput = {
+    accepted: Scalars['Boolean'];
+    comments: Scalars['String'];
+}
+
+export type BookingRequest = {
+    id: Scalars['Int'];
+    uid: Scalars['String'];
+    name: Scalars['String'];
+    createdAt: Scalars['String'];
+    startDate: Scalars['String'];
+    endDate: Scalars['String'];
+    owner: User;
+    state: Scalars['String'];
+    flavours: Array<BookingRequestFlavour>;
+    history: Array<BookingRequestHistory>;
+};
+
+export type BookingRequestFlavour = {
+    id: Scalars['Int'];
+    flavour: Flavour;
+    quantity: Scalars['Int'];
+};
+
+export type BookingRequestHistory = {
+    id: Scalars['Int'];
+    state: Scalars['String'];
+    actor: User;
+    comments?: Maybe<Scalars['String']>;
+    date: Scalars['String'];
+};
+
+export type BookingToken = {
+    id: Scalars['Int'];
+    uid: Scalars['String'];
+    flavour: Flavour;
+    owner?: Maybe<User>;
+    instance?: Maybe<Instance>;
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /** Create an image */
@@ -408,6 +485,8 @@ export type Mutation = {
     updateDevicePool: DevicePool;
     /** Delete a device pool */
     deleteDevicePool: DevicePool;
+    /** Create or update booking configuration */
+    createOrUpdateBookingConfiguration: BookingConfiguration;
     /** Create a plan */
     createPlan: Plan;
     /** Update a plan */
@@ -424,8 +503,8 @@ export type Mutation = {
     deleteInstance: Message;
     /** Update an instance termination date */
     updateInstanceTerminationDate: Message;
-    /** Determine if hypervisors are available */
-    hypervisorsAvailable: boolean;
+    /** respond to a booking request */
+    bookingRequestResponse: BookingRequestHistory;
 };
 
 
@@ -500,17 +579,23 @@ export type Query = {
     devicePools: Array<DevicePool>;
     /** Get all cloud resource classes */
     cloudResourceClasses: CloudResourceClassesResponse;
+    /** Determine if hypervisors are available */
+    hypervisorsAvailable: boolean;
     /** Get all hypervisors */
     hypervisors: Array<Hypervisor>;
     /** Get all flavour availabilities futures */
     flavourAvailabilitiesFutures: Array<FlavourAvailabilitiesFuture>;
+    /** Get booking configuration for a cloud client */
+    bookingConfigurationForCloudClient: BookingConfiguration;
+    /** Get booking requests */
+    bookingRequests: Array<BookingRequest>;
     /** Get all images */
     images: ImageConnection;
     /** Count all images */
     countImages: Scalars['Int'];
     /** Get all instruments */
     instruments?: Maybe<Array<Instrument>>;
-    /** Get all image protcocols */
+    /** Get all image protocols */
     imageProtocols?: Maybe<Array<Maybe<ImageProtocol>>>;
     /** Get all instances */
     instances: InstanceConnection;

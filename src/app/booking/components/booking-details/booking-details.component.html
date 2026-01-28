@@ -1,0 +1,215 @@
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="title">
+            <h1>Instance reservation details</h1>
+        </div>
+    </div>
+</div>
+
+
+<clr-modal [clrModalOpen]="showDeleteModal" [clrModalClosable]="false">
+    <h3 class="modal-title">Confirm delete</h3>
+    <div class="modal-body">
+        <div class="booking-details-delete-modal">
+            <div [hidden]="!sendingDeleteRequest">
+                <div>
+                    <clr-spinner clrInline></clr-spinner>
+                    <span style="margin-left: 24px; color: #666;">Your reservation request is being deleted...</span>
+                </div>
+            </div>
+
+            <div [hidden]="sendingDeleteRequest">
+                Are you sure you want to delete the reservation request?
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" [disabled]="sendingDeleteRequest" (click)="closeDeleteModal()" class="btn btn-outline">Cancel</button>
+        <button type="button" [disabled]="sendingDeleteRequest" (click)="confirmDeleteRequest()" class="btn btn-outline-warning">Delete</button>
+    </div>
+</clr-modal>
+
+
+<div class="content-small-container" [hidden]="!loading">
+    <div class="booking-details-spinner">
+        <clr-spinner></clr-spinner>
+    </div>
+</div>
+
+<div class="content-small-container" *ngIf="error">
+    <div class="blankslate">
+        <div class="title">
+            <clr-icon shape="error-standard"></clr-icon>
+        </div>
+        <div class="description">
+            <p>{{error}}</p>
+        </div>
+        <div class="actions">
+            <button class="btn btn-outline" [routerLink]="['/bookings']">Return to bookings menu</button>
+        </div>
+    </div>
+</div>
+
+<div class="content-small-container" *ngIf="booking != null">
+    <div class="booking-details-container">
+
+        <div class="booking-details-header">
+
+            <div class="booking-details-details">
+                <div class="booking-details-name">
+                    {{ booking.name }}
+                </div>
+                <div class="booking-details-created-at">
+                    Created on {{booking.createdAt | date:'dd MMMM y HH:mm' }}
+                </div>
+                <div class="booking-details-dates">
+                    {{ booking.startDate | date:'dd MMMM y' }} - {{ booking.endDate | date:'dd MMMM y' }}
+                </div>
+            </div>
+
+            <div class="booking-details-history">
+                <div class="booking-details-history-title">
+                    History
+                </div>
+                <div *ngFor="let history of booking.history" class="booking-details-history-element">
+                    <div class="booking-details-history-title">
+                        <div>
+                            {{history.state |titlecase}} {{history.date | date: 'dd MMM y'}} ({{history.actor.fullName}})
+                        </div>
+                    </div>
+                    <div class="booking-details-history-comment">
+                        {{history.comments}}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div *ngIf="booking.state == 'CREATED'" class="information-panel booking-card-status-info">
+            <h4 class="information-panel-title">
+                Your reservation request is pending approval
+            </h4>
+            <div class="information-panel-body">
+                <div class="information-panel-body-text">
+                    Once it has been approved you will be assigned tokens that can be used to create instances with the resources you have requested. The tokens will become visible here once the reservation has been approved.
+                </div>
+                <div class="information-panel-body-text">
+                    The tokens are valid from the first day of your reservation and can be used until the last day of the reservation. The instances created with the tokens will also be available for the duration of the reservation.
+                </div>
+                <div class="information-panel-body-text">
+                    You are free to distribute the tokens to your team or other people you are working with so that they can take advantage of the resources during the reservation period.
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="booking.state == 'ACCEPTED' && !bookingActive" class="information-panel booking-card-status-info">
+            <h4 class="information-panel-title">
+                <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
+                Your reservation request has been accepted!
+            </h4>
+            <div class="information-panel-body">
+                <div class="information-panel-body-text">
+                    Tokens for all of your requested resources are now visible below. You can associate these to other VISA users or use them for your own needs.
+                </div>
+                <div class="information-panel-body-text">
+                    From the {{ booking.startDate | date:'dd MMMM y'}}, the owner of the token will be able to create an instance using it. The instance will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="booking.state == 'ACCEPTED' && bookingActive" class="information-panel booking-card-status-info">
+            <h4 class="information-panel-title">
+                <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
+                Your reservation is active!
+            </h4>
+            <div class="information-panel-body">
+                <div class="information-panel-body-text">
+                    Distribute any unassigned tokens to other VISA users or assign them to yourself: all tokens are active and can be used to create instances.
+                </div>
+                <div class="information-panel-body-text">
+                    The instances created with this reservation will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-details-resources">
+            <div class="booking-details-resources-title">
+                Requested resources
+            </div>
+
+            <div class="booking-details-flavours">
+                <div *ngFor="let flavourRequest of booking.flavours" class="flavour-box">
+                    <div class="flavour-description">
+                        <div class="flavour-description__detail">
+                            {{getCpuView(flavourRequest.flavour)}}
+                        </div>
+                        <div class="flavour-description__detail">
+                            {{getRamView(flavourRequest.flavour)}} memory
+                        </div>
+                        <div *ngFor="let device of flavourRequest.flavour.devices" class="flavour-description__detail">
+                            <div class="flavour-description__device-name">
+                                {{device.devicePool.name}}
+                            </div>
+                            <div *ngIf="device.devicePool.description" class="flavour-description__device-description">
+                                {{device.devicePool.description}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flavour-name">
+                        <div>
+                            {{flavourRequest.flavour.name}}
+                        </div>
+                    </div>
+
+                    <div class="flavour-quantity">
+                        <div class="flavour-quantity__label">
+                            Quantity
+                        </div>
+                        <div>
+                            {{flavourRequest.quantity}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div *ngIf="booking.state === 'ACCEPTED'" class="booking-details-tokens">
+            <div class="booking-details-tokens-title">
+                Tokens
+            </div>
+            <div class="booking-details-tokens-container">
+                <form [formGroup]="form" clrForm clrLayout="horizontal">
+                    <div *ngFor="let flavourToken of flavourTokens">
+                        <div class="booking-details-tokens-flavour">
+                            {{flavourToken.flavour.name}}
+                        </div>
+                        <div *ngFor="let token of flavourToken.tokens">
+                            <visa-booking-token [token]="token.token" [form]="token.form" [bookingActive]="bookingActive"></visa-booking-token>
+                        </div>
+                    </div>
+
+
+                    <div class="booking-details-tokens-submit">
+                        <button (click)="submitTokens()" [disabled]="form.invalid || form.pristine" class="btn btn-primary">Submit token changes</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="booking-details-actions">
+            <div class="booking-details-actions-title">
+                Actions
+            </div>
+            <div class="booking-details-actions-buttons">
+                <button type="button" (click)="deleteBookingRequest()" class="btn btn-outline-warning">Delete reservation</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

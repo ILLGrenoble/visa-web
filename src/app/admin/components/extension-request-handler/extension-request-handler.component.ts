@@ -1,11 +1,18 @@
 import {Component, EventEmitter, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Instance, InstanceExtensionRequest, InstanceExtensionResponseInput} from '../../../core/graphql';
+import {
+    FlavourAvailabilitiesFuture,
+    Instance,
+    InstanceExtensionRequest,
+    InstanceExtensionResponseInput
+} from '../../../core/graphql';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import * as moment from 'moment';
 import {ApplicationState, selectLoggedInUser, User as CoreUser} from '../../../core';
-import {filter, take} from 'rxjs/operators';
+import {filter, map, take, tap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
+import gql from "graphql-tag";
+import {Apollo} from "apollo-angular";
 
 @Component({
     selector: 'visa-admin-extension-request-handler',
@@ -20,6 +27,8 @@ export class ExtensionRequestHandlerComponent implements OnInit {
 
     private readonly _extensionRequest: InstanceExtensionRequest;
     private readonly _instance: Instance;
+    private _availabilityLoading = false;
+    private _availability: FlavourAvailabilitiesFuture = null;
 
     private _form: FormGroup;
     private _accepted: boolean = null;
@@ -74,7 +83,16 @@ export class ExtensionRequestHandlerComponent implements OnInit {
         value.setMinutes(minutes);
     }
 
-    constructor(private dialogRef: MatDialogRef<ExtensionRequestHandlerComponent>,
+    get availabilityLoading(): boolean {
+        return this._availabilityLoading;
+    }
+
+    get availability(): FlavourAvailabilitiesFuture {
+        return this._availability;
+    }
+
+    constructor(private apollo: Apollo,
+                private dialogRef: MatDialogRef<ExtensionRequestHandlerComponent>,
                 private store: Store<ApplicationState>,
                 @Inject(MAT_DIALOG_DATA) data) {
         this._extensionRequest = data.request;
@@ -88,6 +106,7 @@ export class ExtensionRequestHandlerComponent implements OnInit {
 
     public ngOnInit(): void {
         this.createForm();
+        this._getFlavourAvailabilities(this._instance.plan.flavour.id);
         this.dialogRef.keydownEvents().pipe(filter(event => event.key === 'Escape')).subscribe(() => this.dialogRef.close());
         this.dialogRef.backdropClick().subscribe(() => this.dialogRef.close());
     }
@@ -137,6 +156,51 @@ export class ExtensionRequestHandlerComponent implements OnInit {
             terminationDate: dateString,
         } as InstanceExtensionResponseInput;
         this._onHandled$.emit(response);
+    }
+
+
+    private _getFlavourAvailabilities(flavourId: number): void {
+        this._availabilityLoading = true;
+        this.apollo.query<any>({
+            query: gql`
+                query flavourAvailabilitiesFutures($flavourIds: [Int]) {
+                    flavourAvailabilitiesFutures(flavourIds: $flavourIds) {
+                        flavour {
+                            id
+                            name
+                            memory
+                            cpu
+                            cloudId
+                            devices {
+                                devicePool {
+                                    id
+                                    name
+                                    description
+                                    resourceClass
+                                }
+                                unitCount
+                            }
+                        }
+                        confidence
+                        availabilities {
+                            date
+                            confidence
+                            availableUnits
+                            totalUnits
+                        }
+                    }
+                }
+            `,
+            variables: {
+                flavourIds: [flavourId],
+            },
+        }).pipe(
+            map(({data}) => data),
+            tap(() => this._availabilityLoading = false)
+        ).subscribe(({flavourAvailabilitiesFutures}) => {
+            this._availability = flavourAvailabilitiesFutures[0];
+        });
+
     }
 
 }

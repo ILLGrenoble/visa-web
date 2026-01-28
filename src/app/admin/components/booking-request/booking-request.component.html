@@ -1,0 +1,336 @@
+<visa-admin-header></visa-admin-header>
+<visa-booking-admin-header></visa-booking-admin-header>
+
+<div class="admin-container" *ngIf="bookingRequest">
+    <div class="admin-container--main">
+        <div class="clr-row">
+            <div class="clr-col-lg-12">
+                <div class="admin-box admin-box-borderless">
+                    <div class="admin-box-header">
+                        <div class="admin-box-title">
+                            <ul class="admin-breadcrumbs">
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin']">Administration</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    <a [routerLink]="['/admin/bookings/requests']">Booking Requests</a>
+                                </li>
+                                <li class="admin-breadcrumbs-item">
+                                    {{ bookingRequest.name }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clr-row">
+            <div class="clr-col-4">
+                <div class="admin-box-body p-t-10 p-b-10">
+                    <div class="booking-request-section-title">
+                        Booking Request
+                    </div>
+                    <dl class="admin-details-list">
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Details</b>
+                            </dt>
+                            <dd>
+                                <b>{{ bookingRequest.name }}</b> ({{bookingRequest.id}})
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ creationHistory()?.comments }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Created at</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Period</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.startDate | date }} to  {{ bookingRequest.endDate | date }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ durationDays() }} days
+                            </dd>
+                        </div>
+
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Resources</b>
+                            </dt>
+                            <dd>
+                                <div *ngFor="let flavourRequest of bookingRequest.flavours">
+                                    <div>{{ flavourRequest.quantity }} x {{flavourRequest.flavour.name}}</div>
+                                    <div class="booking-request-flavour-details">{{getCpuView(flavourRequest.flavour)}}</div>
+                                    <div class="booking-request-flavour-details">{{getRamView(flavourRequest.flavour)}} RAM</div>
+                                    <div class="booking-request-flavour-details" *ngFor="let device of flavourRequest.flavour.devices">
+                                        {{device.devicePool.name}}
+                                    </div>
+                                </div>
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>State</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.state | titlecase }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>Organiser</b>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.owner.fullName }} (<a
+                                href="mailto:{{ bookingRequest.owner.email }}">{{ bookingRequest.owner.email }}</a>)
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                {{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                <span *ngIf="bookingRequest.owner.activeUserRoles.length === 0">User has no roles</span>
+                                <span *ngFor="let userRole of bookingRequest.owner?.activeUserRoles"
+                                      class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
+                            </dd>
+                        </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                            </dt>
+                            <dd>
+                                <span *ngFor="let group of bookingRequest.owner?.groups"
+                                      class="admin-details-list-item-tag">{{ group.name }}</span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+            </div>
+
+            <div class="clr-col-8">
+                <div class="admin-box-body p-t-10 p-b-10">
+
+                    <div class="booking-request-availabilities">
+                        <div class="booking-request-section-title">
+                            Availability of requested resources
+                        </div>
+                        <div *ngIf="availabilities" class="booking-request-availabilities-charts">
+                            <visa-admin-availability *ngFor="let availability of availabilities"
+                                                     [availability]="availability"
+                                                     [bookings]="[bookingRequest]">
+                            </visa-admin-availability>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="clr-row">
+            <div class="clr-col-12">
+                <div class="admin-box-body p-t-10 p-b-10">
+                    <div class="booking-request-response">
+                        <div class="booking-request-section-title">
+                            Booking response
+                        </div>
+                        <div *ngIf="bookingRequest.state === 'CREATED'">
+                            <form [formGroup]="form" clrForm clrLayout="horizontal">
+                                <dl class="admin-details-list">
+                                    <div class="admin-details-list-item">
+                                        <dt>
+                                            <b>Request is</b>
+                                        </dt>
+                                        <dd>
+                                            <button [ngClass]="{'btn-success': isAcceptedValue(true), 'btn-success-outline': !isAcceptedValue(true)}" class="btn" (click)="setAcceptedValue(true)">Accepted</button>
+                                            <button [ngClass]="{'btn-warning': isAcceptedValue(false), 'btn-warning-outline': !isAcceptedValue(false)}" class="btn" (click)="setAcceptedValue(false)">Refused</button>
+                                        </dd>
+                                    </div>
+
+                                    <div *ngIf="accepted != null">
+                                        <div class="admin-details-list-item">
+                                            <dt>
+                                            </dt>
+                                            <dd>
+                                                <textarea id="comments" rows="8" name="comments"  class="clr-textarea" style="width: 100%" formControlName="comments" placeholder="Enter comments to send to the booking organiser"></textarea>
+                                            </dd>
+                                        </div>
+                                        <div class="admin-details-list-item">
+                                            <dt>
+                                            </dt>
+                                            <dd>
+                                                <button (click)="submit()" [disabled]="!form.valid" class="btn btn-primary">Submit</button>
+                                            </dd>
+                                        </div>
+                                    </div>
+
+                                </dl>
+                            </form>
+                        </div>
+
+                        <div *ngIf="bookingRequest.state === 'ACCEPTED'">
+                            <dl class="admin-details-list">
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Accepted
+                                    </dt>
+                                    <dd>
+                                        {{ acceptedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ acceptedHistory()?.actor.fullName}})
+                                    </dd>
+                                </div>
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Comments
+                                    </dt>
+                                    <dd>
+                                        {{ acceptedHistory()?.comments}}
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div *ngIf="bookingRequest.state === 'REFUSED'">
+                            <dl class="admin-details-list">
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Refused
+                                    </dt>
+                                    <dd>
+                                        {{ refusedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ refusedHistory()?.actor.fullName}})
+                                    </dd>
+                                </div>
+                                <div class="admin-details-list-item">
+                                    <dt>
+                                        Comments
+                                    </dt>
+                                    <dd>
+                                        {{ refusedHistory()?.comments}}
+                                    </dd>
+                                </div>
+                            </dl>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="bookingRequest.state === 'ACCEPTED' && tokens != null" class="clr-row">
+            <div class="clr-col-12">
+                <div class="admin-box-body p-t-10 p-b-10">
+                    <div class="booking-request-tokens">
+                        <div class="booking-request-section-title">
+                            Tokens
+                        </div>
+                    </div>
+                    <clr-datagrid>
+                        <clr-dg-column clrDgColType="number" [clrDgSortBy]="'id'">
+                            <ng-container>
+                                ID
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column>
+                            <ng-container>
+                                UID
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'flavour.name'">
+                            <ng-container>
+                                Flavour
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'owner.lastName'">
+                            <ng-container>
+                                Owner
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column>
+                            <ng-container>
+                                Affiliation
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column clrDgColType="number" [clrDgSortBy]="'instance.id'">
+                            <ng-container>
+                                Instance ID
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.name'">
+                            <ng-container>
+                                Instance Name
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.createdAt'">
+                            <ng-container>
+                                Instance Created
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.plan.image.name'">
+                            <ng-container>
+                                Instance Image
+                            </ng-container>
+                        </clr-dg-column>
+                        <clr-dg-column [clrDgSortBy]="'instance.state'">
+                            <ng-container>
+                                Instance State
+                            </ng-container>
+                        </clr-dg-column>
+
+                        <clr-dg-placeholder>No tokens exist for the booking request</clr-dg-placeholder>
+
+                        <clr-dg-row *clrDgItems="let token of tokens">
+                            <clr-dg-cell>{{ token.id }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.uid }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.flavour.name }}</clr-dg-cell>
+                            <clr-dg-cell>
+                                <div *ngIf="token.owner != null" [style.color]="'#0747a6'" [style.cursor]="'pointer'" [routerLink]="['/admin/users/', token.owner?.id]">
+                                    {{ token.owner?.fullName }}
+                                </div>
+                            </clr-dg-cell>
+                            <clr-dg-cell>{{ token.owner ? token.owner.affiliation?.name || 'No affiliation' : '' }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.id }}</clr-dg-cell>
+                            <clr-dg-cell>
+                                <div *ngIf="token.instance != null" [style.color]="'#0747a6'" [style.cursor]="'pointer'" [routerLink]="['/admin/compute/instances/', token.instance?.id]">
+                                    {{ token.instance?.name }}
+                                </div>
+                            </clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.createdAt | date:'dd-MM-yyyy HH:mm' }}</clr-dg-cell>
+                            <clr-dg-cell>{{ formatImageName(token.instance?.plan.image) }}</clr-dg-cell>
+                            <clr-dg-cell>{{ token.instance?.state }}</clr-dg-cell>
+                        </clr-dg-row>
+
+                        <clr-dg-footer>
+                            <clr-dg-column-toggle [hidden]="true">
+                            </clr-dg-column-toggle>
+                        </clr-dg-footer>
+                    </clr-datagrid>
+
+                </div>
+            </div>
+        </div>
+
+                    </div>
+</div>

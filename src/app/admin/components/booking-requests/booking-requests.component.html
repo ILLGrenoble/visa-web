@@ -1,0 +1,45 @@
+<visa-admin-header></visa-admin-header>
+<visa-booking-admin-header></visa-booking-admin-header>
+
+<div class="booking-requests-spinner-outer" [hidden]="!loading">
+    <div class="booking-requests-spinner">
+        <clr-spinner></clr-spinner>
+    </div>
+</div>
+
+<div *ngIf="!loading" class="admin-container">
+    <div class="admin-container--main">
+        <h3>Booking Requests</h3>
+
+        <div *ngIf="pendingBookingRequests.length > 0" class="booking-requests-section">
+            <div class="booking-requests-section-title">
+                Pending requests
+            </div>
+            <visa-admin-booking-request-list [bookingRequests]="pendingBookingRequests"></visa-admin-booking-request-list>
+        </div>
+
+        <div *ngIf="acceptedBookingRequests.length > 0" class="booking-requests-section">
+            <div class="booking-requests-section-title">
+                Accepted requests
+            </div>
+            <visa-admin-booking-request-list [bookingRequests]="acceptedBookingRequests"></visa-admin-booking-request-list>
+        </div>
+
+        <div class="booking-requests-section">
+            <div class="booking-requests-section-title">
+                Availability of requested resources
+            </div>
+            <div class="booking-requests-availabilities">
+                <div *ngIf="availabilities" class="booking-requests-availabilities-charts">
+                    <visa-admin-availability *ngFor="let availability of availabilities"
+                                             [availability]="availability"
+                                             [bookings]="allBookingRequests"
+                                             [showUncertaintyRegion]="false">
+                    </visa-admin-availability>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -80,5 +80,8 @@
             background-color: #fff;
             border-color: #0747a6 #e1e4e8 transparent;
         }
+        &--hidden {
+            display: none;
+        }
     }
 }

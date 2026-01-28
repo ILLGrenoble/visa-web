@@ -1,0 +1,62 @@
+<div class="instance-token-container">
+    <div class="instance-token-content">
+        <div class="instance-token-request-title">
+            {{ booking.name }}
+        </div>
+        <div class="instance-token-request-period">
+            <div class="instance-token-request-header">
+                From
+            </div>
+            <div class="instance-token-request-period-text">
+                {{ booking.startDate |date:'dd MMMM y' }}
+            </div>
+            <div class="instance-token-request-header">
+                To
+            </div>
+            <div class="instance-token-request-period-text">
+                {{ booking.endDate | date:'dd MMMM y' }}
+            </div>
+
+        </div>
+        <div class="instance-token-request-organiser">
+            <div class="instance-token-request-header">
+                Organised by
+            </div>
+            <div class="instance-token-request-organiser-name">
+                {{ booking.owner.fullName }}
+            </div>
+            <div *ngIf="booking.owner.affiliation != null" class="instance-token-request-organiser-affiliation">
+                {{ booking.owner.affiliation.name }}
+            </div>
+
+        </div>
+        <div class="instance-token-request-flavour">
+            <div class="flavour-box">
+                <div class="flavour-description">
+                    <div class="flavour-description__detail">
+                        {{getCpuView(flavour)}}
+                    </div>
+                    <div class="flavour-description__detail">
+                        {{getRamView(flavour)}} memory
+                    </div>
+                    <div *ngFor="let device of flavour.devices" class="flavour-description__detail">
+                        <div class="flavour-description__device-name">
+                            {{device.devicePool.name}}
+                        </div>
+                        <div *ngIf="device.devicePool.description" class="flavour-description__device-description">
+                            {{device.devicePool.description}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flavour-name">
+                    <div>
+                        {{flavour.name}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="instance-token-create-button">
+            <button class="btn btn-primary" [disabled]="!tokenActive" [routerLink]="['/instances/new', token.uid]">Redeem token</button>
+        </div>
+    </div>
+</div>

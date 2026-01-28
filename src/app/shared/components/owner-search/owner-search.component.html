@@ -1,11 +1,19 @@
 <div [formGroup]="form">
     <ng-select [items]="users$ | async"
                [searchable]="true"
-               placeholder="Enter an owners last name..."
+               placeholder="Enter an user's last name..."
                formControlName="owner"
                [loading]="loading"
                [typeahead]="input$"
-               bindLabel="fullName"
                notFoundText="No owner found">
+
+        <ng-template ng-option-tmp let-user="item">
+            {{ user.firstName }} {{ user.lastName }} ({{ user.affiliation?.name || 'No affiliation' }})
+        </ng-template>
+
+        <ng-template ng-label-tmp let-user="item">
+            {{ user.firstName }} {{ user.lastName }} ({{ user.affiliation?.name || 'No affiliation' }})
+        </ng-template>
+
     </ng-select>
 </div>
