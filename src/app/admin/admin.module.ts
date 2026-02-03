@@ -73,6 +73,7 @@ import {
     HypervisorsComponent,
     HypervisorComponent,
     ServerComponent,
+    ServerMigrateDialogComponent,
     AvailabilitiesComponent,
     AvailabilityComponent,
     BookingSettingsComponent,
@@ -82,6 +83,7 @@ import {
 } from './components';
 import {ClrModalModule, ClrSpinnerModule} from "@clr/angular";
 import {DatePipe, NgIf} from "@angular/common";
+import {DndDraggableDirective, DndDropzoneDirective} from "ngx-drag-drop";
 
 @NgModule({
     imports: [
@@ -92,6 +94,8 @@ import {DatePipe, NgIf} from "@angular/common";
         DatePipe,
         NgIf,
         ClrModalModule,
+        DndDraggableDirective,
+        DndDropzoneDirective,
     ],
     declarations: [
         DashboardComponent,
@@ -155,6 +159,7 @@ import {DatePipe, NgIf} from "@angular/common";
         HypervisorsComponent,
         HypervisorComponent,
         ServerComponent,
+        ServerMigrateDialogComponent,
         AvailabilitiesComponent,
         AvailabilityComponent,
         BookingSettingsComponent,

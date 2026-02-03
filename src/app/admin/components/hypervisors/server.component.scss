@@ -10,6 +10,8 @@
     justify-content: stretch;
     align-items: center;
     cursor: pointer;
+    background-color: #fff;
+    z-index: 500;
 
     .server-header {
         color: #0747a6;
@@ -31,6 +33,10 @@
             font-size: 8pt;
             line-height: 15px;
             font-weight: 400;
+        }
+
+        .server-info__migrating {
+            color: #ffa943;
         }
     }
 
@@ -77,4 +83,11 @@
 .server__error {
     border-top-width: 2px;
     border-top-color: #dd4b39;
+}
+
+.server__migrating {
+    border-left: 2px dashed #ffa943;
+    border-right: 2px dashed #ffa943;
+    border-bottom: 2px dashed #ffa943;
+    box-shadow: rgba(255, 156, 52, 0.34) 0px 3px 8px;
 }

@@ -1,4 +1,8 @@
-<div class="hypervisor-container">
+<div dndDropzone
+     [dndDisableIf]="!acceptDrop"
+     (dndDrop)="onDrop($event)"
+     [dndDragoverClass]="'hypervisor-drag-over'"
+     class="hypervisor-container">
     <div #hyperv class="hypervisor" [class]="hypervisorStateClass(hypervisor)" [ngClass]="{'hypervisor__disabled': hypervisor.status ==='disabled', 'hypervisor__down': hypervisor.state ==='down', 'hypervisor__selected': isSelected}" (click)="onClick()">
         <div class="hypervisor__title">
             {{hypervisor.hostname}}
@@ -64,7 +68,7 @@
             <div *ngIf="instanceCount == 0" class="hypervisor-instances-unknown">
                 No known instances on this hypervisor
             </div>
-            <visa-admin-server *ngFor="let instance of instances" [instance]="instance"></visa-admin-server>
+            <visa-admin-server (draggable$)="onDraggable($event)" *ngFor="let instance of instances" [instance]="instance"></visa-admin-server>
         </div>
     </div>
 

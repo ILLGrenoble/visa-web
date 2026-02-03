@@ -175,11 +175,11 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     public canShutdownInstance(): boolean {
-        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
+        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE', 'ACTIVE_MIGRATING'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
     }
 
     public canRebootInstance(): boolean {
-        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
+        return ['STARTING', 'PARTIALLY_ACTIVE', 'ACTIVE', 'ACTIVE_MIGRATING'].includes(this._instance.state) && this.instance.membership.isRole('OWNER');
     }
 
     public canAccessJupyter(): boolean {
@@ -324,8 +324,7 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     private onStateChanged() {
-        if ((this._instance.state === 'STOPPED' || this._instance.state === 'STOPPING'
-            || this._instance.state === 'ACTIVE' || this._instance.state === 'PARTIALLY_ACTIVE') && this._instance.deleteRequested) {
+        if (['STOPPED', 'STOPPING', 'ACTIVE', 'PARTIALLY_ACTIVE', 'ACTIVE_MIGRATING'].includes(this._instance.state) && this._instance.deleteRequested) {
             this._instance.state = 'DELETING';
         }
 
@@ -344,7 +343,7 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     private updateCanConnect(): void {
-        if (this._instance != null && (this._instance.state === 'ACTIVE' || this._instance.state === 'PARTIALLY_ACTIVE')) {
+        if (this._instance != null && ['ACTIVE', 'PARTIALLY_ACTIVE', 'ACTIVE_MIGRATING'].includes(this._instance.state)) {
             if (this._instance.membership.role === 'OWNER') {
                 this.canConnect = true;
 

@@ -61,7 +61,7 @@
                     <div *ngIf="instance != null && bookingActive" class="booking-token-instance-assigned">
                         <div class="booking-token-instance-assigned-name-and-state">
                             <clr-tooltip>
-                                <div clrTooltipTrigger class="booking-token-instance-assigned-state" [ngClass]="{'booking-token-instance-assigned-state--success': ['PARTIALLY_ACTIVE', 'ACTIVE'].includes(instance.state), 'booking-token-instance-assigned-state--error': ['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)}">
+                                <div clrTooltipTrigger class="booking-token-instance-assigned-state" [ngClass]="{'booking-token-instance-assigned-state--success': ['PARTIALLY_ACTIVE', 'ACTIVE', 'ACTIVE_MIGRATING'].includes(instance.state), 'booking-token-instance-assigned-state--error': ['ERROR', 'UNKNOWN', 'STOPPED', 'DELETED'].includes(instance.state)}">
                                 </div>
                                 <clr-tooltip-content clrPosition="top-right" clrSize="sm" *clrIfOpen>
                                     <span>{{instance.state }}</span>

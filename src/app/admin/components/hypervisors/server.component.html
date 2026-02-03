@@ -1,4 +1,9 @@
-<div class="server" [class]="instanceStateClass()" (click)="onClick()">
+<div [dndDraggable]="instance"
+     (dragstart)="onDragStarted()"
+     [dndDisableIf]="dragDisabled"
+     [class]="instanceStateClass()"
+     class="server"
+     (click)="onClick()">
     <div class="server-header">
         <div class="server-name">
             {{ instance.name }} ({{instance.id}})
@@ -9,7 +14,7 @@
         <div class="server-info">
             {{ instance.createdAt | date:'dd/MM/yyyy'}} - {{ instance.terminationDate | date:'dd/MM/yyyy'}}
         </div>
-        <div class="server-info">
+        <div class="server-info" [ngClass]="{'server-info__migrating': instance.state == 'ACTIVE_MIGRATING'}">
             {{ instance.state }}
         </div>
     </div>

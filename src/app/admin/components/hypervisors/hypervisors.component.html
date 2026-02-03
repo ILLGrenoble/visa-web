@@ -8,6 +8,10 @@
     </div>
 </div>
 
+<visa-admin-server-migrate-dialog [migrationData$]="migrationData$"
+                                  (onClose$)="onMigrateDialogClosed($event)"
+                                  [hypervisors]="targetHypervisors"></visa-admin-server-migrate-dialog>
+
 <div *ngIf="!loading" class="hypervisors-overview">
     <div class="admin-container hypervisors-main">
         <div class="admin-container--main">
@@ -29,7 +33,10 @@
                                        [index]="index"
                                        [devicePools]="devicePools"
                                        [flavours]="flavours"
-                                       [selectedHypervisor$]="selectedHypervisor$">
+                                       [selectedHypervisor$]="selectedHypervisor$"
+                                       [reloadAllocations$]="reloadAllocations$"
+                                       [(draggable)]="draggable"
+                                       (onMigrateRequest)="onMigrateRequest($event)">
                 </visa-admin-hypervisor>
             </div>
         </div>

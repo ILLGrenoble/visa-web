@@ -1,0 +1,67 @@
+<clr-modal clrModalSize="md"
+           [(clrModalOpen)]="showModal"
+           [clrModalStaticBackdrop]="false">
+
+    <h3 class="modal-title">Server live migration</h3>
+
+    <div *ngIf="instance != null" class="modal-body">
+
+        <ng-container>
+            <form clrForm [formGroup]="form" clrLayout="horizontal">
+
+                <clr-input-container>
+                    <label for="server" class="clr-col-md-4">Server</label>
+                    <input clrInput readonly id="server" class="form-control clr-col-md-8" [value]="instance.name">
+                </clr-input-container>
+
+                <clr-input-container>
+                    <label for="flavour" class="clr-col-md-4">Flavour</label>
+                    <input clrInput readonly id="flavour" class="form-control clr-col-md-8" [value]="instance.plan.flavour.name">
+                </clr-input-container>
+
+                <clr-input-container>
+                    <label for="resources" class="clr-col-md-4">Resources</label>
+                    <input clrInput readonly id="resources" class="form-control clr-col-md-8" style="width: 100%;" [value]="getResourcesView()">
+                </clr-input-container>
+
+                <clr-input-container>
+                    <label for="source" class="clr-col-md-4">Current host</label>
+                    <input clrInput readonly id="source" class="form-control clr-col-md-8" [value]="source.hostname">
+                </clr-input-container>
+
+                <clr-select-container>
+                    <label for="target" class="clr-col-md-4">Target host</label>
+                    <select clrSelect id="target" formControlName="target" class="form-control clr-col-md-8">
+                        <option *ngFor="let hypervisor of hypervisors" [ngValue]="hypervisor">{{hypervisor?.hostname}}</option>
+                    </select>
+                </clr-select-container>
+
+                <clr-input-container>
+                    <label for="availability" class="clr-col-md-4">Available instances</label>
+                    <input clrInput readonly id="availability" class="form-control clr-col-md-8" style="width: 100%;" formControlName="availableUnits">
+                </clr-input-container>
+
+                <clr-toggle-container>
+                    <label for="blockMigration" class="clr-col-md-4">Block migration</label>
+                    <clr-toggle-wrapper>
+                        <input type="checkbox" id="blockMigration" class="form-control clr-col-md-8" clrToggle formControlName="blockMigration"/>
+                    </clr-toggle-wrapper>
+                </clr-toggle-container>
+
+                <clr-toggle-container>
+                    <label for="diskOverCommit" class="clr-col-md-4">Disk over commit</label>
+                    <clr-toggle-wrapper>
+                        <input type="checkbox" id="diskOverCommit" class="form-control clr-col-md-8" clrToggle formControlName="diskOverCommit"/>
+                    </clr-toggle-wrapper>
+                </clr-toggle-container>
+
+            </form>
+        </ng-container>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
+        <button (click)="submit()" [disabled]="form.invalid || submitting" class="btn btn-success">Confirm migration</button>
+    </div>
+</clr-modal>
+

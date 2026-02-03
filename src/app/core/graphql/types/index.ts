@@ -73,6 +73,7 @@ export type CloudInstance = {
     id?: Maybe<Scalars['String']>;
     name?: Maybe<Scalars['String']>;
     address?: Maybe<Scalars['String']>;
+    state?: Maybe<Scalars['String']>;
     fault?: Maybe<CloudInstanceFault>;
     securityGroups?: Maybe<Array<Scalars['String']>>;
 };
@@ -268,6 +269,7 @@ export type Instance = {
     members?: Maybe<Array<Maybe<InstanceMember>>>;
     plan?: Maybe<Plan>;
     cloudInstance?: Maybe<CloudInstance>;
+    computeId?: Maybe<Scalars['String']>;
     experiments?: Maybe<Array<Maybe<Experiment>>>;
     protocols?: Maybe<Array<Maybe<ProtocolStatus>>>;
     createdAt: Scalars['String'];
@@ -354,10 +356,12 @@ export enum InstanceState {
     Building = 'BUILDING',
     Starting = 'STARTING',
     Active = 'ACTIVE',
+    ActiveMigrating = 'ACTIVE_MIGRATING',
     PartiallyActive = 'PARTIALLY_ACTIVE',
     Stopping = 'STOPPING',
     Stopped = 'STOPPED',
     Rebooting = 'REBOOTING',
+    Migrating = 'MIGRATING',
     Unavailable = 'UNAVAILABLE',
     Error = 'ERROR',
     Deleting = 'DELETING',
@@ -501,6 +505,8 @@ export type Mutation = {
     shutdownInstance: Message;
     /** Delete an instance */
     deleteInstance: Message;
+    /** Migrate a cloud instance */
+    migrateCloudInstance: Scalars['Boolean'];
     /** Update an instance termination date */
     updateInstanceTerminationDate: Message;
     /** respond to a booking request */

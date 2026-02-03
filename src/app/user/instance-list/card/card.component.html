@@ -32,7 +32,7 @@
                 active
             </span>
         </div>
-        <div class="instance-state" *ngIf="['ACTIVE'].includes(instance.state)">
+        <div class="instance-state" *ngIf="['ACTIVE', 'ACTIVE_MIGRATING'].includes(instance.state)">
             <span class="instance-state--icon">
                 <span class="instance-state-indicator instance-state-indicator--success"></span>
             </span>
@@ -40,7 +40,7 @@
                 active
             </span>
         </div>
-        <div class="instance-state" *ngIf="['STARTING', 'REBOOTING', 'BUILDING', 'STOPPING', 'DELETING'].includes(instance.state)">
+        <div class="instance-state" *ngIf="['STARTING', 'REBOOTING', 'BUILDING', 'STOPPING', 'DELETING', 'MIGRATING'].includes(instance.state)">
             <img src="/assets/images/spinner.svg" class="instance-state--icon"/>
             <span>
                 {{instance.state | lowercase}}

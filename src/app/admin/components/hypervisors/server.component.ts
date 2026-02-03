@@ -1,4 +1,4 @@
-import {Component,  Input } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Instance} from '../../../core/graphql';
 import {Router} from "@angular/router";
 
@@ -10,6 +10,7 @@ import {Router} from "@angular/router";
 export class ServerComponent  {
 
     private _instance: Instance;
+    private _draggable$: EventEmitter<{instance: Instance}> = new EventEmitter();
     constructor(private _router: Router) {
     }
 
@@ -22,17 +23,35 @@ export class ServerComponent  {
         return this._instance;
     }
 
+    @Output()
+    get draggable$(): EventEmitter<{ instance: Instance }> {
+        return this._draggable$;
+    }
+
+    get dragDisabled(): boolean {
+        return this._instance.plan.flavour.devices.length > 0;
+    }
+
     protected instanceStateClass(): string {
+        let stateClass: string;
         if (['ACTIVE', 'PARTIALLY_ACTIVE'].includes(this._instance.state)) {
-            return 'server__active';
-        } else if (['BUILDING', 'STARTING', 'STOPPED', 'STOPPING', 'DELETING', 'REBOOTING'].includes(this._instance.state)) {
-            return 'server__unready';
+            stateClass = 'server__active';
+        } else if (['ACTIVE_MIGRATING'].includes(this._instance.state)) {
+            stateClass = 'server__active server__migrating';
+        } else if (['BUILDING', 'STARTING', 'STOPPED', 'STOPPING', 'DELETING', 'REBOOTING', 'MIGRATING'].includes(this._instance.state)) {
+            stateClass = 'server__unready';
         } else {
-            return 'server__error';
+            stateClass = 'server__error';
         }
+
+        return stateClass;
     }
 
     protected onClick(): void {
         this._router.navigate([`/admin/compute/instances/${this._instance.id}`]);
+    }
+
+    protected onDragStarted(): void {
+        this._draggable$.emit({instance: this._instance});
     }
 }

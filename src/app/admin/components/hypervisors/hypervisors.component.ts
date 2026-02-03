@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject, interval, Observable, Subject, timer} from 'rxjs';
 import gql from 'graphql-tag';
 import {Apollo} from 'apollo-angular';
 import {delay, filter, map, startWith, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Title} from '@angular/platform-browser';
-import {Hypervisor, DevicePool, Flavour, CloudClient} from '../../../core/graphql';
+import {Hypervisor, DevicePool, Flavour, CloudClient, Instance} from '../../../core/graphql';
 
 @Component({
     selector: 'visa-admin-hypervisors',
@@ -24,6 +24,11 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
     private _multiCloudEnabled = false;
     private _selectedCloudClient$: BehaviorSubject<CloudClient> = new BehaviorSubject<CloudClient>(null);
     private _selectedHypervisor$: BehaviorSubject<Hypervisor> = new BehaviorSubject<Hypervisor>(null);
+    private _draggable: {instance: Instance, hypervisor: Hypervisor};
+    private _migrationData$: Subject<{instance: Instance, source: Hypervisor, target: Hypervisor}> = new Subject();
+    private _targetHypervisors: Hypervisor[];
+    private _reloadAllocations$: Subject<void> = new Subject();
+
 
     constructor(private readonly _apollo: Apollo,
                 private readonly _titleService: Title) {
@@ -63,6 +68,26 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
 
     get selectedHypervisor$(): BehaviorSubject<Hypervisor> {
         return this._selectedHypervisor$;
+    }
+
+    get draggable(): { instance: Instance; hypervisor: Hypervisor } {
+        return this._draggable;
+    }
+
+    set draggable(value: { instance: Instance; hypervisor: Hypervisor }) {
+        this._draggable = value;
+    }
+
+    get migrationData$(): Subject<{ instance: Instance; source: Hypervisor; target: Hypervisor }> {
+        return this._migrationData$;
+    }
+
+    get targetHypervisors(): Hypervisor[] {
+        return this._targetHypervisors;
+    }
+
+    get reloadAllocations$(): Subject<void> {
+        return this._reloadAllocations$;
     }
 
     public ngOnInit(): void {
@@ -136,6 +161,20 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
         ).subscribe(cloudClient => {
             this._hypervisors = this._allHypervisors.filter(hypervisor => hypervisor.cloudId == cloudClient.id);
         })
+
+        interval(60000).pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(() => {
+            this._reloadAllocations$.next();
+        })
+
+        this._migrationData$.pipe(
+            takeUntil(this._destroy$),
+        ).subscribe(migrationData => {
+            this._targetHypervisors = this._hypervisors
+                .filter(hypervisor => hypervisor.id != migrationData.source.id)
+                .filter(hypervisor => hypervisor.status !== 'disabled' && hypervisor.state !== 'down')
+            });
     }
 
     public ngOnDestroy(): void {
@@ -145,5 +184,19 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
 
     public onRefresh(): void {
         this._refresh$.next();
+    }
+
+    public onMigrateRequest(data: {instance: Instance, source: Hypervisor, target: Hypervisor}): void {
+        this._migrationData$.next(data);
+    }
+
+    public onMigrateDialogClosed(instance: Instance): void {
+        if (instance) {
+            timer(15000).pipe(
+                takeUntil(this._destroy$),
+            ).subscribe(() => {
+                this._reloadAllocations$.next();
+            })
+        }
     }
 }
