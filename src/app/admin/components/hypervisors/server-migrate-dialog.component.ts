@@ -127,7 +127,7 @@ export class ServerMigrateDialogComponent implements OnInit, OnDestroy {
         }).subscribe({
             next: () => {
                 this._submitting = false;
-                this._notifierService.notify('success', 'Instance migration in progress');
+                this._notifierService.notify('success', `Migration of instance ${this._instance.name} (${this._instance.id}) in progress`);
                 this._showModal = false;
                 this._instance.state = this._instance.state == InstanceState.Active ? InstanceState.ActiveMigrating : InstanceState.Migrating;
                 this._onClose$.emit(this._instance);

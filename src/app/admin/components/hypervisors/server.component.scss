@@ -11,7 +11,7 @@
     align-items: center;
     cursor: pointer;
     background-color: #fff;
-    z-index: 500;
+    user-select: none;
 
     .server-header {
         color: #0747a6;
