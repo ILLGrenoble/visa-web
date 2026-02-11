@@ -4,7 +4,6 @@ import {Member} from './member.model';
 import {Plan} from './plan.model';
 import {User} from './user.model';
 import {Protocol} from './protocol.model';
-import {state} from "@angular/animations";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -38,8 +37,8 @@ export class Instance {
     @JsonProperty('comments', String)
     private _comments: string = undefined;
 
-    @JsonProperty('createdAt', String)
-    private _createdAt: string = undefined;
+    @JsonProperty('createdAt', DateConverter)
+    private _createdAt: Date = undefined;
 
     @JsonProperty('plan', Plan)
     private _plan: Plan = undefined;
@@ -149,11 +148,11 @@ export class Instance {
         this._comments = value;
     }
 
-    public get createdAt(): string {
+    public get createdAt(): Date {
         return this._createdAt;
     }
 
-    public set createdAt(value: string) {
+    public set createdAt(value: Date) {
         this._createdAt = value;
     }
 
