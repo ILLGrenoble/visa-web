@@ -17,12 +17,13 @@ import {
     GuacamoleVirtualDesktopManager,
     WebXVirtualDesktopManager,
     ClipboardService,
+    ToolbarSelectOption,
 } from '@vdi';
 import {NotifierService} from 'angular-notifier';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as md5 from 'blueimp-md5';
 import * as FileSaver from 'file-saver';
-import {BehaviorSubject, combineLatest, interval, Observable, Subject, Subscription, throwError, timer} from 'rxjs';
+import {BehaviorSubject, combineLatest, interval, Observable, Subject, Subscription, throwError, timer, debounceTime, fromEvent} from 'rxjs';
 import {catchError, filter, finalize, map, scan, share, startWith, takeUntil, timeInterval} from 'rxjs/operators';
 import {AccessRequestComponent} from './access-request';
 import {ClipboardComponent} from './clipboard';
@@ -33,6 +34,13 @@ import {Store} from '@ngrx/store';
 import {UrlComponent} from './url';
 import {FileManagerComponent} from "./file-manager";
 import {environment} from 'environments/environment';
+import {InstanceDisplayHelper} from "../instance-new";
+
+type ScreenResolutionOption = {
+    width?: number;
+    height?: number;
+    auto?: boolean;
+}
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -40,6 +48,7 @@ import {environment} from 'environments/environment';
     styleUrls: ['./instance.component.scss'],
 })
 export class InstanceComponent implements OnInit, OnDestroy {
+    private _helper: InstanceDisplayHelper = new InstanceDisplayHelper();
 
     public manager: VirtualDesktopManager;
     public instance: Instance;
@@ -55,6 +64,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _gatewayEventSubscriber: GatewayEventSubscriber;
 
     public stats$;
+
+    public screenSizeOptions: ToolbarSelectOption<ScreenResolutionOption>[];
 
     /**
      * Hot keys
@@ -86,6 +97,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private dataReceivedMessages$: Subscription;
     private clipboard$: Subscription;
     private _clipboardService: ClipboardService = new ClipboardService();
+    private _onScreenInfo$: Subscription;
+    private _screenResizeObservable$: Subscription
 
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
@@ -97,6 +110,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     get dataReceivedRate$(): BehaviorSubject<number> {
         return this._dataReceivedRate$;
+    }
+
+    get isAutoResizing(): boolean {
+        return this._screenResizeObservable$ != null;
     }
 
     constructor(private route: ActivatedRoute,
@@ -253,6 +270,31 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this.instance?.membership.role === 'OWNER' && this.instance?.hasProtocolWithName('VISA_PRINT');
     }
 
+    public onScreenResizeSelected(value: ScreenResolutionOption): void {
+        if (value.auto && this._screenResizeObservable$ == null) {
+            const screenSize = this.manager.viewportSize$.getValue();
+            this.manager.resizeScreen(screenSize);
+            this.manager.setScaleMode(ScaleMode.Scaled);
+
+            this._screenResizeObservable$ = this.manager.viewportSize$.pipe(
+                takeUntil(this._destroy$),
+                debounceTime(400)
+            ).subscribe((screenSize) => {
+                if (this.manager != null && this.manager.isConnected()) {
+                    this.manager.resizeScreen(screenSize);
+                }
+            });
+
+        } else if (!value.auto && this._screenResizeObservable$ != null) {
+            this._screenResizeObservable$.unsubscribe();
+            this._screenResizeObservable$ = null;
+        }
+
+        if (this.manager != null && !value.auto) {
+            this.manager.resizeScreen({width: value.width, height: value.height});
+        }
+    }
+
     /**
      * Enter into full screen mode
      */
@@ -359,6 +401,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.clipboard$) {
             this.clipboard$.unsubscribe();
         }
+        if (this._onScreenInfo$) {
+            this._onScreenInfo$.unsubscribe();
+        }
+        if (this._screenResizeObservable$) {
+            this._screenResizeObservable$.unsubscribe();
+            this._screenResizeObservable$ = null;
+        }
         this._clipboardService.stop();
     }
     /**
@@ -378,6 +427,30 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this._clipboardService.start(this.manager);
             }
         });
+
+        this._onScreenInfo$ = this.manager.onScreenInfo.pipe(
+            takeUntil(this._destroy$),
+            filter(value => !!value),
+        ).subscribe(({resizingAvailable, width, height}) => {
+            this.screenSizeOptions = this._helper.baseScreenResolutions.map(resolution => {
+                return {label: `${resolution.width}x${resolution.height}`, value: {width: resolution.width, height: resolution.height}};
+            });
+
+            const currentScreenSizeOption = this.screenSizeOptions.find(screenSizeOption => {
+               return screenSizeOption.value.width === width && screenSizeOption.value.height === height;
+            });
+
+            if (currentScreenSizeOption != null) {
+                currentScreenSizeOption.selected = true;
+
+            } else {
+                this.screenSizeOptions.push({label: `${width}x${height}`, value: {width, height}, selected: true, hidden: true});
+            }
+
+            if (resizingAvailable) {
+                this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
+            }
+        })
     }
 
     private handleThumbnailGeneration() {

@@ -56,7 +56,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      * Remote desktop manager
      */
     @Input()
-    private manager: VirtualDesktopManager;
+    public manager: VirtualDesktopManager;
 
     @ViewChild('display')
     private display: ElementRef;
@@ -144,6 +144,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
      */
     @HostListener('window:resize', ['$event'])
     public onWindowResize(event: any): void {
+        this.updateViewportSize();
         this.setDisplayScaleMode();
     }
 
@@ -180,6 +181,20 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
             return this.calculateOptimalDisplayScale(display);
         }
     }
+
+    /**
+     * Updates the viewport size
+     */
+    private updateViewportSize(): void {
+        if (this.manager != null) {
+            const viewportElement = this.viewport.nativeElement;
+            const width = viewportElement.clientWidth;
+            const height = viewportElement.clientHeight;
+
+            this.manager.viewportSize$.next({ width, height });
+        }
+    }
+
 
     /**
      * Get the remote desktop display
@@ -417,6 +432,7 @@ export class DisplayComponent implements OnDestroy, AfterViewInit, AfterViewChec
     ngAfterViewInit(): void {
         this.createDisplayCanvas();
         this.bindSubscriptions();
+        this.updateViewportSize();
     }
 
     public handlePan(event): void {

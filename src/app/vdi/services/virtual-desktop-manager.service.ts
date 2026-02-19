@@ -89,6 +89,9 @@ export abstract class VirtualDesktopManager {
 
     public onReconnect = new Subject<boolean>();
 
+    public onScreenInfo: BehaviorSubject<{ resizingAvailable: boolean, width: number, height: number }> = new BehaviorSubject<{ resizingAvailable: boolean, width: number, height: number }>(null);
+
+    public viewportSize$: BehaviorSubject<{ width: number, height: number }> = new BehaviorSubject<{ width: number, height: number }>(null);
 
     protected setClientAdapter(clientAdapter: ClientAdapter): void {
         this._clientAdapter = clientAdapter;
@@ -147,6 +150,20 @@ export abstract class VirtualDesktopManager {
         return this.onFullScreen.getValue();
     }
 
+    /**
+     * Returns whether screen resizing is available in the remote desktop
+     */
+    public isScreenResizingAvailable():boolean {
+        return this.onScreenInfo.getValue().resizingAvailable;
+    }
+
+    /**
+     * Requests a change in remote desktop screen size
+     * @param screenSize the requested screen size
+     */
+    public resizeScreen(screenSize: {width: number, height: number}): void {
+        this._clientAdapter.getDisplay().resizeScreen(screenSize);
+    }
 
     /**
      * Is the tunnel connected?

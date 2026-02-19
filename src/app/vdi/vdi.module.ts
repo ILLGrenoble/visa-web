@@ -11,6 +11,7 @@ import {
     RemoteDesktopComponent,
     StatusBarItemComponent,
     ToolbarItemComponent,
+    ToolbarSelectComponent,
 } from './components';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerModule} from '@angular/platform-browser';
 
@@ -30,6 +31,7 @@ export class HammerConfig extends HammerGestureConfig {
     declarations: [
         RemoteDesktopComponent,
         ToolbarItemComponent,
+        ToolbarSelectComponent,
         MessageComponent,
         DisplayComponent,
         ErrorMessageComponent,
@@ -41,6 +43,7 @@ export class HammerConfig extends HammerGestureConfig {
     exports: [
         RemoteDesktopComponent,
         ToolbarItemComponent,
+        ToolbarSelectComponent,
         ErrorMessageComponent,
         DisconnectedMessageComponent,
         ConnectingMessageComponent,

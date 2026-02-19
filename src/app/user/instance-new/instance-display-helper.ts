@@ -8,7 +8,7 @@ export class InstanceDisplayHelper {
     public static readonly USER_INSTANCE_SCREEN_HEIGHT_KEY = 'user.instance.screen.height';
     public static readonly USER_INSTANCE_SCREEN_NUMBER_X_KEY = 'user.instance.screen.numberX';
 
-    private _screenResolutions: ScreenResolution[] = [{
+    private _baseScreenResolutions: ScreenResolution[] = [{
         label: 'WXGA (1280 x 720) 16:9',
         width: 1280,
         height: 720,
@@ -50,6 +50,8 @@ export class InstanceDisplayHelper {
         height: 2160,
     }];
 
+    private _screenResolutions: ScreenResolution[] = this._baseScreenResolutions.map(screenResolution => screenResolution);
+
     private _arrangements: ScreenArrangement[] = [{
         name: 'Single screen',
         details: 'Default screen layout',
@@ -62,6 +64,10 @@ export class InstanceDisplayHelper {
 
     private _defaultScreenResolution: ScreenResolution;
     private _defaultArrangement: ScreenArrangement;
+
+    get baseScreenResolutions(): ScreenResolution[] {
+        return this._baseScreenResolutions;
+    }
 
     get screenResolutions(): ScreenResolution[] {
         return this._screenResolutions;

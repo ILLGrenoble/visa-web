@@ -102,6 +102,74 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
                     cursor: pointer;
                     color: $ngx-remote-desktop-toolbar-item-hover-color;
                 }
+
+                .ngx-remote-desktop-toolbar-select {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                    background: $ngx-remote-desktop-toolbar-background-color;
+
+                    &__selected {
+                        line-height: 18px;
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 0 8px;
+                        width: 100%;
+                    }
+
+                    &__open-close {
+                        filter: invert(85%);
+                        margin: 0 4px 0 8px;
+                    }
+
+                    &__main {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: flex-start;
+                        align-items: flex-start;
+                        background: $ngx-remote-desktop-toolbar-background-color;
+                        z-index: 1;
+                        width: 100%;
+                    }
+
+                    &__options {
+                        margin-top: 8px;
+                        background: $ngx-remote-desktop-toolbar-background-color;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: flex-start;
+                        align-items: flex-start;
+                        border: 1px solid #3c3c3c;
+                        width: 100%;
+                        box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 8px;
+
+                        &__opened {
+                            display: flex;
+                        }
+
+                        &__closed {
+                            display: none;
+                        }
+                    }
+
+                    &__option {
+                        line-height: 30px;
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        align-items: center;
+                        padding: 0 8px;
+                        cursor: pointer;
+                        width: 100%;
+
+                        &:hover {
+                            background-color: rgb(58, 59, 67);
+                        }
+                    }
+                }
             }
         }
     }

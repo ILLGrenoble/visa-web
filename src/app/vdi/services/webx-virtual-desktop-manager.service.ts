@@ -187,6 +187,8 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
                 this.setState(VirtualDesktopManager.STATE.CONNECTED);
 
+                this.onScreenInfo.next({resizingAvailable: this._client.canResizeScreen(), width: this._client.display.screenWidth, height: this._client.display.screenHeight});
+
             })
             .catch(err => {
                 console.error(err.message);

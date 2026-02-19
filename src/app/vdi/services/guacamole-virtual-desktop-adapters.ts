@@ -67,6 +67,9 @@ class GuacamoleDisplayAdapter extends DisplayAdapter {
         this._display.scale(scale);
     }
 
+    resizeScreen(screenSize: {width: number, height: number}): void {
+    }
+
     showCursor(isShown: boolean): void {
         this._display.showCursor(isShown);
     }

@@ -1,5 +1,6 @@
 export * from './remote-desktop.component';
 export * from './toolbar-item.component';
+export * from './toolbar-select.component';
 export * from './message.component';
 export * from './display.component';
 export * from './messages/waiting-message.component';

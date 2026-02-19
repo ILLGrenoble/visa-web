@@ -58,7 +58,7 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
-            [hidden]="isDisplayScaled() || !manager.isConnected()"
+            [hidden]="isDisplayScaled() || !manager.isConnected() || isAutoResizing"
             (click)="toggleScaledMode()"
             toolbarPosition="right">
             <clr-icon shape="resize-down"></clr-icon>
@@ -74,11 +74,20 @@
 <!--        </ngx-remote-desktop-toolbar-item>-->
 
         <ngx-remote-desktop-toolbar-item
-            [hidden]="isDisplayOptimal() || !manager.isConnected()"
+            [hidden]="isDisplayOptimal() || !manager.isConnected() || isAutoResizing"
             (click)="toggleScaledMode()"
             toolbarPosition="right">
             <clr-icon shape="resize-up"></clr-icon>
             Auto-scale display
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isConnected() || !manager.isScreenResizingAvailable()"
+            toolbarPosition="right">
+            <div class="remote-desktop-toolbar-select-container">
+                <clr-icon style="margin-top: 2px;" shape="display"></clr-icon>
+                <ngx-remote-desktop-toolbar-select style="width: 120px; " [options]="screenSizeOptions" (onSelect)="onScreenResizeSelected($event)"></ngx-remote-desktop-toolbar-select>
+            </div>
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item

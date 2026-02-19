@@ -30,6 +30,7 @@ export abstract class DisplayAdapter {
     abstract showCursor(isShown: boolean): void;
     abstract getScale(): number;
     abstract scale(scale: number): void;
+    abstract resizeScreen(screenSize: {width: number, height: number}): void;
     abstract getWidth(): number;
     abstract getHeight(): number;
     abstract getElement(): any;
