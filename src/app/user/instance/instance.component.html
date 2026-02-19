@@ -82,7 +82,7 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
-            [hidden]="!manager.isConnected() || !manager.isScreenResizingAvailable()"
+            [hidden]="!manager.isConnected() || !isScreenResizingAvailable()"
             toolbarPosition="right">
             <div class="remote-desktop-toolbar-select-container">
                 <clr-icon style="margin-top: 2px;" shape="display"></clr-icon>

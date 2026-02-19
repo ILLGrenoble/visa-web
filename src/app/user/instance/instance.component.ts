@@ -271,6 +271,10 @@ export class InstanceComponent implements OnInit, OnDestroy {
         return this.instance?.membership.role === 'OWNER' && this.instance?.hasProtocolWithName('VISA_PRINT');
     }
 
+    public isScreenResizingAvailable(): boolean {
+        return this.instance?.membership.role === 'OWNER' && this.manager?.isScreenResizingAvailable()
+    }
+
     public onScreenResizeSelected(value: ScreenResolutionOption): void {
         if (value.auto && this._viewportResize$ == null) {
             const screenSize = this.manager.viewportSize$.getValue();
