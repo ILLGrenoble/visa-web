@@ -91,7 +91,15 @@ export abstract class VirtualDesktopManager {
 
     public onScreenInfo: BehaviorSubject<{ resizingAvailable: boolean, width: number, height: number }> = new BehaviorSubject<{ resizingAvailable: boolean, width: number, height: number }>(null);
 
+    /**
+     * Browser viewport resized
+     */
     public viewportSize$: BehaviorSubject<{ width: number, height: number }> = new BehaviorSubject<{ width: number, height: number }>(null);
+
+    /**
+     * Remote desktop screen resized
+     */
+    public onScreenResized: BehaviorSubject<{ width: number, height: number }> = new BehaviorSubject<{ width: number, height: number }>(null);
 
     protected setClientAdapter(clientAdapter: ClientAdapter): void {
         this._clientAdapter = clientAdapter;

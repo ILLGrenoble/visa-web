@@ -11,7 +11,7 @@ import {
     WebXScreenInstruction,
     WebXScreenMessage,
     WebXConnectionStatus,
-    WebXKeyboardCombinationHandler
+    WebXKeyboardCombinationHandler, WebXMessageHandler, WebXMessageType
 } from '@illgrenoble/webx-client';
 
 class StatsHandler extends WebXStatsHandler {
@@ -36,10 +36,31 @@ class StatsHandler extends WebXStatsHandler {
     }
 }
 
+class ScreenResizeHandler extends WebXMessageHandler {
+
+    private readonly _screenResized$ = new BehaviorSubject<{ width: number, height: number }>(null);
+
+    get screenResized$(): BehaviorSubject<{ width: number; height: number }> {
+        return this._screenResized$;
+    }
+
+    handle(message: WebXMessage): void {
+        if (message.type === WebXMessageType.SCREEN_RESIZE) {
+            const screenResizeMessage = message as WebXScreenMessage;
+            const screenSize = screenResizeMessage.screenSize;
+            this._screenResized$.next(screenSize);
+        }
+    }
+
+    destroy(): void {
+    }
+}
+
 export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
     private readonly _statsHandler = new StatsHandler();
-    private readonly _statsInterrupt$: Subject<boolean> = new Subject<boolean>();
+    private readonly _screenResizeHandler = new ScreenResizeHandler();
+    private readonly _handlersInterrupt: Subject<boolean> = new Subject<boolean>();
 
     private readonly _client: WebXClient;
 
@@ -208,12 +229,18 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
     private _bindListeners(): void {
         this._statsHandler.dataReceived$.pipe(
-            takeUntil(this._statsInterrupt$),
+            takeUntil(this._handlersInterrupt),
             filter(data => data != null),
-            map(data => ({length: data})))
-            .subscribe(this.onDataReceived);
+            map(data => ({length: data}))
+        ).subscribe(this.onDataReceived);
+
+        this._screenResizeHandler.screenResized$.pipe(
+            takeUntil(this._handlersInterrupt),
+            filter(data => data != null),
+        ).subscribe(this.onScreenResized);
 
         this._client.registerTracer('stats', this._statsHandler);
+        this._client.registerTracer('screen-resize', this._screenResizeHandler);
         this._client.registerTracer('filter-toggle', new WebXKeyboardCombinationHandler([65362, 65362, 65362, 65364, 65364, 65364, 65361, 65363, 65361, 65363, 65506, 65506, 65506, 65293], () => {
             const display = this._client.display;
             display.filter = display.filter ? null : 'crt';
@@ -230,8 +257,9 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
     private _unbindListeners(): void {
 
-        this._statsInterrupt$.next(true);
+        this._handlersInterrupt.next(true);
         this._client.unregisterTracer('stats');
+        this._client.unregisterTracer('screen-resize');
         this._client.unregisterTracer('filter-toggle');
         this._client.clipboardHandler = (clipboardContent: string) => {};
 

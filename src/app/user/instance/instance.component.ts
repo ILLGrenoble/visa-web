@@ -98,7 +98,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private clipboard$: Subscription;
     private _clipboardService: ClipboardService = new ClipboardService();
     private _onScreenInfo$: Subscription;
-    private _screenResizeObservable$: Subscription
+    private _viewportResize$: Subscription
+    private _remoteDesktopResize$: Subscription
 
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
@@ -113,7 +114,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     get isAutoResizing(): boolean {
-        return this._screenResizeObservable$ != null;
+        return this._viewportResize$ != null;
     }
 
     constructor(private route: ActivatedRoute,
@@ -271,12 +272,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     public onScreenResizeSelected(value: ScreenResolutionOption): void {
-        if (value.auto && this._screenResizeObservable$ == null) {
+        if (value.auto && this._viewportResize$ == null) {
             const screenSize = this.manager.viewportSize$.getValue();
             this.manager.resizeScreen(screenSize);
             this.manager.setScaleMode(ScaleMode.Scaled);
 
-            this._screenResizeObservable$ = this.manager.viewportSize$.pipe(
+            this._viewportResize$ = this.manager.viewportSize$.pipe(
                 takeUntil(this._destroy$),
                 debounceTime(400)
             ).subscribe((screenSize) => {
@@ -285,9 +286,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 }
             });
 
-        } else if (!value.auto && this._screenResizeObservable$ != null) {
-            this._screenResizeObservable$.unsubscribe();
-            this._screenResizeObservable$ = null;
+        } else if (!value.auto && this._viewportResize$ != null) {
+            this._viewportResize$.unsubscribe();
+            this._viewportResize$ = null;
         }
 
         if (this.manager != null && !value.auto) {
@@ -380,6 +381,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.handleThumbnailGeneration();
         this.handleClipboardData();
         this.bindWindowListeners();
+        this.bindScreenResizeHandler();
     }
 
     /**
@@ -404,9 +406,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this._onScreenInfo$) {
             this._onScreenInfo$.unsubscribe();
         }
-        if (this._screenResizeObservable$) {
-            this._screenResizeObservable$.unsubscribe();
-            this._screenResizeObservable$ = null;
+        if (this._viewportResize$) {
+            this._viewportResize$.unsubscribe();
+            this._viewportResize$ = null;
+        }
+        if (this._remoteDesktopResize$) {
+            this._remoteDesktopResize$.unsubscribe();
         }
         this._clipboardService.stop();
     }
@@ -431,26 +436,30 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this._onScreenInfo$ = this.manager.onScreenInfo.pipe(
             takeUntil(this._destroy$),
             filter(value => !!value),
-        ).subscribe(({resizingAvailable, width, height}) => {
-            this.screenSizeOptions = this._helper.baseScreenResolutions.map(resolution => {
-                return {label: `${resolution.width}x${resolution.height}`, value: {width: resolution.width, height: resolution.height}};
-            });
-
-            const currentScreenSizeOption = this.screenSizeOptions.find(screenSizeOption => {
-               return screenSizeOption.value.width === width && screenSizeOption.value.height === height;
-            });
-
-            if (currentScreenSizeOption != null) {
-                currentScreenSizeOption.selected = true;
-
-            } else {
-                this.screenSizeOptions.push({label: `${width}x${height}`, value: {width, height}, selected: true, hidden: true});
-            }
-
-            if (resizingAvailable) {
-                this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
-            }
+        ).subscribe(({width, height}) => {
+            this.buildScreenSizeOptions(width, height);
         })
+    }
+
+    private buildScreenSizeOptions(currentWidth: number, currentHeight: number): void {
+        this.screenSizeOptions = this._helper.baseScreenResolutions.map(resolution => {
+            return {label: `${resolution.width}x${resolution.height}`, value: {width: resolution.width, height: resolution.height}};
+        });
+
+        const currentScreenSizeOption = this.screenSizeOptions.find(screenSizeOption => {
+            return screenSizeOption.value.width === currentWidth && screenSizeOption.value.height === currentHeight;
+        });
+
+        if (currentScreenSizeOption != null) {
+            currentScreenSizeOption.selected = true;
+
+        } else {
+            this.screenSizeOptions.push({label: `${currentWidth}x${currentHeight}`, value: {width: currentWidth, height: currentHeight}, selected: true, hidden: true});
+        }
+
+        if (this.manager.isScreenResizingAvailable()) {
+            this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
+        }
     }
 
     private handleThumbnailGeneration() {
@@ -613,6 +622,24 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 this.dataReceivedRate$.next(bytesPerSecond);
                 this.timeElapsed$.next(timeElapsed);
             });
+    }
+
+    private bindScreenResizeHandler(): void {
+        this._remoteDesktopResize$ = this.manager.onScreenResized.pipe(
+            takeUntil(this._destroy$)
+        ).subscribe(remoteDesktopResolution => {
+            const viewportSize = this.manager.viewportSize$.getValue();
+            if (remoteDesktopResolution.width != viewportSize.width || remoteDesktopResolution.height != viewportSize.height) {
+                // Stop auto-resizing if resize event came from somewhere else
+                if (this._viewportResize$ != null) {
+                    this._viewportResize$.unsubscribe();
+                    this._viewportResize$ = null;
+                }
+
+                // Rebuild screen resizing options
+                this.buildScreenSizeOptions(remoteDesktopResolution.width, remoteDesktopResolution.height);
+            }
+        })
     }
 
     private bindEventGatewayListeners(): void {
