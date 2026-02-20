@@ -42,6 +42,12 @@
         </ngx-remote-desktop-toolbar-item>
 
         <ngx-remote-desktop-toolbar-item
+            [hidden]="!manager.isConnected() || !isKeyboardChangingAvailable()"
+            toolbarPosition="left">
+            <ngx-remote-desktop-toolbar-select style="width: 200px; " [options]="keyboardLayoutOptions" (onSelect)="onKeyboardLayoutSelected($event)"></ngx-remote-desktop-toolbar-select>
+        </ngx-remote-desktop-toolbar-item>
+
+        <ngx-remote-desktop-toolbar-item
             [hidden]="!isFilesAvailable()"
             (click)="handleFileManager()"
             toolbarPosition="left">

@@ -113,4 +113,15 @@ export class GuacamoleClientAdapter extends ClientAdapter {
         this._client.sendMouseState(scaledState as Guacamole.Mouse.State);
     }
 
+    canChangeKeyboardLayout(): boolean {
+        return false;
+    }
+
+    getKeyboardLayout(): string {
+        return null;
+    }
+
+    setKeyboardLayout(keyboardLayout: string): void {
+    }
+
 }

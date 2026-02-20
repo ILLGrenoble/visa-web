@@ -89,7 +89,7 @@ export abstract class VirtualDesktopManager {
 
     public onReconnect = new Subject<boolean>();
 
-    public onScreenInfo: BehaviorSubject<{ resizingAvailable: boolean, width: number, height: number }> = new BehaviorSubject<{ resizingAvailable: boolean, width: number, height: number }>(null);
+    public onScreenInfo: BehaviorSubject<{ resizingAvailable: boolean, screenSize: {width: number, height: number}, keyboardLayout: string }> = new BehaviorSubject<{ resizingAvailable: boolean, screenSize: {width: number, height: number}, keyboardLayout: string }>(null);
 
     /**
      * Browser viewport resized
@@ -100,6 +100,11 @@ export abstract class VirtualDesktopManager {
      * Remote desktop screen resized
      */
     public onScreenResized: BehaviorSubject<{ width: number, height: number }> = new BehaviorSubject<{ width: number, height: number }>(null);
+
+    /**
+     * Remote desktop keyboard layout changed
+     */
+    public onKeyboardLayoutChanged: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
     protected setClientAdapter(clientAdapter: ClientAdapter): void {
         this._clientAdapter = clientAdapter;
@@ -171,6 +176,28 @@ export abstract class VirtualDesktopManager {
      */
     public resizeScreen(screenSize: {width: number, height: number}): void {
         this._clientAdapter.getDisplay().resizeScreen(screenSize);
+    }
+
+    /**
+     * Returns whether keyboard changing is available in the remote desktop
+     */
+    public isKeyboardChangingAvailable():boolean {
+        return this._clientAdapter.canChangeKeyboardLayout();
+    }
+
+    /**
+     * Requests a change in remote desktop keyboard layout
+     * @param keyboardLayout The requested keyboard layout
+     */
+    public setKeyboardLayout(keyboardLayout: string): void {
+        this._clientAdapter.setKeyboardLayout(keyboardLayout);
+    }
+
+    /**
+     * Returns the current keyboard layout of the remote desktop
+     */
+    public getKeyboardLayout(): string {
+        return this._clientAdapter.getKeyboardLayout();
     }
 
     /**

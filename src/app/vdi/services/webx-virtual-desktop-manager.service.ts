@@ -208,7 +208,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
                 this.setState(VirtualDesktopManager.STATE.CONNECTED);
 
-                this.onScreenInfo.next({resizingAvailable: this._client.canResizeScreen(), width: this._client.display.screenWidth, height: this._client.display.screenHeight});
+                this.onScreenInfo.next({resizingAvailable: this._client.canResizeScreen(), screenSize: {width: this._client.display.screenWidth, height: this._client.display.screenHeight}, keyboardLayout: this._client.keyboardLayoutName});
 
             })
             .catch(err => {
@@ -250,6 +250,12 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
             this.onRemoteClipboardData.next({ content: clipboardContent, event: 'received'});
         };
 
+        this._client.keyboardLayoutHandler = (keyboardLayoutName: string) => {
+            this.onKeyboardLayoutChanged.next(keyboardLayoutName);
+        }
+
+        this._client.canChangeKeyboardLayout()
+
         window.addEventListener('resize', this._resizeHandler);
         window.addEventListener('blur', this._blurHandler);
         document.addEventListener('visibilitychange', this._visibilityChangeHandler);
@@ -262,6 +268,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
         this._client.unregisterTracer('screen-resize');
         this._client.unregisterTracer('filter-toggle');
         this._client.clipboardHandler = (clipboardContent: string) => {};
+        this._client.keyboardLayoutHandler = (keyboardLayoutName: string) => {};
 
         window.removeEventListener('resize', this._resizeHandler);
         window.removeEventListener('blur', this._blurHandler);

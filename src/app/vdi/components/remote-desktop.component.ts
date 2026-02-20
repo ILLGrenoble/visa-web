@@ -27,7 +27,7 @@ import screenfull from 'screenfull';
     // tslint:disable-next-line:component-selector
     selector: 'ngx-remote-desktop',
     template: `
-        <main class="ngx-remote-desktop" [ngClass]="{'ngx-remote-desktop-fullscreen': manager.isFullScreen() }" #container>
+        <main class="ngx-remote-desktop" [ngClass]="{'ngx-remote-desktop-fullscreen': manager.isFullScreen() }" (mousemove)="handleDisplayMouseMove($event)" #container>
             <!-- Toolbar items template -->
             <ng-template #toolbarItems>
                 <ul class="ngx-remote-desktop-toolbar-items">
@@ -44,7 +44,7 @@ import screenfull from 'screenfull';
             </nav>
             <!-- End normal toolbar -->
             <!-- Full screen toolbar -->
-            <nav class="ngx-remote-desktop-toolbar ngx-remote-desktop-toolbar-fullscreen"  [hidden]="!manager.isConnected()" (click)="handleToolbarClicked()" *ngIf="manager.isFullScreen()"
+            <nav class="ngx-remote-desktop-toolbar ngx-remote-desktop-toolbar-fullscreen"  [hidden]="!manager.isConnected()" *ngIf="manager.isFullScreen()"
                  [@toolbarAnimation]="toolbarVisible" #toolbar>
                 <template [ngTemplateOutlet]="toolbarItems"></template>
             </nav>

@@ -47,5 +47,8 @@ export abstract class ClientAdapter {
 
     abstract sendMouseState(mouseState: MouseState, scale: number, scrollLeft: number, scrollTop: number): void;
     abstract sendKeyEvent(pressed: boolean, keysym: number): void;
+    abstract canChangeKeyboardLayout(): boolean;
+    abstract setKeyboardLayout(keyboardLayout: string): void;
+    abstract getKeyboardLayout(): string;
 
 }

@@ -2,7 +2,7 @@ $ngx-remote-desktop-toolbar-background-color: rgba(39, 42, 49, 1.0);
 $ngx-remote-desktop-toolbar-border-color: #131418;
 $ngx-remote-desktop-toolbar-item-color:rgba(255, 255, 255, 0.6);
 $ngx-remote-desktop-toolbar-item-hover-color: rgba(255, 255, 255, 1);
-$ngx-remote-desktop-toolbar-width: 170px;
+$ngx-remote-desktop-toolbar-width: 220px;
 $ngx-remote-desktop-viewport-background-color: #272a31;
 $ngx-remote-desktop-font-family: inherit;
 $ngx-remote-desktop-background-color: #ffffff;
@@ -116,13 +116,13 @@ $ngx-remote-desktop-status-bar-border-color: #131418;
                         flex-direction: row;
                         justify-content: space-between;
                         align-items: center;
-                        padding: 0 8px;
+                        //padding: 0 0 0 8px;
                         width: 100%;
                     }
 
                     &__open-close {
                         filter: invert(85%);
-                        margin: 0 4px 0 8px;
+                        margin: 0 0 0 8px;
                     }
 
                     &__main {

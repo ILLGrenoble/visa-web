@@ -33,6 +33,13 @@ export class KeyboardComponent implements AfterViewInit {
                 private el: ElementRef,
                 private renderer: Renderer2) {
         this.manager = data.manager;
+        const keyboardLayout = this.manager.getKeyboardLayout();
+        if (keyboardLayout) {
+            const layout = this.layouts.find(layout => keyboardLayout.startsWith(layout.id));
+            if (layout) {
+                this.selectedLayout = layout;
+            }
+        }
     }
 
     public onNoClick(): void {

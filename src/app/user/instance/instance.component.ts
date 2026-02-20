@@ -6,7 +6,7 @@ import {
     AccountService,
     AnalyticsService,
     ApplicationState,
-    ConfigService, EventsGateway, GatewayEventSubscriber,
+    ConfigService, Configuration, EventsGateway, GatewayEventSubscriber,
     Instance,
     selectLoggedInUser,
     User
@@ -36,11 +36,8 @@ import {FileManagerComponent} from "./file-manager";
 import {environment} from 'environments/environment';
 import {InstanceDisplayHelper} from "../instance-new";
 
-type ScreenResolutionOption = {
-    width?: number;
-    height?: number;
-    auto?: boolean;
-}
+type ScreenResolutionOption = { width?: number; height?: number; auto?: boolean; }
+type KeyboardLayoutOption = { layout: string; name: string; };
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -66,6 +63,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public stats$;
 
     public screenSizeOptions: ToolbarSelectOption<ScreenResolutionOption>[];
+    public keyboardLayoutOptions: ToolbarSelectOption<string>[];
+    private _keyboardLayouts: KeyboardLayoutOption[];
 
     /**
      * Hot keys
@@ -100,6 +99,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _onScreenInfo$: Subscription;
     private _viewportResize$: Subscription
     private _remoteDesktopResize$: Subscription
+    private _remoteDesktopKeyboardLayout$: Subscription
 
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
@@ -155,6 +155,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
             }
         });
         this.store.select(selectLoggedInUser).subscribe((user: User) => this.user = user);
+
+        this.configurationService.configuration$().pipe(
+            takeUntil(this._destroy$),
+        ).subscribe((configuration: Configuration) => {
+            this._keyboardLayouts = configuration.desktop.keyboardLayouts.map(layout => ({name: layout.name.replace(' keyboard', ''), layout: layout.layout}));
+        })
     }
 
     /**
@@ -300,6 +306,16 @@ export class InstanceComponent implements OnInit, OnDestroy {
         }
     }
 
+    public isKeyboardChangingAvailable(): boolean {
+        return this.instance?.membership.role === 'OWNER' && this.manager?.isKeyboardChangingAvailable()
+    }
+
+    public onKeyboardLayoutSelected(keyboardLayout: string): void {
+        if (this.manager != null) {
+            this.manager.setKeyboardLayout(keyboardLayout);
+        }
+    }
+
     /**
      * Enter into full screen mode
      */
@@ -386,6 +402,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this.handleClipboardData();
         this.bindWindowListeners();
         this.bindScreenResizeHandler();
+        this.bindKeyboardLayoutHandler()
     }
 
     /**
@@ -417,6 +434,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this._remoteDesktopResize$) {
             this._remoteDesktopResize$.unsubscribe();
         }
+        if (this._remoteDesktopKeyboardLayout$) {
+            this._remoteDesktopKeyboardLayout$.unsubscribe();
+        }
         this._clipboardService.stop();
     }
     /**
@@ -440,8 +460,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
         this._onScreenInfo$ = this.manager.onScreenInfo.pipe(
             takeUntil(this._destroy$),
             filter(value => !!value),
-        ).subscribe(({width, height}) => {
-            this.buildScreenSizeOptions(width, height);
+        ).subscribe(({screenSize, keyboardLayout}) => {
+            this.buildScreenSizeOptions(screenSize.width, screenSize.height);
+            this.buildKeyboardLayoutOptions(keyboardLayout);
         })
     }
 
@@ -464,6 +485,21 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.manager.isScreenResizingAvailable()) {
             this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
         }
+    }
+
+    private buildKeyboardLayoutOptions(currentKeyboardLayout: string): void {
+        const baseKeyboardLayouts = this._keyboardLayouts.map(keyboardLayoutOption => {
+            return {label: keyboardLayoutOption.name, value: keyboardLayoutOption.layout, selected: keyboardLayoutOption.layout === currentKeyboardLayout, hidden: false}
+        });
+
+
+        if (this._keyboardLayouts.find(keyboardLayoutOption => keyboardLayoutOption.layout === currentKeyboardLayout)) {
+            this.keyboardLayoutOptions = baseKeyboardLayouts;
+        } else {
+            this.keyboardLayoutOptions = [{label: currentKeyboardLayout, value: currentKeyboardLayout, selected: true, hidden: true}, ... baseKeyboardLayouts];
+        }
+
+        this.keyboardLayoutOptions.sort((a,b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0))
     }
 
     private handleThumbnailGeneration() {
@@ -630,7 +666,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     private bindScreenResizeHandler(): void {
         this._remoteDesktopResize$ = this.manager.onScreenResized.pipe(
-            takeUntil(this._destroy$)
+            takeUntil(this._destroy$),
+            filter(data => !!data),
         ).subscribe(remoteDesktopResolution => {
             const viewportSize = this.manager.viewportSize$.getValue();
             if (remoteDesktopResolution.width != viewportSize.width || remoteDesktopResolution.height != viewportSize.height) {
@@ -643,7 +680,16 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 // Rebuild screen resizing options
                 this.buildScreenSizeOptions(remoteDesktopResolution.width, remoteDesktopResolution.height);
             }
-        })
+        });
+    }
+
+    private bindKeyboardLayoutHandler(): void {
+        this._remoteDesktopKeyboardLayout$ = this.manager.onKeyboardLayoutChanged.pipe(
+            takeUntil(this._destroy$),
+            filter(data => !!data),
+        ).subscribe(keyboardLayout => {
+            this.buildKeyboardLayoutOptions(keyboardLayout);
+        });
     }
 
     private bindEventGatewayListeners(): void {

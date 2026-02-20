@@ -124,4 +124,16 @@ export class WebXClientAdapter extends ClientAdapter {
         this._client.sendMouse(new WebXMouseState(mouseState));
     }
 
+    canChangeKeyboardLayout(): boolean {
+        return this._client.canChangeKeyboardLayout();
+    }
+
+    getKeyboardLayout(): string {
+        return this._client.keyboardLayoutName;
+    }
+
+    setKeyboardLayout(keyboardLayout: string): void {
+        this._client.setKeyboardLayout(keyboardLayout);
+    }
+
 }

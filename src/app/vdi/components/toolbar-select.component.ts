@@ -85,8 +85,6 @@ export class ToolbarSelectComponent {
 
     protected toggleOptions(event: MouseEvent): void {
         this.optionsVisible = !this.optionsVisible;
-        event.preventDefault();
-        event.stopPropagation();
     }
 
     protected onSelect(event: MouseEvent, option: ToolbarSelectOption<any>): void {
@@ -97,7 +95,5 @@ export class ToolbarSelectComponent {
             option.selected = true;
             this._onSelect$.next(option.value);
         }
-        event.preventDefault();
-        event.stopPropagation();
     }
 }
