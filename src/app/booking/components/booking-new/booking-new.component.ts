@@ -60,7 +60,7 @@ export class BookingNewComponent implements OnInit {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _form: FormGroup = new FormGroup({
         startDate: new FormControl(null, Validators.required),
-        endDate: new FormControl({value: null, disabled: true}, Validators.required),
+        endDate: new FormControl(null, Validators.required),
         flavourRequests: this._formBuilder.array([], [Validators.required, minLengthArray(1)]),
         name: new FormControl(null, Validators.required),
         comments: new FormControl(null, Validators.required),
@@ -178,17 +178,13 @@ export class BookingNewComponent implements OnInit {
                 return f1.memory - f2.memory;
             });
         });
+        this._calculateFlavourAvailabilities();
 
         this._startDate.pipe(
-            filter(startDate => !!startDate),
             combineLatestWith(this._endDate),
             takeUntil(this._destroy$),
         ).subscribe(([startDate, endDate]) => {
-            startDate == null ? this._form.get('endDate').disable() : this._form.get('endDate').enable();
-
-            if (startDate && endDate) {
-                this._calculateFlavourAvailabilities();
-            }
+            this._calculateFlavourAvailabilities();
         });
 
     }
@@ -332,8 +328,8 @@ export class BookingNewComponent implements OnInit {
         });
 
         const input: BookingRequestInput = {
-            startDate: toDateString(this.startDate),
-            endDate: toDateString(this.endDate),
+            startDate: toDateString(this.startDate == null ? new Date() : this.startDate),
+            endDate: toDateString(this.endDate == null ? new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000) : this.endDate),
             name: name ? name : 'temporary booking request',
             comments : comments ? comments : 'work in progress',
             flavourRequests: flavourRequestInputs,
@@ -371,7 +367,6 @@ export class BookingNewComponent implements OnInit {
             let available = true;
             let message = null;
             if (!this.datesValid) {
-                message = 'Selected dates are invalid';
                 available = false;
             } else if (maxInstances == null) {
                 message = 'Unable to determine availability of flavour';

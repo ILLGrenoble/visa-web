@@ -68,13 +68,13 @@
                             <div class="content">
                                 <div class="clr-row">
                                     <div class="clr-col-5">
-                                        <clr-date-container>
+                                        <clr-date-container class="booking-date-select">
                                             <label for="startDate" class="clr-col-md-5">Reservation period from</label>
                                             <input id="startDate" [(clrDate)]="startDate" type="date" formControlName="startDate" [min]="minStartDate" [max]="maxStartDate" class="clr-col-md-7">
                                         </clr-date-container>
                                     </div>
-                                    <div [hidden]="startDate == null" class="clr-col-7">
-                                        <clr-date-container>
+                                    <div class="clr-col-7">
+                                        <clr-date-container class="booking-date-select">
                                             <label for="endDate" class="clr-col-md-1">to</label>
                                             <input id="endDate" [(clrDate)]="endDate" type="date" formControlName="endDate" [min]="minEndDate">
                                         </clr-date-container>
@@ -84,11 +84,16 @@
                                             Selected reservation period is for {{reservationDurationDays}} days.
                                         </p>
                                     </div>
+                                    <div class="clr-col-12" *ngIf="!datesValid" style="margin-top: 24px;">
+                                        <p>
+                                            Please select the dates of the reservation period.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="section" *ngIf="datesValid">
+                        <div class="section">
                             <div class="clr-row">
                                 <div class="clr-col-12">
                                     <div class="title">
@@ -99,15 +104,18 @@
                                 </div>
                                 <div class="clr-col-12">
                                     <div class="content">
-                                        <p>
+                                        <p *ngIf="datesValid">
                                             Please select the resources you'd like to reserve. Flavours that you are allowed to reserve are shown below. Click on them to add them to your request.
+                                        </p>
+                                        <p *ngIf="!datesValid">
+                                            After selecting your reservation period you can define the resources you'd like to reserve.
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="flavours">
-                                <div *ngFor="let flavourLimit of flavourLimits" (click)="toggleSelectFlavour(flavourLimit)" class="flavour-box" [ngClass]="{'flavour-box--selected': isFlavourSelected(flavourLimit.flavour), 'flavour-box--disabled': !flavourLimit.available}">
+                                <div *ngFor="let flavourLimit of flavourLimits" (click)="toggleSelectFlavour(flavourLimit)" class="flavour-box" [ngClass]="{'flavour-box--selected': datesValid && isFlavourSelected(flavourLimit.flavour), 'flavour-box--disabled': !(datesValid && flavourLimit.available)}">
                                     <button class="flavour-button">
                                         <div class="flavour-button__detail">
                                             {{getCpuView(flavourLimit.flavour)}}
@@ -130,11 +138,11 @@
                                         </div>
                                     </div>
                                     <div class="flavour-availability">
-                                        <div>
+                                        <div *ngIf="datesValid">
                                             {{flavourLimit.maxInstances}} instance{{flavourLimit.maxInstances > 1 ? 's' : ''}} available
                                         </div>
                                     </div>
-                                    <div class="flavour-unavailable">
+                                    <div class="flavour-unavailable" *ngIf="datesValid">
                                         <div *ngIf="!flavourLimit.available" class="unavailable-text">
                                             <div class="unavailable-text-sub">
                                                 {{flavourLimit.message}}

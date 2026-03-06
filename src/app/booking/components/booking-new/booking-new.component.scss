@@ -53,6 +53,9 @@
     }
 }
 
+.booking-date-select input::placeholder {
+    color: #dfdfdf;
+}
 
 .flavours {
     width: 100%;
@@ -66,7 +69,8 @@
         margin-bottom: 0.5rem;
 
         $primary-color: #0747a6;
-        $disabled-color: #dfdfdf;
+        $lighter-color: #dfdfdf;
+        $disabled-color: #e9e9e9;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -82,9 +86,9 @@
 
         .flavour-details {
             text-align: center;
-            border-left: 1px solid $disabled-color;
-            border-right: 1px solid $disabled-color;
-            border-bottom: 1px solid $disabled-color;
+            border-left: 1px solid $lighter-color;
+            border-right: 1px solid $lighter-color;
+            border-bottom: 1px solid $lighter-color;
             font-size: 13px;
             font-weight: 400;
             outline: 0;
@@ -96,7 +100,7 @@
 
         .flavour-button {
             color: inherit;
-            border: 1px solid $disabled-color;
+            border: 1px solid $lighter-color;
 
             &__detail {
                 font-size: 16px;
@@ -130,9 +134,9 @@
 
         .flavour-availability {
             height: 2.0rem;
-            border-left: 1px solid $disabled-color;
-            border-right: 1px solid $disabled-color;
-            border-bottom: 1px solid $disabled-color;
+            border-left: 1px solid $lighter-color;
+            border-right: 1px solid $lighter-color;
+            border-bottom: 1px solid $lighter-color;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -164,23 +168,23 @@
         }
 
         &--disabled {
-            color: #d0d0d0;
+            color: $disabled-color;
             cursor: default;
 
             .flavour-button {
-                border: 1px solid #d0d0d0;
+                border: 1px solid $disabled-color;
             }
 
             .flavour-details {
-                border-left: 1px solid #d0d0d0;
-                border-right: 1px solid #d0d0d0;
-                border-bottom: 1px solid #d0d0d0;
+                border-left: 1px solid $disabled-color;
+                border-right: 1px solid $disabled-color;
+                border-bottom: 1px solid $disabled-color;
             }
 
             .flavour-availability {
-                border-left: 1px solid #d0d0d0;
-                border-right: 1px solid #d0d0d0;
-                border-bottom: 1px solid #d0d0d0;
+                border-left: 1px solid $disabled-color;
+                border-right: 1px solid $disabled-color;
+                border-bottom: 1px solid $disabled-color;
             }
         }
 
