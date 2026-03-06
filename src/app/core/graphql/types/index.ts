@@ -403,7 +403,6 @@ export type BookingFlavourRoleConfiguration = {
 export type BookingConfiguration = {
     enabled: Scalars['Boolean'];
     maxInstancesPerReservation?: Maybe<Scalars['Int']>;
-    maxDaysInAdvance?: Maybe<Scalars['Int']>;
     maxDaysReservation?: Maybe<Scalars['Int']>;
     cloudId: Scalars['Int'];
     flavours: Array<Flavour>;
@@ -421,7 +420,6 @@ export type BookingFlavourRoleConfigurationInput = {
 export type BookingConfigurationInput = {
     enabled: Scalars['Boolean'];
     maxInstancesPerReservation?: Maybe<Scalars['Int']>;
-    maxDaysInAdvance?: Maybe<Scalars['Int']>;
     maxDaysReservation?: Maybe<Scalars['Int']>;
     cloudId: Scalars['Int'];
     flavourIds: Array<Scalars['Int']>;

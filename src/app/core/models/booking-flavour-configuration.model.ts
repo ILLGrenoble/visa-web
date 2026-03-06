@@ -14,9 +14,6 @@ export class BookingFlavourConfiguration {
     @JsonProperty('maxReservationDays', Number)
     private _maxReservationDays: number = undefined;
 
-    @JsonProperty('maxDaysInAdvance', Number)
-    private _maxDaysInAdvance: number = undefined;
-
     get flavour(): Flavour {
         return this._flavour;
     }
@@ -39,13 +36,5 @@ export class BookingFlavourConfiguration {
 
     set maxReservationDays(value: number) {
         this._maxReservationDays = value;
-    }
-
-    get maxDaysInAdvance(): number {
-        return this._maxDaysInAdvance;
-    }
-
-    set maxDaysInAdvance(value: number) {
-        this._maxDaysInAdvance = value;
     }
 }

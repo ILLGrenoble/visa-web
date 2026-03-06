@@ -45,7 +45,6 @@ const minLengthArray = (min: number): ValidatorFn => {
 type BookingFlavourLimit = {
     flavour: Flavour;
     maxInstances: number;
-    maxDaysInAdvance: number;
     maxReservationDays: number;
     available: boolean;
     message?: string;
@@ -75,7 +74,6 @@ export class BookingNewComponent implements OnInit {
     private _bookingFlavourLimits: BookingFlavourLimit[] = [];
 
     private _minStartDate = toDateString(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
-    private _maxStartDateFromConfig: Date;
 
     private _showSubmitModal = false;
     private _sendingRequest = false;
@@ -94,16 +92,7 @@ export class BookingNewComponent implements OnInit {
     }
 
     get maxStartDate(): string {
-        if (this._maxStartDateFromConfig) {
-            if (this.endDate && this.endDate.getTime() < this._maxStartDateFromConfig.getTime()) {
-                return toDateString(this.endDate);
-            } else {
-                return toDateString(this._maxStartDateFromConfig);
-            }
-
-        } else {
-            return this.endDate ? this.endDate.toISOString() : null;
-        }
+        return this.endDate ? this.endDate.toISOString() : null;
     }
 
     get minEndDate(): string {
@@ -188,14 +177,6 @@ export class BookingNewComponent implements OnInit {
                 if (f1.cpu < f2.cpu) return -1;
                 return f1.memory - f2.memory;
             });
-
-            // Get a rough max start date for the reservation
-            const maxStartDateFromConfig = bookingConfig.flavourConfiguration.reduce((acc: number, curr: BookingFlavourConfiguration) => {
-                return acc == null ? curr.maxDaysInAdvance : curr.maxDaysInAdvance == null ? acc : Math.max(curr.maxDaysInAdvance, acc);
-            }, null);
-            if (maxStartDateFromConfig) {
-                this._maxStartDateFromConfig = new Date(new Date().getTime() + maxStartDateFromConfig * 24 * 60 * 60 * 1000);
-            }
         });
 
         this._startDate.pipe(
@@ -382,7 +363,7 @@ export class BookingNewComponent implements OnInit {
             const config = this._bookingConfig.flavourConfiguration.find(config => config.flavour.id === flavour.id);
             const flavourAvailabilitiesFuture = this._flavourAvailabilitiesFutures.find(availabilities => availabilities.flavour.id === flavour.id);
             const availabilities = flavourAvailabilitiesFuture == null ? [] : flavourAvailabilitiesFuture.availabilities;
-            let {maxInstances, maxDaysInAdvance, maxReservationDays} = config;
+            let {maxInstances, maxReservationDays} = config;
             maxInstances = availabilities.reduce((acc: number, curr: FlavourAvailability) => {
                 return acc == null ? curr.availableUnits : Math.min(acc, curr.availableUnits);
             }, maxInstances);
@@ -398,9 +379,6 @@ export class BookingNewComponent implements OnInit {
             } else if (maxInstances === 0) {
                 message = 'Flavour unavailable for chosen dates';
                 available = false;
-            } else if (maxDaysInAdvance != null && this.reservationDaysInAdvance > maxDaysInAdvance) {
-                message = `Reservation must be less than ${maxDaysInAdvance + 1}  days in advance`;
-                available = false;
             } else if (maxReservationDays != null && this.reservationDurationDays > maxReservationDays) {
                 message = `Reservation period must less than ${maxReservationDays + 1} days`;
                 available = false;
@@ -410,7 +388,7 @@ export class BookingNewComponent implements OnInit {
                 this._unselectFlavour(flavour);
             }
 
-            return {flavour, maxInstances, maxDaysInAdvance, maxReservationDays, available, message};
+            return {flavour, maxInstances, maxReservationDays, available, message};
         });
 
         this._revalidateForm(this._form);

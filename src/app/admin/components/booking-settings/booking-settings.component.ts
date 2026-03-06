@@ -37,7 +37,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     private _form: FormGroup = new FormGroup({
         enabled: new FormControl(false, Validators.required),
         maxInstancesPerReservation: new FormControl(null),
-        maxDaysInAdvance: new FormControl(null),
         maxDaysReservation: new FormControl(null),
         roles: new FormControl([]),
         flavours: new FormControl([]),
@@ -235,7 +234,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     }
 
     protected saveSettings(): void {
-        const {enabled, maxInstancesPerReservation, maxDaysInAdvance, maxDaysReservation, roles, flavours, flavoursSettings} = this._form.value;
+        const {enabled, maxInstancesPerReservation, maxDaysReservation, roles, flavours, flavoursSettings} = this._form.value;
 
         const flavourRoleConfigurations = flavoursSettings.flatMap(flavourSettings => {
             const {flavour, roles} = flavourSettings;
@@ -254,7 +253,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             cloudId: this._selectedCloudClient.id,
             enabled,
             maxInstancesPerReservation: maxInstancesPerReservation ? maxInstancesPerReservation : null,
-            maxDaysInAdvance : maxDaysInAdvance ? maxDaysInAdvance : null,
             maxDaysReservation : maxDaysReservation ? maxDaysReservation : null,
             roleIds: (roles || []).map(role => role.id),
             flavourIds: (flavours || []).map(flavour => flavour.id),
@@ -267,7 +265,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                     createOrUpdateBookingConfiguration(input: $input) {
                         enabled
                         maxInstancesPerReservation
-                        maxDaysInAdvance
                         maxDaysReservation
                         cloudId
                         flavours {
@@ -318,7 +315,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                         bookingConfigurationForCloudClient(cloudClientId: $cloudClientId) {
                             enabled
                             maxInstancesPerReservation
-                            maxDaysInAdvance
                             maxDaysReservation
                             cloudId
                             flavours {
@@ -364,7 +360,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         bookingConfiguration = {
             enabled: false,
             maxInstancesPerReservation: null,
-            maxDaysInAdvance: null,
             maxDaysReservation: null,
             roles: [],
             flavours: [],
@@ -392,7 +387,6 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         this._form.reset({
             enabled: bookingConfiguration.enabled,
             maxInstancesPerReservation: bookingConfiguration.maxInstancesPerReservation,
-            maxDaysInAdvance: bookingConfiguration.maxDaysInAdvance,
             maxDaysReservation: bookingConfiguration.maxDaysReservation,
             roles: bookingConfiguration.roles,
             flavours: bookingConfiguration.flavours,
