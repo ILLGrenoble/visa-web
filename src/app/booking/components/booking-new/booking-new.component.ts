@@ -380,7 +380,7 @@ export class BookingNewComponent implements OnInit {
                 message = 'Flavour unavailable for chosen dates';
                 available = false;
             } else if (maxReservationDays != null && this.reservationDurationDays > maxReservationDays) {
-                message = `Reservation period must less than ${maxReservationDays + 1} days`;
+                message = `Reservation period must be less than ${maxReservationDays + 1} days`;
                 available = false;
             }
 
