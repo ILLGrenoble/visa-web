@@ -169,6 +169,16 @@
                             Booking response
                         </div>
                         <div *ngIf="bookingRequest.state === 'CREATED'">
+                            <div class="information-panel booking-request-response-info">
+                                <div class="information-panel-body">
+                                    <div class="information-panel-body-text">
+                                        Before accepting the booking request please ensure that there are sufficient resources available for normal VISA usage
+                                    </div>
+                                    <div class="information-panel-body-text">
+                                        The availability of requested resources cannot be fully guaranteed: always leave a reasonable margin and avoid allocating all resources for a particular flavour.
+                                    </div>
+                                </div>
+                            </div>
                             <form [formGroup]="form" clrForm clrLayout="horizontal">
                                 <dl class="admin-details-list">
                                     <div class="admin-details-list-item">
