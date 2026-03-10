@@ -485,13 +485,19 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.screenSizeOptions.push({label: `${currentWidth}x${currentHeight}`, value: {width: currentWidth, height: currentHeight}, selected: true, hidden: true});
         }
 
-        const autoOption: ScreenResolutionOption = {auto: true};
-        this.screenSizeOptions.unshift({label: 'Auto resize', selected: true, value: autoOption});
-
         if (this.manager.isScreenResizingAvailable()) {
-            // Uncomment to automatically resize after connection
-            // this.onScreenResizeSelected(autoOption);
+            this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
         }
+
+        // const autoOption: ScreenResolutionOption = {auto: true};
+        // // Comment this if automatically resize after connection
+        // // this.screenSizeOptions.unshift({label: 'Auto resize', value: autoOption});
+        //
+        // if (this.manager.isScreenResizingAvailable()) {
+        //     // Uncomment to automatically resize after connection
+        //     this.screenSizeOptions.unshift({label: 'Auto resize', selected: true, value: autoOption});
+        //     this.onScreenResizeSelected(autoOption);
+        // }
     }
 
     private buildKeyboardLayoutOptions(currentKeyboardLayout: string): void {
