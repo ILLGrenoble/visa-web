@@ -393,6 +393,11 @@ export type Message = {
     message: Scalars['String'];
 };
 
+export type BookingRoleConfiguration = {
+    role: Role;
+    autoAccept: Scalars['Boolean'];
+}
+
 export type BookingFlavourRoleConfiguration = {
     flavour: Flavour;
     role?: Maybe<Role>;
@@ -406,7 +411,7 @@ export type BookingConfiguration = {
     maxDaysReservation?: Maybe<Scalars['Int']>;
     cloudId: Scalars['Int'];
     flavours: Array<Flavour>;
-    roles: Array<Role>;
+    roleConfigurations: Array<BookingRoleConfiguration>;
     flavourRoleConfigurations: Array<BookingFlavourRoleConfiguration>;
 };
 
@@ -417,13 +422,18 @@ export type BookingFlavourRoleConfigurationInput = {
     maxDaysReservation?: Maybe<Scalars['Int']>;
 }
 
+export type BookingRoleConfigurationInput = {
+    roleId: Scalars['Int'];
+    autoAccept: Scalars['Boolean'];
+}
+
 export type BookingConfigurationInput = {
     enabled: Scalars['Boolean'];
     maxInstancesPerReservation?: Maybe<Scalars['Int']>;
     maxDaysReservation?: Maybe<Scalars['Int']>;
     cloudId: Scalars['Int'];
     flavourIds: Array<Scalars['Int']>;
-    roleIds: Array<Scalars['Int']>;
+    roleConfigurations: Array<BookingRoleConfigurationInput>;
     flavourRoleConfigurations: Array<BookingFlavourRoleConfigurationInput>;
 };
 

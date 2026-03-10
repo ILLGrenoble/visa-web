@@ -99,6 +99,33 @@
             <div *ngIf="bookingEnabled">
                 <div class="booking-settings-section">
                     <div class="booking-settings-section__title">
+                        Role Settings
+                    </div>
+                    <div class="booking-settings-section__details">
+                        The following settings allow customisation of each individual role that has access to the booking system
+                    </div>
+
+                    <div formArrayName="rolesSettings">
+                        <ng-container *ngFor="let roleControl of rolesSettingsFormArray.controls; let i = index">
+                            <div [formGroupName]="i" class="booking-settings-roles">
+
+                                <div class="booking-settings-role-vertical-label">
+                                    <label>Role</label>
+                                    <div class="value">{{ roleControl.get('role')?.value?.name }}</div>
+                                </div>
+
+                                <clr-input-container class="vertical-label">
+                                    <label [for]="'autoAccept-'+i">Automatically accept requests</label>
+                                    <input type="checkbox" clrInput clrToggle [id]="'autoAccept-'+i" formControlName="autoAccept"/>
+                                </clr-input-container>
+                            </div>
+                        </ng-container>
+
+                    </div>
+                </div>
+
+                <div class="booking-settings-section">
+                    <div class="booking-settings-section__title">
                         Flavour Settings
                     </div>
                     <div class="booking-settings-section__details">
@@ -114,8 +141,8 @@
                                 <div>
                                 </div>
                                 <clr-select-container class="vertical-label">
-                                    <label for="flavour">Flavour</label>
-                                    <select clrSelect id="flavour" formControlName="flavour" [compareWith]="compareFlavour">
+                                    <label [for]="'flavour-'+i">Flavour</label>
+                                    <select clrSelect [id]="'flavour-'+i" formControlName="flavour" [compareWith]="compareFlavour">
                                         <option *ngFor="let flavour of flavoursForConfig" [ngValue]="flavour">
                                             {{flavour?.name}}
                                         </option>
@@ -133,9 +160,9 @@
                                         <div [formGroupName]="j">
                                             <div class="booking-settings-flavours">
                                                 <clr-select-container class="vertical-label">
-                                                    <label for="flavourRole">Role</label>
-                                                    <select clrSelect id="flavourRole" formControlName="role" [compareWith]="compareRole">
-                                                        <option *ngFor="let role of rolesForFlavourConfig" [ngValue]="role">
+                                                    <label [for]="'flavourRole-'+i+'-'+j">Role</label>
+                                                    <select clrSelect [id]="'flavourRole-'+i+'-'+j" formControlName="role" [compareWith]="compareRole">
+                                                        <option *ngFor="let role of availableRoles" [ngValue]="role">
                                                             {{role?.name}}
                                                         </option>
                                                     </select>
@@ -148,14 +175,14 @@
                                                 </clr-select-container>
 
                                                 <clr-input-container class="vertical-label">
-                                                    <label for="flavourMaxInstances">Maximum number of instances</label>
-                                                    <input id="flavourMaxInstances" clrInput formControlName="maxInstancesPerReservation" />
+                                                    <label [for]="'flavourMaxInstances-'+i+'-'+j">Maximum number of instances</label>
+                                                    <input [id]="'flavourMaxInstances-'+i+'-'+j" clrInput formControlName="maxInstancesPerReservation" />
                                                     <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
                                                 </clr-input-container>
 
                                                 <clr-input-container class="vertical-label">
-                                                    <label for="flavourMaxDaysReservation">Maximum reservation period in days</label>
-                                                    <input id="flavourMaxDaysReservation" clrInput formControlName="maxDaysReservation" />
+                                                    <label [for]="'flavourMaxDaysReservation-'+i+'-'+j">Maximum reservation period in days</label>
+                                                    <input [id]="'flavourMaxDaysReservation-'+i+'-'+j" clrInput formControlName="maxDaysReservation" />
                                                     <clr-control-helper>Leave empty to use general settings value</clr-control-helper>
                                                 </clr-input-container>
 

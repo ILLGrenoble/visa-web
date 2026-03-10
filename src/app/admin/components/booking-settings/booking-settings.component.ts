@@ -18,7 +18,7 @@ import {
     Flavour,
     CloudClient,
     BookingFlavourRoleConfiguration,
-     BookingConfiguration
+    BookingConfiguration, BookingConfigurationInput
 } from "../../../core/graphql";
 import gql from "graphql-tag";
 import {map, takeUntil, tap} from "rxjs/operators";
@@ -39,13 +39,14 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         maxInstancesPerReservation: new FormControl(null),
         maxDaysReservation: new FormControl(null),
         roles: new FormControl([]),
+        rolesSettings: this._formBuilder.array([]),
         flavours: new FormControl([]),
         flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
     });
 
     private _allUserRole = {id: null, name: 'ALL USERS', description: '', expiresAt: null};
     private _roles: Role[];
-    private _rolesForFlavourConfig: Role[] = [];
+    private _availableRoles: Role[] = [];
     private _allFlavours: Flavour[];
     private _flavours: Flavour[];
     private _flavoursForConfig: Flavour[] = [];
@@ -81,8 +82,8 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         return this._roles;
     }
 
-    get rolesForFlavourConfig(): Role[] {
-        return this._rolesForFlavourConfig;
+    get availableRoles(): Role[] {
+        return this._availableRoles;
     }
 
     get flavours(): Flavour[] {
@@ -95,6 +96,10 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
     get bookingEnabled(): boolean {
         return this._form.controls.enabled.value;
+    }
+
+    get rolesSettingsFormArray(): FormArray {
+        return this._form.get('rolesSettings') as FormArray;
     }
 
     get flavoursFormArray(): FormArray {
@@ -156,6 +161,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
         this._form.get('roles').valueChanges.subscribe(() => {
             this._updateRolesForFlavourConfig();
+            this._updateRolesSettings();
             this._revalidateForm(this.flavoursFormArray);
         });
 
@@ -234,7 +240,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
     }
 
     protected saveSettings(): void {
-        const {enabled, maxInstancesPerReservation, maxDaysReservation, roles, flavours, flavoursSettings} = this._form.value;
+        const {enabled, maxInstancesPerReservation, maxDaysReservation, rolesSettings, flavours, flavoursSettings} = this._form.value;
 
         const flavourRoleConfigurations = flavoursSettings.flatMap(flavourSettings => {
             const {flavour, roles} = flavourSettings;
@@ -249,15 +255,23 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             })
         });
 
+        const roleConfigurations = rolesSettings.map(roleSettings => {
+            const {role, autoAccept} = roleSettings;
+            return {
+                roleId: role.id,
+                autoAccept,
+            };
+        });
+
         const input = {
             cloudId: this._selectedCloudClient.id,
             enabled,
             maxInstancesPerReservation: maxInstancesPerReservation ? maxInstancesPerReservation : null,
             maxDaysReservation : maxDaysReservation ? maxDaysReservation : null,
-            roleIds: (roles || []).map(role => role.id),
+            roleConfigurations,
             flavourIds: (flavours || []).map(flavour => flavour.id),
             flavourRoleConfigurations
-        }
+        } as BookingConfigurationInput;
 
         this._apollo.mutate<any>({
             mutation: gql`
@@ -271,9 +285,12 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                             id
                             name
                         }
-                        roles {
-                            id
-                            name
+                        roleConfigurations {
+                            role {
+                                id
+                                name
+                            }
+                            autoAccept
                         }
                         flavourRoleConfigurations {
                             flavour {
@@ -321,9 +338,12 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                                 id
                                 name
                             }
-                            roles {
-                                id
-                                name
+                            roleConfigurations {
+                                role {
+                                    id
+                                    name
+                                }
+                                autoAccept
                             }
                             flavourRoleConfigurations {
                                 flavour {
@@ -361,7 +381,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             enabled: false,
             maxInstancesPerReservation: null,
             maxDaysReservation: null,
-            roles: [],
+            roleConfigurations: [],
             flavours: [],
             flavourRoleConfigurations: [],
             ...bookingConfiguration,
@@ -384,19 +404,28 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
         }, []);
 
+        const roles = bookingConfiguration.roleConfigurations.map(roleConfiguration => roleConfiguration.role);
+        const rolesSettings = bookingConfiguration.roleConfigurations.map(roleConfiguration => this._createRoleSettingsGroup(roleConfiguration.role, roleConfiguration.autoAccept));
+
         this._form.reset({
             enabled: bookingConfiguration.enabled,
             maxInstancesPerReservation: bookingConfiguration.maxInstancesPerReservation,
             maxDaysReservation: bookingConfiguration.maxDaysReservation,
-            roles: bookingConfiguration.roles,
+            roles: roles,
             flavours: bookingConfiguration.flavours,
+            rolesSettings: this._formBuilder.array([]),
             flavoursSettings: this._formBuilder.array([], (control) => this._flavoursValidator(control)),
         });
-        this.flavoursFormArray.clear();
 
+        this.flavoursFormArray.clear();
         flavoursSettings.forEach(flavourSetting => {
             this.flavoursFormArray.push(flavourSetting);
         });
+
+        this.rolesSettingsFormArray.clear();
+        rolesSettings.forEach(roleSetting => {
+            this.rolesSettingsFormArray.push(roleSetting);
+        })
 
         this._updateRolesForFlavourConfig();
         this._updateFlavoursForConfig();
@@ -412,18 +441,44 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
 
     private _createFlavourRoleSettingsGroup(role?: Role, maxInstancesPerReservation?: number, maxDaysReservation?: number): FormGroup {
         return this._formBuilder.group({
-            role: [role, [Validators.required, (control) => this._flavourRoleConfigRoleValidator(control)]],
+            role: [role, [Validators.required, (control) => this._roleIsAvailableValidator(control)]],
             maxInstancesPerReservation: [maxInstancesPerReservation],
             maxDaysReservation: [maxDaysReservation],
         });
     }
 
+    private _createRoleSettingsGroup(role: Role, autoAccept: boolean): FormGroup {
+        return this._formBuilder.group({
+            role: [role, [Validators.required, (control) => this._roleIsAvailableValidator(control)]],
+            autoAccept: [autoAccept, [Validators.required]],
+        });
+    }
+
+    private _updateRolesSettings(): void {
+        const rolesSettings = this._form.get('rolesSettings').value || [];
+        const selectedRoles = this._form.get('roles').value || [] as Role[];
+        const selectedRoleIds = selectedRoles.map(role => role.id);
+        const defunctRolesSettingsIndices = rolesSettings.map((roleSetting, index) => {
+            return selectedRoleIds.includes(roleSetting.role.id) ? -1 : index
+        }).filter(index => index != -1);
+        const missingRolesSettingsRoles = selectedRoles.filter(role => rolesSettings.find(roleSetting => roleSetting.role.id == role.id) == null);
+
+        for (const index of defunctRolesSettingsIndices) {
+            this.rolesSettingsFormArray.removeAt(index);
+        }
+
+        for (const role of missingRolesSettingsRoles) {
+            const roleSetting = this._createRoleSettingsGroup(role, false);
+            this.rolesSettingsFormArray.push(roleSetting);
+        }
+    }
+
     private _updateRolesForFlavourConfig(): void {
         const selectedRoles = this._form.get('roles').value || [] as Role[];
         if (selectedRoles.length == 0) {
-            this._rolesForFlavourConfig = [null, this._allUserRole, ...this._roles];
+            this._availableRoles = [null, this._allUserRole, ...this._roles];
         } else {
-            this._rolesForFlavourConfig = [null, ...selectedRoles];
+            this._availableRoles = [null, ...selectedRoles];
         }
     }
 
@@ -444,12 +499,12 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
         return this._flavoursForConfig.filter(flavour => !!flavour).map(flavour => flavour.id).includes(flavour?.id) ? null : {flavourUnavailable: true};
     }
 
-    private _flavourRoleConfigRoleValidator(control: AbstractControl): ValidationErrors | null {
+    private _roleIsAvailableValidator(control: AbstractControl): ValidationErrors | null {
         const role = control.value as Role;
         if (role == null) {
             return {roleIsNull: true};
         }
-        return this._rolesForFlavourConfig.filter(role => !!role).map(role => role.id).includes(role?.id) ? null : {roleUnavailable: true};
+        return this._availableRoles.filter(role => !!role).map(role => role.id).includes(role?.id) ? null : {roleUnavailable: true};
     }
 
     private _flavoursValidator(control: AbstractControl): ValidationErrors | null {
