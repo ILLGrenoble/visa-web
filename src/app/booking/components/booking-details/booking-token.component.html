@@ -71,9 +71,15 @@
                                 {{instance.name}}
                             </div>
                         </div>
-                        <div class="booking-token-instance-assigned-image">
-                            {{instance.plan.image.name}}
+                        <div class="booking-token-instance-access">
+                            <button class="booking-token-instance-access-btn" [routerLink]="['/instances', instance.uid]"
+                                    [disabled]="!canConnect"><clr-icon shape="display" class="is-solid"></clr-icon> Connect
+                            </button>
                         </div>
+
+<!--                        <div class="booking-token-instance-assigned-image">-->
+<!--                            {{instance.plan.image.name}}-->
+<!--                        </div>-->
                     </div>
                 </div>
             </div>

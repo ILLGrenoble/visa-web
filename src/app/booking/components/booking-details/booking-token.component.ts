@@ -1,5 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ApplicationState, BookingToken, BookingTokenInstance, selectLoggedInUser, User} from "../../../core";
+import {
+    AccountService,
+    ApplicationState,
+    BookingToken,
+    BookingTokenInstance,
+    selectLoggedInUser,
+    User
+} from "../../../core";
 import {FormGroup} from "@angular/forms";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs";
@@ -18,6 +25,8 @@ export class BookingTokenComponent implements OnInit {
 
     private _user$: Observable<User>;
     private _user: User;
+    private _canConnect = false;
+
 
     get token(): BookingToken {
         return this._token;
@@ -50,7 +59,12 @@ export class BookingTokenComponent implements OnInit {
         return this._token.instance;
     }
 
-    constructor(store: Store<ApplicationState>) {
+    get canConnect(): boolean {
+        return this._canConnect;
+    }
+
+    constructor(store: Store<ApplicationState>,
+                private _accountService: AccountService) {
         this._user$ = store.select(selectLoggedInUser);
     }
 
@@ -58,6 +72,7 @@ export class BookingTokenComponent implements OnInit {
     public ngOnInit(): void {
         this._user$.pipe(filter((user) => user != null)).subscribe((user) => {
             this._user = user;
+            this._updateCanConnect();
         });
     }
 
@@ -71,6 +86,31 @@ export class BookingTokenComponent implements OnInit {
         }
         const assignedUser: User = this._form.value.owner;
         return !(assignedUser == null || this._user.id != assignedUser.id);
+    }
+
+    private _updateCanConnect(): void {
+        if (this._token.instance == null) {
+            this._canConnect = false;
+        }
+
+        const instance = this._token.instance;
+
+        if (instance != null && ['ACTIVE', 'PARTIALLY_ACTIVE', 'ACTIVE_MIGRATING'].includes(instance.state)) {
+            if (instance.membership.role === 'OWNER') {
+                this._canConnect = true;
+
+            } else if (instance.canConnectWhileOwnerAway) {
+                this._canConnect = true;
+
+            } else {
+                this._accountService.getSessionMembersForInstance(instance).subscribe((sessionMembers) => {
+                    this._canConnect = sessionMembers.length > 0;
+                });
+            }
+
+        } else {
+            this._canConnect = false;
+        }
     }
 
 }

@@ -150,7 +150,7 @@ export class AccountService {
         );
     }
 
-    public getSessionMembersForInstance(instance: Instance): Observable<InstanceSessionMember[]> {
+    public getSessionMembersForInstance(instance: { uid: string }): Observable<InstanceSessionMember[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/sessions/active/members`;
         return this.http.get<Response<InstanceSessionMember[]>>(url).pipe(

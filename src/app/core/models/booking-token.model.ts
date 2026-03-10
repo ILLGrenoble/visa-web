@@ -4,8 +4,6 @@ import {User} from "./user.model";
 import {BookingRequestSimple} from "./booking-request-simple.model";
 import {Plan} from "./plan.model";
 import {Member} from "./member.model";
-import {Experiment} from "./experiment.model";
-import {Protocol} from "./protocol.model";
 
 @JsonObject('BookingTokenInstance')
 export class BookingTokenInstance {
@@ -28,6 +26,14 @@ export class BookingTokenInstance {
     @JsonProperty('state', String)
     private _state: string = undefined;
 
+    @JsonProperty('membership', Member)
+    private _membership?: Member = undefined;
+
+    @JsonProperty('canConnectWhileOwnerAway', Boolean, true)
+    private _canConnectWhileOwnerAway: boolean = undefined;
+
+    @JsonProperty('unrestrictedAccess', Boolean, true)
+    private _unrestrictedAccess: boolean = undefined;
 
     get id(): number {
         return this._id;
@@ -75,6 +81,30 @@ export class BookingTokenInstance {
 
     set state(value: string) {
         this._state = value;
+    }
+
+    get membership(): Member {
+        return this._membership;
+    }
+
+    set membership(value: Member) {
+        this._membership = value;
+    }
+
+    get canConnectWhileOwnerAway(): boolean {
+        return this._canConnectWhileOwnerAway;
+    }
+
+    set canConnectWhileOwnerAway(value: boolean) {
+        this._canConnectWhileOwnerAway = value;
+    }
+
+    get unrestrictedAccess(): boolean {
+        return this._unrestrictedAccess;
+    }
+
+    set unrestrictedAccess(value: boolean) {
+        this._unrestrictedAccess = value;
     }
 }
 
