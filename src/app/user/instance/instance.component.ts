@@ -283,9 +283,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
 
     public onScreenResizeSelected(value: ScreenResolutionOption): void {
         if (value.auto && this._viewportResize$ == null) {
-            const screenSize = this.manager.viewportSize$.getValue();
-            this.manager.resizeScreen(screenSize);
             this.manager.setScaleMode(ScaleMode.Scaled);
+
+            const screenSize = this.manager.viewportSize$.getValue();
+            if (screenSize) {
+                this.manager.resizeScreen(screenSize);
+            }
 
             this._viewportResize$ = this.manager.viewportSize$.pipe(
                 takeUntil(this._destroy$),
@@ -482,8 +485,12 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.screenSizeOptions.push({label: `${currentWidth}x${currentHeight}`, value: {width: currentWidth, height: currentHeight}, selected: true, hidden: true});
         }
 
+        const autoOption: ScreenResolutionOption = {auto: true};
+        this.screenSizeOptions.unshift({label: 'Auto resize', selected: true, value: autoOption});
+
         if (this.manager.isScreenResizingAvailable()) {
-            this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
+            // Uncomment to automatically resize after connection
+            // this.onScreenResizeSelected(autoOption);
         }
     }
 
