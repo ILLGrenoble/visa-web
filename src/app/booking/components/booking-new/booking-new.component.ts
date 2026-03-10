@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {
     AbstractControl, FormArray,
     FormBuilder,
@@ -9,18 +9,26 @@ import {
     Validators
 } from "@angular/forms";
 import {
-    ApplicationState, BookingFlavourConfiguration, BookingFlavourRequestInput,
+    ApplicationState, BookingFlavourConfiguration, BookingFlavourRequestInput, BookingRequest,
     BookingRequestInput,
     BookingService,
     BookingUserConfiguration,
     Flavour, FlavourAvailabilitiesFuture, FlavourAvailability,
     selectUserBookingConfiguration
 } from "../../../core";
-import {combineLatestWith, distinctUntilChanged, filter, take, takeUntil} from "rxjs/operators";
+import {
+    combineLatestWith,
+    distinctUntilChanged,
+    filter,
+    map,
+    switchMap,
+    take,
+    takeUntil,
+} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {NotifierService} from "angular-notifier";
-import {Router} from "@angular/router";
-import {BehaviorSubject, Subject} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
+import {BehaviorSubject, config, forkJoin, of, Subject} from "rxjs";
 import {Title} from "@angular/platform-browser";
 
 const toDateString = (date: Date): string => {
@@ -31,6 +39,16 @@ const toDateString = (date: Date): string => {
     const m = (date.getMonth() + 1).toString().padStart(2, '0');
     const y = date.getFullYear();
     return `${y}-${m}-${d}`;
+}
+
+const toFormDateString = (date: Date): string => {
+    if (date == null) {
+        return null;
+    }
+    const d = date.getDate().toString().padStart(2, '0');
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}/${m}/${y}`;
 }
 
 const minLengthArray = (min: number): ValidatorFn => {
@@ -59,6 +77,7 @@ export class BookingNewComponent implements OnInit {
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _form: FormGroup = new FormGroup({
+        uid: new FormControl(null),
         startDate: new FormControl(null, Validators.required),
         endDate: new FormControl(null, Validators.required),
         flavourRequests: this._formBuilder.array([], [Validators.required, minLengthArray(1)]),
@@ -78,6 +97,7 @@ export class BookingNewComponent implements OnInit {
     private _showSubmitModal = false;
     private _sendingRequest = false;
     private _requestErrors: string[] = null;
+    private _originalName: string;
 
     get form(): FormGroup {
         return this._form;
@@ -134,13 +154,6 @@ export class BookingNewComponent implements OnInit {
         return 0;
     }
 
-    get reservationDaysInAdvance(): number {
-        if (this.startDate != null) {
-            return 1 + Math.floor((this.startDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
-        }
-        return 0;
-    }
-
     get showSubmitModal(): boolean {
         return this._showSubmitModal;
     }
@@ -157,36 +170,57 @@ export class BookingNewComponent implements OnInit {
         return this._requestErrors;
     }
 
+    get originalName(): string {
+        return this._originalName;
+    }
+
     constructor(private _formBuilder: FormBuilder,
                 private _store: Store<ApplicationState>,
                 private _notifierService: NotifierService,
+                private _route: ActivatedRoute,
                 private _router: Router,
                 private _bookingService: BookingService,
                 private _titleService: Title) {
     }
 
     ngOnInit(): void {
-        this._titleService.setTitle(`New booking | VISA`);
-        this._store.select(selectUserBookingConfiguration).pipe(
-            filter(bookingConfig => !!bookingConfig),
-            take(1)
-        ).subscribe(bookingConfig => {
+        forkJoin({
+            bookingRequest: this._route.params.pipe(
+                take(1),
+                map(params => params['uid'] as string),
+                switchMap(uid => {
+                    return uid == null ? of(null) : this._bookingService.getBookingRequest(uid);
+                })
+            ),
+            bookingConfig: this._store.select(selectUserBookingConfiguration).pipe(
+                filter(bookingConfig => !!bookingConfig),
+                take(1)
+            )
+        }).subscribe(({bookingRequest, bookingConfig}) => {
+            if (bookingRequest == null) {
+                this._titleService.setTitle(`New booking | VISA`);
+            } else {
+                this._titleService.setTitle(`Modify booking | VISA`);
+                this._originalName = bookingRequest.name;
+            }
+            this._createForm(bookingRequest);
+
             this._bookingConfig = bookingConfig;
             this._flavours = bookingConfig.flavourConfiguration.map(config => config.flavour).sort((f1: Flavour, f2: Flavour) => {
                 if (f1.cpu > f2.cpu) return 1;
                 if (f1.cpu < f2.cpu) return -1;
                 return f1.memory - f2.memory;
             });
-        });
-        this._calculateFlavourAvailabilities();
 
-        this._startDate.pipe(
-            combineLatestWith(this._endDate),
-            takeUntil(this._destroy$),
-        ).subscribe(([startDate, endDate]) => {
             this._calculateFlavourAvailabilities();
-        });
 
+            this._startDate.pipe(
+                combineLatestWith(this._endDate),
+                takeUntil(this._destroy$),
+            ).subscribe(([startDate, endDate]) => {
+                this._calculateFlavourAvailabilities();
+            });
+        });
     }
 
     protected toggleSelectFlavour(flavourLimit: BookingFlavourLimit): void {
@@ -199,20 +233,21 @@ export class BookingNewComponent implements OnInit {
 
         } else {
             this._unselectFlavour(flavour);
+            this._calculateFlavourAvailabilities();
         }
     }
 
     protected isFlavourSelected(flavour: Flavour): boolean {
         const {flavourRequests} = this._form.value;
-        return flavourRequests.find(flavourRequest => flavourRequest.flavour === flavour);
+        return flavourRequests.find(flavourRequest => flavourRequest.flavour.id === flavour.id);
     }
 
-    protected createBookingRequest(): void {
+    protected createOrUpdateBookingRequest(): void {
         this._showSubmitModal = true;
         this._sendingRequest = true;
         this._requestErrors = null;
 
-        const {name, comments, flavourRequests} = this._form.value;
+        const {uid, name, comments, flavourRequests} = this._form.value;
 
         const flavourRequestInputs = flavourRequests.map(flavourRequest => {
             const {flavour, quantity} = flavourRequest;
@@ -220,6 +255,7 @@ export class BookingNewComponent implements OnInit {
         });
 
         const input: BookingRequestInput = {
+            uid,
             startDate: toDateString(this.startDate),
             endDate: toDateString(this.endDate),
             name,
@@ -227,7 +263,7 @@ export class BookingNewComponent implements OnInit {
             flavourRequests: flavourRequestInputs,
         }
 
-        this._bookingService.createBookingRequest(input).subscribe({
+        this._bookingService.createOrUpdateBookingRequest(input).subscribe({
             next: ({data, errors}) => {
                 this._sendingRequest = false;
                 if (errors) {
@@ -262,10 +298,35 @@ export class BookingNewComponent implements OnInit {
         return this._bookingFlavourLimits.find(limit => limit.flavour.id === flavour.id)?.maxInstances;
     }
 
-    private _createFlavourRequestFormGroup(flavour: Flavour): FormGroup {
+    private _createForm(booking?: BookingRequest): void {
+        if (booking) {
+            const startDate = booking.startDate;
+            const endDate = booking.endDate;
+            const name = booking.name;
+            const flavours = booking.flavours;
+            this._startDate.next(new Date(startDate));
+            this._endDate.next(new Date(endDate));
+
+            this.form.reset({
+                uid: booking.uid,
+                startDate: toFormDateString(startDate),
+                endDate: toFormDateString(endDate),
+                name
+            });
+
+            flavours.map((flavourRequest) => {
+                return this._createFlavourRequestFormGroup(flavourRequest.flavour, flavourRequest.quantity);
+            }).forEach(flavourGroup => {
+                this.flavourRequestsFormArray.push(flavourGroup);
+            })
+            this._sortFlavourForms();
+        }
+    }
+
+    private _createFlavourRequestFormGroup(flavour: Flavour, quantity?: number): FormGroup {
         const formGroup = this._formBuilder.group({
             flavour: [flavour, [Validators.required]],
-            quantity: [null, [Validators.required, (control: AbstractControl) => this._flavourQuantityValidator(flavour, control.value)]],
+            quantity: [quantity, [Validators.required, (control: AbstractControl) => this._flavourQuantityValidator(flavour, control.value)]],
         });
 
         // Add listener to quantity change to update the availabilities
@@ -281,13 +342,16 @@ export class BookingNewComponent implements OnInit {
 
     private _flavourQuantityValidator(flavour: Flavour, quantity: number): ValidationErrors | null {
         const limits = this._bookingFlavourLimits.find(limit => limit.flavour.id === flavour.id);
-        return quantity > limits.maxInstances ? {limitExceeded: true} : null;
+        return quantity > limits?.maxInstances ? {limitExceeded: true} : null;
     }
 
     private _selectFlavour(flavour: Flavour): void {
         const flavourGroup = this._createFlavourRequestFormGroup(flavour);
         this.flavourRequestsFormArray.push(flavourGroup);
+        this._sortFlavourForms();
+    }
 
+    private _sortFlavourForms(): void {
         const sorted = this.flavourRequestsFormArray.controls
             .map(c => c as FormGroup)
             .sort((c1: FormGroup, c2: FormGroup) => {
@@ -316,7 +380,7 @@ export class BookingNewComponent implements OnInit {
     }
 
     private _calculateFlavourAvailabilities(): void {
-        const {name, comments, flavourRequests} = this._form.value;
+        const {uid, name, comments, flavourRequests} = this._form.value;
         const formArray = this.flavourRequestsFormArray;
 
         const flavourRequestInputs = formArray.controls.map((control: AbstractControl) => {
@@ -328,6 +392,7 @@ export class BookingNewComponent implements OnInit {
         });
 
         const input: BookingRequestInput = {
+            uid,
             startDate: toDateString(this.startDate == null ? new Date() : this.startDate),
             endDate: toDateString(this.endDate == null ? new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000) : this.endDate),
             name: name ? name : 'temporary booking request',

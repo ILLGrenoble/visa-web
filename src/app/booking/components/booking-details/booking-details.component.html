@@ -71,10 +71,10 @@
                 <div class="booking-details-history-title">
                     History
                 </div>
-                <div *ngFor="let history of booking.history" class="booking-details-history-element">
+                <div *ngFor="let history of booking.history; let i = index" class="booking-details-history-element">
                     <div class="booking-details-history-title">
                         <div>
-                            {{history.state |titlecase}} {{history.date | date: 'dd MMM y'}} ({{history.actor.fullName}})
+                            {{history.state == 'CREATED' && i > 0 ? 'Updated' : history.state |titlecase}} {{history.date | date: 'dd MMM y'}} ({{history.actor.fullName}})
                         </div>
                     </div>
                     <div class="booking-details-history-comment">
@@ -205,6 +205,18 @@
                 Actions
             </div>
             <div class="booking-details-actions-buttons">
+                <div *ngIf="booking.state == 'CREATED' && !bookingActive">
+                    Before the start of your reservation, if it is waiting for approval, you can modify your request.
+                </div>
+                <div *ngIf="booking.state != 'CREATED' || bookingActive">
+                    Your reservation cannot be modified. If you need to change your request you can delete this one and create a new one.
+                </div>
+                <button type="button" [disabled]="booking.state != 'CREATED' || bookingActive" (click)="modifyBookingRequest()" class="btn btn-outline">Modify reservation</button>
+            </div>
+            <div class="booking-details-actions-buttons">
+                <div>
+                    Your can delete your reservation request at any time. If there are instances associated to the reservation these will not be deleted.
+                </div>
                 <button type="button" (click)="deleteBookingRequest()" class="btn btn-outline-warning">Delete reservation</button>
             </div>
 

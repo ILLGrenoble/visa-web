@@ -1,7 +1,8 @@
-<div class="page-header">
+<div *ngIf="form" class="page-header">
     <div class="page-header-content">
         <div class="title">
-            <h1>Create a new instance reservation</h1>
+            <h1 *ngIf="form.controls.uid == null">Create a new instance reservation</h1>
+            <h1 *ngIf="form.controls.uid != null">Modify instance reservation <em>{{originalName}}</em></h1>
         </div>
     </div>
 </div>
@@ -30,7 +31,7 @@
     </div>
 </clr-modal>
 
-<div class="booking-new-container">
+<div *ngIf="form" class="booking-new-container">
     <form clrForm [formGroup]="form" clrLayout="horizontal">
         <div class="content-container">
             <div class="content-area">
@@ -209,8 +210,11 @@
                                     </clr-input-container>
 
                                     <div class="content">
-                                        <p>
+                                        <p *ngIf="originalName == null">
                                             Please enter the details outlining your need to reserve computational resources in VISA.
+                                        </p>
+                                        <p *ngIf="originalName != null">
+                                            Please describe why you would like to modify your reservation for computational resources in VISA.
                                         </p>
                                     </div>
                                     <textarea id="comments" rows="3" name="comments" class="booking-new-comments-input"
@@ -248,7 +252,7 @@
                                 </div>
 
                                 <div class="clr-col-12 booking-new-submit">
-                                    <button class="btn btn-primary btn-block" [disabled]="form.invalid" (click)="createBookingRequest()">Send booking request</button>
+                                    <button class="btn btn-primary btn-block" [disabled]="form.invalid" (click)="createOrUpdateBookingRequest()">Send booking request</button>
                                 </div>
                             </div>
                         </div>

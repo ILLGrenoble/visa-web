@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {environment} from 'environments/environment';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BookingRequest, BookingToken, BookingUserConfiguration, FlavourAvailabilitiesFuture} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
@@ -13,6 +13,7 @@ export type BookingFlavourRequestInput = {
 }
 
 export type BookingRequestInput = {
+    uid?: string;
     startDate: string;
     endDate: string;
     name: string;
@@ -69,17 +70,30 @@ export class BookingService {
             );
     }
 
-    public createBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {
-        const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/bookings`;
-        return this.http.post<Response<BookingRequest>>(url, input)
-            .pipe(map((result) => {
-                if (result.data) {
-                    return {data: this.objectMapper.deserialize(result.data, BookingRequest)}
-                }
-                return {errors: result.errors}
-            }));
+    public createOrUpdateBookingRequest(input: BookingRequestInput): Observable<{data?: BookingRequest, errors?: string[]}> {
+        if (input.uid != null) {
+            const baseUrl = environment.paths.api;
+            const url = `${baseUrl}/account/bookings/${input.uid}`;
+            return this.http.put<Response<BookingRequest>>(url, input)
+                .pipe(map((result) => {
+                    if (result.data) {
+                        return {data: this.objectMapper.deserialize(result.data, BookingRequest)}
+                    }
+                    return {errors: result.errors}
+                }));
 
+        } else {
+            const baseUrl = environment.paths.api;
+            const url = `${baseUrl}/account/bookings`;
+            return this.http.post<Response<BookingRequest>>(url, input)
+                .pipe(map((result) => {
+                    if (result.data) {
+                        return {data: this.objectMapper.deserialize(result.data, BookingRequest)}
+                    }
+                    return {errors: result.errors}
+                }));
+
+        }
     }
 
     public getBookingTokensForBookingRequestUid(uid: string): Observable<BookingToken[]> {

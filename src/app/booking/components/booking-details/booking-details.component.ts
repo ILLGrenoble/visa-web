@@ -119,6 +119,12 @@ export class BookingDetailsComponent implements OnInit {
         return (Math.round(flavour.memory / 1024 * 10) / 10) + 'GB';
     }
 
+    protected modifyBookingRequest(): void {
+        if (this._booking.state == 'CREATED' && !this.bookingActive) {
+            this._router.navigate(['bookings', this._booking.uid, 'edit'], {replaceUrl: true});
+        }
+    }
+
     protected deleteBookingRequest(): void {
         this._showDeleteModal = true;
     }

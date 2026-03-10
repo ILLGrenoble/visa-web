@@ -1,6 +1,7 @@
 import {RouterModule, Routes} from '@angular/router';
 import {AuthenticatedContainerComponent} from '@shared';
 import {BookingDetailsComponent, BookingHomeComponent, BookingNewComponent} from './components';
+import {authenticationGuard} from "../core";
 
 export const ROUTES: Routes = [
     {
@@ -9,15 +10,23 @@ export const ROUTES: Routes = [
         children: [
             {
                 path: '',
-                component: BookingHomeComponent
+                component: BookingHomeComponent,
+                canActivate: [authenticationGuard],
             },
             {
                 path: 'new',
-                component: BookingNewComponent
+                component: BookingNewComponent,
+                canActivate: [authenticationGuard],
             },
             {
                 path: ':uid',
-                component: BookingDetailsComponent
+                component: BookingDetailsComponent,
+                canActivate: [authenticationGuard],
+            },
+            {
+                path: ':uid/edit',
+                component: BookingNewComponent,
+                canActivate: [authenticationGuard],
             },
         ]
     }

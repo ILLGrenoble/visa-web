@@ -42,13 +42,6 @@
                         </div>
                         <div class="admin-details-list-item">
                             <dt>
-                            </dt>
-                            <dd>
-                                {{ creationHistory()?.comments }}
-                            </dd>
-                        </div>
-                        <div class="admin-details-list-item">
-                            <dt>
                                 <b>Created at</b>
                             </dt>
                             <dd>
@@ -86,6 +79,23 @@
                                 </div>
                             </dd>
                         </div>
+                        <div class="admin-details-list-item">
+                            <dt>
+                                <b>History</b>
+                            </dt>
+                            <dd>
+                                <div *ngFor="let historyElement of bookingRequest.history" class="booking-request-history">
+                                    <div class="booking-request-history-date">
+                                        {{historyElement.actor.fullName}} {{historyElement.date | date:'dd MMMM y HH:mm'}}
+                                    </div>
+                                    <div class="booking-request-history-comments">
+                                        {{historyElement.comments}}
+                                    </div>
+                                </div>
+                            </dd>
+                        </div>
+
+
                         <div class="admin-details-list-item">
                             <dt>
                                 <b>State</b>
