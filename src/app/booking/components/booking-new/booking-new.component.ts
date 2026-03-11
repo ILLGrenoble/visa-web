@@ -140,7 +140,7 @@ export class BookingNewComponent implements OnInit {
     }
 
     get datesValid(): boolean {
-        return this.startDate != null && this.endDate != null;
+        return this.startDate != null && this.endDate != null && this.endDate.getTime() > this.startDate.getTime();
     }
 
     get flavourQuantitiesValid(): boolean {
@@ -296,6 +296,17 @@ export class BookingNewComponent implements OnInit {
 
     protected getMaxInstancesForFlavour(flavour: Flavour): number {
         return this._bookingFlavourLimits.find(limit => limit.flavour.id === flavour.id)?.maxInstances;
+    }
+
+    protected requestIsAutoAccepted(): boolean {
+        const {flavourRequests} = this._form.value;
+        const requestsNotAutoAccepted = flavourRequests.filter(flavourRequest => {
+            const flavour = flavourRequest.flavour;
+            const flavourConfig = this._bookingConfig.flavourConfiguration.find(config => config.flavour.id === flavour.id);
+            return flavourConfig == null || !flavourConfig.autoAccept;
+        });
+
+        return requestsNotAutoAccepted.length == 0;
     }
 
     private _createForm(booking?: BookingRequest): void {

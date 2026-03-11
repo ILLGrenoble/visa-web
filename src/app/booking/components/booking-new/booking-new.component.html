@@ -87,7 +87,7 @@
                                     </div>
                                     <div class="clr-col-12" *ngIf="!datesValid" style="margin-top: 24px;">
                                         <p>
-                                            Please select the dates of the reservation period.
+                                            You can select the resources after specifying valid reservation dates.
                                         </p>
                                     </div>
                                 </div>
@@ -140,7 +140,7 @@
                                     </div>
                                     <div class="flavour-availability">
                                         <div *ngIf="datesValid">
-                                            {{flavourLimit.maxInstances}} instance{{flavourLimit.maxInstances > 1 ? 's' : ''}} available
+                                            {{flavourLimit.maxInstances}} instance{{flavourLimit.maxInstances > 1 ? 's' : ''}} available <br>(estimated)
                                         </div>
                                     </div>
                                     <div class="flavour-unavailable" *ngIf="datesValid">
@@ -253,8 +253,16 @@
 
                                 <div class="clr-col-12 booking-new-submit">
                                     <div *ngIf="form.valid" class="information-panel booking-new-submit-info">
-                                        <div class="information-panel-body">
+                                        <div *ngIf="!requestIsAutoAccepted()" class="information-panel-body">
                                             Your request is ready to submit. The resources will be analysed by the VISA team to ensure that there is sufficient available for ordinary use of VISA too.
+                                        </div>
+                                        <div *ngIf="requestIsAutoAccepted()" class="information-panel-body">
+                                            <div class="information-panel-body-text">
+                                                Your request is ready to submit.
+                                            </div>
+                                            <div class="information-panel-body-text">
+                                                You are entitled to submit this without any further validation: please ensure that sufficient resources will be available for ordinary use of VISA too.
+                                            </div>
                                         </div>
                                     </div>
 

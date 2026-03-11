@@ -5,6 +5,9 @@ import {Flavour} from "./flavour.model";
 @JsonObject('BookingFlavourConfiguration')
 export class BookingFlavourConfiguration {
 
+    @JsonProperty('autoAccept', Boolean)
+    private _autoAccept: Boolean = undefined;
+
     @JsonProperty('flavour', Flavour)
     private _flavour: Flavour = undefined;
 
@@ -20,6 +23,14 @@ export class BookingFlavourConfiguration {
 
     set flavour(value: Flavour) {
         this._flavour = value;
+    }
+
+    get autoAccept(): Boolean {
+        return this._autoAccept;
+    }
+
+    set autoAccept(value: Boolean) {
+        this._autoAccept = value;
     }
 
     get maxInstances(): number {

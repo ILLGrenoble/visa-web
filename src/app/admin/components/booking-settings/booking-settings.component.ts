@@ -134,7 +134,7 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
                         name
                         cloudId
                     }
-                    roles {
+                    rolesAndGroups {
                         id
                         name
                     }
@@ -148,9 +148,9 @@ export class BookingSettingsComponent implements OnInit, OnDestroy {
             takeUntil(this._destroy$),
             map(({data}) => data),
             tap(() => this._loading = false)
-        ).subscribe(({flavours, roles, cloudClients}) => {
+        ).subscribe(({flavours, rolesAndGroups, cloudClients}) => {
             this._allFlavours = flavours;
-            this._roles = roles;
+            this._roles = rolesAndGroups;
             this._updateRolesForFlavourConfig();
             this._cloudClients = cloudClients;
             this._multiCloudEnabled = cloudClients.length > 1;
