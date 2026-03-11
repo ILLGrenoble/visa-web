@@ -252,17 +252,21 @@
                                 </div>
 
                                 <div class="clr-col-12 booking-new-submit">
-                                    <div *ngIf="form.valid" class="information-panel booking-new-submit-info">
-                                        <div *ngIf="!requestIsAutoAccepted()" class="information-panel-body">
-                                            Your request is ready to submit. The resources will be analysed by the VISA team to ensure that there is sufficient available for ordinary use of VISA too.
+                                    <div *ngIf="form.valid">
+                                        <div  class="information-panel booking-new-submit-info">
+                                            <div *ngIf="!requestIsAutoAccepted()" class="information-panel-body">
+                                                Your request is ready to submit! The resources will be analysed by the VISA team to ensure that there is sufficient available for ordinary VISA use.
+                                            </div>
+
+                                            <div *ngIf="requestIsAutoAccepted()" class="information-panel-body">
+                                                Your request is ready to submit! You are entitled to submit this without any further validation: please ensure that sufficient resources will be available for ordinary VISA use.
+                                            </div>
                                         </div>
-                                        <div *ngIf="requestIsAutoAccepted()" class="information-panel-body">
-                                            <div class="information-panel-body-text">
-                                                Your request is ready to submit.
-                                            </div>
-                                            <div class="information-panel-body-text">
-                                                You are entitled to submit this without any further validation: please ensure that sufficient resources will be available for ordinary use of VISA too.
-                                            </div>
+                                        <div *ngIf="requestIsAutoAccepted()" class="booking-new-request-validation-check">
+                                            <clr-checkbox-wrapper>
+                                                <input type="checkbox" clrCheckbox name="requestValidation" formControlName="requestValidation" required="false"/>
+                                                <label>Please check this box if you would like the VISA team to examine your reservation request to ensure that there are no problems rather than it. If it is not checked the reservation will be automatically accepted.</label>
+                                            </clr-checkbox-wrapper>
                                         </div>
                                     </div>
 

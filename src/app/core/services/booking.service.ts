@@ -19,6 +19,7 @@ export type BookingRequestInput = {
     name: string;
     comments: string;
     flavourRequests: BookingFlavourRequestInput[];
+    requestValidation?: boolean;
 }
 
 @Injectable()

@@ -83,6 +83,7 @@ export class BookingNewComponent implements OnInit {
         flavourRequests: this._formBuilder.array([], [Validators.required, minLengthArray(1)]),
         name: new FormControl(null, Validators.required),
         comments: new FormControl(null, Validators.required),
+        requestValidation: new FormControl(null),
     });
     private _startDate: BehaviorSubject<Date> = new BehaviorSubject(null);
     private _endDate: BehaviorSubject<Date> = new BehaviorSubject(null);
@@ -247,7 +248,7 @@ export class BookingNewComponent implements OnInit {
         this._sendingRequest = true;
         this._requestErrors = null;
 
-        const {uid, name, comments, flavourRequests} = this._form.value;
+        const {uid, name, comments, flavourRequests, requestValidation} = this._form.value;
 
         const flavourRequestInputs = flavourRequests.map(flavourRequest => {
             const {flavour, quantity} = flavourRequest;
@@ -261,6 +262,7 @@ export class BookingNewComponent implements OnInit {
             name,
             comments,
             flavourRequests: flavourRequestInputs,
+            requestValidation
         }
 
         this._bookingService.createOrUpdateBookingRequest(input).subscribe({
