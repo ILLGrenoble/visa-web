@@ -200,6 +200,7 @@ export class BookingNewComponent implements OnInit {
         }).subscribe(({bookingRequest, bookingConfig}) => {
             if (bookingRequest == null) {
                 this._titleService.setTitle(`New booking | VISA`);
+                this._originalName = null;
             } else {
                 this._titleService.setTitle(`Modify booking | VISA`);
                 this._originalName = bookingRequest.name;

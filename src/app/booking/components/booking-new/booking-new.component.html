@@ -1,8 +1,8 @@
 <div *ngIf="form" class="page-header">
     <div class="page-header-content">
         <div class="title">
-            <h1 *ngIf="form.controls.uid == null">Create a new instance reservation</h1>
-            <h1 *ngIf="form.controls.uid != null">Modify instance reservation <em>{{originalName}}</em></h1>
+            <h1 *ngIf="originalName == null">Create a new instance reservation</h1>
+            <h1 *ngIf="originalName != null">Modify instance reservation <em>{{originalName}}</em></h1>
         </div>
     </div>
 </div>
@@ -265,7 +265,7 @@
                                         <div *ngIf="requestIsAutoAccepted()" class="booking-new-request-validation-check">
                                             <clr-checkbox-wrapper>
                                                 <input type="checkbox" clrCheckbox name="requestValidation" formControlName="requestValidation" required="false"/>
-                                                <label>Please check this box if you would like the VISA team to examine your reservation request to ensure that there are no problems rather than it. If it is not checked the reservation will be automatically accepted.</label>
+                                                <label>Please check this box if you would like the VISA team to examine your reservation request to ensure that there are no problems with it. If it is not checked the reservation will be automatically accepted.</label>
                                             </clr-checkbox-wrapper>
                                         </div>
                                     </div>
