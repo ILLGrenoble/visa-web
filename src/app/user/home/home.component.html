@@ -56,7 +56,7 @@
                     VISA resources have been reserved for you!
                 </h4>
                 <div class="information-panel-body">
-                    A reservation request for VISA resources has been accepted and you have been assigned one or more instances using these resources. Below, in the <em>My instance tokens</em> tab, you will see all the <em>tokens</em> that have been assigned to you which allow you to create instances during the reservation period.
+                    A reservation request for VISA resources has been accepted and you have been assigned one or more instances using these resources. Below, in the <em>My instance vouchers</em> tab, you will see all the <em>vouchers</em> that have been assigned to you which allow you to create instances during the reservation period.
                 </div>
             </div>
         </div>
@@ -145,7 +145,7 @@
                 </visa-tab>
                 <visa-tab name="tokens" [hidden]="freeTokens.length === 0">
                     <visa-tab-title>
-                        My instance tokens <span class="label">{{ freeTokens.length }}</span>
+                        My instance vouchers <span class="label">{{ freeTokens.length }}</span>
                     </visa-tab-title>
                     <visa-tab-actions>
                         <button class="visa-tabs-btn" (click)="handleUpdate()">

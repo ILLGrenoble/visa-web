@@ -63,7 +63,7 @@ export class BookingDetailsComponent implements OnInit {
 
     get bookingActive(): boolean {
         const now = Date.now();
-        return now > this._booking.startDate.getTime() && now < this._booking.endDate.getTime() + 24 * 60 * 60 * 1000;
+        return now > this._booking.startTime.getTime() && now < this._booking.endTime.getTime();
     }
 
     get tokensFormArray(): FormArray {

@@ -113,7 +113,7 @@ export class BookingNewComponent implements OnInit {
     }
 
     get maxStartDate(): string {
-        return this.endDate ? this.endDate.toISOString() : null;
+        return this.endTime ? this.endTime.toISOString() : null;
     }
 
     get minEndDate(): string {
@@ -132,6 +132,11 @@ export class BookingNewComponent implements OnInit {
         return this._endDate.value;
     }
 
+    get endTime(): Date {
+        const endDate = this.endDate;
+        return endDate == null ? null : new Date(endDate.getTime() + 24 * 60 * 60 * 1000);
+    }
+
     set endDate(value: Date) {
         this._endDate.next(value);
     }
@@ -141,7 +146,7 @@ export class BookingNewComponent implements OnInit {
     }
 
     get datesValid(): boolean {
-        return this.startDate != null && this.endDate != null && this.endDate.getTime() > this.startDate.getTime();
+        return this.startDate != null && this.endDate != null && this.endDate.getTime() >= this.startDate.getTime();
     }
 
     get flavourQuantitiesValid(): boolean {
@@ -150,7 +155,7 @@ export class BookingNewComponent implements OnInit {
 
     get reservationDurationDays(): number {
         if (this.datesValid) {
-            return 1 + Math.floor((this.endDate.getTime() - this.startDate.getTime()) / (24 * 60 * 60 * 1000));
+            return Math.floor((this.endTime.getTime() - this.startDate.getTime()) / (24 * 60 * 60 * 1000));
         }
         return 0;
     }

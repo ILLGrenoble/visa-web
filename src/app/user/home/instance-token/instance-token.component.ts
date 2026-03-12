@@ -31,7 +31,7 @@ export class InstanceTokenComponent {
 
     get tokenActive(): boolean {
         const now = Date.now();
-        return now > this.booking.startDate.getTime() && now < this.booking.endDate.getTime();
+        return now > this.booking.startTime.getTime() && now < this.booking.endTime.getTime();
     }
 
     constructor(private router: Router) {

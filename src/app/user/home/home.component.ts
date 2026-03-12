@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         const now = Date.now();
 
         return this._freeTokens.filter(token => {
-            return now > token.bookingRequest.startDate.getTime() && now < token.bookingRequest.endDate.getTime()
+            return now > token.bookingRequest.startTime.getTime() && now < token.bookingRequest.endTime.getTime();
         }).length > 0;
     }
 

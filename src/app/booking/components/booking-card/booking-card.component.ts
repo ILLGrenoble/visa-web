@@ -37,7 +37,7 @@ export class BookingCardComponent {
 
     get bookingActive(): boolean {
         const now = Date.now();
-        return now > this._booking.startDate.getTime() && now < this._booking.endDate.getTime();
+        return now > this._booking.startTime.getTime() && now < this._booking.endTime.getTime();
     }
 
     constructor() {

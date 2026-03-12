@@ -92,13 +92,13 @@
             </h4>
             <div class="information-panel-body">
                 <div class="information-panel-body-text">
-                    Once it has been approved you will be assigned tokens that can be used to create instances with the resources you have requested. The tokens will become visible here once the reservation has been approved.
+                    Once it has been approved you will be assigned <em>vouchers</em> that can be used to create instances with the resources you have requested.
                 </div>
                 <div class="information-panel-body-text">
-                    The tokens are valid from the first day of your reservation and can be used until the last day of the reservation. The instances created with the tokens will also be available for the duration of the reservation.
+                    The vouchers are valid from the first day of your reservation and can be used until the last day of the reservation. The instances created with the vouchers will also be available for the duration of the reservation.
                 </div>
                 <div class="information-panel-body-text">
-                    You are free to distribute the tokens to your team or other people you are working with so that they can take advantage of the resources during the reservation period.
+                    You are free to distribute the vouchers to your team or other people you are working with so that they can take advantage of the resources during the reservation period.
                 </div>
             </div>
         </div>
@@ -110,10 +110,10 @@
             </h4>
             <div class="information-panel-body">
                 <div class="information-panel-body-text">
-                    Tokens for all of your requested resources are now visible below. You can associate these to other VISA users or use them for your own needs.
+                    Vouchers for all of your requested resources are now visible below. You can associate these to other VISA users or use them for your own needs.
                 </div>
                 <div class="information-panel-body-text">
-                    From the {{ booking.startDate | date:'dd MMMM y'}}, the owner of the token will be able to create an instance using it. The instance will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
+                    From the {{ booking.startDate | date:'dd MMMM y'}}, the owner of the voucher will be able to create an instance using it. The instance will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@
             </h4>
             <div class="information-panel-body">
                 <div class="information-panel-body-text">
-                    Distribute any unassigned tokens to other VISA users or assign them to yourself: all tokens are active and can be used to create instances.
+                    Distribute any unassigned vouchers to other VISA users or assign them to yourself: all vouchers are active and can be used to create instances.
                 </div>
                 <div class="information-panel-body-text">
                     The instances created with this reservation will be deleted at the end of {{ booking.endDate | date:'dd MMMM y'}}.
@@ -177,7 +177,7 @@
 
         <div *ngIf="booking.state === 'ACCEPTED'" class="booking-details-tokens">
             <div class="booking-details-tokens-title">
-                Tokens
+                Vouchers
             </div>
             <div class="booking-details-tokens-container">
                 <form [formGroup]="form" clrForm clrLayout="horizontal">
@@ -192,7 +192,7 @@
 
 
                     <div class="booking-details-tokens-submit">
-                        <button (click)="submitTokens()" [disabled]="form.invalid || form.pristine" class="btn btn-primary">Submit token changes</button>
+                        <button (click)="submitTokens()" [disabled]="form.invalid || form.pristine" class="btn btn-primary">Submit voucher changes</button>
                     </div>
                 </form>
 

@@ -53,12 +53,20 @@ export class BookingRequestSimple {
         this._startDate = value;
     }
 
+    get startTime(): Date {
+        return this._startDate;
+    }
+
     get endDate(): Date {
         return this._endDate;
     }
 
     set endDate(value: Date) {
         this._endDate = value;
+    }
+
+    get endTime(): Date {
+        return this._endDate ? new Date(this._endDate.getTime() + 24 * 60 * 60 * 1000) : null;
     }
 
     get owner(): User {
