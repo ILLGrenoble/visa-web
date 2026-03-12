@@ -99,10 +99,11 @@ export class AvailabilityChartData {
             formatter: function () {
                 const totalData = this.points[0];
                 const availableData = this.points[1];
-                const details = `<span style="color:${availableData.color}">\u25CF</span> Available instances: <b>${availableData.y}</b> / ${totalData.y}`;
+                const usedData = this.points[2];
+                const details = `<span style="color:${availableData.color}">\u25CF</span> Available instances: <b>${availableData.y}</b> / ${totalData.y}<br><span style="color:${usedData.color}">\u25CF</span> Active/allocated instances: <b>${usedData.y}</b>`;
                 // const date = new Date(availableData.x).toLocaleDateString('en-UK');
                 const date = moment(new Date(availableData.x)).format('DD/MM/YYYY HH:mm')
-                return `<span style="font-size: 0.7em;">${date}</span><br/><span style="font-size: 0.8em;">${availableData.series.name}</span><br/>${details}`;
+                return `<span style="font-size: 0.7em;">${date}</span><br/><span style="font-size: 0.8em;">${totalData.series.name}</span><br/>${details}`;
             },
         },
         plotOptions: {
@@ -110,10 +111,19 @@ export class AvailabilityChartData {
                 step: true,
                 color: '#00a65a',
                 fillColor: '#edfbf1',
+                marker: {
+                    enabled: false,
+                }
             },
         },
         legend: {
-            enabled: false,
+            enabled: true,
+            floating: true,
+            align: 'right',
+            verticalAlign: 'top',
+            itemStyle: {
+                fontSize: '14px'
+            }
         },
         credits: {
             enabled: false,
@@ -129,6 +139,9 @@ export class AvailabilityChartData {
         const availableData = availabilities.map(availability => {
             return { x: Date.parse(availability.date), y: availability.availableUnits };
         });
+        const usageData = availabilities.map(availability => {
+            return { x: Date.parse(availability.date), y: availability.usedUnits };
+        });
         const totalData = availabilities.map(availability => {
             return { x: Date.parse(availability.date), y: availability.totalUnits };
         });
@@ -142,10 +155,12 @@ export class AvailabilityChartData {
         this.addRegions(showUncertaintyRegion ? availabilities : [], bookings);
 
         availableData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].availableUnits});
+        usageData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].usedUnits});
         totalData.push({x: Date.parse('2050-01-01T00:00:00.000'), y: availabilities[availabilities.length - 1].totalUnits})
         this._options.series = [
-            {name: flavour.name, data: totalData, color: '#b0b0ff', fillColor: '#fcfcff', lineWidth: 1, dashStyle: 'LongDash'},
-            {name: flavour.name, data: availableData, color: '#00a65a', fillColor: '#f8fffa'},
+            {name: flavour.name, data: totalData, color: '#b0b0ff', fillColor: '#fcfcff', lineWidth: 1, dashStyle: 'LongDash', showInLegend: false},
+            {name: 'Available instances', data: availableData, color: '#00a65a', type: 'line', showInLegend: true},
+            {name: 'Active/allocated instances', data: usageData, color: '#6600ff', type: 'line', showInLegend: true},
         ];
     }
 

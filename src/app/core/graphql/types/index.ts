@@ -189,6 +189,7 @@ export type FlavourAvailability = {
     confidence: Scalars['String'];
     availableUnits: Maybe<Scalars['Int']>;
     totalUnits: Maybe<Scalars['Int']>;
+    usedUnits: Maybe<Scalars['Int']>;
 };
 
 export type FlavourAvailabilitiesFuture = {

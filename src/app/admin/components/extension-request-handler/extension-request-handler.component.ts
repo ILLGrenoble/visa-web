@@ -236,6 +236,7 @@ export class ExtensionRequestHandlerComponent implements OnInit, OnDestroy {
                             confidence
                             availableUnits
                             totalUnits
+                            usedUnits
                         }
                     }
                 }

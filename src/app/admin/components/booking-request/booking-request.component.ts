@@ -297,6 +297,7 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
                             confidence
                             availableUnits
                             totalUnits
+                            usedUnits
                         }
                     }
                 }

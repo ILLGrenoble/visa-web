@@ -105,6 +105,7 @@ export class AvailabilitiesComponent implements OnInit, OnDestroy {
                                     confidence
                                     availableUnits
                                     totalUnits
+                                    usedUnits
                                 }
                             }
                             cloudClients {
