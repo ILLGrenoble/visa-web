@@ -45,7 +45,7 @@
                                 <b>Created at</b>
                             </dt>
                             <dd>
-                                {{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}
+                                {{ bookingRequest.createdAt | date:'d MMMM y HH:mm' }}
                             </dd>
                         </div>
                         <div class="admin-details-list-item">
@@ -53,7 +53,7 @@
                                 <b>Period</b>
                             </dt>
                             <dd>
-                                {{ bookingRequest.startDate | date }} to  {{ bookingRequest.endDate | date }}
+                                {{ bookingRequest.startDate | date:'d MMMM y' }} to  {{ bookingRequest.endDate | date:'d MMMM y' }}
                             </dd>
                         </div>
                         <div class="admin-details-list-item">
@@ -86,7 +86,7 @@
                             <dd>
                                 <div *ngFor="let historyElement of bookingRequest.history" class="booking-request-history">
                                     <div class="booking-request-history-date">
-                                        {{historyElement.actor.fullName}} {{historyElement.date | date:'dd MMMM y HH:mm'}}
+                                        {{historyElement.actor.fullName}} {{historyElement.date | date:'d MMMM y HH:mm'}}
                                     </div>
                                     <div class="booking-request-history-comments">
                                         {{historyElement.comments}}
@@ -219,7 +219,7 @@
                                         Accepted
                                     </dt>
                                     <dd>
-                                        {{ acceptedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ acceptedHistory()?.actor.fullName}})
+                                        {{ acceptedHistory()?.date | date:'d MMMM y HH:mm'}} ({{ acceptedHistory()?.actor.fullName}})
                                     </dd>
                                 </div>
                                 <div class="admin-details-list-item">
@@ -240,7 +240,7 @@
                                         Refused
                                     </dt>
                                     <dd>
-                                        {{ refusedHistory()?.date | date:'dd MMMM y HH:mm'}} ({{ refusedHistory()?.actor.fullName}})
+                                        {{ refusedHistory()?.date | date:'d MMMM y HH:mm'}} ({{ refusedHistory()?.actor.fullName}})
                                     </dd>
                                 </div>
                                 <div class="admin-details-list-item">

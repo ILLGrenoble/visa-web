@@ -53,11 +53,11 @@
                 {{ creationComment(bookingRequest) }}
             </div>
         </clr-dg-cell>
-        <clr-dg-cell>{{ bookingRequest.startDate | date }}</clr-dg-cell>
-        <clr-dg-cell>{{ bookingRequest.endDate | date }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.startDate | date:'d MMMM y' }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.endDate | date:'d MMMM y' }}</clr-dg-cell>
         <clr-dg-cell>{{ bookingRequest.owner.fullName }}</clr-dg-cell>
         <clr-dg-cell>{{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}</clr-dg-cell>
-        <clr-dg-cell>{{ bookingRequest.createdAt | date:'dd MMMM y HH:mm' }}</clr-dg-cell>
+        <clr-dg-cell>{{ bookingRequest.createdAt | date:'d MMMM y HH:mm' }}</clr-dg-cell>
         <clr-dg-cell>{{ bookingRequest.state }}</clr-dg-cell>
         <clr-dg-cell>
             <div class="booking-request-list-resources">

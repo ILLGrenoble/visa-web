@@ -5,10 +5,10 @@
             {{ booking.name }}
         </div>
         <div class="booking-card-created-at">
-            Created on {{booking.createdAt | date:'dd MMMM y HH:mm' }}
+            Created on {{booking.createdAt | date:'d MMMM y HH:mm' }}
         </div>
         <div class="booking-card-dates">
-            {{ booking.startDate | date:'dd MMM y' }} - {{ booking.endDate | date:'dd MMM y' }}
+            {{ booking.startDate | date:'d MMM y' }} - {{ booking.endDate | date:'d MMM y' }}
         </div>
         <div class="booking-card-status">
             <div>

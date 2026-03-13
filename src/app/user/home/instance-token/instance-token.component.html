@@ -8,13 +8,13 @@
                 From
             </div>
             <div class="instance-token-request-period-text">
-                {{ booking.startDate |date:'dd MMMM y' }}
+                {{ booking.startDate |date:'d MMMM y' }}
             </div>
             <div class="instance-token-request-header">
                 To
             </div>
             <div class="instance-token-request-period-text">
-                {{ booking.endDate | date:'dd MMMM y' }}
+                {{ booking.endDate | date:'d MMMM y' }}
             </div>
 
         </div>
@@ -56,7 +56,7 @@
             </div>
         </div>
         <div class="instance-token-create-button">
-            <button class="btn btn-primary" [disabled]="!tokenActive" [routerLink]="['/instances/new', token.uid]">Redeem voucher</button>
+            <button class="btn btn-primary" [routerLink]="['/instances/new', token.uid]">Redeem voucher</button>
         </div>
     </div>
 </div>
