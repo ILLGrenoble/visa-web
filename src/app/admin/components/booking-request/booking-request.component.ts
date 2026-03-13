@@ -24,7 +24,7 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
     private _tokens: BookingToken[] = [];
 
     private _form = new FormGroup({
-        comments: new FormControl('', Validators.compose([Validators.maxLength(2500), Validators.required])),
+        comments: new FormControl(null, Validators.compose([Validators.maxLength(2500)])),
     });
     private _accepted: boolean = null;
 
@@ -54,6 +54,12 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
 
     set accepted(value: boolean) {
         this._accepted = value;
+    }
+
+    get formValid(): boolean {
+        const comments = this._form.value.comments;
+        const commentsEmpty = comments == null || comments.length === 0;
+        return this._form.valid && this._accepted != null && (this._accepted || !commentsEmpty);
     }
 
     constructor(private readonly _apollo: Apollo,

@@ -84,11 +84,11 @@
                                 <b>History</b>
                             </dt>
                             <dd>
-                                <div *ngFor="let historyElement of bookingRequest.history" class="booking-request-history">
+                                <div *ngFor="let historyElement of bookingRequest.history; let i = index" class="booking-request-history">
                                     <div class="booking-request-history-date">
-                                        {{historyElement.actor.fullName}} {{historyElement.date | date:'d MMMM y HH:mm'}}
+                                        {{historyElement.state == 'CREATED' && i > 0 ? 'Updated' : historyElement.state |titlecase}} {{historyElement.date | date: 'dd MMM y HH:mm'}} ({{historyElement.actor.fullName}})
                                     </div>
-                                    <div class="booking-request-history-comments">
+                                    <div *ngIf="historyElement.comments" class="booking-request-history-comments">
                                         {{historyElement.comments}}
                                     </div>
                                 </div>
@@ -203,7 +203,7 @@
                                             <dt>
                                             </dt>
                                             <dd>
-                                                <button (click)="submit()" [disabled]="!form.valid" class="btn btn-primary">Submit</button>
+                                                <button (click)="submit()" [disabled]="!formValid" class="btn btn-primary">Submit</button>
                                             </dd>
                                         </div>
                                     </div>
@@ -352,5 +352,5 @@
             </div>
         </div>
 
-                    </div>
+    </div>
 </div>

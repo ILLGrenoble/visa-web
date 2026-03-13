@@ -81,12 +81,14 @@ $disabled-color: #dfdfdf;
         .booking-details-history-title {
             font-size: 11px;
             text-align: right;
-            border-bottom: 1px solid #eee;
             line-height: 14px;
+            color: #666
         }
 
         .booking-details-history-comment {
+            text-align: right;
             font-size: 14px;
+            line-height: 18px;
         }
     }
 }
