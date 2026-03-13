@@ -131,6 +131,10 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+
+        .btn {
+            margin: 0;
+        }
     }
 }
 

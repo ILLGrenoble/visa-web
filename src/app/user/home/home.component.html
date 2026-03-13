@@ -158,7 +158,7 @@
                                 <visa-instance-token [token]="token"></visa-instance-token>
                             </div>
                         </div>
-                        <div class="blankslate" [hidden]="tokensRedeemable">
+                        <div class="blankslate" [hidden]="tokensRedeemable || instances.length > 0">
                             <div class="home-tokens-waiting">
                                 <img src="/assets/images/visa-computing.png" alt="cloud"/>
                                 <div>
