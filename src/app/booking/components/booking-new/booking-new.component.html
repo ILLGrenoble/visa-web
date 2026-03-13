@@ -40,8 +40,11 @@
                     <div class="clr-row">
                         <div class="clr-col-12">
                             <div class="information-panel">
-                                <div class="information-panel-body">
+                                <div *ngIf="originalName == null" class="information-panel-body">
                                     Please fill in the details below to create a new instance reservation request.
+                                </div>
+                                <div *ngIf="originalName != null" class="information-panel-body">
+                                    You are free to modify any of the details of this reservation request. Please enter a comment to explain why changes are needed.
                                 </div>
                             </div>
                         </div>
