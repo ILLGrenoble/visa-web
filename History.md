@@ -1,3 +1,25 @@
+3.8.0 13/03/2026
+================
+ - Instance Reservation System
+   - Add admin booking menu tab
+   - Add admin booking configuration
+   - Get booking config for logged-in user
+   - Show booking side menu for entitled users
+   - Create and modify booking requests and validate form data
+   - Show list of pending and accepted booking requests for user
+   - Booking Request Details page. Show booking vouchers when accepted and allow assigning them to other VISA users
+   - Show instances associated to booking vouchers
+   - Admin for booking requests: show availabilities along with the request details
+   - Accept/refuse booking requests and see voucher usage
+   - Show bookings in availability charts
+   - Show booking voucher on recipient's home page
+   - Creation of instances from vouchers
+ - Enable live migration of servers on hypervisors admin page (drag-and-drop)
+ - Update WebX to 1.14.0: dynamic remote desktop resizing and dynamic keyboard layout changes
+ - Show uncertainty regions in availabilities graph
+ - Show availabilities in extension requests page
+ - Remove Material modals from admin pages
+
 3.7.1 20/01/2026
 ================
  - Modify cloud-client edit component to accept multiple openstack address provider UUIDs.
