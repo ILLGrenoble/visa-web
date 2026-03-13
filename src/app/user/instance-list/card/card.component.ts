@@ -268,9 +268,14 @@ export class CardComponent implements OnInit, OnDestroy {
 
         } else {
             // Show warning 48 hours max in advance if expiring due to lifetime
-            const instanceLifetimeHours = (this._instance.terminationDate.getTime() - this._instance.createdAt.getTime()) / (1000 * 60 * 60) ;
-            const hoursBeforeWarning = Math.min(48, Math.ceil(0.25 * instanceLifetimeHours)); // 2 days => 12 hours
-            return this.instance.willExpireInHours(hoursBeforeWarning);
+            if (this._instance.terminationDate != null) {
+                const instanceLifetimeHours = (this._instance.terminationDate.getTime() - this._instance.createdAt.getTime()) / (1000 * 60 * 60) ;
+                const hoursBeforeWarning = Math.min(48, Math.ceil(0.25 * instanceLifetimeHours)); // 2 days => 12 hours
+                return this.instance.willExpireInHours(hoursBeforeWarning);
+
+            } else {
+                return false;
+            }
         }
     }
 
