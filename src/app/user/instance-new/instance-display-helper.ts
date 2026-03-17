@@ -109,7 +109,16 @@ export class InstanceDisplayHelper {
     }
 
     private getHostScreenResolution(): ScreenResolution {
-        const {width, height} = window.screen;
+        let {width, height} = window.screen;
+
+        // Fix a little bit the scaling on firefox: see if we have a non-integer dpr and scale the window size accordingly. Chrome and safari report correct window sizes, ignoring zooming.
+        const isFirefox = typeof (window as any).InstallTrigger !== 'undefined' || navigator.userAgent.includes('Firefox');
+        if (isFirefox) {
+            const dprRatio = window.devicePixelRatio / Math.floor(window.devicePixelRatio);
+            width = Math.floor(width * dprRatio);
+            height = Math.floor(height * dprRatio);
+        }
+
         return {
             label: `Host (${width} x ${height})`,
             width,
