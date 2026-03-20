@@ -1,3 +1,7 @@
+3.8.1 20/03/2026
+================
+ - Bug fix (firefox) on determining host screen size: estimate screen scaling when determining size on instance creation
+
 3.8.0 13/03/2026
 ================
  - Instance Reservation System
