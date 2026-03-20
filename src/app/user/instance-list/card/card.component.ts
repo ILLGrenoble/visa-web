@@ -318,8 +318,8 @@ export class CardComponent implements OnInit, OnDestroy {
         this._instance.comments = event.comments;
         this._instance.state = event.state;
         this._instance.ipAddress = event.ipAddress
-        this._instance.terminationDate = event.terminationDate;
-        this._instance.expirationDate = event.expirationDate;
+        this._instance.terminationDate = new Date(event.terminationDate);
+        this._instance.expirationDate = new Date(event.expirationDate);
         this._instance.deleteRequested = event.deleteRequested;
         this._instance.unrestrictedAccess = event.unrestrictedMemberAccess;
         this._instance.activeProtocols = event.activeProtocols;
