@@ -100,6 +100,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     private _viewportResize$: Subscription
     private _remoteDesktopResize$: Subscription
     private _remoteDesktopKeyboardLayout$: Subscription
+    private _currentScreenSize: {width: number, height: number} = {width: 0, height: 0};
 
     get timeElapsed$(): BehaviorSubject<number> {
         return this._timeElapsed$;
@@ -143,6 +144,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 if (instance.membership?.id == null) {
                     this._publicAccessToken = accessToken;
                 }
+                this._currentScreenSize = {width: instance.screenWidth, height: instance.screenHeight};
                 this.handleConnect();
             },
             error: (error) => {
@@ -466,6 +468,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         ).subscribe(({screenSize, keyboardLayout}) => {
             this.buildScreenSizeOptions(screenSize.width, screenSize.height);
             this.buildKeyboardLayoutOptions(keyboardLayout);
+            this._currentScreenSize = screenSize;
         })
     }
 
@@ -520,9 +523,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
             // take a screenshot every minute
             this.thumbnailInterval$ = timer(10000, 60000).subscribe(() => {
                 if (this.manager.isConnected()) {
-                    const {screenHeight, screenWidth} = this.instance;
+                    const {width, height} = this._currentScreenSize;
                     const thumbnailWidth = 320;
-                    this.manager.createThumbnail(thumbnailWidth, (screenHeight / screenWidth) * thumbnailWidth)
+                    this.manager.createThumbnail(thumbnailWidth, (height / width) * thumbnailWidth)
                         .then((blob) => {
                             if (blob) {
                                 this.createChecksumForThumbnail(blob).then((checksum) => {
@@ -693,6 +696,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
                 // Rebuild screen resizing options
                 this.buildScreenSizeOptions(remoteDesktopResolution.width, remoteDesktopResolution.height);
             }
+            this._currentScreenSize = remoteDesktopResolution;
         });
     }
 
