@@ -275,4 +275,19 @@ export abstract class VirtualDesktopManager {
      * Send text to the remote clipboard
      */
     public abstract sendRemoteClipboardData(text: string): void;
+
+    /**
+     * Determines whether the cursor can be shown or hidden
+     */
+    public abstract canShowHideHostCursor(): boolean;
+
+    /**
+     * Show's the host cursor
+     */
+    public abstract showHostCursor(visible: boolean): void;
+
+    /**
+     * Returns true if the host cursor is visible
+     */
+    public abstract isHostCursorShown(): boolean;
 }

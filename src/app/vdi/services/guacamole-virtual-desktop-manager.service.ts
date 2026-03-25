@@ -137,6 +137,17 @@ export class GuacamoleVirtualDesktopManager extends VirtualDesktopManager {
 
     }
 
+    public canShowHideHostCursor(): boolean {
+        return false;
+    }
+
+    showHostCursor(visible: boolean): void {
+    }
+
+    public isHostCursorShown(): boolean {
+        return false;
+    }
+
     /**
      * Receive clipboard data from the remote desktop and emit an event to the client
      */

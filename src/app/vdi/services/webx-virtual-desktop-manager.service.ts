@@ -73,6 +73,7 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
 
     private _testing: boolean = false;
     private _connectionTest: Promise<WebXMessage> = null;
+    private _hostCursorVisible = false;
 
     constructor(tunnel: WebXTunnel) {
         super();
@@ -187,6 +188,28 @@ export class WebXVirtualDesktopManager extends VirtualDesktopManager {
     sendRemoteClipboardData(text: string): void {
         this._client.sendClipboardContent(text);
         this.onRemoteClipboardData.next({ content: text, event: 'sent'});
+    }
+
+    public canShowHideHostCursor(): boolean {
+        return true;
+    }
+
+    public showHostCursor(visible: boolean): void {
+        const overlay = document.getElementById('webx-overlay');
+        if (!overlay) {
+            return;
+        }
+        if (visible) {
+            overlay.style.cursor = 'default';
+
+        } else {
+            overlay.style.cursor = 'none';
+        }
+        this._hostCursorVisible = visible;
+    }
+
+    public isHostCursorShown(): boolean {
+        return this._hostCursorVisible;
     }
 
     private _onConnected(): void {
