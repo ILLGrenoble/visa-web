@@ -167,7 +167,7 @@ export abstract class VirtualDesktopManager {
      * Returns whether screen resizing is available in the remote desktop
      */
     public isScreenResizingAvailable():boolean {
-        return this.onScreenInfo.getValue().resizingAvailable;
+        return this.onScreenInfo.getValue()?.resizingAvailable;
     }
 
     /**
