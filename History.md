@@ -1,3 +1,10 @@
+3.8.2 25/03/2026
+================
+ - Bug fix (guacamole): check for null screen info on connection
+ - Add functions to hide/show host cursor
+ - Get correct thumbnail ratios after screen resizing
+ - Ensure that dates are valid in instance update events
+
 3.8.1 20/03/2026
 ================
  - Bug fix (firefox) on determining host screen size: estimate screen scaling when determining size on instance creation
