@@ -468,6 +468,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
         ).subscribe(({screenSize, keyboardLayout}) => {
             this.buildScreenSizeOptions(screenSize.width, screenSize.height);
             this.buildKeyboardLayoutOptions(keyboardLayout);
+            this.startScreenAutoResizing();
             this._currentScreenSize = screenSize;
         })
     }
@@ -491,16 +492,17 @@ export class InstanceComponent implements OnInit, OnDestroy {
         if (this.manager.isScreenResizingAvailable()) {
             this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
         }
+    }
 
-        // const autoOption: ScreenResolutionOption = {auto: true};
-        // // Comment this if automatically resize after connection
-        // // this.screenSizeOptions.unshift({label: 'Auto resize', value: autoOption});
-        //
-        // if (this.manager.isScreenResizingAvailable()) {
-        //     // Uncomment to automatically resize after connection
-        //     this.screenSizeOptions.unshift({label: 'Auto resize', selected: true, value: autoOption});
-        //     this.onScreenResizeSelected(autoOption);
-        // }
+    private startScreenAutoResizing(): void {
+        if (this.manager.isScreenResizingAvailable()) {
+            const autoOption = this.screenSizeOptions.find(option => option.value.auto === true);
+            if (autoOption) {
+                this.screenSizeOptions.forEach(option => option.selected = false);
+                autoOption.selected = true;
+                this.onScreenResizeSelected(autoOption.value);
+            }
+        }
     }
 
     private buildKeyboardLayoutOptions(currentKeyboardLayout: string): void {
