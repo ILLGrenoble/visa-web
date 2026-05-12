@@ -110,9 +110,6 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.selectedSingleScreenResolution = this._helper.defaultScreenResolution;
-        this.selectedArrangement = this._helper.defaultArrangement;
-
         this._selectedSingleScreenResolution.pipe(
             takeUntil(this._destroy$),
             filter(selectedSingleScreenResolution => !!selectedSingleScreenResolution),
@@ -126,6 +123,10 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
         ).subscribe(arrangement => {
             this.arrangement.next(arrangement);
         })
+
+        // Initialise values (without setting local storage).
+        this._selectedSingleScreenResolution.next(this._helper.defaultScreenResolution);
+        this._selectedArrangement.next(this._helper.defaultArrangement);
 
         this._configurationService.configuration$()
             .pipe(takeUntil(this._destroy$))

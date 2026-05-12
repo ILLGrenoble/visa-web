@@ -87,37 +87,20 @@ export class InstanceDisplayHelper {
 
     constructor() {
         const hostScreenResolution = this.getHostScreenResolution();
-        if (this.findScreenResolution(hostScreenResolution.width, hostScreenResolution.height) == null) {
-            this.screenResolutions.push(hostScreenResolution);
-            this.screenResolutions.sort((resolution1, resolution2) => resolution2.width - resolution1.width);
-        }
-
         const localScreenResolution = this.getLocalScreenResolution();
         if (localScreenResolution) {
-            if (this.screenResolutions.find(screenResolution => screenResolution.height === localScreenResolution.height && screenResolution.width === localScreenResolution.width) == null) {
-                this.screenResolutions.push(localScreenResolution);
-                this.screenResolutions.sort((resolution1, resolution2) => resolution2.width - resolution1.width);
-            }
-
-            this._defaultScreenResolution = this.findScreenResolution(localScreenResolution.width, localScreenResolution.height);
+            this._defaultScreenResolution = this.findClosestScreenResolution(localScreenResolution);
 
         } else {
-            this._defaultScreenResolution = this.findScreenResolution(hostScreenResolution.width, hostScreenResolution.height);
+            this._defaultScreenResolution = this.findClosestScreenResolution(hostScreenResolution);
         }
 
         this._defaultArrangement = this.getLocalScreenArrangement();
     }
 
     private getHostScreenResolution(): ScreenResolution {
+        // Note that if scaling is being done on firefox, the screen resolution is incorrect. For this reason we now find the closest matching resolution rather than a precise one.
         let {width, height} = window.screen;
-
-        // Fix a little bit the scaling on firefox: see if we have a non-integer dpr and scale the window size accordingly. Chrome and safari report correct window sizes, ignoring zooming.
-        const isFirefox = typeof (window as any).InstallTrigger !== 'undefined' || navigator.userAgent.includes('Firefox');
-        if (isFirefox) {
-            const dprRatio = window.devicePixelRatio / Math.floor(window.devicePixelRatio);
-            width = Math.floor(width * dprRatio);
-            height = Math.floor(height * dprRatio);
-        }
 
         return {
             label: `Host (${width} x ${height})`,
@@ -156,8 +139,25 @@ export class InstanceDisplayHelper {
         return this.arrangements.find(arrangement => arrangement.screens === 1);
     }
 
-    private findScreenResolution(width: number, height: number): ScreenResolution {
-        return this._screenResolutions.find(screenResolution => screenResolution.height === height && screenResolution.width === width)
+    private findClosestScreenResolution(target: {width: number, height: number}): ScreenResolution {
+        const targetAspect = target.width / target.height;
+
+        return this._screenResolutions.reduce((best, current) => {
+            const currentAspect = current.width / current.height;
+            const bestAspect = best.width / best.height;
+
+            const currentScore =
+                Math.abs(current.width - target.width) +
+                Math.abs(current.height - target.height) +
+                Math.abs(currentAspect - targetAspect) * 1000;
+
+            const bestScore =
+                Math.abs(best.width - target.width) +
+                Math.abs(best.height - target.height) +
+                Math.abs(bestAspect - targetAspect) * 1000;
+
+            return currentScore < bestScore ? current : best;
+        }, this._screenResolutions[0]);
     }
 
 }
