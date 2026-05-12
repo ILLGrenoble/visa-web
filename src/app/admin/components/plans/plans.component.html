@@ -59,9 +59,11 @@
                 <clr-dg-cell><input [checked]="plan.image.visible" disabled type="checkbox"/></clr-dg-cell>
                 <clr-dg-cell><input [checked]="plan.preset" disabled type="checkbox"/></clr-dg-cell>
                 <clr-dg-cell>
-                    <button (click)="onUpdate(plan)" class="btn btn-sm">Edit</button>
-                    <button (click)="onCreate(plan)" class="btn btn-sm">Clone</button>
-                    <button (click)="onDelete(plan)" class="btn btn-warning-outline btn-sm">Delete</button>
+                    <clr-button-group class="btn-sm">
+                        <clr-button (click)="onUpdate(plan)">Edit</clr-button>
+                        <clr-button (click)="onCreate(plan)">Clone</clr-button>
+                        <clr-button (click)="onDelete(plan)" class="btn-warning-outline">Delete</clr-button>
+                    </clr-button-group>
                 </clr-dg-cell>
             </clr-dg-row>
             <clr-dg-footer>

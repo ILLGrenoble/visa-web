@@ -729,6 +729,7 @@ export type ImageInput = {
     bootCommand?: Maybe<Scalars['String']>;
     autologin?: Maybe<Scalars['String']>;
     autoAcceptExtensionRequest?: Maybe<Scalars['String']>;
+    clonePlansFromImageId?: Maybe<Scalars['Int']>;
 };
 
 export type UserInput = {

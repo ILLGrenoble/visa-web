@@ -109,9 +109,11 @@
                         </span>
                     </clr-dg-cell>
                     <clr-dg-cell>
-                        <button (click)="onUpdate(flavour)" class="btn btn-sm">Edit</button>
-                        <button (click)="onCreate(flavour)" class="btn btn-sm">Clone</button>
-                        <button (click)="onDelete(flavour)" class="btn btn-warning-outline btn-sm">Delete</button>
+                        <clr-button-group class="btn-sm">
+                            <clr-button (click)="onUpdate(flavour)">Edit</clr-button>
+                            <clr-button (click)="onCreate(flavour)">Clone</clr-button>
+                            <clr-button (click)="onDelete(flavour)" class="btn-warning-outline">Delete</clr-button>
+                        </clr-button-group>
                     </clr-dg-cell>
                 </clr-dg-row>
 
@@ -151,9 +153,11 @@
                     <clr-dg-cell>{{devicePoolTotal(devicePool)}}</clr-dg-cell>
                     <clr-dg-cell>{{devicePoolUsage(devicePool)}}</clr-dg-cell>
                     <clr-dg-cell>
-                        <button (click)="onUpdateDevicePool(devicePool)" class="btn btn-sm">Edit</button>
-                        <button (click)="onCreateDevicePool(devicePool)" class="btn btn-sm">Clone</button>
-                        <button (click)="onDeleteDevicePool(devicePool)" class="btn btn-warning-outline btn-sm">Delete</button>
+                        <clr-button-group class="btn-sm">
+                            <clr-button (click)="onUpdateDevicePool(devicePool)">Edit</clr-button>
+                            <clr-button (click)="onCreateDevicePool(devicePool)">Clone</clr-button>
+                            <clr-button (click)="onDeleteDevicePool(devicePool)" class="btn-warning-outline">Delete</clr-button>
+                        </clr-button-group>
                     </clr-dg-cell>
                 </clr-dg-row>
 

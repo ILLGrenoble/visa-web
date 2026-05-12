@@ -20,7 +20,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     private _loading: boolean;
     private _multiCloudEnabled = false;
 
-    private _modalData$ = new Subject<{ image: Image, clone: boolean }>();
+    private _modalData$ = new Subject<{ image: Image, clone: boolean, cloneWithPlans: boolean }>();
     private _imageToDelete: Image;
 
     get loading(): boolean {
@@ -47,7 +47,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
-    get modalData$(): Subject<{ image: Image; clone: boolean }> {
+    get modalData$(): Subject<{ image: Image; clone: boolean, cloneWithPlans: boolean }> {
         return this._modalData$;
     }
 
@@ -133,8 +133,8 @@ export class ImagesComponent implements OnInit, OnDestroy {
     }
 
 
-    public onCreate(image?: Image): void {
-        this.modalData$.next({image: image, clone: !!image});
+    public onCreate(image?: Image, cloneWithPlans?: boolean): void {
+        this.modalData$.next({image: image, clone: !!image, cloneWithPlans: !!image && cloneWithPlans});
     }
 
     public onDelete(image: Image): void {
@@ -172,7 +172,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
     }
 
     public onUpdate(image: Image): void {
-        this.modalData$.next({image: image, clone: false});
+        this.modalData$.next({image: image, clone: false, cloneWithPlans: false});
     }
 
     public onImageSaved(): void {

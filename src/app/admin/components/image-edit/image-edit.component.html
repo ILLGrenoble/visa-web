@@ -109,7 +109,8 @@
     </div>
     <div class="modal-footer">
         <button (click)="onCancel()" class="btn btn-outline">Cancel</button>
-        <button (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
+        <button *ngIf="!isCloneWithPlans" (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save</button>
+        <button *ngIf="isCloneWithPlans" (click)="submit()" [disabled]="form.invalid" class="btn btn-primary">Save and create Plans</button>
     </div>
 
 </clr-modal>

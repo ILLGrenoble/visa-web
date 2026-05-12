@@ -23,7 +23,8 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     private _multiCloudEnabled = false;
 
     private _imageId: number;
-    private _modalData$: Subject<{image: Image, clone: boolean}>;
+    private _clonePlansFromImageId: number;
+    private _modalData$: Subject<{image: Image, clone: boolean, cloneWithPlans: boolean}>;
     private _showEditModal = false;
     private _onSave$: EventEmitter<void> = new EventEmitter<void>();
 
@@ -37,7 +38,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     @Input()
-    set modalData$(value: Subject<{ image: Image; clone: boolean }>) {
+    set modalData$(value: Subject<{ image: Image; clone: boolean, cloneWithPlans: boolean }>) {
         this._modalData$ = value;
     }
 
@@ -88,6 +89,10 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         return this._multiCloudEnabled;
     }
 
+    get isCloneWithPlans(): boolean {
+        return this._clonePlansFromImageId != null;
+    }
+
     constructor(private readonly _apollo: Apollo,
                 private readonly _notifierService: NotifierService) {
         this._form = new FormGroup({
@@ -130,12 +135,13 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         this._modalData$.pipe(
             takeUntil(this._destroy$),
         ).subscribe(data => {
-            const {image, clone} = data;
+            const {image, clone, cloneWithPlans} = data;
 
             if (image) {
                 if (clone) {
                     this._title = `Clone image`;
                     this._imageId = null;
+                    this._clonePlansFromImageId = cloneWithPlans ? image.id : null;
 
                 } else {
                     this._title = `Edit image`;
@@ -322,6 +328,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             bootCommand,
             autologin,
             autoAcceptExtensionRequest,
+            clonePlansFromImageId: this._clonePlansFromImageId
         } as ImageInput;
         this._saveImage(input);
     }
