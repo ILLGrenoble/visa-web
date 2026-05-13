@@ -16,6 +16,8 @@ export class Configuration {
     public desktop: {
         allowedClipboardUrlHosts: { host: string, https: boolean }[]
         keyboardLayouts: { layout: string, name: string, selected: boolean }[];
+        screenResizingEnabled: boolean;
+        autoScreenResize: boolean;
     };
 
     public experiments: {

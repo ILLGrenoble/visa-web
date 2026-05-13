@@ -65,6 +65,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
     public screenSizeOptions: ToolbarSelectOption<ScreenResolutionOption>[];
     public keyboardLayoutOptions: ToolbarSelectOption<string>[];
     private _keyboardLayouts: KeyboardLayoutOption[];
+    private _screenResizingEnabled: boolean;
+    private _autoScreenResize: boolean;
 
     /**
      * Hot keys
@@ -162,6 +164,8 @@ export class InstanceComponent implements OnInit, OnDestroy {
             takeUntil(this._destroy$),
         ).subscribe((configuration: Configuration) => {
             this._keyboardLayouts = configuration.desktop.keyboardLayouts.map(layout => ({name: layout.name.replace(' keyboard', ''), layout: layout.layout}));
+            this._screenResizingEnabled = configuration.desktop.screenResizingEnabled;
+            this._autoScreenResize = configuration.desktop.autoScreenResize;
         })
     }
 
@@ -280,7 +284,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     public isScreenResizingAvailable(): boolean {
-        return this.instance?.membership.role === 'OWNER' && this.manager?.isScreenResizingAvailable()
+        return this.instance?.membership.role === 'OWNER' && this.manager?.isScreenResizingAvailable() && this._screenResizingEnabled;
     }
 
     public onScreenResizeSelected(value: ScreenResolutionOption): void {
@@ -489,13 +493,13 @@ export class InstanceComponent implements OnInit, OnDestroy {
             this.screenSizeOptions.push({label: `${currentWidth}x${currentHeight}`, value: {width: currentWidth, height: currentHeight}, selected: true, hidden: true});
         }
 
-        if (this.manager.isScreenResizingAvailable()) {
+        if (this.isScreenResizingAvailable()) {
             this.screenSizeOptions.unshift({label: 'Auto resize', value: {auto: true}})
         }
     }
 
     private startScreenAutoResizing(): void {
-        if (this.manager.isScreenResizingAvailable()) {
+        if (this.isScreenResizingAvailable() && this._autoScreenResize) {
             const autoOption = this.screenSizeOptions.find(option => option.value.auto === true);
             if (autoOption) {
                 this.screenSizeOptions.forEach(option => option.selected = false);
