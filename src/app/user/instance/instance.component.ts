@@ -45,6 +45,8 @@ type KeyboardLayoutOption = { layout: string; name: string; };
     styleUrls: ['./instance.component.scss'],
 })
 export class InstanceComponent implements OnInit, OnDestroy {
+    private static SCREEN_AUTORESIZING_DISABLED = 'user.instance.desktop.autoResizingDisabled';
+
     private _helper: InstanceDisplayHelper = new InstanceDisplayHelper();
 
     public manager: VirtualDesktopManager;
@@ -288,6 +290,7 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     public onScreenResizeSelected(value: ScreenResolutionOption): void {
+        localStorage.setItem(InstanceComponent.SCREEN_AUTORESIZING_DISABLED, value.auto ? 'false' : 'true');
         if (value.auto && this._viewportResize$ == null) {
             this.manager.setScaleMode(ScaleMode.Scaled);
 
@@ -499,7 +502,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
     }
 
     private startScreenAutoResizing(): void {
-        if (this.isScreenResizingAvailable() && this._autoScreenResize) {
+        const userDisabledAutoResizing = (localStorage.getItem(InstanceComponent.SCREEN_AUTORESIZING_DISABLED) === 'true');
+
+        if (this.isScreenResizingAvailable() && this._autoScreenResize && !userDisabledAutoResizing) {
             const autoOption = this.screenSizeOptions.find(option => option.value.auto === true);
             if (autoOption) {
                 this.screenSizeOptions.forEach(option => option.selected = false);
