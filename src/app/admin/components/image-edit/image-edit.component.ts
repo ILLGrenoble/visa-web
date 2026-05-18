@@ -135,6 +135,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
         this._modalData$.pipe(
             takeUntil(this._destroy$),
         ).subscribe(data => {
+            this._clonePlansFromImageId = null;
             const {image, clone, cloneWithPlans} = data;
 
             if (image) {
