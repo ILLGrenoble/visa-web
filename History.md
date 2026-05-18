@@ -1,3 +1,11 @@
+3.8.3 18/05/2026
+================
+ - Use local storage to determine whether to auto resize desktop or not.
+ - Add screen resizing properties to desktop config.
+ - auto-resize screens by default after connection (owner only)
+ - Add possibility to clone images and create associated plans automatically.
+ - Remove custom resolutions from selection to avoid problems with firefox window zooming: find closest resolution to current window.
+
 3.8.2 25/03/2026
 ================
  - Bug fix (guacamole): check for null screen info on connection
