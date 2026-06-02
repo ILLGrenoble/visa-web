@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
 import {InstanceSessionMember} from 'app/core/graphql/types';
@@ -13,6 +13,7 @@ import {Title} from '@angular/platform-browser';
     selector: 'visa-admin-sessions',
     styleUrls: ['./sessions.component.scss'],
     templateUrl: './sessions.component.html',
+    encapsulation: ViewEncapsulation.None,
 })
 export class SessionsComponent implements OnInit, OnDestroy {
 
@@ -144,6 +145,12 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                     id
                                     uid
                                     name
+                                    plan {
+                                        image {
+                                            name
+                                            version
+                                        }
+                                    }
                                 }
                                 current
                                 protocol

@@ -67,22 +67,38 @@
                             <a class="session-box" *ngFor="let instanceSessionMember of sessions; let index = index"
                                [routerLink]="['/admin/compute/instances/', instanceSessionMember.instanceSession.instance.id]">
                                 <div class="session-box__details">
-                                <span class="session-box__details__content" style="text-align: left; font-size: 13px">
-                                    {{instanceSessionMember.instanceSession.instance.name}}
-                                </span>
-                                <span class="session-box__details__content" style="text-align: center; font-size: 13px; font-weight: 300; ">
-                                    {{instanceSessionMember.instanceSession.protocol}}
-                                </span>
-                                <span class="session-box__details__content" style="text-align: right; font-size: 10px">
-                                    {{instanceSessionMember.user.fullName}}
-                                </span>
+                                    <div class="session-box__details__content" style="font-size: 13px">
+                                        {{instanceSessionMember.instanceSession.instance.name}} ({{instanceSessionMember.instanceSession.instance.id}})
+                                    </div>
+                                    <div class="session-box__details__content" style="font-size: 11px; font-weight: 100">
+                                        {{instanceSessionMember.instanceSession.instance.plan.image.name}} ({{instanceSessionMember.instanceSession.instance.plan.image.version}}) {{instanceSessionMember.instanceSession.protocol}}
+                                    </div>
+                                    <div class="session-box__details__content" style="font-size: 11px; font-weight: 100;">
+                                        {{instanceSessionMember.user.fullName}} ({{instanceSessionMember.user.affiliation ? instanceSessionMember.user.affiliation.name : 'No affiliation'}})
+                                    </div>
+                                    <div class="session-box__details__content" style="font-size: 11px; font-weight: 100;">
+                                        {{instanceSessionMember.role}}, connected for
+                                        <clr-tooltip>
+                                            <span clrTooltipTrigger> {{instanceSessionMember.duration | timeDuration: 's'}}</span>
+                                            <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                                                <span>{{ instanceSessionMember.createdAt | date:'MMM d, y, h:mm a' }}</span>
+                                            </clr-tooltip-content>
+                                        </clr-tooltip>
+                                    </div>
                                 </div>
                                 <div class="session-box__container">
-                                    <visa-instance-thumbnail [uid]="instanceSessionMember.instanceSession.instance.uid" [refresh]="this.refreshEvent$"></visa-instance-thumbnail>
+                                    <visa-instance-thumbnail class="session-box-thumbnail" [uid]="instanceSessionMember.instanceSession.instance.uid" [refresh]="this.refreshEvent$"></visa-instance-thumbnail>
                                 </div>
                                 <div class="session-box__activity">
                                 <span class="session-box__activity__content">
-                                   {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}
+                                    last seen
+                                    <clr-tooltip>
+                                        <span clrTooltipTrigger> {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}</span>
+                                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                                            <span>{{ instanceSessionMember.lastInteractionAt | date:'MMM d, y, h:mm a' }}</span>
+                                        </clr-tooltip-content>
+                                    </clr-tooltip>
+
                                     <clr-icon size="20" *ngIf="isInteractiveSession(instanceSessionMember)"
                                               shape="mouse"
                                               class="instance-interaction"></clr-icon>
