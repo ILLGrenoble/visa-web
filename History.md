@@ -1,4 +1,8 @@
-3.8.3 18/05/2026
+3.8.4 08/06/2026
+================
+ - Improve display of admin sessions grid view.
+
+- 3.8.3 18/05/2026
 ================
  - Use local storage to determine whether to auto resize desktop or not.
  - Add screen resizing properties to desktop config.
