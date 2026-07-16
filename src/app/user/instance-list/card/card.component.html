@@ -208,6 +208,11 @@
                                 </div>
                                 JupyterLab
                             </visa-dropdown-menu-item>
+                            <visa-dropdown-menu-item *ngIf="canAccessCode()" [routerLink]="['/instances', instance.uid, 'service', 'code']">
+                                <div style="margin-right: 8px">
+                                </div>
+                                VSCode
+                            </visa-dropdown-menu-item>
                         </visa-dropdown-menu>
                     </div>
                 </div>

@@ -49,6 +49,11 @@ export const ROUTES: Routes = [
                 component: JupyterComponent,
                 canActivate: [authenticationGuard],
             },
+            {
+                path: 'instances/:id/service/:service',
+                component: JupyterComponent,
+                canActivate: [authenticationGuard],
+            },
         ],
     },
 ];

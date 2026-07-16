@@ -188,6 +188,12 @@ export class CardComponent implements OnInit, OnDestroy {
         return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
     }
 
+    public canAccessCode(): boolean {
+        const hasCodeProtocol = this.instance.hasProtocolWithName('CODE');
+
+        return (this.canConnect &&  hasCodeProtocol && this.instance.membership.isRole('OWNER'));
+    }
+
     public multiEnvAvailable(): boolean {
         return this.canAccessJupyter();
     }

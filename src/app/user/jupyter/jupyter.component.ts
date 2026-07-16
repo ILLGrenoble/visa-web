@@ -63,8 +63,18 @@ export class JupyterComponent implements OnInit, OnDestroy {
             this.analyticsService.trackPageView(title);
             this._instance = instance;
 
-            const baseUrl = environment.paths.jupyter;
-            this._jupyterUrl = `${baseUrl}/${instance.id}/lab`;
+
+            const service = this.route.snapshot.paramMap.get('service');
+            if (service) {
+                const baseUrl = `/${service}`
+                this._jupyterUrl = `${baseUrl}/${instance.id}/`;
+
+            } else {
+                const baseUrl = environment.paths.jupyter;
+                this._jupyterUrl = `${baseUrl}/${instance.id}/lab`;
+            }
+
+
 
         } else {
             this._instance = null;
