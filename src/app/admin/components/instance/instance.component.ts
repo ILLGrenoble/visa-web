@@ -280,6 +280,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
                             }
                             unitCount
                         }
+                        hypervisor {
+                            hostname
+                        }
                     }
                 }
                 `,

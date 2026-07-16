@@ -60,6 +60,14 @@
                                     {{ instance?.name }}
                                 </dd>
                             </div>
+                            <div *ngIf="instance?.hypervisor" class="admin-details-list-item">
+                                <dt>
+                                    <b>Hypervisor</b>
+                                </dt>
+                                <dd>
+                                    {{ instance?.hypervisor.hostname }}
+                                </dd>
+                            </div>
                             <div class="admin-details-list-item">
                                 <dt>
                                     <b>VDI Protocol</b>

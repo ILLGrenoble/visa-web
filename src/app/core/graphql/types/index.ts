@@ -271,6 +271,7 @@ export type Instance = {
     plan?: Maybe<Plan>;
     cloudInstance?: Maybe<CloudInstance>;
     computeId?: Maybe<Scalars['String']>;
+    hypervisor?: Maybe<Hypervisor>;
     experiments?: Maybe<Array<Maybe<Experiment>>>;
     protocols?: Maybe<Array<Maybe<ProtocolStatus>>>;
     createdAt: Scalars['String'];
