@@ -792,6 +792,9 @@ export class InstanceComponent implements OnInit, OnDestroy {
             })
             .on('vdi:access_revoked', () => {
                 this.accessRevoked = true;
+            })
+            .on('vdi:ping', ({clientId, time}) => {
+                this.eventsGateway.emit('vdi:pong', {clientId, time});
             });
     }
 
