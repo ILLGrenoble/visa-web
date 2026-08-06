@@ -122,11 +122,11 @@ export class SessionsComponent implements OnInit, OnDestroy {
     }
 
     public clientNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        return instanceSessionMember.rttSamples.map(sample => Math.round(sample.clientMeanRttMs))
+        return instanceSessionMember.rttSamples.map(sample => sample.clientMeanRttMs != null ? Math.round(sample.clientMeanRttMs) : null)
     }
 
     public instanceNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        return instanceSessionMember.rttSamples.map(sample => Math.round(sample.instanceMeanRttMs))
+        return instanceSessionMember.rttSamples.map(sample => sample.instanceMeanRttMs != null ? Math.round(sample.instanceMeanRttMs) : null)
     }
 
     private fetch(): Observable<ApolloQueryResult<any>> {
