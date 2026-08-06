@@ -33,6 +33,7 @@ import {
     TabTitleIconComponent,
     NotificationBadgeComponent,
     InstanceThumbnailComponent,
+    StatsPanelComponent,
 } from './components';
 import {AuthenticatedContainerComponent} from './containers';
 import {
@@ -162,6 +163,7 @@ export function markedOptionsFactory(): MarkedOptions {
         InstanceFilterPipe,
         NotificationBadgeComponent,
         LifetimeDurationPipe,
+        StatsPanelComponent,
     ],
     declarations: [
         MembersRoleFilterPipe,
@@ -192,6 +194,7 @@ export function markedOptionsFactory(): MarkedOptions {
         InvalidAccountDialogComponent,
         SanitizerPipe,
         NotificationBadgeComponent,
+        StatsPanelComponent,
     ]
 })
 export class SharedModule {

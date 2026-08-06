@@ -1,0 +1,9 @@
+<div class="stats-panel-container">
+    <div *ngIf="statsLatest != null" class="stats-panel-title">
+        {{ statsLatest}}{{ unit }} ({{ statsMin}}-{{ statsMax}})
+    </div>
+    <div *ngIf="statsLatest == null" class="stats-panel-title">
+
+    </div>
+    <canvas class="stats-panel-chart" #statsCanvas></canvas>
+</div>

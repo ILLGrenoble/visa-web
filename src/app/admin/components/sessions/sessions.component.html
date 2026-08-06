@@ -90,19 +90,33 @@
                                     <visa-instance-thumbnail class="session-box-thumbnail" [uid]="instanceSessionMember.instanceSession.instance.uid" [refresh]="this.refreshEvent$"></visa-instance-thumbnail>
                                 </div>
                                 <div class="session-box__activity">
-                                <span class="session-box__activity__content">
-                                    last seen
-                                    <clr-tooltip>
-                                        <span clrTooltipTrigger> {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}</span>
-                                        <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
-                                            <span>{{ instanceSessionMember.lastInteractionAt | date:'MMM d, y, h:mm a' }}</span>
-                                        </clr-tooltip-content>
-                                    </clr-tooltip>
+                                    <span class="session-box__activity__content">
+                                        last seen
+                                        <clr-tooltip>
+                                            <span clrTooltipTrigger> {{instanceSessionMember.lastInteractionAt | timeDuration: 'date'}}</span>
+                                            <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+                                                <span>{{ instanceSessionMember.lastInteractionAt | date:'MMM d, y, h:mm a' }}</span>
+                                            </clr-tooltip-content>
+                                        </clr-tooltip>
 
-                                    <clr-icon size="20" *ngIf="isInteractiveSession(instanceSessionMember)"
-                                              shape="mouse"
-                                              class="instance-interaction"></clr-icon>
-                                </span>
+                                        <clr-icon size="20" *ngIf="isInteractiveSession(instanceSessionMember)"
+                                                  shape="mouse"
+                                                  class="instance-interaction"></clr-icon>
+                                    </span>
+                                </div>
+                                <div class="session-box__stats-zone">
+                                    <div class="session-box__stats-zone__stats">
+                                        <div class="session-box__stats-zone__stats__title">
+                                            Client Network
+                                        </div>
+                                        <visa-stats-panel [data]="instanceSessionMember['clientNetworkData']" [width]="64" [height]="16" [min]="0" [unit]="'ms'"></visa-stats-panel>
+                                    </div>
+                                    <div class="session-box__stats-zone__stats">
+                                        <div class="session-box__stats-zone__stats__title">
+                                            Instance Network
+                                        </div>
+                                        <visa-stats-panel [data]="instanceSessionMember['instanceNetworkData']" [width]="64" [height]="16" [min]="0" [unit]="'ms'"></visa-stats-panel>
+                                    </div>
                                 </div>
                             </a>
                         </div>

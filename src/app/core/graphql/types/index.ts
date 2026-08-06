@@ -332,6 +332,21 @@ export type InstanceSessionMember = {
     role?: Maybe<Scalars['String']>;
     active?: Maybe<Scalars['Boolean']>;
     duration: Scalars['Int'];
+    rttSamples: DesktopSessionRttSample[];
+};
+
+export type DesktopSessionRttSample = {
+    __typename?: 'DesktopSessionRttSample';
+    id: Scalars['Int'];
+    instanceSessionMemberId: Scalars['Int'];
+    date: Scalars['String'];
+    samplePeriodMinutes: Scalars['Int'];
+    clientMeanRttMs?: Scalars['Float'];
+    clientSdRttMs?: Scalars['Float'];
+    clientRttSampleCount: Scalars['Int'];
+    instanceMeanRttMs?: Scalars['Float'];
+    instanceSdRttMs?: Scalars['Float'];
+    instanceRttSampleCount: Scalars['Int'];
 };
 
 export type InstanceJupyterSession = {

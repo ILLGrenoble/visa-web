@@ -29,7 +29,7 @@
         font-size: 12px;
         background: #fff;
         color: #111;
-        padding: 6px;
+        padding: 6px 6px 3px 6px;
         justify-content: space-between;
         &__content {
             display: block;
@@ -38,6 +38,32 @@
             line-height: 18px;
             flex: 1;
             font-weight: 100;
+        }
+    }
+    &__stats-zone {
+        width: 100%;
+        display: flex;
+        font-weight: 400;
+        font-size: 10px;
+        background: #fff;
+        color: #111;
+        padding: 0 6px 6px 6px;
+        justify-content: space-evenly;
+        &__stats {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: center;
+
+            &__title {
+                font-weight: 400;
+                font-size: 10px;
+                line-height: 10px;
+                background: #fff;
+                color: #111;
+                margin-right: 6px;
+                text-align: right;
+            }
         }
     }
     &__details {

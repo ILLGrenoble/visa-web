@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {SharedModule} from '@shared';
 import {HighchartsChartModule} from 'highcharts-angular';
 
 import {ROUTES} from './admin.routing';
@@ -84,6 +83,7 @@ import {
 import {ClrModalModule, ClrSpinnerModule} from "@clr/angular";
 import {DatePipe, NgIf} from "@angular/common";
 import {DndDraggableDirective, DndDropzoneDirective} from "ngx-drag-drop";
+import {SharedModule} from "../shared";
 
 @NgModule({
     imports: [
@@ -96,6 +96,7 @@ import {DndDraggableDirective, DndDropzoneDirective} from "ngx-drag-drop";
         ClrModalModule,
         DndDraggableDirective,
         DndDropzoneDirective,
+        SharedModule,
     ],
     declarations: [
         DashboardComponent,

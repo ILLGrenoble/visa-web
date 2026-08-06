@@ -88,6 +88,10 @@ export class SessionsComponent implements OnInit, OnDestroy {
                     this.notifierService.notify('error', `There was an error loading the sessions`);
                 }
                 this.sessions = data.sessions.data;
+                this.sessions.forEach(session => {
+                    session['clientNetworkData'] = this.clientNetworkData(session);
+                    session['instanceNetworkData'] = this.instanceNetworkData(session);
+                })
                 this.loading = loading;
             });
     }
@@ -115,6 +119,14 @@ export class SessionsComponent implements OnInit, OnDestroy {
 
     public isFullScreen(): boolean {
         return screenfull.isFullscreen;
+    }
+
+    public clientNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
+        return instanceSessionMember.rttSamples.map(sample => Math.round(sample.clientMeanRttMs))
+    }
+
+    public instanceNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
+        return instanceSessionMember.rttSamples.map(sample => Math.round(sample.instanceMeanRttMs))
     }
 
     private fetch(): Observable<ApolloQueryResult<any>> {
@@ -154,6 +166,11 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                 }
                                 current
                                 protocol
+                            }
+                            rttSamples {
+                              id
+                              clientMeanRttMs
+                              instanceMeanRttMs
                             }
                             sessionId
                             user {
