@@ -269,7 +269,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
         }, { title: ""}]
 
         this._instanceRttSamples.forEach((samples, instanceSessionMemberId) => {
-            // samples = samples.splice(1);
+            samples = samples.splice(1);
             if (samples.length > 1) {
                 const rttData = samples
                     .filter(sample => sample.mean != null)
@@ -281,7 +281,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
         });
 
         this._clientRttSamples.forEach((samples, instanceSessionMemberId) => {
-            // samples = samples.splice(1);
+            samples = samples.splice(1);
             if (samples.length > 1) {
                 const rttData = samples
                     .filter(sample => sample.mean != null)
