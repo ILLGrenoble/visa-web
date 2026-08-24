@@ -45,6 +45,9 @@ export class CloudClientDistributionBoxComponent implements OnInit, OnDestroy {
                 showInLegend: true,
             },
         },
+        credits: {
+            enabled: false,
+        },
         series: [{
             type: 'pie', name: 'Instances',
             colorByPoint: true,
@@ -153,6 +156,9 @@ export class CloudClientDistributionBoxComponent implements OnInit, OnDestroy {
                     },
                     showInLegend: true,
                 },
+            },
+            credits: {
+                enabled: false,
             },
         };
     }
