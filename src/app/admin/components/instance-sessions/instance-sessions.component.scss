@@ -1,0 +1,28 @@
+.instance-sessions-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: flex-start;
+}
+
+.instance-sessions-table {
+    flex: 1;
+    margin-right: 6px;
+}
+
+.instance-sessions-network-chart {
+    flex: 1;
+    margin-left: 6px;
+    width: 100%;
+}
+
+.instance-session-network-highcharts {
+    display: block;
+}
+
+.instance-sessions-network-separate-toggle {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 16px;
+}

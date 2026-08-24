@@ -1,14 +1,32 @@
-<clr-datagrid [clrDgLoading]="loading">
-    <clr-dg-column>ID</clr-dg-column>
-    <clr-dg-column>User</clr-dg-column>
-    <clr-dg-column>Role</clr-dg-column>
-    <clr-dg-column>Creation</clr-dg-column>
-    <clr-dg-column>Time connected</clr-dg-column>
-    <clr-dg-row *ngFor="let session of sessions">
-        <clr-dg-cell>{{ session.id }}</clr-dg-cell>
-        <clr-dg-cell>{{ session.user.fullName }}</clr-dg-cell>
-        <clr-dg-cell>{{ session.role | titlecase }}</clr-dg-cell>
-        <clr-dg-cell>{{ session.createdAt | date:'dd-MM-yyyy HH:mm:ss' }}</clr-dg-cell>
-        <clr-dg-cell>{{ session.duration | timeDuration:'seconds'}}</clr-dg-cell>
-    </clr-dg-row>
-</clr-datagrid>
+<div class="instance-sessions-container">
+    <div class="instance-sessions-table">
+        <clr-datagrid [clrDgLoading]="loading">
+            <clr-dg-column>ID</clr-dg-column>
+            <clr-dg-column>User</clr-dg-column>
+            <clr-dg-column>Role</clr-dg-column>
+            <clr-dg-column>Creation</clr-dg-column>
+            <clr-dg-column>Time connected</clr-dg-column>
+            <clr-dg-row *ngFor="let session of sessions">
+                <clr-dg-cell>{{ session.id }}</clr-dg-cell>
+                <clr-dg-cell>{{ session.user.fullName }}</clr-dg-cell>
+                <clr-dg-cell>{{ session.role | titlecase }}</clr-dg-cell>
+                <clr-dg-cell>{{ session.createdAt | date:'dd-MM-yyyy HH:mm:ss' }}</clr-dg-cell>
+                <clr-dg-cell>{{ session.duration | timeDuration:'seconds'}}</clr-dg-cell>
+            </clr-dg-row>
+        </clr-datagrid>
+    </div>
+    <div *ngIf="!loading" class="instance-sessions-network-chart">
+
+        <highcharts-chart [options]="chartOptions"
+                          [Highcharts]="highcharts"
+                          class="instance-session-network-highcharts"
+        >
+        </highcharts-chart>
+        <div class="instance-sessions-network-separate-toggle">
+            <clr-toggle-wrapper style="margin-left: 16px; padding-top: 7px">
+                <label>Separate client and instance times</label>
+                <input type="checkbox" clrToggle [(ngModel)]="separateRTTCharts" />
+            </clr-toggle-wrapper>
+        </div>
+    </div>
+</div>

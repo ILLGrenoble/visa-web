@@ -287,6 +287,7 @@ export type Instance = {
     vdiProtocol: ImageProtocol;
     deviceAllocations: Maybe<Array<Maybe<InstanceDeviceAllocation>>>;
     bookingToken: Maybe<BookingToken>;
+    rttSamples: DesktopSessionRttSample[];
 };
 
 export type InstanceConnection = {
