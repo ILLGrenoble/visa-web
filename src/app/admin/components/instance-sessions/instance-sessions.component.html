@@ -1,4 +1,9 @@
-<div class="instance-sessions-container">
+<div *ngIf="sessions?.length == 0" class="instance-sessions-container">
+    <div style="font-size: 14px; color: rgb(51, 51, 51); font-weight: normal">
+        No session data available
+    </div>
+</div>
+<div *ngIf="sessions?.length > 0" class="instance-sessions-container">
     <div class="instance-sessions-table">
         <div style="font-size: 14px; color: rgb(51, 51, 51); font-weight: normal">
             Instance session data
