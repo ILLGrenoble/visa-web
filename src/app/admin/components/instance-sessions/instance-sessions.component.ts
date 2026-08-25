@@ -29,7 +29,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<boolean> = new BehaviorSubject<boolean>(true);
 
-    private _separateRTTCharts: boolean = true;
+    private _separateRTTCharts: boolean = false;
 
     private _highcharts: typeof Highcharts = Highcharts;
 
@@ -266,27 +266,27 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     color: '#606060'
                 }
             },
-        }, { title: ""}]
+        }, { title: null}]
 
         this._instanceRttSamples.forEach((samples, instanceSessionMemberId) => {
-            samples = samples.splice(1);
-            if (samples.length > 1) {
+            if (samples.length > 2) {
                 const rttData = samples
+                    .filter((sample, index) => index > 0)
                     .filter(sample => sample.mean != null)
                     .map(sample => {
-                    return { x: Date.parse(sample.date), y: sample.mean };
-                });
+                        return { x: Date.parse(sample.date), y: +sample.mean.toFixed(2) };
+                    });
                 this._chartOptions.series.push({ name: `Instance RTT (ms) for Session ${instanceSessionMemberId}`, data: rttData, type: 'line', showInLegend: false, color: '#444444', yAxis: 0 });
             }
         });
 
         this._clientRttSamples.forEach((samples, instanceSessionMemberId) => {
-            samples = samples.splice(1);
-            if (samples.length > 1) {
+            if (samples.length > 2) {
                 const rttData = samples
+                    .filter((sample, index) => index > 0)
                     .filter(sample => sample.mean != null)
                     .map(sample => {
-                        return { x: Date.parse(sample.date), y: sample.mean };
+                        return { x: Date.parse(sample.date), y: +sample.mean.toFixed(2) };
                     });
                 this._chartOptions.series.push({ name: `Client RTT (ms) for Session ${instanceSessionMemberId}`, data: rttData, type: 'line', showInLegend: false, yAxis: clientRttAxis });
             }
