@@ -33,12 +33,25 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
 
     private _highcharts: typeof Highcharts = Highcharts;
 
+    private _selectedSessions = [];
+
     private _chartDefaultOptions: any = {
         chart: {
             type: 'line',
             zoomType: 'x',
             panning: true,
             panKey: 'shift',
+            animation: false,
+            style: {
+                fontFamily: "Metropolis, 'Avenir Next', 'Helvetica Neue', Arial, sans-serif",
+            }
+        },
+        plotOptions: {
+            series: {
+                marker: {
+                    enabled: false,
+                }
+            },
         },
         title: {
             style: {
@@ -52,7 +65,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                 fontSize: 12,
                 // fontWeight: 'normal',
             },
-            text: 'Instances times in dark grey, client times are coloured'
+            text: 'Instances times in black, client times are coloured'
         },
         xAxis: {
             type: 'datetime',
@@ -269,6 +282,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
         }, { title: null}]
 
         this._instanceRttSamples.forEach((samples, instanceSessionMemberId) => {
+            const includeSession = this._selectedSessions.length == 0 ? true : this.isSessionSelected(instanceSessionMemberId);
             if (samples.length > 2) {
                 const rttData = samples
                     .filter((sample, index) => index > 0)
@@ -276,11 +290,12 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     .map(sample => {
                         return { x: Date.parse(sample.date), y: +sample.mean.toFixed(2) };
                     });
-                this._chartOptions.series.push({ name: `Instance RTT (ms) for Session ${instanceSessionMemberId}`, data: rttData, type: 'line', showInLegend: false, color: '#444444', yAxis: 0 });
+                this._chartOptions.series.push({ name: `Instance RTT (ms) for Session ${instanceSessionMemberId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, color: '#000', yAxis: 0 });
             }
         });
 
         this._clientRttSamples.forEach((samples, instanceSessionMemberId) => {
+            const includeSession = this._selectedSessions.length == 0 ? true : this.isSessionSelected(instanceSessionMemberId);
             if (samples.length > 2) {
                 const rttData = samples
                     .filter((sample, index) => index > 0)
@@ -288,10 +303,23 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     .map(sample => {
                         return { x: Date.parse(sample.date), y: +sample.mean.toFixed(2) };
                     });
-                this._chartOptions.series.push({ name: `Client RTT (ms) for Session ${instanceSessionMemberId}`, data: rttData, type: 'line', showInLegend: false, yAxis: clientRttAxis });
+                this._chartOptions.series.push({ name: `Client RTT (ms) for Session ${instanceSessionMemberId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, yAxis: clientRttAxis });
             }
         });
+    }
 
+    selectSession(id: number): void {
+        if (this._selectedSessions.includes(id)) {
+            this._selectedSessions = this._selectedSessions.filter(sessionId => sessionId !== id);
+
+        } else {
+            this._selectedSessions.push(id)
+        }
+        this.createChartData();
+    }
+
+    isSessionSelected(id: number): boolean {
+        return this._selectedSessions.includes(id);
     }
 
 }

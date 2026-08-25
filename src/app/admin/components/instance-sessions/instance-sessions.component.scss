@@ -8,6 +8,11 @@
 .instance-sessions-table {
     flex: 1;
     margin-right: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    text-align: center;
 }
 
 .instance-sessions-network-chart {
