@@ -25,13 +25,19 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
     private _instanceRttSamples: Map<number, Sample[]> = new Map();
 
     private _instance: Instance;
-    private _loading = true;
+    private _loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _refresh$: Subject<boolean> = new BehaviorSubject<boolean>(true);
 
     private _separateRTTCharts: boolean = false;
 
     private _highcharts: typeof Highcharts = Highcharts;
+
+    private _chart: Highcharts.Chart;
+
+    chartCallback = (chart) => {
+        this._chart = chart;
+    };
 
     private _selectedSessions = [];
 
@@ -93,14 +99,6 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
 
     private _chartOptions = {...this._chartDefaultOptions};
 
-    public get destroy$(): Subject<boolean> {
-        return this._destroy$;
-    }
-
-    public set destroy$(value: Subject<boolean>) {
-        this._destroy$ = value;
-    }
-
     get refresh$(): Subject<boolean> {
         return this._refresh$;
     }
@@ -119,11 +117,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
     }
 
     get loading(): boolean {
-        return this._loading;
-    }
-
-    set loading(value: boolean) {
-        this._loading = value;
+        return this._loading$.getValue();
     }
 
     @Input()
@@ -161,8 +155,18 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
             time: {useUTC: false},
         })
 
-        this.refresh$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-            this.loading = true;
+        this._loading$.pipe(takeUntil(this._destroy$)).subscribe(loading => {
+            if (this._chart) {
+                if (loading) {
+                    this._chart.showLoading();
+                } else {
+                    this._chart.hideLoading();
+                }
+            }
+        })
+
+        this.refresh$.pipe(takeUntil(this._destroy$)).subscribe(() => {
+            this._loading$.next(true);
             this.apollo.query<any>({
                 query: gql`
                 query Instance($id: Int!) {
@@ -201,7 +205,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                 .pipe(
                     takeUntil(this._destroy$),
                     map(({data}) => data.instance),
-                    tap(() => this.loading = false),
+                    tap(() => this._loading$.next(false)),
                 )
                 .subscribe((instance: Instance) => {
                     this.sessions = instance.sessions;
@@ -238,8 +242,8 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        this.destroy$.next(true);
-        this.destroy$.unsubscribe();
+        this._destroy$.next(true);
+        this._destroy$.unsubscribe();
     }
 
     private createChartData(): void {
@@ -306,6 +310,10 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                 this._chartOptions.series.push({ name: `Client RTT (ms) for Session ${instanceSessionMemberId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, yAxis: clientRttAxis });
             }
         });
+
+        if (this._chart) {
+            this._chart.zoomOut();
+        }
     }
 
     selectSession(id: number): void {

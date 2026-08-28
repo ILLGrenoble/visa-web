@@ -29,10 +29,11 @@
             </clr-datagrid>
         </div>
     </div>
-    <div *ngIf="!loading" class="instance-sessions-network-chart">
+    <div class="instance-sessions-network-chart">
 
         <highcharts-chart [options]="chartOptions"
                           [Highcharts]="highcharts"
+                          [callbackFunction]="chartCallback"
                           class="instance-session-network-highcharts"
         >
         </highcharts-chart>
