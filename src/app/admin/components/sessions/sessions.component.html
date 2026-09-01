@@ -104,7 +104,9 @@
                                                   class="instance-interaction"></clr-icon>
                                     </span>
                                 </div>
-                                <div class="session-box__stats-zone">
+                                <div *ngIf="instanceSessionMember.instanceSession.protocol != 'webx'" class="session-box__stats-zone">
+                                </div>
+                                <div *ngIf="instanceSessionMember.instanceSession.protocol == 'webx'" class="session-box__stats-zone">
                                     <div class="session-box__stats-zone__stats">
                                         <div class="session-box__stats-zone__stats__title">
                                             Client Network

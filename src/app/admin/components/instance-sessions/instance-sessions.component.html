@@ -29,7 +29,7 @@
             </clr-datagrid>
         </div>
     </div>
-    <div class="instance-sessions-network-chart">
+    <div *ngIf="instance.vdiProtocol.name == 'WEBX'" class="instance-sessions-network-chart">
 
         <highcharts-chart [options]="chartOptions"
                           [Highcharts]="highcharts"
