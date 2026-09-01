@@ -113,6 +113,12 @@ export class HypervisorsComponent implements OnInit, OnDestroy {
                                     total
                                     usage
                                 }
+                                instanceRTTStats {
+                                    mean
+                                    standardDeviation
+                                    sampleCount
+                                    firstSampleDate
+                                }
                             }
                             devicePools {
                                 name

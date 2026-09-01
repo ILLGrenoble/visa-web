@@ -9,7 +9,7 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import {BehaviorSubject, fromEvent, Subject} from 'rxjs';
+import {BehaviorSubject, fromEvent, min, Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
 import {Hypervisor, HypervisorResource, DevicePool, Flavour, Instance} from '../../../core/graphql';
 import * as Highcharts from "highcharts";
@@ -53,6 +53,10 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
     private _draggableChange: EventEmitter<{instance: Instance, hypervisor: Hypervisor}> = new EventEmitter();
     private _onMigrateRequest$: EventEmitter<{instance: Instance, source: Hypervisor, target: Hypervisor}> = new EventEmitter();
     private _reloadAllocations$: Subject<void>;
+
+    private _latestInstanceRTTMean: number;
+    private _maxInstanceRTTMean: number;
+    private _minInstanceRTTMean: number;
 
     @ViewChild('hyperv') _hypervisorElement: ElementRef;
     @ViewChild('hypervinstances') _instancesElement: ElementRef;
@@ -138,6 +142,19 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
 
     get acceptDrop(): boolean {
         return this._acceptDrop;
+    }
+
+
+    get latestInstanceRTTMean(): number {
+        return this._latestInstanceRTTMean;
+    }
+
+    get maxInstanceRTTMean(): number {
+        return this._maxInstanceRTTMean;
+    }
+
+    get minInstanceRTTMean(): number {
+        return this._minInstanceRTTMean;
     }
 
     @Input()
@@ -295,6 +312,12 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
                                     }
                                 }
                             }
+                            instanceRTTStats {
+                                mean
+                                standardDeviation
+                                sampleCount
+                                firstSampleDate
+                            }
                         }
                     }
                 `,
@@ -305,6 +328,22 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
                 tap(() => this._loading = false)
             ).subscribe(({hypervisor}) => {
                 this._hypervisor.allocations = hypervisor.allocations;
+                this._hypervisor.instanceRTTStats = hypervisor.instanceRTTStats;
+
+                this._latestInstanceRTTMean = hypervisor.instanceRTTStats.length > 0 ? hypervisor.instanceRTTStats[hypervisor.instanceRTTStats.length - 1].mean : null;
+                this._minInstanceRTTMean = hypervisor.instanceRTTStats.reduce((min, stat) => {
+                    if (min == null || stat.mean < min) {
+                        return stat.mean;
+                    }
+                    return min;
+                }, null)
+                this._maxInstanceRTTMean = hypervisor.instanceRTTStats.reduce((max, stat) => {
+                    if (max == null || stat.mean > max) {
+                        return stat.mean;
+                    }
+                    return max;
+                }, null)
+
                 this._instanceCount = hypervisor.allocations?.reduce((acc, current) => {
                     acc = acc + (current.instance != null ? 1 : 0);
                     return acc;

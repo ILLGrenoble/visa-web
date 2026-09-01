@@ -173,6 +173,13 @@ export type HypervisorAllocation = {
     serverComputeId: Scalars['String'];
 }
 
+export type SampleStats = {
+    mean: Scalars['Int'];
+    standardDeviation: Scalars['Int'];
+    sampleCount: Scalars['Int'];
+    firstSampleDate: Maybe<Scalars['String']>;
+}
+
 export type Hypervisor = {
     id: Scalars['Int'];
     computeId: Scalars['String'];
@@ -182,6 +189,7 @@ export type Hypervisor = {
     cloudId: Scalars['Int'];
     resources: Array<HypervisorResource>;
     allocations: Array<HypervisorAllocation>;
+    instanceRTTStats: Array<Maybe<SampleStats>>
 }
 
 export type FlavourAvailability = {

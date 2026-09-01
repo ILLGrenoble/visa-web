@@ -7,6 +7,11 @@
         <div class="hypervisor__title">
             {{hypervisor.hostname}}
         </div>
+        <div class="hypervisor__ping">
+            <div *ngIf="latestInstanceRTTMean != null">
+                Mean desktop ping: {{latestInstanceRTTMean | number : '1.1-1'}}ms ({{minInstanceRTTMean | number : '1.1-1'}}-{{maxInstanceRTTMean | number : '1.1-1'}})
+            </div>
+        </div>
         <div class="hypervisor__content">
 
             <div class="hypervisor-resources">
