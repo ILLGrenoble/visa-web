@@ -15,6 +15,7 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
     private _availableVdiProtocols: Protocol[] = null;
     private _vdiProtocol$: BehaviorSubject<Protocol> = new BehaviorSubject(null);
     private _showAdvancedSettings = false;
+    private _advancedSettingsAvailable = false;
     private _plan: Plan;
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
@@ -37,6 +38,7 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
         this._plan = plan;
         this._availableVdiProtocols = plan?.image.availableVdiProtocols();
         this._updateVdiProtocol();
+        this._advancedSettingsAvailable = this.vdiProtocolChoiceAvailable;
     }
 
     public get destroy$(): Subject<boolean> {
@@ -93,6 +95,10 @@ export class InstanceDisplaySelectComponent implements OnInit, OnDestroy {
 
     set showAdvancedSettings(value: boolean) {
         this._showAdvancedSettings = value;
+    }
+
+    get advancedSettingsAvailable(): boolean {
+        return this._advancedSettingsAvailable;
     }
 
     @Output("vdiProtocol")

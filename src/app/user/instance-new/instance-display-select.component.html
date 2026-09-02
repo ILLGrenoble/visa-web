@@ -35,7 +35,7 @@
     </ul>
 </div>
 
-<clr-toggle-container clrInline>
+<clr-toggle-container clrInline *ngIf="advancedSettingsAvailable">
     <clr-toggle-wrapper>
         <input type="checkbox" clrToggle name="experimentFree" [(ngModel)]="showAdvancedSettings"/>
         <label>Advanced display settings</label>
