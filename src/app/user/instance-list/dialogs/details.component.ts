@@ -143,10 +143,10 @@ export class DetailsDialog implements OnInit {
 
     getProtocolDescription(protocol: Protocol): string {
         if (protocol.name === 'GUACD') {
-            return 'Proven remote desktop protocol but can have noticeable latency and limited graphical quality';
+            return 'Legacy remote desktop protocol but can have noticeable latency and limited graphical quality';
 
         } else if (protocol.name === 'WEBX') {
-            return 'Experimental remote desktop protocol with low latency and high graphical quality';
+            return 'Newer remote desktop protocol with low latency and high graphical quality';
         }
         return null;
     }
