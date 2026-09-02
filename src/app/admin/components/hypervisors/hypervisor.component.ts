@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {BehaviorSubject, fromEvent, min, Subject} from 'rxjs';
 import {Apollo} from 'apollo-angular';
-import {Hypervisor, HypervisorResource, DevicePool, Flavour, Instance} from '../../../core/graphql';
+import {Hypervisor, HypervisorResource, DevicePool, Flavour, Instance, SampleStats} from '../../../core/graphql';
 import * as Highcharts from "highcharts";
 import {map, takeUntil, tap} from "rxjs/operators";
 import gql from "graphql-tag";
@@ -187,6 +187,8 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
     }
 
     public ngOnInit(): void {
+        this._calculateRTTStats();
+
         this._reloadAllocations();
 
         this._reloadAllocations$.pipe(
@@ -330,19 +332,7 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
                 this._hypervisor.allocations = hypervisor.allocations;
                 this._hypervisor.instanceRTTStats = hypervisor.instanceRTTStats;
 
-                this._latestInstanceRTTMean = hypervisor.instanceRTTStats.length > 0 ? hypervisor.instanceRTTStats[hypervisor.instanceRTTStats.length - 1].mean : null;
-                this._minInstanceRTTMean = hypervisor.instanceRTTStats.reduce((min, stat) => {
-                    if (min == null || stat.mean < min) {
-                        return stat.mean;
-                    }
-                    return min;
-                }, null)
-                this._maxInstanceRTTMean = hypervisor.instanceRTTStats.reduce((max, stat) => {
-                    if (max == null || stat.mean > max) {
-                        return stat.mean;
-                    }
-                    return max;
-                }, null)
+                this._calculateRTTStats();
 
                 this._instanceCount = hypervisor.allocations?.reduce((acc, current) => {
                     acc = acc + (current.instance != null ? 1 : 0);
@@ -403,5 +393,21 @@ export class HypervisorComponent implements OnInit, OnDestroy, AfterViewInit, Af
 
     private _getResourceValue(resources: HypervisorResource[], resourceClass: string) {
         return resources.find((resource) => resource.resourceClass === resourceClass);
+    }
+
+    private _calculateRTTStats(): void {
+        this._latestInstanceRTTMean = this._hypervisor.instanceRTTStats.length > 0 ? this._hypervisor.instanceRTTStats[this._hypervisor.instanceRTTStats.length - 1].mean : null;
+        this._minInstanceRTTMean = this._hypervisor.instanceRTTStats.reduce((min: number, stat: SampleStats) => {
+            if (min == null || stat.mean < min) {
+                return stat.mean;
+            }
+            return min;
+        }, null)
+        this._maxInstanceRTTMean = this._hypervisor.instanceRTTStats.reduce((max: number, stat: SampleStats) => {
+            if (max == null || stat.mean > max) {
+                return stat.mean;
+            }
+            return max;
+        }, null)
     }
 }

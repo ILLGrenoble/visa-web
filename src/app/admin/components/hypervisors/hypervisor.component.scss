@@ -7,12 +7,12 @@ $hypervisor-selected-color: #7eb2d6;
 }
 
 .hypervisor {
-    min-height: 320px;
+    min-height: 332px;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
+    align-items: stretch;
     border: 1px solid #d5d5d5;
     color: #666;
 
@@ -20,6 +20,7 @@ $hypervisor-selected-color: #7eb2d6;
         font-weight: 400;
         font-size: 12pt;
         line-height: 30px;
+        text-align: center;
     }
 
     &__content {
@@ -32,9 +33,23 @@ $hypervisor-selected-color: #7eb2d6;
     }
 
     &__ping {
-        font-size: 10pt;
-        line-height: 20px;
-        height: 20px;
+        height: 28px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        margin-bottom: 4px;
+
+        &__main {
+            text-align: center;
+            font-size: 10pt;
+            line-height: 20px;
+        }
+        &__sub {
+            text-align: center;
+            font-size: 8pt;
+            line-height: 8px;
+        }
     }
 
     &__disabled {
