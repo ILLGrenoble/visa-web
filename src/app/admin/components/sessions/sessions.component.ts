@@ -123,15 +123,11 @@ export class SessionsComponent implements OnInit, OnDestroy {
     }
 
     public clientNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        const times = instanceSessionMember.rttSamples.map(sample => sample.clientMeanRttMs);
-        const max = this._roundTimes(times);
-        return times.map(time => time == null ? null : max < 10 ? +time.toFixed(1) : Math.round(time));
+        return instanceSessionMember.rttSamples.map(sample => sample.clientMeanRttMs);
     }
 
     public instanceNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        const times = instanceSessionMember.rttSamples.map(sample => sample.instanceMeanRttMs);
-        const max = this._roundTimes(times);
-        return times.map(time => time == null ? null : max < 10 ? +time.toFixed(1) : Math.round(time));
+        return instanceSessionMember.rttSamples.map(sample => sample.instanceMeanRttMs);
     }
 
     private _roundTimes(times: number[]): number {

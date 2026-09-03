@@ -17,7 +17,7 @@ export class StatsPanelComponent implements AfterViewInit, OnInit {
     private _height: number = 16;
     private _unit: string = '';
     private _min: number;
-    private _data = [];
+    private _data: number[] = [];
 
     // Test for rendering:
     // private _data = [
@@ -116,10 +116,13 @@ export class StatsPanelComponent implements AfterViewInit, OnInit {
 
     private analyze(): void {
         if (this._data.length > this._width) {
-            this.data = this._data.slice(this._data.length - this._width);
+            this._data = this._data.slice(this._data.length - this._width);
         }
-        this._statsMin = this._data.length > 0 ? this._data.filter(value => value != null).reduce((a, b) => a < b ? a : b, 999999) : null;
-        this._statsMax = this._data.length > 0 ? this._data.filter(value => value != null).reduce((a, b) => a > b ? a : b, -999999) : null;
+        const max = this._data.reduce((max: number, val: number) => (max == null || (val != null && val > max)) ? val : max, null)
+        this._data = this._data.map(time => time == null ? null : max < 10 ? +time.toFixed(1) : Math.round(time));
+
+        this._statsMin = this._data.reduce((max: number, val: number) => (max == null || (val != null && val < max)) ? val : max, null);
+        this._statsMax = this._data.reduce((max: number, val: number) => (max == null || (val != null && val > max)) ? val : max, null);
         this._statsLatest = this._data.length > 0 ? this._data[this._data.length - 1] : null;
     }
 
