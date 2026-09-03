@@ -8,6 +8,7 @@ import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
 import screenfull from 'screenfull';
 import {ApolloQueryResult} from '@apollo/client';
 import {Title} from '@angular/platform-browser';
+import {DesktopSessionRttSample} from "../../../core/graphql";
 
 @Component({
     selector: 'visa-admin-sessions',
@@ -122,11 +123,19 @@ export class SessionsComponent implements OnInit, OnDestroy {
     }
 
     public clientNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        return instanceSessionMember.rttSamples.map(sample => sample.clientMeanRttMs != null ? Math.round(sample.clientMeanRttMs) : null)
+        const times = instanceSessionMember.rttSamples.map(sample => sample.clientMeanRttMs);
+        const max = this._roundTimes(times);
+        return times.map(time => time == null ? null : max < 10 ? +time.toFixed(1) : Math.round(time));
     }
 
     public instanceNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        return instanceSessionMember.rttSamples.map(sample => sample.instanceMeanRttMs != null ? +sample.instanceMeanRttMs.toFixed(1) : null)
+        const times = instanceSessionMember.rttSamples.map(sample => sample.instanceMeanRttMs);
+        const max = this._roundTimes(times);
+        return times.map(time => time == null ? null : max < 10 ? +time.toFixed(1) : Math.round(time));
+    }
+
+    private _roundTimes(times: number[]): number {
+        return times.reduce((max: number, val: number) => (max == null || (val != null && val > max)) ? val : max, null);
     }
 
     private fetch(): Observable<ApolloQueryResult<any>> {
