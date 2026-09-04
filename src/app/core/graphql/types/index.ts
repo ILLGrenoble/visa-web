@@ -244,7 +244,7 @@ export type Image = {
     bootCommand: Scalars['String'];
     cloudClient?: Maybe<CloudClient>;
     cloudId: Maybe<Scalars['Int']>;
-    autoAcceptExtensionRequest: Maybe<Scalars['String']>;
+    extensionRequestPolicy: Maybe<Scalars['String']>;
 };
 
 export type ImageConnection = {
@@ -753,7 +753,7 @@ export type ImageInput = {
     secondaryVdiProtocolId?: Maybe<Scalars['Int']>;
     bootCommand?: Maybe<Scalars['String']>;
     autologin?: Maybe<Scalars['String']>;
-    autoAcceptExtensionRequest?: Maybe<Scalars['String']>;
+    extensionRequestPolicy?: Maybe<Scalars['String']>;
     clonePlansFromImageId?: Maybe<Scalars['Int']>;
 };
 

@@ -41,6 +41,9 @@ export class Image {
     @JsonProperty('deleted', Boolean, true)
     private _deleted: boolean = undefined;
 
+    @JsonProperty('extensionRequestPolicy', String, true)
+    private _extensionRequestPolicy: string = undefined;
+
     get nameAndVersion(): string {
         let value = this._name;
         if (!!this._version) {
@@ -61,6 +64,7 @@ export class Image {
         this.visible = data.visible;
         this.deleted = data.deleted;
         this.bootCommand = data.bootCommand;
+        this.extensionRequestPolicy = data.extensionRequestPolicy;
         return this;
     }
 
@@ -158,6 +162,14 @@ export class Image {
 
     public set deleted(value: boolean) {
         this._deleted = value;
+    }
+
+    get extensionRequestPolicy(): string {
+        return this._extensionRequestPolicy;
+    }
+
+    set extensionRequestPolicy(value: string) {
+        this._extensionRequestPolicy = value;
     }
 
     public hasProtocolWithName(protocolName: string): boolean {

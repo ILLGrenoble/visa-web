@@ -106,7 +106,7 @@ export class ImagesComponent implements OnInit, OnDestroy {
                                   id
                                   name
                                 }
-                                autoAcceptExtensionRequest
+                                extensionRequestPolicy
                             }
                             cloudClients {
                                 id

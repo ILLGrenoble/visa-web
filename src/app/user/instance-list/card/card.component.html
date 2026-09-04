@@ -65,13 +65,13 @@
                             WARNING!
                         </div>
                         <span *ngIf="willExpireFromInactivity()" class="instance-card-expiration__info">
-                        This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
-                    </span>
+                            This instance is scheduled to be deleted <b>{{expirationCountdown}}</b>. Connect to the instance to extend its lifetime.
+                        </span>
                         <span *ngIf="!willExpireFromInactivity()" class="instance-card-expiration__info">
-                        This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
-                    </span>
+                            This instance will be deleted <b>{{expirationCountdown}}</b> due to reaching the end of its lifetime
+                        </span>
                     </div>
-                    <button *ngIf="!willExpireFromInactivity() && isOwner()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="!requestExtensionEnabled">
+                    <button *ngIf="canRequestExtension()" class="instance-card-button" (click)="requestExtension($event)" [disabled]="extensionState == 'PENDING'">
                         <clr-icon shape="pencil" class="is-solid"> </clr-icon> Request extension
                     </button>
                 </div>

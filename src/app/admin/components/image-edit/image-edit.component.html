@@ -84,13 +84,14 @@
                     <clr-control-helper>Automatic login is possible if the VISA PAM module has been installed in the image</clr-control-helper>
                 </clr-select-container>
                 <clr-select-container>
-                    <label for="autoAcceptExtension">Auto Grant Extension</label>
-                    <select clrSelect id="autoAcceptExtension" formControlName="autoAcceptExtensionRequest">
-                        <option value="NONE">No one</option>
-                        <option value="STAFF">Staff only</option>
-                        <option value="ALL">Everyone</option>
+                    <label for="extensionRequestPolicy">Instance Extension Policy</label>
+                    <select clrSelect id="extensionRequestPolicy" formControlName="extensionRequestPolicy">
+                        <option value="AVAILABLE">Available (users can request instance extensions)</option>
+                        <option value="AUTO_STAFF">Automatically accepted for staff only</option>
+                        <option value="AUTO_ALL">Automatically accepted for everyone</option>
+                        <option value="UNAVAILABLE">Unavailable (instance extensions are not proposed)</option>
                     </select>
-                    <clr-control-helper>Automatically accepts instance extension requests</clr-control-helper>
+                    <clr-control-helper>Specifies instance extension request policy</clr-control-helper>
                 </clr-select-container>
                 <clr-textarea-container>
                     <label for="bootCommand">Boot command</label>

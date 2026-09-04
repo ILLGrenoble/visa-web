@@ -12,6 +12,9 @@ export class InstanceExtensionRequest {
     @JsonProperty('createdAt', String)
     private _createdAt: string = undefined;
 
+    @JsonProperty('state', String)
+    private _state: string = undefined;
+
     public get id(): number {
         return this._id;
     }
@@ -34,5 +37,13 @@ export class InstanceExtensionRequest {
 
     set createdAt(value: string) {
         this._createdAt = value;
+    }
+
+    get state(): string {
+        return this._state;
+    }
+
+    set state(value: string) {
+        this._state = value;
     }
 }

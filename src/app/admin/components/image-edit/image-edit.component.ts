@@ -105,7 +105,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             description: new FormControl(null),
             protocols: new FormControl(null),
             autologin: new FormControl(null),
-            autoAcceptExtensionRequest: new FormControl(null),
+            extensionRequestPolicy: new FormControl(null),
             bootCommand: new FormControl(null),
             defaultVdiProtocol: new FormControl(null, Validators.required),
             secondaryVdiProtocol: new FormControl(null, this._secondaryVdiProtocolValidator.bind(this)),
@@ -235,7 +235,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             defaultVdiProtocol: null,
             secondaryVdiProtocol: null,
             autologin: null,
-            autoAcceptExtensionRequest: null,
+            extensionRequestPolicy: null,
             bootCommand: null,
             description: null,
             cloudClient: this._cloudClients[0],
@@ -256,7 +256,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             defaultVdiProtocol,
             secondaryVdiProtocol,
             autologin,
-            autoAcceptExtensionRequest,
+            extensionRequestPolicy,
             bootCommand
         } = image;
         this.form.reset({
@@ -268,7 +268,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             defaultVdiProtocol,
             secondaryVdiProtocol,
             autologin,
-            autoAcceptExtensionRequest: autoAcceptExtensionRequest == null ? 'NONE' : autoAcceptExtensionRequest,
+            extensionRequestPolicy: extensionRequestPolicy == null ? 'AVAILABLE_ALL' : extensionRequestPolicy,
             bootCommand,
             description,
             cloudClient,
@@ -314,7 +314,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
     }
 
     public submit(): void {
-        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, secondaryVdiProtocol, autologin, autoAcceptExtensionRequest, bootCommand} = this.form.value;
+        const {name, version, icon, cloudClient, cloudImage, visible, description, protocols, defaultVdiProtocol, secondaryVdiProtocol, autologin, extensionRequestPolicy, bootCommand} = this.form.value;
         const input = {
             name,
             version,
@@ -328,7 +328,7 @@ export class ImageEditComponent implements OnInit, OnDestroy {
             secondaryVdiProtocolId: secondaryVdiProtocol?.id,
             bootCommand,
             autologin,
-            autoAcceptExtensionRequest,
+            extensionRequestPolicy,
             clonePlansFromImageId: this._clonePlansFromImageId
         } as ImageInput;
         this._saveImage(input);

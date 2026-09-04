@@ -37,7 +37,7 @@ export class CardComponent implements OnInit, OnDestroy {
     private _instance: Instance;
     private _bookingToken: BookingToken;
     private _configuration: Configuration;
-    private _requestExtensionEnabled = false;
+    private _extensionState = null;
     private _gatewayEventSubscriber: GatewayEventSubscriber;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -71,8 +71,8 @@ export class CardComponent implements OnInit, OnDestroy {
         this._configuration = value;
     }
 
-    get requestExtensionEnabled(): boolean {
-        return this._requestExtensionEnabled;
+    get extensionState(): string {
+        return this._extensionState;
     }
 
     get user(): User {
@@ -188,6 +188,20 @@ export class CardComponent implements OnInit, OnDestroy {
         return (this.canConnect &&  hasJupyterProtocol && this.instance.membership.isRole('OWNER'));
     }
 
+    public canRequestExtension(): boolean {
+        if (!this.isOwner()) {
+            return false;
+        }
+        const extensionPolicy = this._instance.plan.image.extensionRequestPolicy;
+        if (extensionPolicy == 'UNAVAILABLE') {
+            return false;
+        }
+        if (this._extensionState == 'REFUSED') {
+            return false;
+        }
+        return !this.willExpireFromInactivity();
+    }
+
     public multiEnvAvailable(): boolean {
         return this.canAccessJupyter();
     }
@@ -270,7 +284,7 @@ export class CardComponent implements OnInit, OnDestroy {
             // Show warning 48 hours max in advance if expiring due to lifetime
             if (this._instance.terminationDate != null) {
                 const instanceLifetimeHours = (this._instance.terminationDate.getTime() - this._instance.createdAt.getTime()) / (1000 * 60 * 60) ;
-                const hoursBeforeWarning = Math.min(48, Math.ceil(0.25 * instanceLifetimeHours)); // 2 days => 12 hours
+                const hoursBeforeWarning = Math.max(Math.min(48, Math.ceil(0.25 * instanceLifetimeHours)), 6); // 2 days => 12 hours
                 return this.instance.willExpireInHours(hoursBeforeWarning);
 
             } else {
@@ -304,7 +318,7 @@ export class CardComponent implements OnInit, OnDestroy {
                 return;
             }
             this.notifierService.notify('success', 'Successfully requested lifetime extension');
-            this._requestExtensionEnabled = false;
+            this._extensionState = 'PENDING';
         });
 
     }
@@ -342,7 +356,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         if (this.willExpireWarning() && !this.willExpireFromInactivity()) {
             this.accountService.getInstanceLifetimeExtension(this._instance).subscribe((instanceLifetimeExtension) => {
-                this._requestExtensionEnabled = (instanceLifetimeExtension == null);
+                this._extensionState = (instanceLifetimeExtension == null) ? null : instanceLifetimeExtension.state;
             });
         }
     }
