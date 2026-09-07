@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<div class="content-small-container" [hidden]="loading || bookings.length > 0">
+<div class="content-small-container" [hidden]="loading || ownerBookings.length > 0 || organiserBookings.length > 0">
     <div class="information-panel">
         <h4 class="information-panel-title">
             What are Instance Reservations?
@@ -47,6 +47,18 @@
     </div>
 </div>
 
-<div *ngIf="bookings.length > 0" class="content-small-container">
-    <visa-booking-list [bookings]="bookings"></visa-booking-list>
+<div *ngIf="ownerBookings.length > 0" class="content-small-container">
+    <div class="booking-list-title">
+        Your instance reservations
+    </div>
+
+    <visa-booking-list [bookings]="ownerBookings"></visa-booking-list>
+</div>
+
+<div *ngIf="organiserBookings.length > 0" class="content-small-container">
+    <div>
+        Instance reservations you're helping organise
+    </div>
+
+    <visa-booking-list [bookings]="organiserBookings"></visa-booking-list>
 </div>

@@ -4,16 +4,16 @@ import {AccountState, ApplicationState} from '../state';
 
 export const initialAccountState: AccountState = {
     user: null,
-    bookingConfig: null,
+    bookingAccess: null,
 };
 
 const reducer = createReducer(
     initialAccountState,
-    on(AccountActions.loadAccountSuccess, (state, {user, bookingConfig}) => {
-        return {...state, user, bookingConfig};
+    on(AccountActions.loadAccountSuccess, (state, {user, bookingAccess}) => {
+        return {...state, user, bookingAccess};
     }),
     on(AccountActions.loadAccount, () => initialAccountState),
-    on(AccountActions.clearAccount, (state) => ({...state, user: null, bookingConfig: null})),
+    on(AccountActions.clearAccount, (state) => ({...state, user: null, bookingAccess: null})),
 );
 
 export function accountReducer(state, action): AccountState {
@@ -25,7 +25,7 @@ export const selectLoggedInUser = createSelector(
     (state: AccountState) => state.user,
 );
 
-export const selectUserBookingConfiguration = createSelector(
+export const selectAccountBookingAccess = createSelector(
     (state: ApplicationState) => state.account,
-    (state: AccountState) => state.bookingConfig,
+    (state: AccountState) => state.bookingAccess,
 );

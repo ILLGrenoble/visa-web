@@ -12,7 +12,8 @@ import {Title} from "@angular/platform-browser";
 export class BookingHomeComponent implements OnInit {
 
     private _loading = false;
-    private _bookings: BookingRequest[] = [];
+    private _ownerBookings: BookingRequest[] = [];
+    private _organiserBookings: BookingRequest[] = [];
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
 
@@ -20,8 +21,12 @@ export class BookingHomeComponent implements OnInit {
         return this._loading;
     }
 
-    get bookings(): BookingRequest[] {
-        return this._bookings;
+    get ownerBookings(): BookingRequest[] {
+        return this._ownerBookings;
+    }
+
+    get organiserBookings(): BookingRequest[] {
+        return this._organiserBookings;
     }
 
     constructor(private _bookingService: BookingService,
@@ -33,10 +38,10 @@ export class BookingHomeComponent implements OnInit {
         this._loading = true;
         this._bookingService.getBookingRequests()
             .pipe(takeUntil(this._destroy$))
-            .subscribe(bookings => {
+            .subscribe(accountBookingRequests => {
                 this._loading = false;
-                this._bookings = bookings;
+                this._ownerBookings = accountBookingRequests.ownerBookingRequests;
+                this._organiserBookings = accountBookingRequests.organiserBookingRequests;
             })
-
     }
 }

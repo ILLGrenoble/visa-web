@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
     AbstractControl, FormArray,
     FormBuilder,
@@ -9,12 +9,10 @@ import {
     Validators
 } from "@angular/forms";
 import {
-    ApplicationState, BookingFlavourConfiguration, BookingFlavourRequestInput, BookingRequest,
+    BookingFlavourConfiguration, BookingFlavourRequestInput, BookingRequest,
     BookingRequestInput,
     BookingService,
-    BookingUserConfiguration,
     Flavour, FlavourAvailabilitiesFuture, FlavourAvailability,
-    selectUserBookingConfiguration
 } from "../../../core";
 import {
     combineLatestWith,
@@ -25,10 +23,9 @@ import {
     take,
     takeUntil,
 } from "rxjs/operators";
-import {Store} from "@ngrx/store";
 import {NotifierService} from "angular-notifier";
 import {ActivatedRoute, Router} from "@angular/router";
-import {BehaviorSubject, config, forkJoin, of, Subject} from "rxjs";
+import {BehaviorSubject, forkJoin, of, Subject} from "rxjs";
 import {Title} from "@angular/platform-browser";
 
 const toDateString = (date: Date): string => {
@@ -88,7 +85,7 @@ export class BookingNewComponent implements OnInit {
     private _startDate: BehaviorSubject<Date> = new BehaviorSubject(null);
     private _endDate: BehaviorSubject<Date> = new BehaviorSubject(null);
 
-    private _bookingConfig: BookingUserConfiguration;
+    private _bookingFlavourConfiguration: BookingFlavourConfiguration[];
     private _flavours: Flavour[];
     private _flavourAvailabilitiesFutures: FlavourAvailabilitiesFuture[];
     private _bookingFlavourLimits: BookingFlavourLimit[] = [];
@@ -181,7 +178,6 @@ export class BookingNewComponent implements OnInit {
     }
 
     constructor(private _formBuilder: FormBuilder,
-                private _store: Store<ApplicationState>,
                 private _notifierService: NotifierService,
                 private _route: ActivatedRoute,
                 private _router: Router,
@@ -198,11 +194,8 @@ export class BookingNewComponent implements OnInit {
                     return uid == null ? of(null) : this._bookingService.getBookingRequest(uid);
                 })
             ),
-            bookingConfig: this._store.select(selectUserBookingConfiguration).pipe(
-                filter(bookingConfig => !!bookingConfig),
-                take(1)
-            )
-        }).subscribe(({bookingRequest, bookingConfig}) => {
+            bookingFlavourConfigurations: this._bookingService.getFlavourConfigurations()
+        }).subscribe(({bookingRequest, bookingFlavourConfigurations}) => {
             if (bookingRequest == null) {
                 this._titleService.setTitle(`New booking | VISA`);
                 this._originalName = null;
@@ -212,8 +205,8 @@ export class BookingNewComponent implements OnInit {
             }
             this._createForm(bookingRequest);
 
-            this._bookingConfig = bookingConfig;
-            this._flavours = bookingConfig.flavourConfiguration.map(config => config.flavour).sort((f1: Flavour, f2: Flavour) => {
+            this._bookingFlavourConfiguration = bookingFlavourConfigurations;
+            this._flavours = bookingFlavourConfigurations.map(config => config.flavour).sort((f1: Flavour, f2: Flavour) => {
                 if (f1.cpu > f2.cpu) return 1;
                 if (f1.cpu < f2.cpu) return -1;
                 return f1.memory - f2.memory;
@@ -310,7 +303,7 @@ export class BookingNewComponent implements OnInit {
         const {flavourRequests} = this._form.value;
         const requestsNotAutoAccepted = flavourRequests.filter(flavourRequest => {
             const flavour = flavourRequest.flavour;
-            const flavourConfig = this._bookingConfig.flavourConfiguration.find(config => config.flavour.id === flavour.id);
+            const flavourConfig = this._bookingFlavourConfiguration.find(config => config.flavour.id === flavour.id);
             return flavourConfig == null || !flavourConfig.autoAccept;
         });
 
@@ -440,7 +433,7 @@ export class BookingNewComponent implements OnInit {
 
     private _updateFlavourLimits(): void {
         this._bookingFlavourLimits = this._flavours.map(flavour => {
-            const config = this._bookingConfig.flavourConfiguration.find(config => config.flavour.id === flavour.id);
+            const config = this._bookingFlavourConfiguration.find(config => config.flavour.id === flavour.id);
             const flavourAvailabilitiesFuture = this._flavourAvailabilitiesFutures.find(availabilities => availabilities.flavour.id === flavour.id);
             const availabilities = flavourAvailabilitiesFuture == null ? [] : flavourAvailabilitiesFuture.availabilities;
             let {maxInstances, maxReservationDays} = config;

@@ -133,6 +133,9 @@ export class BookingRequest {
     @JsonProperty('owner', User)
     private _owner: User = undefined;
 
+    @JsonProperty('organisers', [User])
+    private _organisers: User[] = undefined;
+
     @JsonProperty('state', String)
     private _state: string = undefined;
 
@@ -205,6 +208,14 @@ export class BookingRequest {
 
     set owner(value: User) {
         this._owner = value;
+    }
+
+    get organisers(): User[] {
+        return this._organisers;
+    }
+
+    set organisers(value: User[]) {
+        this._organisers = value;
     }
 
     get state(): string {

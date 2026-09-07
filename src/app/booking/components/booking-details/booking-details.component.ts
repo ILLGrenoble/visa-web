@@ -1,12 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {BookingRequest, BookingService, BookingToken, Flavour} from "../../../core";
+import {
+    ApplicationState,
+    BookingRequest,
+    BookingService,
+    BookingToken,
+    Flavour,
+    selectLoggedInUser
+} from "../../../core";
 import {forkJoin, Subject} from "rxjs";
-import {takeUntil} from "rxjs/operators";
+import {filter, takeUntil} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotifierService} from "angular-notifier";
 import {Title} from "@angular/platform-browser";
-import {AbstractControl, FormArray, FormBuilder, FormGroup} from "@angular/forms";
-import {error} from "@angular/compiler-cli/src/transformers/util";
+import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {Store} from "@ngrx/store";
 
 type BookingTokenContainer = {
     token: BookingToken;
@@ -27,6 +34,7 @@ export class BookingDetailsComponent implements OnInit {
 
     private _loading = false;
     private _booking: BookingRequest;
+    private _isOwner: boolean = false;
     private _flavourTokens: BookingFlavourTokensContainer[];
     private _error: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
@@ -43,6 +51,10 @@ export class BookingDetailsComponent implements OnInit {
 
     get booking(): BookingRequest {
         return this._booking;
+    }
+
+    get isOwner(): boolean {
+        return this._isOwner;
     }
 
     get flavourTokens(): BookingFlavourTokensContainer[] {
@@ -79,6 +91,7 @@ export class BookingDetailsComponent implements OnInit {
                 private _router: Router,
                 private _bookingService: BookingService,
                 private _formBuilder: FormBuilder,
+                private _store: Store<ApplicationState>,
                 private _titleService: Title) {
     }
 
@@ -90,7 +103,7 @@ export class BookingDetailsComponent implements OnInit {
 
         forkJoin({
                 booking: this._bookingService.getBookingRequest(uid),
-                tokens: this._bookingService.getBookingTokensForBookingRequestUid(uid),
+                tokens: this._bookingService.getBookingTokensForBookingRequestUid(uid)
             }).pipe(takeUntil(this._destroy$))
             .subscribe({
                 next: ({booking, tokens}) => {
@@ -98,6 +111,11 @@ export class BookingDetailsComponent implements OnInit {
                     this._booking = booking;
                     this._buildFlavourTokens(tokens);
                     this._titleService.setTitle(`Booking details (${booking.name}) | VISA`);
+                    this._store.select(selectLoggedInUser).pipe(
+                        filter(user => !!user)
+                    ).subscribe((user) => {
+                        this._isOwner = user.id == this._booking?.owner.id;
+                    })
                 },
                 error: (error) => {
                     this._loading = false;

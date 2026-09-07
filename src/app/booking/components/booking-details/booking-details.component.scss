@@ -97,6 +97,22 @@ $disabled-color: #dfdfdf;
     margin-top: 32px;
 }
 
+.booking-details-organisers {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .booking-details-organisers-title {
+        margin-top: 24px;
+        font-size: 20px;
+    }
+
+    .booking-details-organisers-person {
+        margin-top: 12px;
+    }
+}
+
 .booking-details-resources {
     display: flex;
     flex-direction: column;

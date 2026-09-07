@@ -3,7 +3,13 @@ import {Injectable} from '@angular/core';
 import {environment} from 'environments/environment';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {BookingRequest, BookingToken, BookingUserConfiguration, FlavourAvailabilitiesFuture} from '../models';
+import {
+    AccountBookingAccess, AccountBookingRequests,
+    BookingFlavourConfiguration,
+    BookingRequest,
+    BookingToken,
+    FlavourAvailabilitiesFuture
+} from '../models';
 import {ObjectMapperService} from './object-mapper.service';
 import {Response} from "./visa-response";
 
@@ -28,23 +34,34 @@ export class BookingService {
                 private objectMapper: ObjectMapperService) {
     }
 
-    public getConfig(): Observable<BookingUserConfiguration> {
+    public getAccess(): Observable<AccountBookingAccess> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/bookings/config`;
-        return this.http.get<Response<BookingUserConfiguration>>(url)
+        const url = `${baseUrl}/account/bookings/access`;
+        return this.http.get<Response<AccountBookingAccess>>(url)
             .pipe(map((result) => {
                 const data = result.data;
-                return this.objectMapper.deserialize(data, BookingUserConfiguration);
+                return this.objectMapper.deserialize(data, AccountBookingAccess);
             }));
     }
 
-    public getBookingRequests(): Observable<BookingRequest[]> {
+    public getFlavourConfigurations(): Observable<BookingFlavourConfiguration[]> {
         const baseUrl = environment.paths.api;
-        const url = `${baseUrl}/account/bookings`;
-        return this.http.get<Response<BookingRequest[]>>(url)
+        const url = `${baseUrl}/account/bookings/flavour-configurations`;
+        return this.http.get<Response<BookingFlavourConfiguration[]>>(url)
             .pipe(
                 map(({data}) => {
-                    return data.map(element => this.objectMapper.deserialize(element, BookingRequest))
+                    return data.map(element => this.objectMapper.deserialize(element, BookingFlavourConfiguration))
+                })
+            );
+    }
+
+    public getBookingRequests(): Observable<AccountBookingRequests> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings`;
+        return this.http.get<Response<AccountBookingRequests>>(url)
+            .pipe(
+                map(({data}) => {
+                    return this.objectMapper.deserialize(data, AccountBookingRequests);
                 })
             );
     }

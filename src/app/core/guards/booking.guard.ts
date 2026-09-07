@@ -4,18 +4,18 @@ import {Store} from '@ngrx/store';
 import {AccountActions} from '../actions';
 import {ApplicationState} from '../state';
 import {Observable, of} from 'rxjs';
-import {selectUserBookingConfiguration} from '../reducers';
+import {selectAccountBookingAccess} from '../reducers';
 import {catchError, filter, switchMap, take, tap} from 'rxjs/operators';
-import {BookingUserConfiguration, User} from '../models';
+import {AccountBookingAccess} from '../models';
 
-const getUserBookingConfigFromStoreOrAPI = (store: Store<ApplicationState>): Observable<BookingUserConfiguration> => {
-    return store.select(selectUserBookingConfiguration).pipe(
-        tap((bookingConfig: BookingUserConfiguration) => {
-            if (!bookingConfig) {
+const getAccountBookingAccessFromStoreOrAPI = (store: Store<ApplicationState>): Observable<AccountBookingAccess> => {
+    return store.select(selectAccountBookingAccess).pipe(
+        tap((bookingAccess: AccountBookingAccess) => {
+            if (!bookingAccess) {
                 store.dispatch(AccountActions.loadAccount());
             }
         }),
-        filter((bookingConfig: BookingUserConfiguration) => bookingConfig != null),
+        filter(bookingAccess => !!bookingAccess),
         take(1)
     );
 }
@@ -28,13 +28,13 @@ export const bookingGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state
     const router = inject(Router);
     const store = inject(Store<ApplicationState>);
 
-    return getUserBookingConfigFromStoreOrAPI(store)
+    return getAccountBookingAccessFromStoreOrAPI(store)
         .pipe(
-            switchMap((bookingConfig) => {
-                if (!bookingConfig.enabled) {
+            switchMap((bookingAccess) => {
+                if (!bookingAccess.owner && !bookingAccess.organiser) {
                     redirectToHome(router);
                 }
-                return of(bookingConfig.enabled);
+                return of(bookingAccess.owner || bookingAccess.organiser);
             }),
             catchError(() => of(false))
         );

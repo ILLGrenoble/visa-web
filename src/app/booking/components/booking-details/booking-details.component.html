@@ -86,9 +86,10 @@
             </div>
 
         </div>
+
         <div *ngIf="booking.state == 'CREATED'" class="information-panel booking-card-status-info">
             <h4 class="information-panel-title">
-                Your reservation request is pending approval
+                The reservation request is pending approval
             </h4>
             <div class="information-panel-body">
                 <div class="information-panel-body-text">
@@ -103,7 +104,7 @@
         <div *ngIf="booking.state == 'ACCEPTED' && !bookingActive" class="information-panel booking-card-status-info">
             <h4 class="information-panel-title">
                 <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
-                Your reservation request has been accepted!
+                The reservation request has been accepted!
             </h4>
             <div class="information-panel-body">
                 <div class="information-panel-body-text">
@@ -118,7 +119,7 @@
         <div *ngIf="booking.state == 'ACCEPTED' && bookingActive" class="information-panel booking-card-status-info">
             <h4 class="information-panel-title">
                 <clr-icon *ngIf="booking.state === 'ACCEPTED'" shape="check" style="color: green;"></clr-icon>
-                Your reservation is active!
+                The reservation is active!
             </h4>
             <div class="information-panel-body">
                 <div class="information-panel-body-text">
@@ -127,6 +128,18 @@
                 <div class="information-panel-body-text">
                     The instances created with this reservation will be deleted at the end of {{ booking.endDate | date:'d MMMM y'}}.
                 </div>
+            </div>
+        </div>
+
+        <div class="booking-details-organisers">
+            <div class="booking-details-organisers-title">
+                Organisers
+            </div>
+            <div class="booking-details-organisers-person">
+                {{booking.owner.fullName}} (Reservation owner)
+            </div>
+            <div *ngFor="let organiser of booking.organisers" class="booking-details-organisers-person">
+                {{organiser.fullName}}
             </div>
         </div>
 
@@ -197,7 +210,7 @@
 
         </div>
 
-        <div class="booking-details-actions">
+        <div *ngIf="isOwner" class="booking-details-actions">
             <div class="booking-details-actions-title">
                 Actions
             </div>

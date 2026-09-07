@@ -1,17 +1,18 @@
 import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {
+    AccountBookingAccess,
     ApplicationState,
-    AuthenticationService, BookingUserConfiguration,
-    ClientNotification, EventsGateway, GatewayEventSubscriber, NotificationPayload,
-    NotificationService, selectAdminNotifications,
-    selectLoggedInUser, selectUserBookingConfiguration,
+    AuthenticationService,
+    EventsGateway, GatewayEventSubscriber, NotificationPayload,
+    NotificationService,
+    selectLoggedInUser, selectAccountBookingAccess,
     SystemNotification,
     User,
 } from '@core';
 import {Store} from '@ngrx/store';
-import {Observable, Subject} from 'rxjs';
+import {Observable} from 'rxjs';
 import {InvalidAccountDialogComponent} from '../../components';
-import {filter, take, takeUntil} from 'rxjs/operators';
+import {filter, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({
@@ -24,7 +25,7 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
 
     private static DISMISSED_NOTIFICATIONS = 'authenticated.dismissed.notifications';
     public user$: Observable<User>;
-    public bookingConfig$: Observable<BookingUserConfiguration>;
+    public accountBookingAccess$: Observable<AccountBookingAccess>;
     public systemNotifications: SystemNotification[] = [];
     public dismissedSystemNotifications: Array<number> = new Array<number>();
     private _gatewayEventSubscriber: GatewayEventSubscriber;
@@ -44,7 +45,7 @@ export class AuthenticatedContainerComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
 
         this.user$ = this.store.select(selectLoggedInUser).pipe(filter(user => !!user), take(1));
-        this.bookingConfig$ = this.store.select(selectUserBookingConfiguration).pipe(filter(bookingConfig => !!bookingConfig), take(1));
+        this.accountBookingAccess$ = this.store.select(selectAccountBookingAccess).pipe(filter(bookingAccess => !!bookingAccess), take(1));
 
         this.user$.pipe(filter(user => user.id === '0')).subscribe(() => {
             this.dialog.open(InvalidAccountDialogComponent, {

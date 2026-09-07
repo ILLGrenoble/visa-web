@@ -3,7 +3,7 @@ import {AccountService, BookingService} from '../services';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {EMPTY, forkJoin, switchMap} from 'rxjs';
-import {catchError, map, mergeMap, } from 'rxjs/operators';
+import {catchError, map } from 'rxjs/operators';
 import {AccountActions} from '../actions';
 
 @Injectable()
@@ -14,11 +14,11 @@ export class AccountEffects {
         switchMap(() => {
             return forkJoin({
                 user: this.accountService.getInformation(),
-                bookingConfig: this.bookingService.getConfig()
+                bookingAccess: this.bookingService.getAccess()
             })
         }),
         catchError(() => EMPTY),
-        map(({user, bookingConfig}) => AccountActions.loadAccountSuccess({user, bookingConfig}))
+        map(({user, bookingAccess}) => AccountActions.loadAccountSuccess({user, bookingAccess}))
     ));
 
     constructor(
