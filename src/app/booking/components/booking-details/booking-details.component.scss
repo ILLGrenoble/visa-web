@@ -105,11 +105,48 @@ $disabled-color: #dfdfdf;
 
     .booking-details-organisers-title {
         margin-top: 24px;
+        margin-bottom: 12px;
         font-size: 20px;
     }
 
+    .booking-details-organisers-people {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+    }
+
     .booking-details-organisers-person {
+        margin-left: 12px;
+        font-size: 14px;
+        color: #333;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+
+        &:hover {
+            background-color: #fcfcfc;
+        }
+
+        .booking-details-organisers-person-name {
+            width: 500px;
+            line-height: 32px;
+        }
+    }
+
+    .booking-details-organisers-more {
         margin-top: 12px;
+    }
+
+    .booking-details-organisers-search {
+        display: flex;
+        flex-direction: row;
+        column-gap: 16px;
+
+        .booking-details-organisers-select {
+            width: 350px;
+        }
     }
 }
 
@@ -259,10 +296,7 @@ $disabled-color: #dfdfdf;
 
 .booking-details-delete-modal {
     margin-top: 20px;
-    height: 100px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     color: #444;
 }

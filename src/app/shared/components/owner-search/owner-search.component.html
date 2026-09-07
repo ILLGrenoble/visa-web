@@ -1,7 +1,7 @@
 <div [formGroup]="form">
     <ng-select [items]="users$ | async"
                [searchable]="true"
-               placeholder="Enter an user's last name..."
+               placeholder="Enter a user's last name..."
                formControlName="owner"
                [loading]="loading"
                [typeahead]="input$"

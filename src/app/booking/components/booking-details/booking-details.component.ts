@@ -5,14 +5,14 @@ import {
     BookingService,
     BookingToken,
     Flavour,
-    selectLoggedInUser
+    selectLoggedInUser, User
 } from "../../../core";
 import {forkJoin, Subject} from "rxjs";
 import {filter, takeUntil} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotifierService} from "angular-notifier";
 import {Title} from "@angular/platform-browser";
-import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Store} from "@ngrx/store";
 
 type BookingTokenContainer = {
@@ -36,10 +36,16 @@ export class BookingDetailsComponent implements OnInit {
     private _booking: BookingRequest;
     private _isOwner: boolean = false;
     private _flavourTokens: BookingFlavourTokensContainer[];
+    private _organiserForm: FormGroup = new FormGroup({
+        owner: new FormControl(null, Validators.required),
+    });
+    private _showOrganisersSearch = false;
     private _error: string;
     private _destroy$: Subject<boolean> = new Subject<boolean>();
     private _showDeleteModal = false;
     private _sendingDeleteRequest = false;
+    private _sendingDeleteOrganiserRequest = false;
+    private _organiserToDelete: User = null;
 
     private _form: FormGroup = new FormGroup({
         tokens: this._formBuilder.array([]),
@@ -61,6 +67,18 @@ export class BookingDetailsComponent implements OnInit {
         return this._flavourTokens;
     }
 
+    get organiserForm(): FormGroup {
+        return this._organiserForm;
+    }
+
+    get showOrganisersSearch(): boolean {
+        return this._showOrganisersSearch;
+    }
+
+    set showOrganisersSearch(value: boolean) {
+        this._showOrganisersSearch = value;
+    }
+
     get error(): string {
         return this._error;
     }
@@ -71,6 +89,14 @@ export class BookingDetailsComponent implements OnInit {
 
     get sendingDeleteRequest(): boolean {
         return this._sendingDeleteRequest;
+    }
+
+    get sendingDeleteOrganiserRequest(): boolean {
+        return this._sendingDeleteOrganiserRequest;
+    }
+
+    get organiserToDelete(): User {
+        return this._organiserToDelete;
     }
 
     get bookingActive(): boolean {
@@ -137,9 +163,37 @@ export class BookingDetailsComponent implements OnInit {
         return (Math.round(flavour.memory / 1024 * 10) / 10) + 'GB';
     }
 
+    protected addOrganiser(): void {
+        if (this._organiserForm.valid) {
+            const organiser: User = this._organiserForm.value.owner;
+            this._bookingService.addBookingRequestOrganiser(this._booking, organiser).subscribe(booking => {
+                this._booking = booking;
+                this._organiserForm.reset({owner: null});
+                this._showOrganisersSearch = false;
+            })
+        }
+    }
+
+    protected removeOrganiser(organiser: User): void {
+        this._organiserToDelete = organiser;
+    }
+
+    protected confirmDeleteOrganiserRequest(): void {
+        this._sendingDeleteOrganiserRequest = true;
+        this._bookingService.removeBookingRequestOrganiser(this._booking, this._organiserToDelete).subscribe(booking => {
+            this._booking = booking;
+            this._sendingDeleteOrganiserRequest = false;
+            this._organiserToDelete = null;
+        });
+    }
+
+    protected closeDeleteOrganiserModal(): void {
+        this._organiserToDelete = null;
+    }
+
     protected modifyBookingRequest(): void {
         if (this._booking.state == 'CREATED' && !this.bookingActive) {
-            this._router.navigate(['bookings', this._booking.uid, 'edit'], {replaceUrl: true});
+            this._router.navigate(['bookings', this._booking.uid, 'edit']);
         }
     }
 

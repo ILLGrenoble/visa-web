@@ -29,6 +29,28 @@
     </div>
 </clr-modal>
 
+<clr-modal [clrModalOpen]="organiserToDelete != null" [clrModalClosable]="false">
+    <h3 class="modal-title">Confirm removal of organiser</h3>
+    <div class="modal-body">
+        <div *ngIf="organiserToDelete" class="booking-details-delete-modal">
+            <div [hidden]="!sendingDeleteOrganiserRequest">
+                <div>
+                    <clr-spinner clrInline></clr-spinner>
+                    <span style="margin-left: 24px; color: #666;">The organiser is being removed...</span>
+                </div>
+            </div>
+
+            <div [hidden]="sendingDeleteOrganiserRequest">
+                Are you sure you want to remove {{organiserToDelete.firstName }} as reservation organiser?
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" [disabled]="sendingDeleteOrganiserRequest" (click)="closeDeleteOrganiserModal()" class="btn btn-outline">Cancel</button>
+        <button type="button" [disabled]="sendingDeleteOrganiserRequest" (click)="confirmDeleteOrganiserRequest()" class="btn btn-outline-warning">Remove</button>
+    </div>
+</clr-modal>
+
 
 <div class="content-small-container" [hidden]="!loading">
     <div class="booking-details-spinner">
@@ -135,12 +157,38 @@
             <div class="booking-details-organisers-title">
                 Organisers
             </div>
-            <div class="booking-details-organisers-person">
-                {{booking.owner.fullName}} (Reservation owner)
+            <div>
+                The co-organisers of the reservation request can manage the distribution of instance vouchers and provide remote desktop support to participants.
             </div>
-            <div *ngFor="let organiser of booking.organisers" class="booking-details-organisers-person">
-                {{organiser.fullName}}
+            <div class="booking-details-organisers-people">
+                <div class="booking-details-organisers-person">
+                    <div class="booking-details-organisers-person-name">
+                        {{booking.owner.fullName}} ({{ booking.owner.affiliation ? booking.owner.affiliation.name : 'No affiliation'}}) : Reservation owner
+                    </div>
+                </div>
+                <div *ngFor="let organiser of booking.organisers" class="booking-details-organisers-person">
+                    <div class="booking-details-organisers-person-name">
+                        {{organiser.fullName}} ({{ organiser.affiliation ? organiser.affiliation.name : 'No affiliation'}})
+                    </div>
+                    <button *ngIf="isOwner" type="button" class="btn btn-sm btn-outline-warning" (click)="removeOrganiser(organiser)">
+                        Remove
+                    </button>
+                </div>
             </div>
+
+            <div  *ngIf="isOwner" class="booking-details-organisers-more">
+                <button *ngIf="!showOrganisersSearch" type="button" class="btn btn-sm btn-outline" (click)="showOrganisersSearch = true">Add co-organiser</button>
+
+                <div *ngIf="showOrganisersSearch" class="booking-details-organisers-search">
+                    <div class="booking-details-organisers-select">
+                        <visa-owner-search [form]="organiserForm"></visa-owner-search>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" [disabled]="organiserForm.invalid" (click)="addOrganiser()">
+                        Add co-organiser
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <div class="booking-details-resources">

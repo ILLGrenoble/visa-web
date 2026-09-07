@@ -8,7 +8,7 @@ import {
     BookingFlavourConfiguration,
     BookingRequest,
     BookingToken,
-    FlavourAvailabilitiesFuture
+    FlavourAvailabilitiesFuture, User
 } from '../models';
 import {ObjectMapperService} from './object-mapper.service';
 import {Response} from "./visa-response";
@@ -112,6 +112,27 @@ export class BookingService {
                 }));
 
         }
+    }
+
+    public addBookingRequestOrganiser(booking: BookingRequest, organiser: User): Observable<BookingRequest> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/${booking.uid}/organisers`;
+        const body = {
+            userId: organiser.id,
+        };
+        return this.http.post<Response<BookingRequest>>(url, body)
+            .pipe(map(({data}) => {
+                return this.objectMapper.deserialize(data, BookingRequest);
+            }));
+    }
+
+    public removeBookingRequestOrganiser(booking: BookingRequest, organiser: User): Observable<BookingRequest> {
+        const baseUrl = environment.paths.api;
+        const url = `${baseUrl}/account/bookings/${booking.uid}/organisers/${organiser.id}`;
+        return this.http.delete<Response<BookingRequest>>(url)
+            .pipe(map(({data}) => {
+                return this.objectMapper.deserialize(data, BookingRequest);
+            }));
     }
 
     public getBookingTokensForBookingRequestUid(uid: string): Observable<BookingToken[]> {
