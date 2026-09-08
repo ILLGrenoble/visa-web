@@ -237,7 +237,7 @@ export class BookingDetailsComponent implements OnInit {
             },
             error: (error) => {
                 this._bookingService.getBookingTokensForBookingRequestUid(this.booking.uid).subscribe(tokens => {
-                    const checkFailTokens = tokenInputs.filter(tokenInput => tokens.find(token => token.id == tokenInput.id && token.owner?.id != tokenInput.ownerId));
+                    const checkFailTokens = tokenInputs.filter(tokenInput => tokens.find(token => token.id == tokenInput.id && token.owner?.id != tokenInput.checkId));
                     if (checkFailTokens.length > 0) {
                         this._notifierService.notify('warning', 'Tokens could not be updated as they had already been changed');
 
