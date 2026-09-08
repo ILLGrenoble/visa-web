@@ -168,7 +168,7 @@ export class BookingService {
             );
     }
 
-    public updateBookingRequestTokens(uid: string, input: [{id: number, ownerId: string}]): Observable<BookingToken[]> {
+    public updateBookingRequestTokens(uid: string, input: {id: number, ownerId: string, checkId: string}[]): Observable<BookingToken[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/bookings/${uid}/tokens`;
         return this.http.put<Response<BookingToken[]>>(url, input)

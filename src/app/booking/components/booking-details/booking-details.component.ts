@@ -219,16 +219,36 @@ export class BookingDetailsComponent implements OnInit {
     }
 
     protected submitTokens(): void {
-        const tokenForms = this._form.value.tokens;
-        const tokenInputs = tokenForms.map(tokenForm => {
-            const {id, owner} = tokenForm;
-            return {id, ownerId: owner ? owner.id : null}
+        const tokensFormsArray = this._form.get('tokens') as FormArray;
+        const changedTokenForms = tokensFormsArray.controls
+            .filter(control => !control.pristine)
+            .map(control => control.value);
+
+        const tokenInputs = changedTokenForms.map(tokenForm => {
+            const {id, owner, check} = tokenForm;
+            return {id, ownerId: owner ? owner.id : null, checkId: check ? check.id : null}
         });
 
-        this._bookingService.updateBookingRequestTokens(this.booking.uid, tokenInputs).subscribe((tokens) => {
-            this._notifierService.notify('success', 'Tokens successfully updated');
-            this._form.markAsPristine();
-            this._buildFlavourTokens(tokens);
+        this._bookingService.updateBookingRequestTokens(this.booking.uid, tokenInputs).subscribe({
+            next: (tokens) => {
+                this._notifierService.notify('success', 'Tokens successfully updated');
+                this._form.markAsPristine();
+                this._buildFlavourTokens(tokens);
+            },
+            error: (error) => {
+                this._bookingService.getBookingTokensForBookingRequestUid(this.booking.uid).subscribe(tokens => {
+                    const checkFailTokens = tokenInputs.filter(tokenInput => tokens.find(token => token.id == tokenInput.id && token.owner?.id != tokenInput.ownerId));
+                    if (checkFailTokens.length > 0) {
+                        this._notifierService.notify('warning', 'Tokens could not be updated as they had already been changed');
+
+                    } else {
+                        this._notifierService.notify('error', 'Tokens could not be updated');
+                    }
+
+                    this._form.markAsPristine();
+                    this._buildFlavourTokens(tokens);
+                })
+            }
         });
     }
 
@@ -255,6 +275,7 @@ export class BookingDetailsComponent implements OnInit {
         const tokenFormGroup = this._formBuilder.group({
             id: [token.id],
             owner: [token.owner],
+            check: [token.owner],
         });
 
         tokenFormGroup.get('owner').valueChanges.subscribe((user) => {
