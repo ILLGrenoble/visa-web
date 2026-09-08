@@ -278,6 +278,10 @@ export class BookingDetailsComponent implements OnInit {
             check: [token.owner],
         });
 
+        if (token.instance != null) {
+            tokenFormGroup.get('owner').disable();
+        }
+
         tokenFormGroup.get('owner').valueChanges.subscribe((user) => {
             if (user == null && token.owner != null) {
                 this._form.markAsDirty();
