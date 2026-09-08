@@ -53,14 +53,12 @@
                                 <b>Period</b>
                             </dt>
                             <dd>
-                                {{ bookingRequest.startDate | date:'d MMMM y' }} to  {{ bookingRequest.endDate | date:'d MMMM y' }}
-                            </dd>
-                        </div>
-                        <div class="admin-details-list-item">
-                            <dt>
-                            </dt>
-                            <dd>
-                                {{ durationDays() }} days
+                                <div>
+                                    {{ bookingRequest.startDate | date:'d MMMM y' }} to  {{ bookingRequest.endDate | date:'d MMMM y' }}
+                                </div>
+                                <div>
+                                    {{ durationDays() }} days
+                                </div>
                             </dd>
                         </div>
 
@@ -106,35 +104,32 @@
                         </div>
                         <div class="admin-details-list-item">
                             <dt>
-                                <b>Organiser</b>
+                                <b>Owner</b>
                             </dt>
                             <dd>
-                                {{ bookingRequest.owner.fullName }} (<a
-                                href="mailto:{{ bookingRequest.owner.email }}">{{ bookingRequest.owner.email }}</a>)
+                                <div>
+                                    {{ bookingRequest.owner.fullName }} (<a href="mailto:{{ bookingRequest.owner.email }}">{{ bookingRequest.owner.email }}</a>), {{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}
+                                </div>
+                                <div>
+                                    <span *ngIf="bookingRequest.owner.activeUserRoles.length === 0">User has no roles</span>
+                                    <span *ngFor="let userRole of bookingRequest.owner?.activeUserRoles"
+                                          class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
+                                    <span *ngFor="let group of bookingRequest.owner?.groups"
+                                          class="admin-details-list-item-tag">{{ group.name }}</span>
+                                </div>
                             </dd>
                         </div>
                         <div class="admin-details-list-item">
                             <dt>
+                                <b>Co-organisers</b>
                             </dt>
                             <dd>
-                                {{ bookingRequest.owner.affiliation ? bookingRequest.owner.affiliation.name : 'No affiliation' }}
-                            </dd>
-                        </div>
-                        <div class="admin-details-list-item">
-                            <dt>
-                            </dt>
-                            <dd>
-                                <span *ngIf="bookingRequest.owner.activeUserRoles.length === 0">User has no roles</span>
-                                <span *ngFor="let userRole of bookingRequest.owner?.activeUserRoles"
-                                      class="admin-details-list-item-tag">{{ userRole.role.name }}</span>
-                            </dd>
-                        </div>
-                        <div class="admin-details-list-item">
-                            <dt>
-                            </dt>
-                            <dd>
-                                <span *ngFor="let group of bookingRequest.owner?.groups"
-                                      class="admin-details-list-item-tag">{{ group.name }}</span>
+                                <div *ngIf="bookingRequest.organisers.length == 0" style="color: #666;">
+                                    <em>None assigned to this booking request</em>
+                                </div>
+                                <div *ngFor="let organiser of bookingRequest.organisers">
+                                    {{ organiser.fullName }} (<a href="mailto:{{ organiser.email }}">{{ organiser.email }}</a>), {{ organiser.affiliation ? organiser.affiliation.name : 'No affiliation' }}
+                                </div>
                             </dd>
                         </div>
                     </dl>

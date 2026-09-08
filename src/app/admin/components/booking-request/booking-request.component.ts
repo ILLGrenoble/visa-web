@@ -103,6 +103,14 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
                                 name
                             }
                         }
+                        organisers {
+                            id
+                            fullName
+                            email
+                            affiliation {
+                                name
+                            }
+                        }
                         state
                         flavours {
                             id
@@ -225,6 +233,14 @@ export class BookingRequestComponent implements OnInit, OnDestroy {
                                     }
                                 }
                                 groups {
+                                    name
+                                }
+                            }
+                            organisers {
+                                id
+                                fullName
+                                email
+                                affiliation {
                                     name
                                 }
                             }

@@ -476,6 +476,7 @@ export type BookingRequest = {
     startDate: Scalars['String'];
     endDate: Scalars['String'];
     owner: User;
+    organisers: Array<User>;
     state: Scalars['String'];
     flavours: Array<BookingRequestFlavour>;
     history: Array<BookingRequestHistory>;
