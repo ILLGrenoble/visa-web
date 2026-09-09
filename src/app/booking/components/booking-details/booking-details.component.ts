@@ -170,6 +170,7 @@ export class BookingDetailsComponent implements OnInit {
                 this._booking = booking;
                 this._organiserForm.reset({owner: null});
                 this._showOrganisersSearch = false;
+                this._notifierService.notify('success', `${organiser.fullName} has been added as an organiser of the booking request`);
             })
         }
     }
@@ -183,6 +184,7 @@ export class BookingDetailsComponent implements OnInit {
         this._bookingService.removeBookingRequestOrganiser(this._booking, this._organiserToDelete).subscribe(booking => {
             this._booking = booking;
             this._sendingDeleteOrganiserRequest = false;
+            this._notifierService.notify('success', `${this._organiserToDelete.fullName} has been removed as organiser of the booking request`);
             this._organiserToDelete = null;
         });
     }
