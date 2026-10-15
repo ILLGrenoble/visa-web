@@ -20,20 +20,23 @@
         "changeOrigin": true,
         "ws": true
     },
-    "/visafs/**": {
+    "/visafs/*": {
         "target": "http://localhost:8088",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
-    "/ws/vdi/**": {
+    "/api/ws/vdi/*": {
         "target": "http://localhost:8087",
         "secure": false,
+        "pathRewrite": {
+            "^/api/ws/vdi/": "/ws/vdi/"
+        },
         "changeOrigin": true,
         "logLevel": "debug",
         "ws": true
     },
-    "/api/ws/**": {
+    "/api/ws/*/*/gateway": {
         "target": "http://localhost:8086",
         "secure": false,
         "changeOrigin": true,

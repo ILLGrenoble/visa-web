@@ -88,7 +88,7 @@ export class EventsGateway {
                 const hostname = location.hostname;
                 const port = location.port ? `:${location.port}` : '';
 
-                const url = `${protocol}//${hostname}${port}${environment.paths.api}/ws/${token}/${this._clientId}/gateway`;
+                const url = `${protocol}//${hostname}${port}${environment.paths.gateway}/${token}/${this._clientId}/gateway`;
 
                 this._reconnectionState = null;
 
