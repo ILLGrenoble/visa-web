@@ -7,6 +7,7 @@
     "start": "ng serve --host 0.0.0.0 --proxy-config proxy.conf.json --disable-host-check",
     "start:prod": "ng serve --configuration production --host 0.0.0.0 --proxy-config proxy.conf.json --disable-host-check",
     "start-lb": "ng serve --proxy-config lb-proxy.conf.json --disable-host-check",
+    "start-vdi": "ng serve --proxy-config vdi-proxy.conf.json --disable-host-check",
     "test": "ng test",
     "e2e": "ng e2e",
     "build": "ng build --configuration production",

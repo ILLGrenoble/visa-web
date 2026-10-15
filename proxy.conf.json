@@ -27,8 +27,11 @@
         "changeOrigin": true
     },
     "/ws/vdi/**": {
-        "target": "http://localhost:8087",
+        "target": "http://localhost:8086",
         "secure": false,
+        "pathRewrite": {
+            "^/ws/vdi/": "/api/ws/vdi/"
+        },
         "changeOrigin": true,
         "logLevel": "debug",
         "ws": true
