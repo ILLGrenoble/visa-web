@@ -288,7 +288,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     private processFilters(): UserFilterInput {
         return {
-            id: this.currentState.filters.userId,
+            ids: [this.currentState.filters.userId],
             role: this.currentState.filters.role,
             activated: this.currentState.filters.activated ? true : null,
         }

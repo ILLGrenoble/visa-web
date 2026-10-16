@@ -103,7 +103,7 @@ export class BookingTokenComponent implements OnInit {
                 this._canConnect = true;
 
             } else {
-                this._accountService.getSessionMembersForInstance(instance).subscribe((sessionMembers) => {
+                this._accountService.getConnectedUsersForInstance(instance).subscribe((sessionMembers) => {
                     this._canConnect = sessionMembers.length > 0;
                 });
             }

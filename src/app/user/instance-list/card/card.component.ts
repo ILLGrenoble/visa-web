@@ -370,7 +370,7 @@ export class CardComponent implements OnInit, OnDestroy {
                 this.canConnect = true;
 
             } else {
-                this.accountService.getSessionMembersForInstance(this._instance).subscribe((sessionMembers) => {
+                this.accountService.getConnectedUsersForInstance(this._instance).subscribe((sessionMembers) => {
                     this.canConnect = sessionMembers.length > 0;
                 });
             }

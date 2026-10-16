@@ -77,12 +77,12 @@
                                 <clr-dg-cell class="support-cell">{{ instance.owner.fullName }}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">{{ instance.state.replace('_', ' ') | titlecase }}</clr-dg-cell>
                                 <clr-dg-cell class="support-cell">
-                                    <span *ngIf="getInstanceSessionMembers(instance).length === 0">
+                                    <span *ngIf="getConnectedUsers(instance).length === 0">
                                         {{ instance.lastSeenAt | timeDuration: 'date' }}
                                     </span>
-                                    <clr-tooltip *ngIf="getInstanceSessionMembers(instance).length > 0">
+                                    <clr-tooltip *ngIf="getConnectedUsers(instance).length > 0">
                                         <span clrTooltipTrigger>
-                                            {{getInstanceSessionMembers(instance).length + ' active'}}
+                                            {{getConnectedUsers(instance).length + ' active'}}
                                             <clr-icon size="20" *ngIf="isInteractiveSession(instance)" shape="mouse" class="instance-interaction"></clr-icon>
                                         </span>
                                         <clr-tooltip-content clrPosition="top-right" clrSize="lg" style="word-break: keep-all">

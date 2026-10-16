@@ -286,8 +286,8 @@ export type Instance = {
     lastSeenAt?: Maybe<Scalars['String']>;
     lastInteractionAt?: Maybe<Scalars['String']>;
     terminationDate?: Maybe<Scalars['String']>;
-    sessions?: Maybe<Array<Maybe<InstanceSessionMember>>>;
-    activeSessions?: Maybe<Array<Maybe<InstanceSessionMember>>>;
+    sessions?: Maybe<Array<Maybe<InstanceDesktopSession>>>;
+    activeSessions?: Maybe<Array<Maybe<InstanceDesktopSession>>>;
     owner?: Maybe<User>;
     username: Scalars['String'];
     attributes: Maybe<Array<Maybe<InstanceAttribute>>>;
@@ -319,30 +319,25 @@ export type InstanceAttribute = {
     value: Scalars['String'];
 };
 
-export type InstanceSession = {
-    __typename?: 'InstanceSession';
+export type InstanceDesktopSession = {
+    __typename?: 'InstanceDesktopSession';
     id: Scalars['Int'];
-    connectionId: Scalars['String'];
     instanceId: Scalars['Int'];
     instance: Instance;
-    current: Scalars['Boolean'];
-    protocol: Scalars['String'];
-};
-
-export type InstanceSessionMember = {
-    __typename?: 'InstanceSessionMember';
-    id: Scalars['Int'];
-    instanceSession: InstanceSession;
-    sessionId: Scalars['String'];
+    userId: Scalars['String'];
     user: User;
+    connectionId: Scalars['String'];
+    clientId: Scalars['String'];
+    protocol: Maybe<Scalars['String']>;
+    role: Scalars['String'];
     createdAt: Scalars['String'];
-    updatedAt: Scalars['String'];
-    lastInteractionAt: Scalars['String'];
-    role?: Maybe<Scalars['String']>;
-    active?: Maybe<Scalars['Boolean']>;
+    updatedAt: Maybe<Scalars['String']>;
+    lastClientPingAt: Maybe<Scalars['String']>;
+    lastInteractionAt: Maybe<Scalars['String']>;
+    closedAt: Maybe<Scalars['String']>;
     duration: Scalars['Int'];
     rttSamples: DesktopSessionRttSample[];
-};
+}
 
 export type DesktopSessionRttSample = {
     __typename?: 'DesktopSessionRttSample';
@@ -371,10 +366,10 @@ export type InstanceJupyterSession = {
     duration: Scalars['Int'];
 };
 
-export type InstanceSessionMemberConnection = {
-    __typename?: 'InstanceSessionMemberConnection';
+export type InstanceDesktopSessionConnection = {
+    __typename?: 'InstanceDesktopSessionConnection';
     pageInfo?: Maybe<PageInfo>;
-    data?: Maybe<Array<Maybe<InstanceSessionMember>>>;
+    data?: Maybe<Array<Maybe<InstanceDesktopSession>>>;
 };
 
 export enum InstanceState {
@@ -674,7 +669,7 @@ export type Query = {
     /** Get cloud limits */
     cloudLimits?: Maybe<CloudLimit>;
     /** Get all sessions */
-    sessions?: Maybe<InstanceSessionMemberConnection>;
+    sessions?: Maybe<InstanceDesktopSessionConnection>;
 };
 
 
@@ -695,7 +690,7 @@ export type ExperimentFilterInput = {
 }
 
 export type UserFilterInput = {
-    id: Maybe<Scalars['String']>;
+    ids: Maybe<Array<Maybe<Scalars['String']>>>;
     role: Maybe<Scalars['String']>;
     activated: Maybe<Scalars['Boolean']>;
 }

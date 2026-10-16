@@ -1,14 +1,13 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
-import {InstanceSessionMember} from 'app/core/graphql/types';
+import {InstanceDesktopSession} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
 import screenfull from 'screenfull';
 import {ApolloQueryResult} from '@apollo/client';
 import {Title} from '@angular/platform-browser';
-import {DesktopSessionRttSample} from "../../../core/graphql";
 
 @Component({
     selector: 'visa-admin-sessions',
@@ -20,7 +19,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
 
     private static SELECTED_TAB_KEY = 'admin.sessions.selectedTab';
 
-    public sessions: InstanceSessionMember[] = [];
+    public sessions: InstanceDesktopSession[] = [];
     public loading: boolean;
     private _refreshEvent$: Subject<void> = new BehaviorSubject<void>(null);
     private _destroy$: Subject<boolean> = new Subject<boolean>();
@@ -102,8 +101,8 @@ export class SessionsComponent implements OnInit, OnDestroy {
         this.destroy$.unsubscribe();
     }
 
-    public isInteractiveSession(instanceSessionMember: InstanceSessionMember): boolean {
-        const timeSinceLastInteractionAtS = (new Date().getTime() - new Date(instanceSessionMember.lastInteractionAt).getTime()) / 1000;
+    public isInteractiveSession(instanceDesktopSession: InstanceDesktopSession): boolean {
+        const timeSinceLastInteractionAtS = (new Date().getTime() - new Date(instanceDesktopSession.lastInteractionAt).getTime()) / 1000;
         return timeSinceLastInteractionAtS < 300;
     }
 
@@ -122,12 +121,12 @@ export class SessionsComponent implements OnInit, OnDestroy {
         return screenfull.isFullscreen;
     }
 
-    public clientNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        return instanceSessionMember.rttSamples.map(sample => sample.clientMeanRttMs);
+    public clientNetworkData(instanceDesktopSession: InstanceDesktopSession): number[] {
+        return instanceDesktopSession.rttSamples.map(sample => sample.clientMeanRttMs);
     }
 
-    public instanceNetworkData(instanceSessionMember: InstanceSessionMember): number[] {
-        return instanceSessionMember.rttSamples.map(sample => sample.instanceMeanRttMs);
+    public instanceNetworkData(instanceDesktopSession: InstanceDesktopSession): number[] {
+        return instanceDesktopSession.rttSamples.map(sample => sample.instanceMeanRttMs);
     }
 
     private _roundTimes(times: number[]): number {
@@ -151,33 +150,19 @@ export class SessionsComponent implements OnInit, OnDestroy {
                         }
                         data {
                             id
-                            createdAt
-                            lastInteractionAt
-                            role
-                            active
-                            duration
-                            instanceSession {
+                            instanceId
+                            instance {
                                 id
-                                instance {
-                                    id
-                                    uid
-                                    name
-                                    plan {
-                                        image {
-                                            name
-                                            version
-                                        }
+                                uid
+                                name
+                                plan {
+                                    image {
+                                        name
+                                        version
                                     }
                                 }
-                                current
-                                protocol
                             }
-                            rttSamples {
-                              id
-                              clientMeanRttMs
-                              instanceMeanRttMs
-                            }
-                            sessionId
+                            userId
                             user {
                                 id
                                 fullName
@@ -186,6 +171,20 @@ export class SessionsComponent implements OnInit, OnDestroy {
                                 affiliation {
                                     name
                                 }
+                            }
+                            connectionId
+                            clientId
+                            role
+                            protocol
+                            createdAt
+                            lastClientPingAt
+                            lastInteractionAt
+                            closedAt
+                            duration
+                            rttSamples {
+                              id
+                              clientMeanRttMs
+                              instanceMeanRttMs
                             }
                         }
 

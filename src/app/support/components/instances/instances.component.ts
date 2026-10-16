@@ -7,9 +7,8 @@ import {QueryParameterBag} from './query-parameter-bag';
 import {
     AccountService,
     AnalyticsService,
-    ApplicationState,
+    ApplicationState, ConnectedUser,
     Instance,
-    InstanceSessionMember,
     InstancesFilterState,
     Paginated,
     selectLoggedInUser,
@@ -39,7 +38,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
 
     private _state$ = new Subject<InstancesFilterState>();
 
-    private _sessions: Map<number, InstanceSessionMember[]> = new Map();
+    private _sessions: Map<number, ConnectedUser[]> = new Map();
 
     private refreshTimer$: Subscription;
     private refreshTimeMS = 60000;
@@ -181,7 +180,7 @@ export class InstancesComponent implements OnInit, OnDestroy {
             instances.items.forEach(instance => {
                 const timeSinceLastSeenAtS = (new Date().getTime() - new Date(instance.lastSeenAt).getTime()) / 1000;
                 if (timeSinceLastSeenAtS < 120) {
-                    this.accountService.getSessionMembersForInstance(instance).subscribe(sessionMembers => {
+                    this.accountService.getConnectedUsersForInstance(instance).subscribe(sessionMembers => {
                         newSessions.set(instance.id, sessionMembers);
                     });
                 }
@@ -215,12 +214,12 @@ export class InstancesComponent implements OnInit, OnDestroy {
         return instruments.join(', ');
     }
 
-    public getInstanceSessionMembers(instance: Instance): InstanceSessionMember[] {
-        const members: InstanceSessionMember[] = this._sessions.get(instance.id);
-        if (members == null) {
+    public getConnectedUsers(instance: Instance): ConnectedUser[] {
+        const connectedUsers: ConnectedUser[] = this._sessions.get(instance.id);
+        if (connectedUsers == null) {
             return [];
         }
-        return members;
+        return connectedUsers;
     }
 
     public isInteractiveSession(instance: Instance): boolean {
@@ -236,10 +235,10 @@ export class InstancesComponent implements OnInit, OnDestroy {
             return true;
         }
 
-        const sessionMembers = this.getInstanceSessionMembers(instance);
-        if (sessionMembers.length > 0) {
+        const connectedUsers = this.getConnectedUsers(instance);
+        if (connectedUsers.length > 0) {
             // Check if owner connected
-            if (sessionMembers.map(sessionMember => sessionMember.role).includes('OWNER')) {
+            if (connectedUsers.map(connectedUser => connectedUser.role).includes('OWNER')) {
                 return true;
             }
         }

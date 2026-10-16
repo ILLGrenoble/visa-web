@@ -2,9 +2,9 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Apollo} from 'apollo-angular';
 import {Instance} from 'app/core/graphql';
 import gql from 'graphql-tag';
-import {BehaviorSubject, sample, Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {map, takeUntil, tap} from 'rxjs/operators';
-import {InstanceSessionMember} from '../../../core/graphql';
+import {InstanceDesktopSession} from '../../../core/graphql';
 import * as Highcharts from "highcharts";
 
 interface Sample {
@@ -20,7 +20,7 @@ interface Sample {
 })
 export class InstanceSessionsComponent implements OnInit, OnDestroy {
 
-    private _sessions: InstanceSessionMember[] = [];
+    private _sessions: InstanceDesktopSession[] = [];
     private _clientRttSamples: Map<number, Sample[]> = new Map();
     private _instanceRttSamples: Map<number, Sample[]> = new Map();
 
@@ -108,11 +108,11 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
         this._refresh$ = value;
     }
 
-    get sessions(): InstanceSessionMember[] {
+    get sessions(): InstanceDesktopSession[] {
         return this._sessions;
     }
 
-    set sessions(value: InstanceSessionMember[]) {
+    set sessions(value: InstanceDesktopSession[]) {
         this._sessions = value;
     }
 
