@@ -342,7 +342,7 @@ export type InstanceDesktopSession = {
 export type DesktopSessionRttSample = {
     __typename?: 'DesktopSessionRttSample';
     id: Scalars['Int'];
-    instanceSessionMemberId: Scalars['Int'];
+    instanceDesktopSessionId: Scalars['Int'];
     date: Scalars['String'];
     samplePeriodMinutes: Scalars['Int'];
     clientMeanRttMs?: Scalars['Float'];

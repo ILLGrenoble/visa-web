@@ -186,7 +186,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                         rttSamples {
                             id
                             date
-                            instanceSessionMemberId
+                            instanceDesktopSessionId
                             samplePeriodMinutes
                             clientMeanRttMs
                             clientSdRttMs
@@ -211,10 +211,10 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     this.sessions = instance.sessions;
                     const rttSamples = instance.rttSamples;
                     this._clientRttSamples = rttSamples.reduce((acc, sample) => {
-                        let samples = acc.get(sample.instanceSessionMemberId);
+                        let samples = acc.get(sample.instanceDesktopSessionId);
                         if (samples == null) {
                             samples = [];
-                            acc.set(sample.instanceSessionMemberId, samples);
+                            acc.set(sample.instanceDesktopSessionId, samples);
                         }
 
                         const {date, clientMeanRttMs, clientSdRttMs} = sample;
@@ -224,10 +224,10 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     }, new Map());
 
                     this._instanceRttSamples = rttSamples.reduce((acc, sample) => {
-                        let samples = acc.get(sample.instanceSessionMemberId);
+                        let samples = acc.get(sample.instanceDesktopSessionId);
                         if (samples == null) {
                             samples = [];
-                            acc.set(sample.instanceSessionMemberId, samples);
+                            acc.set(sample.instanceDesktopSessionId, samples);
                         }
 
                         const {date, instanceMeanRttMs, instanceSdRttMs} = sample;
@@ -285,8 +285,8 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
             },
         }, { title: null}]
 
-        this._instanceRttSamples.forEach((samples, instanceSessionMemberId) => {
-            const includeSession = this._selectedSessions.length == 0 ? true : this.isSessionSelected(instanceSessionMemberId);
+        this._instanceRttSamples.forEach((samples, instanceDesktopSessionId) => {
+            const includeSession = this._selectedSessions.length == 0 ? true : this.isSessionSelected(instanceDesktopSessionId);
             if (samples.length > 2) {
                 const rttData = samples
                     .filter((sample, index) => index > 0)
@@ -294,12 +294,12 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     .map(sample => {
                         return { x: Date.parse(sample.date), y: +sample.mean.toFixed(2) };
                     });
-                this._chartOptions.series.push({ name: `Instance RTT (ms) for Session ${instanceSessionMemberId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, color: '#000', yAxis: 0 });
+                this._chartOptions.series.push({ name: `Instance RTT (ms) for Session ${instanceDesktopSessionId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, color: '#000', yAxis: 0 });
             }
         });
 
-        this._clientRttSamples.forEach((samples, instanceSessionMemberId) => {
-            const includeSession = this._selectedSessions.length == 0 ? true : this.isSessionSelected(instanceSessionMemberId);
+        this._clientRttSamples.forEach((samples, instanceDesktopSessionId) => {
+            const includeSession = this._selectedSessions.length == 0 ? true : this.isSessionSelected(instanceDesktopSessionId);
             if (samples.length > 2) {
                 const rttData = samples
                     .filter((sample, index) => index > 0)
@@ -307,7 +307,7 @@ export class InstanceSessionsComponent implements OnInit, OnDestroy {
                     .map(sample => {
                         return { x: Date.parse(sample.date), y: +sample.mean.toFixed(2) };
                     });
-                this._chartOptions.series.push({ name: `Client RTT (ms) for Session ${instanceSessionMemberId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, yAxis: clientRttAxis });
+                this._chartOptions.series.push({ name: `Client RTT (ms) for Session ${instanceDesktopSessionId}`, visible: includeSession, data: rttData, type: 'line', showInLegend: false, yAxis: clientRttAxis });
             }
         });
 
