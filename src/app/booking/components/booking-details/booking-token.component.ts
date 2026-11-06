@@ -78,6 +78,7 @@ export class BookingTokenComponent implements OnInit {
 
     protected assignToMe(): void {
         this._form.get('owner').patchValue(this._user);
+        this._form.markAsDirty();
     }
 
     protected assignToMeDisabled(): boolean {
