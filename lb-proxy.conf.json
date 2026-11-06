@@ -29,9 +29,6 @@
     "/api/ws/*": {
         "target": "http://localhost:8000",
         "secure": false,
-        "pathRewrite": {
-            "^/": ""
-        },
         "changeOrigin": true,
         "logLevel": "debug",
         "ws": true

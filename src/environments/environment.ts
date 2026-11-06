@@ -7,6 +7,7 @@ export const environment = {
     production: false,
     paths: {
         api: '/api',
+        gateway: '/api/ws',
         vdi: '/api/ws/vdi',
         graphql: '/api/graphql',
         jupyter: '/jupyter',
