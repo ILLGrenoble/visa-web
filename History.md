@@ -1,3 +1,23 @@
+3.9.0 05/11/2026
+================
+  - Add organisers to booking request model
+    - Remove booking-user-configuration and replace with account-booking-access
+    - allow organisers to access the booking menu
+    - Show organisers and owner on the booking request details page
+  - Change autoAcceptExtensionRequest to extensionRequestPolicy
+    - can now stop extension requests being available for older images
+    - Compatibility maintained for previous auto-accepted images
+    - Stop users from making subsequent extension requests if already one refused
+  - Only show advanced display settings if vdi protocol choice available
+  - Remove Experimental from WebX description
+  - Display mean, min and max instance RTT times for previous hour on hypervisor admin page
+  - Display charts of instance session client and instance RTT data on admin instance details.
+    - Show all session details or click on individual ones to show specific session data
+  - remove highcharts credits from dashboard chart
+  - Add stats-panel component (visually based on three.js stats panel)
+    - Show client and instance mean RTT times on the admin sessions page
+  - Show hypervisor in admin instance details
+
 3.8.4 08/06/2026
 ================
  - Improve display of admin sessions grid view.
