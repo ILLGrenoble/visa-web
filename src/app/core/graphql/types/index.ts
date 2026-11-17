@@ -332,7 +332,7 @@ export type InstanceDesktopSession = {
     role: Scalars['String'];
     createdAt: Scalars['String'];
     updatedAt: Maybe<Scalars['String']>;
-    lastClientPingAt: Maybe<Scalars['String']>;
+    lastSeenAt: Maybe<Scalars['String']>;
     lastInteractionAt: Maybe<Scalars['String']>;
     closedAt: Maybe<Scalars['String']>;
     duration: Scalars['Int'];

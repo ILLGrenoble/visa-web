@@ -177,7 +177,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
                             role
                             protocol
                             createdAt
-                            lastClientPingAt
+                            lastSeenAt
                             lastInteractionAt
                             closedAt
                             duration
