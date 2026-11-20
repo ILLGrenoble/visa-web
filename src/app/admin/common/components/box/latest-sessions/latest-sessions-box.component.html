@@ -19,8 +19,8 @@
             <tbody *ngFor="let sessionMember of data">
             <tr>
                 <td>
-                    <a [routerLink]="['/admin/compute/instances',sessionMember.instanceSession.instance.id]">
-                        {{ sessionMember.instanceSession.instance.name }}
+                    <a [routerLink]="['/admin/compute/instances',sessionMember.instance.id]">
+                        {{ sessionMember.instance.name }}
                     </a>
                 </td>
                 <td>{{sessionMember.user.fullName}}</td>

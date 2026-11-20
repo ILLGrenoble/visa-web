@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NotifierService} from 'angular-notifier';
 import {Apollo} from 'apollo-angular';
 import {ApolloQueryResult} from '@apollo/client';
-import {InstanceSessionMember} from 'app/core/graphql/types';
+import {InstanceDesktopSession} from 'app/core/graphql/types';
 import gql from 'graphql-tag';
 import {Observable, Subject} from 'rxjs';
 import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
@@ -14,7 +14,7 @@ import {delay, switchMap, takeUntil, tap} from 'rxjs/operators';
 export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
     private _refresh$: Subject<void>;
 
-    private _data: InstanceSessionMember[] = [];
+    private _data: InstanceDesktopSession[] = [];
 
     private _destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -37,11 +37,11 @@ export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
         this._refresh$ = value;
     }
 
-    get data(): InstanceSessionMember[] {
+    get data(): InstanceDesktopSession[] {
         return this._data;
     }
 
-    set data(value: InstanceSessionMember[]) {
+    set data(value: InstanceDesktopSession[]) {
         this._data = value;
     }
 
@@ -97,18 +97,11 @@ export class LatestSessionsBoxComponent implements OnInit, OnDestroy {
                             id
                             createdAt
                             role
-                            active
                             duration
-                            instanceSession {
+                            instance {
                                 id
-                                instance {
-                                    id
-                                    uid
-                                    name
-                                }
-                                current
+                                name
                             }
-                            sessionId
                             user {
                                 id
                                 fullName

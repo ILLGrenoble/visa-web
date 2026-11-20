@@ -5,10 +5,9 @@ import {environment} from 'environments/environment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
-    BookingToken,
+    BookingToken, ConnectedUser,
     Experiment,
     Instance, InstanceExtensionRequest,
-    InstanceSessionMember,
     InstanceState,
     Instrument,
     Member,
@@ -150,13 +149,13 @@ export class AccountService {
         );
     }
 
-    public getSessionMembersForInstance(instance: { uid: string }): Observable<InstanceSessionMember[]> {
+    public getConnectedUsersForInstance(instance: { uid: string }): Observable<ConnectedUser[]> {
         const baseUrl = environment.paths.api;
         const url = `${baseUrl}/account/instances/${instance.uid}/sessions/active/members`;
-        return this.http.get<Response<InstanceSessionMember[]>>(url).pipe(
+        return this.http.get<Response<ConnectedUser[]>>(url).pipe(
             map((response) => {
                 const data = response.data;
-                return data.map((member) => this.objectMapper.deserialize(member, InstanceSessionMember));
+                return data.map((member) => this.objectMapper.deserialize(member, ConnectedUser));
             })
         );
     }

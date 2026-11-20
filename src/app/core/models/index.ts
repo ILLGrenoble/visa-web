@@ -12,7 +12,7 @@ export * from './instance-state-changed-event.model';
 export * from './instance-thumbnail-updated-event.model';
 export * from './paginated.model';
 export * from './image.model';
-export * from './instanceSessionMember.model';
+export * from './connected-user.model';
 export * from './instanceExtensionRequest.model';
 export * from './flavour.model';
 export * from './plan.model';
