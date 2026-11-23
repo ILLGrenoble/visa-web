@@ -29,9 +29,6 @@
     "/api/ws/vdi/*": {
         "target": "http://localhost:8087",
         "secure": false,
-        "pathRewrite": {
-            "^/api/ws/vdi/": "/ws/vdi/"
-        },
         "changeOrigin": true,
         "logLevel": "debug",
         "ws": true
